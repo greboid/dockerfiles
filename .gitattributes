@@ -1,0 +1,6 @@
+distribution/Dockerfile merge=ours
+irc-bot/Dockerfile merge=ours
+irc-distribution/Dockerfile merge=ours
+irc-github/Dockerfile merge=ours
+irc-goplum/Dockerfile merge=ours
+irc-news/Dockerfile merge=ours
