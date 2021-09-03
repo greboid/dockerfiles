@@ -1,7 +1,7 @@
 # Generated from https://github.com/csmith/dockerfiles/blob/master/irc-goplum/Dockerfile.gotpl
-# BOM: {"github:greboid/irc-goplum":"v4.0.0","image:base":"sha256:1cc5b31fea33445d7b10537f4e5c2682fdc72e806b7c92dbdd3930a88fed86f0","image:golang":"sha256:4ce5fc8b1f9c331c30f7dffadc43239e802c29ffb7185ec203584196a5e52511"}
+# BOM: {"github:greboid/irc-goplum":"v4.0.0","image:base":"sha256:f7f27db7afb58bae23ad902072228f1b090b878af303d9f63bd2c1526b9b4f53","image:golang":"sha256:0ce3bbf3061a90aab6bd060fc453f0fe709168374a77805e6f4c9c2de46a5402"}
 
-FROM reg.g5d.dev/golang@sha256:4ce5fc8b1f9c331c30f7dffadc43239e802c29ffb7185ec203584196a5e52511 AS build
+FROM reg.g5d.dev/golang@sha256:0ce3bbf3061a90aab6bd060fc453f0fe709168374a77805e6f4c9c2de46a5402 AS build
 
 ARG TAG="v4.0.0"
 
@@ -13,7 +13,7 @@ RUN set -eux; \
     # Clobber all the timestamps to make the build more reproducible
     touch --date=@0 /go/src/github.com/greboid/irc-goplum/main;
 
-FROM reg.g5d.dev/base@sha256:1cc5b31fea33445d7b10537f4e5c2682fdc72e806b7c92dbdd3930a88fed86f0
+FROM reg.g5d.dev/base@sha256:f7f27db7afb58bae23ad902072228f1b090b878af303d9f63bd2c1526b9b4f53
 
 COPY --from=build /go/src/github.com/greboid/irc-goplum/main /irc-goplum
 ENTRYPOINT ["/irc-goplum"]
