@@ -7,8 +7,8 @@ ARG TAG="2.0.32"
 
 RUN set -eux; \
     apk add --no-cache git; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/irc-distribution /go/src/github.com/miniflux/v2; \
-    cd /go/src/github.com/csmith/irc-distribution; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/miniflux/v2 /go/src/github.com/miniflux/v2; \
+    cd /go/src/github.com/miniflux/v2; \
     CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
     go run github.com/google/go-licenses@latest save ./... --save_path=/notices; \
     # Clobber all the timestamps to make the build more reproducible
