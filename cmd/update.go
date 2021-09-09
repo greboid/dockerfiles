@@ -51,9 +51,10 @@ func main() {
 		"irc-github",       // depends on golang + base
 		"irc-goplum",       // depends on golang + base
 		"irc-news",         // depends on golang + base
-                "irc-webhook",      // depends on golang + base
+		"irc-webhook",      // depends on golang + base
 		"linx-server",      // depends on golang + base
-                "httpredirect",     // depends on golang + base
+		"httpredirect",     // depends on golang + base
+		"miniflux",         // depends on golang + base
 		"postgres-13",      // depends on alpine
 	}
 

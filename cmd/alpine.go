@@ -139,4 +139,3 @@ func readApkIndexContent(reader io.Reader) map[string]*packageInfo {
 
 	return res
 }
-
