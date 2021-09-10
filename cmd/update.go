@@ -56,6 +56,7 @@ func main() {
 		"httpredirect",     // depends on golang + base
 		"miniflux",         // depends on golang + base
 		"postgres-13",      // depends on alpine
+		"haproxy",          // depends on alpine + base
 	}
 
 	for i := range targets {
