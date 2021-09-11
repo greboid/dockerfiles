@@ -43,7 +43,8 @@ func main() {
 	targets := []string{
 		"alpine",
 		"arch",
-		"base",             // depends on alpine
+		"baseroot",         // depends on alpine
+		"base",             // depends on baseroot
 		"golang",           // depends on alpine
 		"distribution",     // depends on golang + base
 		"irc-bot",          // depends on golang + base
@@ -57,6 +58,7 @@ func main() {
 		"miniflux",         // depends on golang + base
 		"postgres-13",      // depends on alpine
 		"haproxy",          // depends on alpine + base
+		"watchtower",       // depends on golang + base
 	}
 
 	for i := range targets {
