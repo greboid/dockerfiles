@@ -1,0 +1,18 @@
+FROM {{image "golang"}} AS build
+
+ARG TAG="{{github_tag "containrrr/watchtower"}}"
+
+RUN set -eux; \
+    apk add --no-cache git; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/containrrr/watchtower /go/src/github.com/containrrr/watchtower; \
+    cd /go/src/github.com/containrrr/watchtower; \
+    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
+    #go run github.com/google/go-licenses@latest save ./... --save_path=/notices; \
+    # Clobber all the timestamps to make the build more reproducible
+    touch --date=@0 /go/src/github.com/containrrr/watchtower/main;
+
+FROM {{image "baseroot"}}
+
+COPY --from=build /go/src/github.com/containrrr/watchtower/main /watchtower
+#COPY --from=build /notices /notices
+ENTRYPOINT ["/watchtower"]
