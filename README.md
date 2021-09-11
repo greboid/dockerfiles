@@ -54,6 +54,7 @@ All images are available at `reg.g5d.dev/<name>`. Only the latest tag is built.
 | httpredirect       | https://github.com/greboid/httpredirect               |       ✅      |    ✅     |    ✅    |
 | dotege             | https://github.com/csmith/dotege                      |       ✅      |    ❌     |    ✅    |
 | webhooked          | https://github.com/csmith/webhooked                   |       ✅      |    ✅     |    ✅    |
+| soju               | https://soju.im/                                      |       ✅      |    ✅     |    ✅    |
 | haproxy            | https://github.com/haproxy/haproxy                    |       ✅      |    ✅     |    ✅    |
 | postgres-13        | https://www.postgresql.org/                           |       ❌      |    ❌     |    ❌    |
 
