@@ -52,6 +52,7 @@ All images are available at `reg.g5d.dev/<name>`. Only the latest tag is built.
 | miniflux           | https://github.com/miniflux/v2                        |       ✅      |    ✅     |    ✅    |
 | watchtower         | https://github.com/containrrr/watchtower/             |       ✅      |    ❌     |    ✅    |
 | httpredirect       | https://github.com/greboid/httpredirect               |       ✅      |    ✅     |    ✅    |
+| dotege             | https://github.com/csmith/dotege                      |       ✅      |    ❌     |    ✅    |
 | haproxy            | https://github.com/haproxy/haproxy                    |       ✅      |    ✅     |    ✅    |
 | postgres-13        | https://www.postgresql.org/                           |       ❌      |    ❌     |    ❌    |
 

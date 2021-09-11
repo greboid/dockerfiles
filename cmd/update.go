@@ -58,7 +58,8 @@ func main() {
 		"miniflux",         // depends on golang + base
 		"postgres-13",      // depends on alpine
 		"haproxy",          // depends on alpine + base
-		"watchtower",       // depends on golang + base
+		"watchtower",       // depends on golang + baseroot
+		"dotege",           // depends on golang + baseroot
 	}
 
 	for i := range targets {
