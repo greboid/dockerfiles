@@ -25,4 +25,6 @@ STOPSIGNAL SIGUSR1
 
 COPY --from=build /usr/local/sbin/haproxy /haproxy
 
-ENTRYPOINT ["/haproxy"]
+ENTRYPOINT ["/haproxy", "-W", "-db"]
+
+CMD ["-f", "/usr/local/etc/haproxy/haproxy.cfg"]
