@@ -1,5 +1,8 @@
 # Dockerfiles from the ground up
 
+Based almost exclusively on the work of [csmith/dockerfiles](https://github.com/csmith/dockerfiles) with my own images
+added in.
+
 ## What? Why?
 
 This is a collection of Dockerfiles for various software projects I want to run, built from the ground up.
@@ -28,23 +31,29 @@ you can pass `--commit=false` and `--build=false`.
 
 ## Images
 
-All images are available at `reg.c5h.io/<name>`. Only the latest tag is built.
+All images are available at `reg.g5d.dev/<name>`. Only the latest tag is built.
 
 | Name               | Upstream                                              | Reproducible? | Non-root? | Minimal? |
 |--------------------|-------------------------------------------------------|:-------------:|:---------:|:--------:|
 | alpine             | https://alpinelinux.org/                              |       ✅      |    N/A    |    ✅    |
 | arch               | https://archlinux.org/                                |       ✅      |    N/A    |    ❌    |
+| baseroot           | N/A                                                   |       ✅      |    ❌      |   ✅     |
 | base               | N/A                                                   |       ✅      |    ✅     |    ✅    |
-| distribution       | https://github.com/distribution/distribution          |       ✅      |    ✅     |    ✅    |
 | irc-bot            | https://github.com/greboid/irc-bot                    |       ✅      |    ✅     |    ✅    |
 | ↳ irc-distribution | https://github.com/csmith/irc-distribution            |       ✅      |    ✅     |    ✅    |
 | ↳ irc-github       | https://github.com/greboid/irc-github                 |       ✅      |    ✅     |    ✅    |
 | ↳ irc-goplum       | https://github.com/greboid/irc-goplum                 |       ✅      |    ✅     |    ✅    |
 | ↳ irc-news         | https://github.com/csmith/ircplugins                  |       ✅      |    ✅     |    ✅    |
-| golang             | https://golang.org/                                   |       ✅      |    N/A    |    ✅    |
+| ↳ irc-webhook      | https://github.com/greboid/irc-webhook                |       ✅      |    ✅     |    ✅    |
+| golang             | https://golang.org/                                   |       ✅      |    N/A    |    ✅    | 
+| distribution       | https://github.com/distribution/distribution          |       ✅      |    ✅     |    ✅    |
 | linx-server        | https://github.com/csmith/linx-server                 |       ✅      |    ✅     |    ✅    |
-| postgres-13        | https://www.postgresql.org/                           |       ❌      |    ❌     |    ❌    |
 | vault              | https://github.com/hashicorp/vault                    |       ✅      |    ✅     |    ✅    |
+| miniflux           | https://github.com/miniflux/v2                        |       ✅      |    ✅     |    ✅    |
+| watchtower         | https://github.com/containrrr/watchtower/             |       ✅      |    ❌     |    ✅    |
+| httpredirect       | https://github.com/greboid/httpredirect               |       ✅      |    ✅     |    ✅    |
+| haproxy            | https://github.com/haproxy/haproxy                    |       ✅      |    ✅     |    ✅    |
+| postgres-13        | https://www.postgresql.org/                           |       ❌      |    ❌     |    ❌    |
 
 Meaning of the status columns:
 
