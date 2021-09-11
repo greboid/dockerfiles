@@ -5,6 +5,8 @@ FROM reg.g5d.dev/alpine@sha256:f32b56d2f268e9a4dce68b95adac9f81b8ed8f9bc7fd33ba0
 
 ARG TAG="v2.4.0"
 
+COPY buildstatic.patch /src/buildstatic.patch
+
 RUN set -eux; \
      apk add --no-cache --virtual .build-deps \
         binutils=2.35.2-r2 \
@@ -54,7 +56,7 @@ RUN set -eux; \
         ; \
      git clone --depth=1 -b $TAG --single-branch git://github.com/haproxy/haproxy /src/haproxy; \
      cd /src/haproxy; \
-     sed -i 's$OPTIONS_LDFLAGS =$OPTIONS_LDFLAGS = -static$' Makefile; \
+     patch Makefile < /src/buildstatic.patch; \
      make TARGET=linux-musl USE_OPENSSL=1 USE_PCRE=1; \
      make install-bin; \
      strip /usr/local/sbin/haproxy; \
