@@ -1,7 +1,7 @@
 # Generated from https://github.com/csmith/dockerfiles/blob/master/irc-distribution/Dockerfile.gotpl
-# BOM: {"github:csmith/irc-distribution":"v1.0.0","image:base":"sha256:f7f27db7afb58bae23ad902072228f1b090b878af303d9f63bd2c1526b9b4f53","image:golang":"sha256:beae544bfe746af2dec32e19106ea3ce7e346dde3c9692bb1a82c70be9b636e4"}
+# BOM: {"github:csmith/irc-distribution":"v1.0.0","image:base":"sha256:f7f27db7afb58bae23ad902072228f1b090b878af303d9f63bd2c1526b9b4f53","image:golang":"sha256:176928588492da996e1d64b66397ca6c3e7b629d2ba3e333f2b0ae10bffe637b"}
 
-FROM reg.g5d.dev/golang@sha256:beae544bfe746af2dec32e19106ea3ce7e346dde3c9692bb1a82c70be9b636e4 AS build
+FROM reg.g5d.dev/golang@sha256:176928588492da996e1d64b66397ca6c3e7b629d2ba3e333f2b0ae10bffe637b AS build
 
 ARG TAG="v1.0.0"
 
