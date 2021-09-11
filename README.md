@@ -53,6 +53,7 @@ All images are available at `reg.g5d.dev/<name>`. Only the latest tag is built.
 | watchtower         | https://github.com/containrrr/watchtower/             |       ✅      |    ❌     |    ✅    |
 | httpredirect       | https://github.com/greboid/httpredirect               |       ✅      |    ✅     |    ✅    |
 | dotege             | https://github.com/csmith/dotege                      |       ✅      |    ❌     |    ✅    |
+| webhooked          | https://github.com/csmith/webhooked                   |       ✅      |    ✅     |    ✅    |
 | haproxy            | https://github.com/haproxy/haproxy                    |       ✅      |    ✅     |    ✅    |
 | postgres-13        | https://www.postgresql.org/                           |       ❌      |    ❌     |    ❌    |
 

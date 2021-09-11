@@ -60,6 +60,7 @@ func main() {
 		"haproxy",          // depends on alpine + base
 		"watchtower",       // depends on golang + baseroot
 		"dotege",           // depends on golang + baseroot
+		"webhooked",        // depends on golang + baser
 	}
 
 	for i := range targets {
