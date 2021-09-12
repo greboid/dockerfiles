@@ -62,6 +62,8 @@ func main() {
 		"dotege",           // depends on golang + baseroot
 		"webhooked",        // depends on golang + base
 		"soju",             // depends on golang + base
+		"greboid.com",      // depends on golang + base
+		"greboid.gay",      // depends on alpine + golang + base
 	}
 
 	for i := range targets {
