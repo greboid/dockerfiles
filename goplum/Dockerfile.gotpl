@@ -1,0 +1,23 @@
+FROM {{image "golang"}} AS build
+
+ARG TAG="{{github_tag "csmith/goplum"}}"
+
+RUN set -eux; \
+    apk add --no-cache git; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/goplum /go/src/github.com/csmith/goplum; \
+    cd /go/src/github.com/csmith/goplum; \
+    #Build the plugins (all, its easier)
+    for plugin in $(ls plugins); do go build -o $plugin.so -buildmode=plugin ./plugins/$plugin/cmd; done; \
+    #Build goplum
+    go build -o main ./cmd/goplum; \
+    go run github.com/google/go-licenses@latest save ./... --save_path=/notices; \
+    # Clobber all the timestamps to make the build more reproducible
+    touch --date=@0 /go/src/github.com/csmith/goplum/main;
+
+FROM {{image "base"}}
+
+COPY --from=build /go/src/github.com/csmith/goplum/main /goplum
+COPY --from=build /go/src/github.com/csmith/goplum/*.so /plugins/
+COPY --from=build /notices /notices
+EXPOSE 8080
+ENTRYPOINT ["/goplum"]
