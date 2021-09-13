@@ -58,6 +58,8 @@ All images are available at `reg.g5d.dev/<name>`. Only the latest tag is built.
 | greboid.com        | https://github.com/greboid.com                        |       ✅      |    ✅     |    ✅    |
 | greboid.gay        | https://github.com/greboid.gay                        |       ❌      |    ✅     |    ✅    |
 | goplum             | https://github.com/csmith/goplum                      |       ✅      |    ✅     |    ✅    |
+| identd             | https://github.com/greboid/identd                     |       ✅      |    ✅     |    ✅    |
+| newtab             | https://github.com/greboid/newtab                     |       ✅      |    ✅     |    ✅    |
 | haproxy            | https://github.com/haproxy/haproxy                    |       ✅      |    ✅     |    ✅    |
 | postgres-13        | https://www.postgresql.org/                           |       ❌      |    ❌     |    ❌    |
 
