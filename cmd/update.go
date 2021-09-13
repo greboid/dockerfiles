@@ -64,6 +64,7 @@ func main() {
 		"soju",             // depends on golang + base
 		"greboid.com",      // depends on golang + base
 		"greboid.gay",      // depends on alpine + golang + base
+		"goplum",           // depends on golang + base
 	}
 
 	for i := range targets {
