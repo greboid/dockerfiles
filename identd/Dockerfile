@@ -18,5 +18,5 @@ FROM reg.g5d.dev/base@sha256:9eb1693b711c4282b96c772aecfb3fe764a384ed907fb24f808
 
 COPY --from=build /go/src/github.com/greboid/identd/main /identd
 COPY --from=build /notices /notices
-EXPOSE 8080
+EXPOSE 8000
 ENTRYPOINT ["/identd"]
