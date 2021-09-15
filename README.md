@@ -55,7 +55,7 @@ All images are available at `reg.g5d.dev/<name>`. Only the latest tag is built.
 | dotege             | https://github.com/csmith/dotege                      |       ✅      |    ❌     |    ✅    |
 | webhooked          | https://github.com/csmith/webhooked                   |       ✅      |    ✅     |    ✅    |
 | soju               | https://soju.im/                                      |       ✅      |    ✅     |    ✅    |
-| greboid.com        | https://github.com/greboid.com                        |       ✅      |    ✅     |    ✅    |
+| greboid.com        | https://github.com/greboid.com                        |       ❌      |    ✅     |    ✅    |
 | greboid.gay        | https://github.com/greboid.gay                        |       ❌      |    ✅     |    ✅    |
 | goplum             | https://github.com/csmith/goplum                      |       ✅      |    ✅     |    ✅    |
 | identd             | https://github.com/greboid/identd                     |       ✅      |    ✅     |    ✅    |
