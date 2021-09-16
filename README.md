@@ -60,6 +60,7 @@ All images are available at `reg.g5d.dev/<name>`. Only the latest tag is built.
 | goplum             | https://github.com/csmith/goplum                      |       ✅      |    ✅     |    ✅    |
 | identd             | https://github.com/greboid/identd                     |       ✅      |    ✅     |    ✅    |
 | newtab             | https://github.com/greboid/newtab                     |       ✅      |    ✅     |    ✅    |
+| legoergo           | https://github.com/greboid/legoergo                   |       ✅      |    ✅     |    ✅    |
 | haproxy            | https://github.com/haproxy/haproxy                    |       ✅      |    ✅     |    ✅    |
 | postgres-13        | https://www.postgresql.org/                           |       ❌      |    ❌     |    ❌    |
 
