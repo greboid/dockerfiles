@@ -1,0 +1,9 @@
+--- cmd/soju/main.go	2021-09-16 22:46:28.834091287 +0100
++++ cmd/soju/main.go	2021-09-16 22:47:40.482383338 +0100
+@@ -253,5 +253,6 @@
+ 			}
+ 			return proxyproto.IGNORE, nil
+ 		},
++	        ReadHeaderTimeout: 5 * time.Second,
+ 	}
+ }

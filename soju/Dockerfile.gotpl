@@ -3,10 +3,16 @@ FROM {{image "golang"}} AS build
 ARG SOJUTAG="{{github_tag "emersion/soju"}}"
 ARG CERTTAG="{{github_tag "csmith/certwrapper"}}"
 
+COPY proxytimeout.patch /
+
 RUN set -eux; \
-    apk add --no-cache git; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "git" "patch" -}}
+        {{$key}}={{$value}} \
+        {{end}}; \
     git clone --depth=1 -b $SOJUTAG --single-branch https://github.com/emersion/soju /go/src/github.com/emersion/soju; \
     cd /go/src/github.com/emersion/soju; \
+    patch cmd/soju/main.go < /proxytimeout.patch; \
     GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o soju ./cmd/soju; \
     GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o sojuctl ./cmd/sojuctl; \
     git clone --depth=1 -b $CERTTAG --single-branch https://github.com/csmith/certwrapper /go/src/github.com/csmith/certwrapper; \
