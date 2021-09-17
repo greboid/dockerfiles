@@ -61,7 +61,8 @@ All images are available at `reg.g5d.dev/<name>`. Only the latest tag is built.
 | identd             | https://github.com/greboid/identd                     |       ✅      |    ✅     |    ✅    |
 | newtab             | https://github.com/greboid/newtab                     |       ✅      |    ✅     |    ✅    |
 | legoergo           | https://github.com/greboid/legoergo                   |       ✅      |    ✅     |    ✅    |
-| haproxy            | https://github.com/haproxy/haproxy                    |       ✅      |    ✅     |    ✅    |
+| dockercleanup      | https://github.com/greboid/dockercleanup              |       ✅      |    ✅     |    ✅    |
+| githubmirror       | https://github.com/greboid/githubmirror               |       ✅      |    ✅     |    ✅    |
 | postgres-13        | https://www.postgresql.org/                           |       ❌      |    ❌     |    ❌    |
 
 Meaning of the status columns:
