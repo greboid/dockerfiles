@@ -63,6 +63,7 @@ All images are available at `reg.g5d.dev/<name>`. Only the latest tag is built.
 | legoergo           | https://github.com/greboid/legoergo                   |       ✅      |    ✅     |    ✅    |
 | dockercleanup      | https://github.com/greboid/dockercleanup              |       ✅      |    ✅     |    ✅    |
 | githubmirror       | https://github.com/greboid/githubmirror               |       ✅      |    ✅     |    ✅    |
+| puzzles            | https://github.com/greboid/puzzles                    |       ✅      |    ✅     |    ✅    |
 | postgres-13        | https://www.postgresql.org/                           |       ❌      |    ❌     |    ❌    |
 
 Meaning of the status columns:
