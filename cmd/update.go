@@ -70,7 +70,8 @@ func main() {
 		"legoergo",         // depends on golang + base
 		"dockercleanup",    // depends on golang + base
 		"githubmirror",     // depends on golang + base
-		"puzzles",     // depends on golang + base
+		"puzzles",          // depends on golang + base
+		"registryauth",     // depends on golang + base
 	}
 
 	for i := range targets {
