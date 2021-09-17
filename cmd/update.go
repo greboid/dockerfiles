@@ -67,7 +67,7 @@ func main() {
 		"goplum",           // depends on golang + base
 		"identd",           // depends on golang + base
 		"newtab",           // depends on golang + base
-		"legergo",          // depends on golang + base
+		"legoergo",          // depends on golang + base
 	}
 
 	for i := range targets {
