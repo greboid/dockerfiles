@@ -1,7 +1,7 @@
 # Generated from https://github.com/csmith/dockerfiles/blob/master/watchtower/Dockerfile.gotpl
-# BOM: {"github:containrrr/watchtower":"v1.3.0","image:baseroot":"sha256:73cd5d7b8df5d4846f076ca7c8181d4e5d7a60bb4ba4e9a66fa55e75a57d2e23","image:golang":"sha256:c1d9d794a310682b45fbdaad1dbe94ee3773ce218c3c0fcdff6b499cc87c6f4c"}
+# BOM: {"github:containrrr/watchtower":"v1.3.0","image:baseroot":"sha256:da3ab01f29ec0054e06e485d216c219a62efa78691f20e2cd67d4ead3688ab05","image:golang":"sha256:092432223820de2928ae7bd05e069c52b69349e29250695f56b793e17c32d0a2"}
 
-FROM reg.g5d.dev/golang@sha256:c1d9d794a310682b45fbdaad1dbe94ee3773ce218c3c0fcdff6b499cc87c6f4c AS build
+FROM reg.g5d.dev/golang@sha256:092432223820de2928ae7bd05e069c52b69349e29250695f56b793e17c32d0a2 AS build
 
 ARG TAG="v1.3.0"
 
@@ -14,7 +14,7 @@ RUN set -eux; \
     # Clobber all the timestamps to make the build more reproducible
     touch --date=@0 /go/src/github.com/containrrr/watchtower/main;
 
-FROM reg.g5d.dev/baseroot@sha256:73cd5d7b8df5d4846f076ca7c8181d4e5d7a60bb4ba4e9a66fa55e75a57d2e23
+FROM reg.g5d.dev/baseroot@sha256:da3ab01f29ec0054e06e485d216c219a62efa78691f20e2cd67d4ead3688ab05
 
 COPY --from=build /go/src/github.com/containrrr/watchtower/main /watchtower
 #COPY --from=build /notices /notices
