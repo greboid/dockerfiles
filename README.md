@@ -65,6 +65,7 @@ All images are available at `reg.g5d.dev/<name>`. Only the latest tag is built.
 | githubmirror       | https://github.com/greboid/githubmirror               |       ✅      |    ✅     |    ✅    |
 | puzzles            | https://github.com/greboid/puzzles                    |       ✅      |    ✅     |    ✅    |
 | registryauth       | https://github.com/greboid/registryauth               |       ✅      |    ✅     |    ✅    |
+| thelounge          | https://github.com/thelounge/thelounge                |       ✅      |    ✅     |    ❌    |
 | postgres-13        | https://www.postgresql.org/                           |       ❌      |    ❌     |    ❌    |
 
 Meaning of the status columns:

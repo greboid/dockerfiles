@@ -1,0 +1,32 @@
+FROM {{image "alpine"}} as yarnbase
+
+RUN set -eux; \
+    apk add --no-cache \
+            {{range $key, $value := alpine_packages "yarn" -}}
+            {{$key}}={{$value}}\
+            {{end}};
+
+FROM yarnbase as deps
+
+ARG TAG="{{github_tag "thelounge/thelounge"}}"
+
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "git" -}}
+        {{$key}}={{$value}}\
+        {{end}}; \
+        git clone --depth=1 -b $TAG --single-branch https://github.com/thelounge/thelounge /js/src/github.com/thelounge/thelounge; \
+        cd /js/src/github.com/thelounge/thelounge; \
+        yarn install --silent --ignore-optional --non-interactive --link-duplicates; \
+        yarn build; \
+        touch --date=@0 /js/src/github.com/thelounge/thelounge
+
+FROM yarnbase
+
+ENV NODE_ENV=production
+
+WORKDIR /app
+COPY --from=deps /js/src/github.com/thelounge/thelounge .
+RUN yarn install --production --silent --ignore-optional --non-interactive --link-duplicates
+EXPOSE 5050
+CMD ["yarn", "run", "start"]

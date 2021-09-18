@@ -72,6 +72,7 @@ func main() {
 		"githubmirror",     // depends on golang + base
 		"puzzles",          // depends on golang + base
 		"registryauth",     // depends on golang + base
+		"thelounge",        // depends on alpine
 	}
 
 	for i := range targets {
