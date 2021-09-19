@@ -19,6 +19,8 @@ var (
 	shouldCommit = flag.Bool("commit", true, "Whether or not to commit changes")
 	shouldBuild  = flag.Bool("build", true, "Whether or not to build (and push) the image")
 	target       = flag.String("target", "", "Project to build. Blank for all projects.")
+	mirrorTarget = flag.String("mirror-target", "", "Additional registry to push built images to")
+	mirrorImages = flag.String("mirror-images", "", "If mirror target is setup, all images will be pushed, unless specific images specified here, space separated list")
 
 	funcs = template.FuncMap{
 		"image":           Image,
@@ -124,33 +126,70 @@ func Update(dir string) {
 	}
 
 	if *shouldBuild {
-		imageName := fmt.Sprintf("%s/%s", *registry, dir)
-		buildahCommand := exec.Command(
-			"/usr/bin/buildah",
+		imageNames := getTags(dir)
+		args := []string{
 			"bud",
 			"--timestamp",
 			"0",
-			"--tag",
-			imageName,
-			dir,
-		)
+		}
+		for index := range imageNames {
+			args = append(args, "--tag")
+			args = append(args, imageNames[index])
+		}
+		args = append(args, dir)
+		log.Printf("Buildah: %s", args)
+		buildahCommand := exec.Command("/usr/bin/buildah", args...)
 		buildahCommand.Stdout = os.Stdout
 		buildahCommand.Stderr = os.Stderr
 		if err := buildahCommand.Run(); err != nil {
 			log.Fatalf("Failure building image: %v", err)
 		}
 
-		pushCommand := exec.Command(
-			"/usr/bin/buildah",
-			"push",
-			imageName,
-		)
-		pushCommand.Stdout = os.Stdout
-		pushCommand.Stderr = os.Stderr
-		if err := pushCommand.Run(); err != nil {
-			log.Fatalf("Failure pushing image: %v", err)
+		for index := range imageNames {
+			pushCommand := exec.Command(
+				"/usr/bin/buildah",
+				"push",
+				imageNames[index],
+			)
+			pushCommand.Stdout = os.Stdout
+			pushCommand.Stderr = os.Stderr
+			if err := pushCommand.Run(); err != nil {
+				log.Fatalf("Failure pushing image: %v", err)
+			}
 		}
 	}
+}
+
+func getTags(imageName string) []string {
+	if len(*mirrorTarget) == 0 {
+		return []string{fmt.Sprintf("%s/%s", *registry, imageName)}
+	}
+	addToList := false
+	if len(*mirrorImages) == 0 {
+		addToList = true
+	} else {
+		toMirror := strings.Split(*mirrorImages, " ")
+		if sliceContains(toMirror, imageName) {
+			addToList = true
+		}
+	}
+	if addToList {
+		return []string{
+			fmt.Sprintf("%s/%s", *registry, imageName),
+			fmt.Sprintf("%s/%s", *mirrorTarget, imageName),
+		}
+	} else {
+		return []string{fmt.Sprintf("%s/%s", *registry, imageName)}
+	}
+}
+
+func sliceContains(values []string, value string) bool {
+	for index := range values {
+		if values[index] == value {
+			return true
+		}
+	}
+	return false
 }
 
 func diff(oldBom, newBom map[string]string) string {
