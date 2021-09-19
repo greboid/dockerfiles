@@ -21,8 +21,8 @@ jobs:
           buildah login -u "$REGISTRY_USER" -p "$REGISTRY_PASS" $REGISTRY
           go run ./cmd
           git push
-          buildah login ghcr.io -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
+          buildah login ghcr.io -u "${{ github.repository_owner }}" -p "${{ secrets.GITHUB_TOKEN }}"
           for image in alpine base baseroot golang; do
-            buildah tag reg.g5d.dev/$image ghcr.io/greboid/dockerfiles/$image
+            buildah tag $REGISTRY/$image ghcr.io/greboid/dockerfiles/$image
             buildah push ghcr.io/greboid/dockerfiles/$image
           done
