@@ -36,7 +36,6 @@ All images are available at `reg.g5d.dev/<name>`. Only the latest tag is built.
 | Name               | Upstream                                              | Reproducible? | Non-root? | Minimal? |
 |--------------------|-------------------------------------------------------|:-------------:|:---------:|:--------:|
 | alpine             | https://alpinelinux.org/                              |       ✅      |    N/A    |    ✅    |
-| arch               | https://archlinux.org/                                |       ✅      |    N/A    |    ❌    |
 | baseroot           | N/A                                                   |       ✅      |    ❌      |   ✅     |
 | base               | N/A                                                   |       ✅      |    ✅     |    ✅    |
 | irc-bot            | https://github.com/greboid/irc-bot                    |       ✅      |    ✅     |    ✅    |
@@ -45,10 +44,8 @@ All images are available at `reg.g5d.dev/<name>`. Only the latest tag is built.
 | ↳ irc-goplum       | https://github.com/greboid/irc-goplum                 |       ✅      |    ✅     |    ✅    |
 | ↳ irc-news         | https://github.com/csmith/ircplugins                  |       ✅      |    ✅     |    ✅    |
 | ↳ irc-webhook      | https://github.com/greboid/irc-webhook                |       ✅      |    ✅     |    ✅    |
-| golang             | https://golang.org/                                   |       ✅      |    N/A    |    ✅    | 
-| distribution       | https://github.com/distribution/distribution          |       ✅      |    ✅     |    ✅    |
+| golang             | https://golang.org/                                   |       ✅      |    N/A    |    ✅    |
 | linx-server        | https://github.com/csmith/linx-server                 |       ✅      |    ✅     |    ✅    |
-| vault              | https://github.com/hashicorp/vault                    |       ✅      |    ✅     |    ✅    |
 | miniflux           | https://github.com/miniflux/v2                        |       ✅      |    ✅     |    ✅    |
 | watchtower         | https://github.com/containrrr/watchtower/             |       ✅      |    ❌     |    ✅    |
 | httpredirect       | https://github.com/greboid/httpredirect               |       ✅      |    ✅     |    ✅    |
