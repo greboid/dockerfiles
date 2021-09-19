@@ -42,7 +42,6 @@ All images are available at `reg.g5d.dev/<name>`. Only the latest tag is built.
 | ↳ irc-distribution | https://github.com/csmith/irc-distribution            |       ✅      |    ✅     |    ✅    |
 | ↳ irc-github       | https://github.com/greboid/irc-github                 |       ✅      |    ✅     |    ✅    |
 | ↳ irc-goplum       | https://github.com/greboid/irc-goplum                 |       ✅      |    ✅     |    ✅    |
-| ↳ irc-news         | https://github.com/csmith/ircplugins                  |       ✅      |    ✅     |    ✅    |
 | ↳ irc-webhook      | https://github.com/greboid/irc-webhook                |       ✅      |    ✅     |    ✅    |
 | golang             | https://golang.org/                                   |       ✅      |    N/A    |    ✅    |
 | linx-server        | https://github.com/csmith/linx-server                 |       ✅      |    ✅     |    ✅    |
