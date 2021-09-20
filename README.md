@@ -36,7 +36,7 @@ All images are available at `reg.g5d.dev/<name>`. Only the latest tag is built.
 | Name               | Upstream                                              | Reproducible? | Non-root? | Minimal? |
 |--------------------|-------------------------------------------------------|:-------------:|:---------:|:--------:|
 | alpine             | https://alpinelinux.org/                              |       ✅      |    N/A    |    ✅    |
-| baseroot           | N/A                                                   |       ✅      |    ❌      |   ✅     |
+| baseroot           | N/A                                                   |       ✅      |    ❌     |    ✅    |
 | base               | N/A                                                   |       ✅      |    ✅     |    ✅    |
 | irc-bot            | https://github.com/greboid/irc-bot                    |       ✅      |    ✅     |    ✅    |
 | ↳ irc-distribution | https://github.com/csmith/irc-distribution            |       ✅      |    ✅     |    ✅    |
@@ -51,8 +51,8 @@ All images are available at `reg.g5d.dev/<name>`. Only the latest tag is built.
 | dotege             | https://github.com/csmith/dotege                      |       ✅      |    ❌     |    ✅    |
 | webhooked          | https://github.com/csmith/webhooked                   |       ✅      |    ✅     |    ✅    |
 | soju               | https://soju.im/                                      |       ✅      |    ✅     |    ✅    |
-| greboid.com        | https://github.com/greboid.com                        |       ❌      |    ✅     |    ✅    |
-| greboid.gay        | https://github.com/greboid.gay                        |       ❌      |    ✅     |    ✅    |
+| greboid.com        | https://github.com/greboid.com                        |       ✅      |    ✅     |    ✅    |
+| greboid.gay        | https://github.com/greboid.gay                        |       ✅      |    ✅     |    ✅    |
 | goplum             | https://github.com/csmith/goplum                      |       ✅      |    ✅     |    ✅    |
 | identd             | https://github.com/greboid/identd                     |       ✅      |    ✅     |    ✅    |
 | newtab             | https://github.com/greboid/newtab                     |       ✅      |    ✅     |    ✅    |
