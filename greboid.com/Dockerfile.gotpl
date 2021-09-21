@@ -22,7 +22,10 @@ ARG TAG="{{github_tag "greboid/greboid.com"}}"
 COPY --from=images /app/static/images /images
 
 RUN set -eux; \
-    apk add --no-cache git; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "git" -}}
+        {{$key}}={{$value}}\
+        {{end}}; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/greboid.com /go/src/github.com/greboid/greboid.com; \
     cd /go/src/github.com/greboid/greboid.com; \
     cp -r /images/* static/images/; \
