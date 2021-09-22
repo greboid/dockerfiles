@@ -9,13 +9,17 @@ RUN set -eux; \
             busybox=1.33.1-r3\
             c-ares=1.17.2-r0\
             ca-certificates=20191127-r5\
+            expat=2.4.1-r0\
+            git=2.32.0-r0\
             libcrypto1.1=1.1.1l-r0\
+            libcurl=7.79.0-r0\
             libgcc=10.3.1_git20210424-r2\
             libssl1.1=1.1.1l-r0\
             libstdc++=10.3.1_git20210424-r2\
             musl=1.2.2-r3\
             nghttp2-libs=1.43.0-r0\
             nodejs=14.17.6-r0\
+            pcre2=10.36-r0\
             yarn=1.22.10-r0\
             zlib=1.2.11-r3\
             ;
@@ -25,20 +29,6 @@ FROM yarnbase as deps
 ARG TAG="27.15.0"
 
 RUN set -eux; \
-    apk add --no-cache \
-        brotli-libs=1.0.9-r5\
-        busybox=1.33.1-r3\
-        ca-certificates=20191127-r5\
-        expat=2.4.1-r0\
-        git=2.32.0-r0\
-        libcrypto1.1=1.1.1l-r0\
-        libcurl=7.79.0-r0\
-        libssl1.1=1.1.1l-r0\
-        musl=1.2.2-r3\
-        nghttp2-libs=1.43.0-r0\
-        pcre2=10.36-r0\
-        zlib=1.2.11-r3\
-        ; \
         git clone --depth=1 -b $TAG --single-branch https://github.com/renovatebot/renovate /js/src/github.com/renovatebot/renovate; \
         cd /js/src/github.com/renovatebot/renovate; \
         yarn install; \
