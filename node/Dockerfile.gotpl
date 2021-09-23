@@ -1,0 +1,22 @@
+FROM {{ image "alpine" }} as node
+
+ARG TAG="{{github_tag "nodejs/node"}}"
+
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "git" "make" "gcc" "g++" "python3" "linux-headers" -}}
+        {{$key}}={{$value}}\
+        {{end}};
+
+RUN set -eux; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/nodejs/node /src; \
+    cd /src; \
+    ./configure --fully-static --enable-static; \
+    make -j $(nproc); \
+    make install
+
+FROM {{ image "base" }} as basenode
+
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
+COPY --from=node /usr/local/bin/npm /usr/local/bin/npm
+COPY --from=node /usr/local/bin/npx /usr/local/bin/npx
