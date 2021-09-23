@@ -20,6 +20,7 @@ var (
 	shouldBuild  = flag.Bool("build", true, "Whether or not to build (and push) the image")
 	target       = flag.String("target", "", "Project to build. Blank for all projects.")
 	mirrorTarget = flag.String("mirror-target", "", "Additional registry to push built images to")
+	mirrorPath   = flag.String("mirror-path", "", "path to append to the mirror target, before appending the image name")
 	mirrorImages = flag.String("mirror-images", "", "If mirror target is setup, all images will be pushed, unless specific images specified here, space separated list")
 
 	funcs = template.FuncMap{
@@ -176,7 +177,7 @@ func getTags(imageName string) []string {
 	if addToList {
 		return []string{
 			fmt.Sprintf("%s/%s", *registry, imageName),
-			fmt.Sprintf("%s/%s", *mirrorTarget, imageName),
+			fmt.Sprintf("%s/%s/%s", *mirrorTarget, *mirrorPath, imageName),
 		}
 	} else {
 		return []string{fmt.Sprintf("%s/%s", *registry, imageName)}

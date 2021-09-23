@@ -15,10 +15,13 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+          MIRROR_IMAGES: base baseroot alpine golang
         run:  |
           git config user.name "${{ secrets.GIT_USERNAME }}"
           git config user.email "${{ secrets.GIT_EMAIL }}"
           buildah login -u "$REGISTRY_USER" -p "$REGISTRY_PASS" $REGISTRY
           buildah login -u "${{ github.repository_owner }}" -p "${{ secrets.GITHUB_TOKEN }}" ghcr.io
-          go run ./cmd -mirror-target=ghcr.io -mirror-images="base baseroot alpine golang"
+          go run ./cmd
           git push
