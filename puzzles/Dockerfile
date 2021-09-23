@@ -1,7 +1,7 @@
 # Generated from https://github.com/csmith/dockerfiles/blob/master/puzzles/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.33.1-r3","apk:ca-certificates":"20191127-r5","apk:expat":"2.4.1-r0","apk:git":"2.32.0-r0","apk:libcrypto1.1":"1.1.1l-r0","apk:libcurl":"7.79.0-r0","apk:libssl1.1":"1.1.1l-r0","apk:musl":"1.2.2-r3","apk:nghttp2-libs":"1.43.0-r0","apk:pcre2":"10.36-r0","apk:zlib":"1.2.11-r3","github:greboid/puzzles":"v1.0.0","image:base":"sha256:4dc61e45d55285af7ae06b1f56943e825d55793a628d085ff56be2a00a3d5039","image:golang":"sha256:092432223820de2928ae7bd05e069c52b69349e29250695f56b793e17c32d0a2"}
+# BOM: {"apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.33.1-r3","apk:ca-certificates":"20191127-r5","apk:expat":"2.4.1-r0","apk:git":"2.32.0-r0","apk:libcrypto1.1":"1.1.1l-r0","apk:libcurl":"7.79.1-r0","apk:libssl1.1":"1.1.1l-r0","apk:musl":"1.2.2-r3","apk:nghttp2-libs":"1.43.0-r0","apk:pcre2":"10.36-r0","apk:zlib":"1.2.11-r3","github:greboid/puzzles":"v1.0.0","image:base":"sha256:4dc61e45d55285af7ae06b1f56943e825d55793a628d085ff56be2a00a3d5039","image:golang":"sha256:5ee724772fe7a6042d23044146b8db2b01943f2a24a3d9c49a792d7cb9051a79"}
 
-FROM reg.g5d.dev/golang@sha256:092432223820de2928ae7bd05e069c52b69349e29250695f56b793e17c32d0a2 AS build
+FROM reg.g5d.dev/golang@sha256:5ee724772fe7a6042d23044146b8db2b01943f2a24a3d9c49a792d7cb9051a79 AS build
 
 ARG TAG="v1.0.0"
 
@@ -13,7 +13,7 @@ RUN set -eux; \
         expat=2.4.1-r0\
         git=2.32.0-r0\
         libcrypto1.1=1.1.1l-r0\
-        libcurl=7.79.0-r0\
+        libcurl=7.79.1-r0\
         libssl1.1=1.1.1l-r0\
         musl=1.2.2-r3\
         nghttp2-libs=1.43.0-r0\
