@@ -1,5 +1,5 @@
 # Generated from https://github.com/csmith/dockerfiles/blob/master/baseroot/Dockerfile.gotpl
-# BOM: {"apk:busybox":"1.33.1-r3","apk:ca-certificates":"20191127-r5","apk:libacl":"2.2.53-r0","apk:libcrypto1.1":"1.1.1l-r0","apk:musl":"1.2.2-r3","apk:popt":"1.18-r0","apk:rsync":"3.2.3-r4","apk:tzdata":"2021a-r0","apk:zlib":"1.2.11-r3","apk:zstd-libs":"1.4.9-r1","image:alpine":"sha256:7cdc7a220adf9635167126cfe627b6ff000c12ddc5a44c7c5796161a81dae302"}
+# BOM: {"apk:busybox":"1.33.1-r3","apk:ca-certificates":"20191127-r5","apk:libacl":"2.2.53-r0","apk:libcrypto1.1":"1.1.1l-r0","apk:musl":"1.2.2-r3","apk:popt":"1.18-r0","apk:rsync":"3.2.3-r4","apk:tzdata":"2021b-r0","apk:zlib":"1.2.11-r3","apk:zstd-libs":"1.4.9-r1","image:alpine":"sha256:7cdc7a220adf9635167126cfe627b6ff000c12ddc5a44c7c5796161a81dae302"}
 
 FROM reg.g5d.dev/alpine@sha256:7cdc7a220adf9635167126cfe627b6ff000c12ddc5a44c7c5796161a81dae302 AS build
 
@@ -13,7 +13,7 @@ RUN set -eux; \
         musl=1.2.2-r3 \
         popt=1.18-r0 \
         rsync=3.2.3-r4 \
-        tzdata=2021a-r0 \
+        tzdata=2021b-r0 \
         zlib=1.2.11-r3 \
         zstd-libs=1.4.9-r1 \
         ; \
