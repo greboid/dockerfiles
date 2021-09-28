@@ -1,5 +1,5 @@
 # Generated from https://github.com/csmith/dockerfiles/blob/master/httpredirect/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.33.1-r3","apk:ca-certificates":"20191127-r5","apk:expat":"2.4.1-r0","apk:git":"2.32.0-r0","apk:libcrypto1.1":"1.1.1l-r0","apk:libcurl":"7.79.1-r0","apk:libssl1.1":"1.1.1l-r0","apk:musl":"1.2.2-r3","apk:nghttp2-libs":"1.43.0-r0","apk:pcre2":"10.36-r0","apk:zlib":"1.2.11-r3","github:greboid/httpredirect":"v1.0.0","image:base":"sha256:4dc61e45d55285af7ae06b1f56943e825d55793a628d085ff56be2a00a3d5039","image:golang":"sha256:5ee724772fe7a6042d23044146b8db2b01943f2a24a3d9c49a792d7cb9051a79"}
+# BOM: {"apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.33.1-r3","apk:ca-certificates":"20191127-r5","apk:expat":"2.4.1-r0","apk:git":"2.32.0-r0","apk:libcrypto1.1":"1.1.1l-r0","apk:libcurl":"7.79.1-r0","apk:libssl1.1":"1.1.1l-r0","apk:musl":"1.2.2-r3","apk:nghttp2-libs":"1.43.0-r0","apk:pcre2":"10.36-r0","apk:zlib":"1.2.11-r3","github:greboid/httpredirect":"v1.0.0","image:base":"sha256:712fc3471f4bc3f997c6fde284cde3b351acdc88a5904fc8488ee557d3e67904","image:golang":"sha256:5ee724772fe7a6042d23044146b8db2b01943f2a24a3d9c49a792d7cb9051a79"}
 
 FROM reg.g5d.dev/golang@sha256:5ee724772fe7a6042d23044146b8db2b01943f2a24a3d9c49a792d7cb9051a79 AS build
 
@@ -27,7 +27,7 @@ RUN set -eux; \
     # Clobber all the timestamps to make the build more reproducible
     touch --date=@0 /go/src/github.com/greboid/httpredirect/main;
 
-FROM reg.g5d.dev/base@sha256:4dc61e45d55285af7ae06b1f56943e825d55793a628d085ff56be2a00a3d5039
+FROM reg.g5d.dev/base@sha256:712fc3471f4bc3f997c6fde284cde3b351acdc88a5904fc8488ee557d3e67904
 
 COPY --from=build /go/src/github.com/greboid/httpredirect/main /httpredirect
 COPY --from=build /notices /notices
