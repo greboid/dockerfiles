@@ -1,4 +1,4 @@
-FROM {{ image "alpine" }} as node
+FROM {{ image "alpine" }} as build
 
 ARG TAG="{{github_tag "nodejs/node"}}"
 
@@ -15,8 +15,8 @@ RUN set -eux; \
     make -j $(nproc); \
     make install
 
-FROM {{ image "base" }} as basenode
+FROM {{image "base" }}
 
-COPY --from=node /usr/local/bin/node /usr/local/bin/node
-COPY --from=node /usr/local/bin/npm /usr/local/bin/npm
-COPY --from=node /usr/local/bin/npx /usr/local/bin/npx
+COPY --from=build /usr/local /usr/local
+
+CMD ["/usr/local/node"]

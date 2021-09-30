@@ -1,7 +1,7 @@
 # Generated from https://github.com/csmith/dockerfiles/blob/master/node/Dockerfile.gotpl
-# BOM: {"apk:binutils":"2.35.2-r2","apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.33.1-r3","apk:ca-certificates":"20191127-r5","apk:expat":"2.4.1-r0","apk:g++":"10.3.1_git20210424-r2","apk:gcc":"10.3.1_git20210424-r2","apk:gdbm":"1.19-r0","apk:git":"2.32.0-r0","apk:gmp":"6.2.1-r0","apk:isl22":"0.22-r0","apk:libatomic":"10.3.1_git20210424-r2","apk:libbz2":"1.0.8-r1","apk:libc-dev":"0.7.2-r3","apk:libcrypto1.1":"1.1.1l-r0","apk:libcurl":"7.79.1-r0","apk:libffi":"3.3-r2","apk:libgcc":"10.3.1_git20210424-r2","apk:libgomp":"10.3.1_git20210424-r2","apk:libgphobos":"10.3.1_git20210424-r2","apk:libssl1.1":"1.1.1l-r0","apk:libstdc++":"10.3.1_git20210424-r2","apk:linux-headers":"5.10.41-r0","apk:make":"4.3-r0","apk:mpc1":"1.2.1-r0","apk:mpdecimal":"2.5.1-r1","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.2-r3","apk:musl-dev":"1.2.2-r3","apk:ncurses-libs":"6.2_p20210612-r0","apk:ncurses-terminfo-base":"6.2_p20210612-r0","apk:nghttp2-libs":"1.43.0-r0","apk:pcre2":"10.36-r0","apk:python3":"3.9.5-r1","apk:readline":"8.1.0-r0","apk:sqlite-libs":"3.35.5-r0","apk:xz-libs":"5.2.5-r0","apk:zlib":"1.2.11-r3","github:nodejs/node":"v16.10.0","image:alpine":"sha256:7cdc7a220adf9635167126cfe627b6ff000c12ddc5a44c7c5796161a81dae302","image:base":"sha256:4dc61e45d55285af7ae06b1f56943e825d55793a628d085ff56be2a00a3d5039"}
+# BOM: {"apk:binutils":"2.35.2-r2","apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.33.1-r3","apk:ca-certificates":"20191127-r5","apk:expat":"2.4.1-r0","apk:g++":"10.3.1_git20210424-r2","apk:gcc":"10.3.1_git20210424-r2","apk:gdbm":"1.19-r0","apk:git":"2.32.0-r0","apk:gmp":"6.2.1-r0","apk:isl22":"0.22-r0","apk:libatomic":"10.3.1_git20210424-r2","apk:libbz2":"1.0.8-r1","apk:libc-dev":"0.7.2-r3","apk:libcrypto1.1":"1.1.1l-r0","apk:libcurl":"7.79.1-r0","apk:libffi":"3.3-r2","apk:libgcc":"10.3.1_git20210424-r2","apk:libgomp":"10.3.1_git20210424-r2","apk:libgphobos":"10.3.1_git20210424-r2","apk:libssl1.1":"1.1.1l-r0","apk:libstdc++":"10.3.1_git20210424-r2","apk:linux-headers":"5.10.41-r0","apk:make":"4.3-r0","apk:mpc1":"1.2.1-r0","apk:mpdecimal":"2.5.1-r1","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.2-r3","apk:musl-dev":"1.2.2-r3","apk:ncurses-libs":"6.2_p20210612-r0","apk:ncurses-terminfo-base":"6.2_p20210612-r0","apk:nghttp2-libs":"1.43.0-r0","apk:pcre2":"10.36-r0","apk:python3":"3.9.5-r1","apk:readline":"8.1.0-r0","apk:sqlite-libs":"3.35.5-r0","apk:xz-libs":"5.2.5-r0","apk:zlib":"1.2.11-r3","github:nodejs/node":"v16.10.0","image:alpine":"sha256:7cdc7a220adf9635167126cfe627b6ff000c12ddc5a44c7c5796161a81dae302","image:base":"sha256:712fc3471f4bc3f997c6fde284cde3b351acdc88a5904fc8488ee557d3e67904"}
 
-FROM reg.g5d.dev/alpine@sha256:7cdc7a220adf9635167126cfe627b6ff000c12ddc5a44c7c5796161a81dae302 as node
+FROM reg.g5d.dev/alpine@sha256:7cdc7a220adf9635167126cfe627b6ff000c12ddc5a44c7c5796161a81dae302 as build
 
 ARG TAG="v16.10.0"
 
@@ -54,8 +54,8 @@ RUN set -eux; \
     make -j $(nproc); \
     make install
 
-FROM reg.g5d.dev/base@sha256:4dc61e45d55285af7ae06b1f56943e825d55793a628d085ff56be2a00a3d5039 as basenode
+FROM reg.g5d.dev/base@sha256:712fc3471f4bc3f997c6fde284cde3b351acdc88a5904fc8488ee557d3e67904
 
-COPY --from=node /usr/local/bin/node /usr/local/bin/node
-COPY --from=node /usr/local/bin/npm /usr/local/bin/npm
-COPY --from=node /usr/local/bin/npx /usr/local/bin/npx
+COPY --from=build /usr/local /usr/local
+
+CMD ["/usr/local/node"]
