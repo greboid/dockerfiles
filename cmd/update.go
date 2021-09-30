@@ -47,6 +47,7 @@ func main() {
 		"baseroot",         // depends on alpine
 		"base",             // depends on baseroot
 		"golang",           // depends on alpine
+		"node",           // depends on alpine
 		"irc-bot",          // depends on golang + base
 		"irc-distribution", // depends on golang + base
 		"irc-github",       // depends on golang + base
