@@ -133,6 +133,7 @@ func Update(dir string) {
 			"bud",
 			"--timestamp",
 			"0",
+			"--layers",
 		}
 		for index := range imageNames {
 			args = append(args, "--tag")
