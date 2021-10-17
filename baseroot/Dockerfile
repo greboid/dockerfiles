@@ -27,6 +27,7 @@ RUN set -eux; \
     # Copy the tzdata files and musl
     apk info -qL tzdata | rsync -aq --files-from=- / /rootfs/; \
     apk info -qL musl | rsync -aq --files-from=- / /rootfs/; \
+    mkdir /rootfs/proc /rootfs/dev /rootfs/sys; \
     # Generate thw CA certificates file and copy the result
     /usr/sbin/update-ca-certificates; \
     cp /etc/ssl/certs/ca-certificates.crt /rootfs/etc/ssl/certs/ca-certificates.crt; \
