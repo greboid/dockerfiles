@@ -1,6 +1,6 @@
 # Generated from https://github.com/csmith/dockerfiles/blob/master/base/Dockerfile.gotpl
-# BOM: {"image:baseroot":"sha256:b39286239eaa46c7a6c7f803a6c66b35c4270ff110e672c2dd684626ca72f00e"}
+# BOM: {"image:baseroot":"sha256:b40d1c4b5f52c1eefe2497b7e549d4f37f112759aab12e09b5100cded47a04e7"}
 
-FROM reg.g5d.dev/baseroot@sha256:b39286239eaa46c7a6c7f803a6c66b35c4270ff110e672c2dd684626ca72f00e AS build
+FROM reg.g5d.dev/baseroot@sha256:b40d1c4b5f52c1eefe2497b7e549d4f37f112759aab12e09b5100cded47a04e7 AS build
 
 USER nonroot
