@@ -121,3 +121,33 @@ func FindInHtml(url string, selector string) ([]string, error) {
 	})
 	return results, nil
 }
+
+// LatestNginxTag uses the GitHub API to find the tag for the latest stable release.
+func LatestNginxTag() (string, error) {
+	var releases []struct {
+		Name string `json:"name"`
+	}
+
+	if err := DownloadJson("https://api.github.com/repos/nginx/nginx/tags", &releases); err != nil {
+		return "", err
+	}
+
+	for index := range releases {
+		releases[index].Name = strings.TrimPrefix(releases[index].Name, "release-")
+	}
+
+	best := version.Must(version.NewVersion("0.0.0"))
+	bestTag := ""
+	for i := range releases {
+		v, err := version.NewVersion(releases[i].Name)
+		if err == nil && v.GreaterThanOrEqual(best) && v.Prerelease() == "" {
+			best = v
+			bestTag = releases[i].Name
+		}
+	}
+
+	if bestTag == "" {
+		return "", fmt.Errorf("no stable semver tags found")
+	}
+	return "release-"+bestTag, nil
+}

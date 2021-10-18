@@ -28,6 +28,7 @@ var (
 		"alpine_packages": AlpinePackages,
 		"github_tag":      GitHubTag,
 		"registry":        Registry,
+		"nginx_version":   LatestNginxTag,
 	}
 )
 
@@ -47,7 +48,7 @@ func main() {
 		"baseroot",         // depends on alpine
 		"base",             // depends on baseroot
 		"golang",           // depends on alpine
-		"node",           // depends on alpine
+		"node",             // depends on alpine
 		"irc-bot",          // depends on golang + base
 		"irc-distribution", // depends on golang + base
 		"irc-github",       // depends on golang + base
@@ -73,6 +74,7 @@ func main() {
 		"puzzles",          // depends on golang + base
 		"registryauth",     // depends on golang + base
 		"thelounge",        // depends on alpine
+		"nginx",			// depends on alpine + base
 	}
 
 	for i := range targets {

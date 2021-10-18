@@ -1,6 +1,6 @@
 FROM {{image "alpine"}} AS build
 
-ARG TAG="release-1.21.3"
+ARG TAG="{{nginx_version}}"
 
 RUN set -eux; \
      apk add --no-cache --virtual .build-deps \
