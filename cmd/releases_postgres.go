@@ -9,37 +9,44 @@ import (
 )
 
 func init() {
-	AddRelease("postgres13", func() (latest string, url string, checksum string) {
-		const (
-			postgresReleaseIndex = "https://ftp.postgresql.org/pub/source/"
-			postgresDownloadUrl  = postgresReleaseIndex + "v%[1]s/postgresql-%[1]s.tar.bz2"
-			postgresChecksumUrl  = postgresReleaseIndex + "v%[1]s/postgresql-%[1]s.tar.bz2.sha256"
-		)
-
-		versions, err := FindInHtml(postgresReleaseIndex, `a[href*="v13."]`)
-		if err != nil {
-			log.Fatalf("Couldn't find releases: %v", err)
-		}
-
-		best := version.Must(version.NewVersion("0.0.0"))
-		for i := range versions {
-			v := version.Must(version.NewVersion(strings.TrimSuffix(versions[i], "/")))
-			if (best == nil || v.GreaterThanOrEqual(best)) && v.Prerelease() == "" {
-				best = v
-				latest = strings.TrimPrefix(strings.TrimSuffix(versions[i], "/"), "v")
-			}
-		}
-
-		if latest == "" {
-			log.Fatalf("Couldn't find candidate version from postgres releases: %v", versions)
-		}
-
-		url = fmt.Sprintf(postgresDownloadUrl, latest)
-		checksum, err = DownloadHash(fmt.Sprintf(postgresChecksumUrl, latest))
-		if err != nil {
-			log.Fatalf("Couldn't get checksum for postgres releases: %v", versions)
-		}
-
-		return
+	AddRelease("postgres13", func() (version string, url string, checksum string) {
+		return getPostgresVersion("13", "postgres13")
 	})
+	AddRelease("postgres14", func() (version string, url string, checksum string) {
+		return getPostgresVersion("14", "postgres14")
+	})
+}
+
+func getPostgresVersion(numericalVersion, name string)  (latest string, url string, checksum string) {
+	const (
+		postgresReleaseIndex = "https://ftp.postgresql.org/pub/source/"
+		postgresDownloadUrl  = postgresReleaseIndex + "v%[1]s/postgresql-%[1]s.tar.bz2"
+		postgresChecksumUrl  = postgresReleaseIndex + "v%[1]s/postgresql-%[1]s.tar.bz2.sha256"
+	)
+
+	versions, err := FindInHtml(postgresReleaseIndex, `a[href*="v`+numericalVersion+`."]`)
+	if err != nil {
+		log.Fatalf("Couldn't find releases: %v", err)
+	}
+
+	best := version.Must(version.NewVersion("0.0.0"))
+	for i := range versions {
+		v := version.Must(version.NewVersion(strings.TrimSuffix(versions[i], "/")))
+		if (best == nil || v.GreaterThanOrEqual(best)) && v.Prerelease() == "" {
+			best = v
+			latest = strings.TrimPrefix(strings.TrimSuffix(versions[i], "/"), "v")
+		}
+	}
+
+	if latest == "" {
+		log.Fatalf("Couldn't find candidate version from postgres releases: %v", versions)
+	}
+
+	url = fmt.Sprintf(postgresDownloadUrl, latest)
+	checksum, err = DownloadHash(fmt.Sprintf(postgresChecksumUrl, latest))
+	if err != nil {
+		log.Fatalf("Couldn't get checksum for postgres releases: %v", versions)
+	}
+
+	return
 }
