@@ -42,41 +42,7 @@ func main() {
 		return
 	}
 
-	// NB: These are manually sorted to flatten the dependency hierarchy.
-	targets := []string{
-		"alpine",
-		"baseroot",         // depends on alpine
-		"base",             // depends on baseroot
-		"golang",           // depends on alpine
-		"node",             // depends on alpine
-		"irc-bot",          // depends on golang + base
-		"irc-distribution", // depends on golang + base
-		"irc-github",       // depends on golang + base
-		"irc-goplum",       // depends on golang + base
-		"irc-webhook",      // depends on golang + base
-		"linx-server",      // depends on golang + base
-		"httpredirect",     // depends on golang + base
-		"miniflux",         // depends on golang + base
-		"postgres-13",      // depends on alpine
-		"haproxy",          // depends on alpine + base
-		"watchtower",       // depends on golang + baseroot
-		"dotege",           // depends on golang + baseroot
-		"webhooked",        // depends on golang + base
-		"soju",             // depends on golang + base
-		"greboid.com",      // depends on alpine + golang + base
-		"greboid.gay",      // depends on alpine + golang + base
-		"goplum",           // depends on golang + base
-		"identd",           // depends on golang + base
-		"newtab",           // depends on golang + base
-		"legoergo",         // depends on golang + base
-		"dockercleanup",    // depends on golang + base
-		"githubmirror",     // depends on golang + base
-		"puzzles",          // depends on golang + base
-		"registryauth",     // depends on golang + base
-		"thelounge",        // depends on alpine
-		"nginx",			// depends on alpine + base
-	}
-
+	targets := AllImages()
 	for i := range targets {
 		Update(targets[i])
 	}
