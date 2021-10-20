@@ -27,4 +27,6 @@ COPY --from=build --chown=65532:65532 /src/redis/src/redis-server /home/nonroot/
 
 ENTRYPOINT ["/home/nonroot/redis"]
 
+EXPOSE 6379
+VOLUME "/home/nonroot/database"
 CMD ["/home/nonroot/redis.conf"]
