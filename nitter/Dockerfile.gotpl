@@ -38,6 +38,11 @@ RUN set -eux; \
         {{$key}}={{$value}} \
         {{end}}; \
     git clone -b master --single-branch git://github.com/zedeus/nitter /src/nitter; \
+    mkdir -p /src/libs; \
+    cp /usr/lib/libsqlite3* /src/libs; \
+    cp /usr/lib/libssl* /src/libs; \
+    cp /usr/lib/libcrypto* /src/libs; \
+    cp /usr/lib/libpcre* /src/libs; \
     cd /src/nitter; \
     git checkout $TAG; \
     nimble build -y -d:release; \
@@ -46,12 +51,7 @@ RUN set -eux; \
 
 FROM {{ image "base" }}
 
-COPY --from=build /usr/lib/libsqlite3.so.0 /usr/lib/libsqlite3.so.0
-COPY --from=build /usr/lib/libsqlite3.so.0.8.6 /usr/lib/libsqlite3.so.0.8.6
-COPY --from=build /lib/libssl.so.1.1 /lib/libssl.so.1.1
-COPY --from=build /lib/libcrypto.so.1.1 /lib/libcrypto.so.1.1
-COPY --from=build /usr/lib/libpcre.so.1 /usr/lib/libpcre.so.1
-COPY --from=build /usr/lib/libpcre.so.1.2.12 /usr/lib/libpcre.so.1.2.12
+COPY --from=build /src/libs/* /usr/lib/
 COPY --from=build /src/nitter/nitter /home/nonroot/nitter
 COPY --from=build /src/nitter/public /home/nonroot/public
 
