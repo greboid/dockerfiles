@@ -1,0 +1,43 @@
+FROM {{image "alpine"}} as build
+
+ARG ARCHIVE_URL="{{postgres14_url}}"
+ARG ARCHIVE_SUM="{{postgres14_checksum}}"
+
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "curl" "gcc" "g++" "make" "readline-dev" "zlib-dev" "linux-headers" "musl-locales" "openssl-dev" -}}
+        {{$key}}={{$value}} \
+        {{end}}; \
+    curl -sfLo postgresql.tar.bz2 $ARCHIVE_URL; \
+    echo "$ARCHIVE_SUM *postgresql.tar.bz2" | sha256sum -wc -; \
+    mkdir -p /usr/local/postgres; \
+    tar -C /usr/local/postgres --strip-components 1 -xf postgresql.tar.bz2; \
+    cd /usr/local/postgres; \
+    ./configure \
+       --with-system-tzdata=/usr/share/zoneinfo \
+        --with-ssl=openssl; \
+    make -j$(nproc); \
+    make install; \
+    mkdir -p /src/libs; \
+    cp /usr/lib/libreadline* /src/libs/; \
+    cp /usr/lib/libncursesw* /src/libs/; \
+    cp /usr/lib/libcrypto* /src/libs/; \
+    cp /usr/lib/libssl* /src/libs/; \
+    mkdir /src/data
+
+FROM {{image "base"}}
+
+ENV LANG en_US.utf8
+ENV PGDATA=/var/lib/postgres/data
+
+COPY --from=build /bin/sh /bin/sh
+COPY --from=build /usr/bin/locale /usr/bin/locale
+COPY --from=build /src/libs /usr/lib/
+COPY --from=build /usr/local/pgsql /usr/local/
+COPY --from=build --chown=65532:65532 /src/data /var/lib/postgres
+COPY postgresql.conf /etc/postgresql.conf
+COPY entry.sh /usr/local/bin/
+
+STOPSIGNAL SIGINT
+
+ENTRYPOINT ["/usr/local/bin/entry.sh"]
