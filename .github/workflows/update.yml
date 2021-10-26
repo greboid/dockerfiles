@@ -25,5 +25,6 @@ jobs:
           GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
           REPO_OWNER: ${{ github.repository_owner }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run:  |
           "${GITHUB_WORKSPACE}/.github/contempt.sh"
