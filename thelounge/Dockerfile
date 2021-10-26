@@ -1,7 +1,7 @@
-# Generated from https://github.com/csmith/dockerfiles/blob/master/thelounge/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.33.1-r3","apk:c-ares":"1.17.2-r0","apk:ca-certificates":"20191127-r5","apk:expat":"2.4.1-r0","apk:git":"2.32.0-r0","apk:libcrypto1.1":"1.1.1l-r0","apk:libcurl":"7.79.1-r0","apk:libgcc":"10.3.1_git20210424-r2","apk:libssl1.1":"1.1.1l-r0","apk:libstdc++":"10.3.1_git20210424-r2","apk:musl":"1.2.2-r3","apk:nghttp2-libs":"1.43.0-r0","apk:nodejs":"14.18.1-r0","apk:pcre2":"10.36-r0","apk:yarn":"1.22.10-r0","apk:zlib":"1.2.11-r3","github:thelounge/thelounge":"v4.2.0","image:alpine":"sha256:b81c50e56d1dd83921e2dbf786ef233ac11bf297a9130308f5e1da9f549d7ff3"}
+# Generated from https://github.com/greboid/dockerfiles/blob/master/thelounge/Dockerfile.gotpl
+# BOM: {"apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.33.1-r3","apk:c-ares":"1.17.2-r0","apk:ca-certificates":"20191127-r5","apk:expat":"2.4.1-r0","apk:git":"2.32.0-r0","apk:libcrypto1.1":"1.1.1l-r0","apk:libcurl":"7.79.1-r0","apk:libgcc":"10.3.1_git20210424-r2","apk:libssl1.1":"1.1.1l-r0","apk:libstdc++":"10.3.1_git20210424-r2","apk:musl":"1.2.2-r3","apk:nghttp2-libs":"1.43.0-r0","apk:nodejs":"14.18.1-r0","apk:pcre2":"10.36-r0","apk:yarn":"1.22.10-r0","apk:zlib":"1.2.11-r3","github:thelounge/thelounge":"v4.2.0","image:alpine":"sha256:c8797cc5b046929decf47059cc3a62b89d664ed442288d10833f496d1339af7f"}
 
-FROM reg.g5d.dev/alpine@sha256:b81c50e56d1dd83921e2dbf786ef233ac11bf297a9130308f5e1da9f549d7ff3 as yarnbase
+FROM reg.g5d.dev/alpine@sha256:c8797cc5b046929decf47059cc3a62b89d664ed442288d10833f496d1339af7f as yarnbase
 
 RUN set -eux; \
     apk add --no-cache \
