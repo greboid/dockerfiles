@@ -7,21 +7,23 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - uses: actions/setup-go@v1
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v1
         with:
           go-version: '1.17'
-      - env:
+      - name: Update dockerfiles
+        env:
           REGISTRY: ${{ secrets.REGISTRY }}
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
           MIRROR_IMAGES: base baseroot alpine golang
+          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run:  |
-          git config user.name "${{ secrets.GIT_USERNAME }}"
-          git config user.email "${{ secrets.GIT_EMAIL }}"
-          buildah login -u "$REGISTRY_USER" -p "$REGISTRY_PASS" $REGISTRY
-          buildah login -u "${{ github.repository_owner }}" -p "${{ secrets.GITHUB_TOKEN }}" ghcr.io
-          go run ./cmd
-          git push
+          "${GITHUB_WORKSPACE}/.github/contempt.sh"
