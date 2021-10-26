@@ -1,6 +1,6 @@
 FROM {{image "alpine"}} AS build
 
-ARG TAG="{{nginx_version}}"
+ARG TAG="{{ prefixed_github_tag "nginx/nginx" "release-" }}"
 
 RUN set -eux; \
      apk add --no-cache --virtual .build-deps \
