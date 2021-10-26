@@ -1,6 +1,6 @@
 #!/bin/sh -l
 
-go install github.com/csmith/contempt/cmd/contempt@v1.0.2
+go install github.com/csmith/contempt/cmd/contempt@latest
 git config user.name "$GIT_USERNAME"
 git config user.email "$GIT_EMAIL"
 buildah login -u $REGISTRY_USER -p $REGISTRY_PASS $REGISTRY
