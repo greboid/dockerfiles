@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/postgres-13/Dockerfile.gotpl
-# BOM: {"image:alpine":"sha256:c8797cc5b046929decf47059cc3a62b89d664ed442288d10833f496d1339af7f","postgres13":"13.4"}
+# BOM: {"image:alpine":"c8797cc5b046929decf47059cc3a62b89d664ed442288d10833f496d1339af7f","postgres13":"13.4"}
 
 # Based on https://github.com/docker-library/postgres/blob/6bbf1c7b308d1c4288251d73c37f6caf75f8a3d4/13/alpine/Dockerfile
 # Original version released under the MIT licence, Copyright (c) 2014, Docker PostgreSQL Authors (See AUTHORS).
