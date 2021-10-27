@@ -28,3 +28,4 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run:  |
           "${GITHUB_WORKSPACE}/.github/contempt.sh"
+          "${GITHUB_WORKSPACE}/.github/mirror.sh"
