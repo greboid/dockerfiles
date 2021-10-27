@@ -27,5 +27,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run:  |
+          echo "Running contempt"
           "${GITHUB_WORKSPACE}/.github/contempt.sh"
+          echo "Mirroring images"
           "${GITHUB_WORKSPACE}/.github/mirror.sh"
