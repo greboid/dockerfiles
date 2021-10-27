@@ -25,9 +25,8 @@ Each image has its own folder, containing:
 The template files using go's [text/template syntax](https://pkg.go.dev/text/template), with functions
 defined to retrieve the latest images, releases, packages, etc.
 
-To update all the Dockerfiles in the repo, run the `cmd` package (`go run ./cmd`). This will commit
-each Dockerfile individually and build and push any changed images by default; for local development
-you can pass `--commit=false` and `--build=false`.
+Dockerfiles are updated using [contempt](https://github.com/csmith/contempt).  This can also be used
+to commit, build and push any changes.
 
 ## Images
 
