@@ -1,5 +1,3 @@
-FROM ghcr.io/greboid/cv:latest as cv
-
 FROM {{image "alpine"}} AS images
 
 ARG TAG="{{github_tag "greboid/greboid.com"}}"
