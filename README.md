@@ -32,38 +32,7 @@ to commit, build and push any changes.
 
 All images are available at `reg.g5d.dev/<name>`. Only the latest tag is built.
 
-| Name               | Upstream                                              | Reproducible? | Non-root? | Minimal? |
-|--------------------|-------------------------------------------------------|:-------------:|:---------:|:--------:|
-| alpine             | https://alpinelinux.org/                              |       ✅      |    N/A    |    ✅    |
-| baseroot           | N/A                                                   |       ✅      |    ❌     |    ✅    |
-| base               | N/A                                                   |       ✅      |    ✅     |    ✅    |
-| irc-bot            | https://github.com/greboid/irc-bot                    |       ✅      |    ✅     |    ✅    |
-| ↳ irc-distribution | https://github.com/csmith/irc-distribution            |       ✅      |    ✅     |    ✅    |
-| ↳ irc-github       | https://github.com/greboid/irc-github                 |       ✅      |    ✅     |    ✅    |
-| ↳ irc-goplum       | https://github.com/greboid/irc-goplum                 |       ✅      |    ✅     |    ✅    |
-| ↳ irc-webhook      | https://github.com/greboid/irc-webhook                |       ✅      |    ✅     |    ✅    |
-| golang             | https://golang.org/                                   |       ✅      |    N/A    |    ✅    |
-| linx-server        | https://github.com/csmith/linx-server                 |       ✅      |    ✅     |    ✅    |
-| miniflux           | https://github.com/miniflux/v2                        |       ✅      |    ✅     |    ✅    |
-| watchtower         | https://github.com/containrrr/watchtower/             |       ✅      |    ❌     |    ✅    |
-| httpredirect       | https://github.com/greboid/httpredirect               |       ✅      |    ✅     |    ✅    |
-| dotege             | https://github.com/csmith/dotege                      |       ✅      |    ❌     |    ✅    |
-| webhooked          | https://github.com/csmith/webhooked                   |       ✅      |    ✅     |    ✅    |
-| soju               | https://soju.im/                                      |       ✅      |    ✅     |    ✅    |
-| greboid.com        | https://github.com/greboid.com                        |       ✅      |    ✅     |    ✅    |
-| greboid.gay        | https://github.com/greboid.gay                        |       ✅      |    ✅     |    ✅    |
-| goplum             | https://github.com/csmith/goplum                      |       ✅      |    ✅     |    ✅    |
-| identd             | https://github.com/greboid/identd                     |       ✅      |    ✅     |    ✅    |
-| newtab             | https://github.com/greboid/newtab                     |       ✅      |    ✅     |    ✅    |
-| legoergo           | https://github.com/greboid/legoergo                   |       ✅      |    ✅     |    ✅    |
-| dockercleanup      | https://github.com/greboid/dockercleanup              |       ✅      |    ✅     |    ✅    |
-| githubmirror       | https://github.com/greboid/githubmirror               |       ✅      |    ✅     |    ✅    |
-| puzzles            | https://github.com/greboid/puzzles                    |       ✅      |    ✅     |    ✅    |
-| registryauth       | https://github.com/greboid/registryauth               |       ✅      |    ✅     |    ✅    |
-| thelounge          | https://github.com/thelounge/thelounge                |       ✅      |    ✅     |    ❌    |
-| postgres-13        | https://www.postgresql.org/                           |       ❌      |    ❌     |    ❌    |
-
-Meaning of the status columns:
+Each images aims for the following:
 
 **Reproducible** - if the same Dockerfile is rebuilt at any time on any machine it will produce the same
 image. This is nice to have, but it is quite challenging and makes little difference in day-to-day
@@ -78,3 +47,6 @@ preferable for it to happen in the image.
 no bloat. For base images this definition is a bit hazy as they'll contain things that might be used
 in downstream images. For applications this generally means they're statically compiled and run in the
 "base" image.
+
+This isn't always possible, some images do require root, its not always possible to make them fully
+reproducible and some images are quite bloated but do try as closely as possible.
