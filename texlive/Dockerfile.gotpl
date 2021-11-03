@@ -5,11 +5,12 @@ RUN set -eux; \
         {{range $key, $value := alpine_packages "rsync" "texlive-xetex" "texmf-dist-latexextra" -}}
         {{$key}}={{$value}} \
         {{end}}; \
-   apk info -qL texlive-xetex | rsync -aq --files-from=- / /rootfs/; \
-   apk info -qL texmf-dist-latexextra | rsync -aq --files-from=- / /rootfs/; \
+   {{range $key, $value := alpine_packages "rsync" "texlive-xetex" "texmf-dist-latexextra" -}}
+   apk info -qL {{$key}} | rsync -aq --files-from=- / /rootfs/; \
+   {{end}} \
    mkdir -p /rootfs/bin; \
    cp /bin/sh /rootfs/bin/sh; \
-   find /rootfs -exec touch --date=@0 {} \;
+   find /rootfs -type f -exec touch --date=@0 {} \;
 
 FROM {{ image "base" }}
 
