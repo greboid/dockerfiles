@@ -2,6 +2,8 @@ FROM {{image "alpine"}} AS images
 
 ARG TAG="{{github_tag "greboid/greboid.com"}}"
 
+COPY --from=ghcr.io/greboid/cv /cv.pdf /app/static/cv.pdf
+
 RUN set -eux; \
     # Dependencies and source for bootstrapping go
     apk add --no-cache --virtual .build-deps \
