@@ -2,10 +2,10 @@ FROM {{ image "alpine" }} as build
 
 RUN set -eux; \
    apk add --no-cache \
-        {{range $key, $value := alpine_packages "rsync" "texlive-xetex" "texmf-dist-latexextra" -}}
+        {{range $key, $value := alpine_packages "rsync" "texlive" "texlive-xetex" "texmf-dist-latexextra" -}}
         {{$key}}={{$value}} \
         {{end}}; \
-   {{range $key, $value := alpine_packages "rsync" "texlive-xetex" "texmf-dist-latexextra" -}}
+   {{range $key, $value := alpine_packages "rsync" "texlive" "texlive-xetex" "texmf-dist-latexextra" -}}
    apk info -qL {{$key}} | rsync -aq --files-from=- / /rootfs/; \
    {{end}} \
    mkdir -p /rootfs/bin; \
