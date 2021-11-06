@@ -20,7 +20,7 @@ jobs:
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-          MIRROR_IMAGES: base baseroot alpine golang
+          MIRROR_IMAGES: base baseroot alpine golang texlive
           GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
           GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
           REPO_OWNER: ${{ github.repository_owner }}
