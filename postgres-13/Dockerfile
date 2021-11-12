@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/postgres-13/Dockerfile.gotpl
-# BOM: {"image:alpine":"c8797cc5b046929decf47059cc3a62b89d664ed442288d10833f496d1339af7f","postgres13":"13.4"}
+# BOM: {"image:alpine":"6c5733fa0e3f4ef241e64a81b5bd95ad8138fb2351e3fb3a4b08425c31a798fa","postgres13":"13.5"}
 
 # Based on https://github.com/docker-library/postgres/blob/6bbf1c7b308d1c4288251d73c37f6caf75f8a3d4/13/alpine/Dockerfile
 # Original version released under the MIT licence, Copyright (c) 2014, Docker PostgreSQL Authors (See AUTHORS).
@@ -7,10 +7,10 @@
 # See LICENCE for a copy of the MIT licence.
 # See https://github.com/docker-library/postgres/blob/517c64f87e6661366b415df3f2273c76cea428b0/AUTHORS for upstream authors.
 
-FROM reg.g5d.dev/alpine@sha256:c8797cc5b046929decf47059cc3a62b89d664ed442288d10833f496d1339af7f
+FROM reg.g5d.dev/alpine@sha256:6c5733fa0e3f4ef241e64a81b5bd95ad8138fb2351e3fb3a4b08425c31a798fa
 
-ARG ARCHIVE_URL="https://ftp.postgresql.org/pub/source/v13.4/postgresql-13.4.tar.bz2"
-ARG ARCHIVE_SUM="ea93e10390245f1ce461a54eb5f99a48d8cabd3a08ce4d652ec2169a357bc0cd"
+ARG ARCHIVE_URL="https://ftp.postgresql.org/pub/source/v13.5/postgresql-13.5.tar.bz2"
+ARG ARCHIVE_SUM="9b81067a55edbaabc418aacef457dd8477642827499560b00615a6ea6c13f6b3"
 
 # 70 is the standard uid/gid for "postgres" in Alpine
 # https://git.alpinelinux.org/aports/tree/main/postgresql/postgresql.pre-install?h=3.12-stable
