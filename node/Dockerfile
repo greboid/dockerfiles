@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/node/Dockerfile.gotpl
-# BOM: {"apk:bash":"5.1.4-r0","apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.33.1-r3","apk:ca-certificates":"20191127-r5","apk:curl":"7.79.1-r0","apk:gcompat":"1.0.0-r2","apk:gdbm":"1.19-r0","apk:glib":"2.68.3-r0","apk:gmp":"6.2.1-r0","apk:gnupg":"2.2.31-r0","apk:gnutls":"3.7.1-r0","apk:libacl":"2.2.53-r0","apk:libassuan":"2.5.5-r0","apk:libblkid":"2.37.2-r0","apk:libbz2":"1.0.8-r1","apk:libcap":"2.50-r0","apk:libcrypto1.1":"1.1.1l-r0","apk:libcurl":"7.79.1-r0","apk:libffi":"3.3-r2","apk:libgcc":"10.3.1_git20210424-r2","apk:libgcrypt":"1.9.4-r0","apk:libgpg-error":"1.42-r0","apk:libintl":"0.21-r0","apk:libksba":"1.5.1-r0","apk:libldap":"2.4.58-r0","apk:libmount":"2.37.2-r0","apk:libsasl":"2.1.27-r12","apk:libsecret":"0.20.4-r1","apk:libssl1.1":"1.1.1l-r0","apk:libstdc++":"10.3.1_git20210424-r2","apk:libtasn1":"4.17.0-r0","apk:libucontext":"1.1-r0","apk:libunistring":"0.9.10-r1","apk:musl":"1.2.2-r3","apk:musl-obstack":"1.2.2-r0","apk:ncurses-libs":"6.2_p20210612-r0","apk:ncurses-terminfo-base":"6.2_p20210612-r0","apk:nettle":"3.7.3-r0","apk:nghttp2-libs":"1.43.0-r0","apk:npth":"1.6-r0","apk:p11-kit":"0.23.22-r0","apk:pcre":"8.44-r0","apk:pinentry":"1.1.1-r0","apk:popt":"1.18-r0","apk:readline":"8.1.0-r0","apk:rsync":"3.2.3-r4","apk:sqlite-libs":"3.35.5-r0","apk:tar":"1.34-r0","apk:xz":"5.2.5-r0","apk:xz-libs":"5.2.5-r0","apk:zlib":"1.2.11-r3","apk:zstd-libs":"1.4.9-r1","github:nodejs/node":"v17.1.0","image:alpine":"c8797cc5b046929decf47059cc3a62b89d664ed442288d10833f496d1339af7f"}
+# BOM: {"apk:bash":"5.1.4-r0","apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.33.1-r6","apk:ca-certificates":"20191127-r5","apk:curl":"7.79.1-r0","apk:gcompat":"1.0.0-r2","apk:gdbm":"1.19-r0","apk:glib":"2.68.3-r0","apk:gmp":"6.2.1-r0","apk:gnupg":"2.2.31-r0","apk:gnutls":"3.7.1-r0","apk:libacl":"2.2.53-r0","apk:libassuan":"2.5.5-r0","apk:libblkid":"2.37.2-r0","apk:libbz2":"1.0.8-r1","apk:libcap":"2.50-r0","apk:libcrypto1.1":"1.1.1l-r0","apk:libcurl":"7.79.1-r0","apk:libffi":"3.3-r2","apk:libgcc":"10.3.1_git20210424-r2","apk:libgcrypt":"1.9.4-r0","apk:libgpg-error":"1.42-r0","apk:libintl":"0.21-r0","apk:libksba":"1.5.1-r0","apk:libldap":"2.4.58-r0","apk:libmount":"2.37.2-r0","apk:libsasl":"2.1.27-r12","apk:libsecret":"0.20.4-r1","apk:libssl1.1":"1.1.1l-r0","apk:libstdc++":"10.3.1_git20210424-r2","apk:libtasn1":"4.17.0-r0","apk:libucontext":"1.1-r0","apk:libunistring":"0.9.10-r1","apk:musl":"1.2.2-r3","apk:musl-obstack":"1.2.2-r0","apk:ncurses-libs":"6.2_p20210612-r0","apk:ncurses-terminfo-base":"6.2_p20210612-r0","apk:nettle":"3.7.3-r0","apk:nghttp2-libs":"1.43.0-r0","apk:npth":"1.6-r0","apk:p11-kit":"0.23.22-r0","apk:pcre":"8.44-r0","apk:pinentry":"1.1.1-r0","apk:popt":"1.18-r0","apk:readline":"8.1.0-r0","apk:rsync":"3.2.3-r4","apk:sqlite-libs":"3.35.5-r0","apk:tar":"1.34-r0","apk:xz":"5.2.5-r0","apk:xz-libs":"5.2.5-r0","apk:zlib":"1.2.11-r3","apk:zstd-libs":"1.4.9-r1","github:nodejs/node":"v17.1.0","image:alpine":"6c5733fa0e3f4ef241e64a81b5bd95ad8138fb2351e3fb3a4b08425c31a798fa"}
 
-FROM reg.g5d.dev/alpine@sha256:c8797cc5b046929decf47059cc3a62b89d664ed442288d10833f496d1339af7f as build
+FROM reg.g5d.dev/alpine@sha256:6c5733fa0e3f4ef241e64a81b5bd95ad8138fb2351e3fb3a4b08425c31a798fa as build
 
 ARG TAG="v17.1.0"
 
@@ -9,7 +9,7 @@ RUN set -eux; \
     apk add --no-cache \
         bash=5.1.4-r0\
         brotli-libs=1.0.9-r5\
-        busybox=1.33.1-r3\
+        busybox=1.33.1-r6\
         ca-certificates=20191127-r5\
         curl=7.79.1-r0\
         gcompat=1.0.0-r2\
@@ -72,7 +72,7 @@ RUN set -eux; \
     rm -rf /usr/local/LICENSE; \
     rm -rf /usr/local/README.md;
 
-FROM reg.g5d.dev/alpine@sha256:c8797cc5b046929decf47059cc3a62b89d664ed442288d10833f496d1339af7f
+FROM reg.g5d.dev/alpine@sha256:6c5733fa0e3f4ef241e64a81b5bd95ad8138fb2351e3fb3a4b08425c31a798fa
 
 RUN set -eux; \
     apk add --no-cache \
