@@ -23,7 +23,7 @@ FROM {{ image "alpine" }}
 
 RUN set -eux; \
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "gcompat" "libstdc++" -}}
+        {{range $key, $value := alpine_packages "gcompat" "libstdc++" "git" -}}
         {{$key}}={{$value}}\
         {{end}};
 
