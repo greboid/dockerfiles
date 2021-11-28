@@ -2,7 +2,7 @@ FROM {{image "alpine"}} as yarnbase
 
 RUN set -eux; \
     apk add --no-cache \
-            {{range $key, $value := alpine_packages "yarn" -}}
+            {{range $key, $value := alpine_packages "yarn" "git" -}}
             {{$key}}={{$value}}\
             {{end}};
 
