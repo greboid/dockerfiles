@@ -1,47 +1,47 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/postgres-14/Dockerfile.gotpl
-# BOM: {"apk:binutils":"2.35.2-r2","apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.33.1-r6","apk:ca-certificates":"20191127-r5","apk:curl":"7.79.1-r0","apk:g++":"10.3.1_git20210424-r2","apk:gcc":"10.3.1_git20210424-r2","apk:gmp":"6.2.1-r0","apk:isl22":"0.22-r0","apk:libatomic":"10.3.1_git20210424-r2","apk:libc-dev":"0.7.2-r3","apk:libcrypto1.1":"1.1.1l-r0","apk:libcurl":"7.79.1-r0","apk:libgcc":"10.3.1_git20210424-r2","apk:libgomp":"10.3.1_git20210424-r2","apk:libgphobos":"10.3.1_git20210424-r2","apk:libhistory":"8.1.0-r0","apk:libssl1.1":"1.1.1l-r0","apk:libstdc++":"10.3.1_git20210424-r2","apk:linux-headers":"5.10.41-r0","apk:make":"4.3-r0","apk:mpc1":"1.2.1-r0","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.2-r3","apk:musl-dev":"1.2.2-r3","apk:musl-locales":"0_git20201005-r0","apk:ncurses-dev":"6.2_p20210612-r0","apk:ncurses-libs":"6.2_p20210612-r0","apk:ncurses-terminfo-base":"6.2_p20210612-r0","apk:nghttp2-libs":"1.43.0-r0","apk:openssl-dev":"1.1.1l-r0","apk:pkgconf":"1.7.4-r0","apk:readline":"8.1.0-r0","apk:readline-dev":"8.1.0-r0","apk:zlib":"1.2.11-r3","apk:zlib-dev":"1.2.11-r3","image:alpine":"6c5733fa0e3f4ef241e64a81b5bd95ad8138fb2351e3fb3a4b08425c31a798fa","image:base":"f25b9dc29d96dee9ff3919d93729ba9105802a4ee8a15b69e654877fa74e0af2","postgres14":"14.1"}
+# BOM: {"apk:binutils":"2.37-r3","apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.34.1-r3","apk:ca-certificates":"20191127-r7","apk:curl":"7.80.0-r0","apk:g++":"10.3.1_git20211027-r0","apk:gcc":"10.3.1_git20211027-r0","apk:gmp":"6.2.1-r0","apk:isl22":"0.22-r0","apk:libatomic":"10.3.1_git20211027-r0","apk:libc-dev":"0.7.2-r3","apk:libcrypto1.1":"1.1.1l-r7","apk:libcurl":"7.80.0-r0","apk:libgcc":"10.3.1_git20211027-r0","apk:libgomp":"10.3.1_git20211027-r0","apk:libgphobos":"10.3.1_git20211027-r0","apk:libhistory":"8.1.1-r0","apk:libssl1.1":"1.1.1l-r7","apk:libstdc++":"10.3.1_git20211027-r0","apk:linux-headers":"5.10.41-r0","apk:make":"4.3-r0","apk:mpc1":"1.2.1-r0","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.2-r7","apk:musl-dev":"1.2.2-r7","apk:musl-locales":"0_git20201005-r0","apk:ncurses-dev":"6.3_p20211120-r0","apk:ncurses-libs":"6.3_p20211120-r0","apk:ncurses-terminfo-base":"6.3_p20211120-r0","apk:nghttp2-libs":"1.46.0-r0","apk:openssl-dev":"1.1.1l-r7","apk:pkgconf":"1.8.0-r0","apk:readline":"8.1.1-r0","apk:readline-dev":"8.1.1-r0","apk:zlib":"1.2.11-r3","apk:zlib-dev":"1.2.11-r3","image:alpine":"ef95559f475cdf56e55db71c168f1616d497e2215bbd9f6bc63398036ae546a1","image:base":"e0de705f0d65b2dab86345626fa5ef6279e04bfbfe189ad9dfa3c5d678428ed9","postgres14":"14.1"}
 
-FROM reg.g5d.dev/alpine@sha256:6c5733fa0e3f4ef241e64a81b5bd95ad8138fb2351e3fb3a4b08425c31a798fa as build
+FROM reg.g5d.dev/alpine@sha256:ef95559f475cdf56e55db71c168f1616d497e2215bbd9f6bc63398036ae546a1 as build
 
 ARG ARCHIVE_URL="https://ftp.postgresql.org/pub/source/v14.1/postgresql-14.1.tar.bz2"
 ARG ARCHIVE_SUM="4d3c101ea7ae38982f06bdc73758b53727fb6402ecd9382006fa5ecc7c2ca41f"
 
 RUN set -eux; \
     apk add --no-cache \
-        binutils=2.35.2-r2 \
+        binutils=2.37-r3 \
         brotli-libs=1.0.9-r5 \
-        busybox=1.33.1-r6 \
-        ca-certificates=20191127-r5 \
-        curl=7.79.1-r0 \
-        g++=10.3.1_git20210424-r2 \
-        gcc=10.3.1_git20210424-r2 \
+        busybox=1.34.1-r3 \
+        ca-certificates=20191127-r7 \
+        curl=7.80.0-r0 \
+        g++=10.3.1_git20211027-r0 \
+        gcc=10.3.1_git20211027-r0 \
         gmp=6.2.1-r0 \
         isl22=0.22-r0 \
-        libatomic=10.3.1_git20210424-r2 \
+        libatomic=10.3.1_git20211027-r0 \
         libc-dev=0.7.2-r3 \
-        libcrypto1.1=1.1.1l-r0 \
-        libcurl=7.79.1-r0 \
-        libgcc=10.3.1_git20210424-r2 \
-        libgomp=10.3.1_git20210424-r2 \
-        libgphobos=10.3.1_git20210424-r2 \
-        libhistory=8.1.0-r0 \
-        libssl1.1=1.1.1l-r0 \
-        libstdc++=10.3.1_git20210424-r2 \
+        libcrypto1.1=1.1.1l-r7 \
+        libcurl=7.80.0-r0 \
+        libgcc=10.3.1_git20211027-r0 \
+        libgomp=10.3.1_git20211027-r0 \
+        libgphobos=10.3.1_git20211027-r0 \
+        libhistory=8.1.1-r0 \
+        libssl1.1=1.1.1l-r7 \
+        libstdc++=10.3.1_git20211027-r0 \
         linux-headers=5.10.41-r0 \
         make=4.3-r0 \
         mpc1=1.2.1-r0 \
         mpfr4=4.1.0-r0 \
-        musl=1.2.2-r3 \
-        musl-dev=1.2.2-r3 \
+        musl=1.2.2-r7 \
+        musl-dev=1.2.2-r7 \
         musl-locales=0_git20201005-r0 \
-        ncurses-dev=6.2_p20210612-r0 \
-        ncurses-libs=6.2_p20210612-r0 \
-        ncurses-terminfo-base=6.2_p20210612-r0 \
-        nghttp2-libs=1.43.0-r0 \
-        openssl-dev=1.1.1l-r0 \
-        pkgconf=1.7.4-r0 \
-        readline=8.1.0-r0 \
-        readline-dev=8.1.0-r0 \
+        ncurses-dev=6.3_p20211120-r0 \
+        ncurses-libs=6.3_p20211120-r0 \
+        ncurses-terminfo-base=6.3_p20211120-r0 \
+        nghttp2-libs=1.46.0-r0 \
+        openssl-dev=1.1.1l-r7 \
+        pkgconf=1.8.0-r0 \
+        readline=8.1.1-r0 \
+        readline-dev=8.1.1-r0 \
         zlib=1.2.11-r3 \
         zlib-dev=1.2.11-r3 \
         ; \
@@ -62,7 +62,7 @@ RUN set -eux; \
     cp /usr/lib/libssl* /src/libs/; \
     mkdir /src/data
 
-FROM reg.g5d.dev/base@sha256:f25b9dc29d96dee9ff3919d93729ba9105802a4ee8a15b69e654877fa74e0af2
+FROM reg.g5d.dev/base@sha256:e0de705f0d65b2dab86345626fa5ef6279e04bfbfe189ad9dfa3c5d678428ed9
 
 ENV LANG en_US.utf8
 ENV PGDATA=/var/lib/postgres/data
