@@ -1,64 +1,68 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/node/Dockerfile.gotpl
-# BOM: {"apk:bash":"5.1.4-r0","apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.33.1-r6","apk:ca-certificates":"20191127-r5","apk:curl":"7.79.1-r0","apk:gcompat":"1.0.0-r2","apk:gdbm":"1.19-r0","apk:glib":"2.68.3-r0","apk:gmp":"6.2.1-r0","apk:gnupg":"2.2.31-r0","apk:gnutls":"3.7.1-r0","apk:libacl":"2.2.53-r0","apk:libassuan":"2.5.5-r0","apk:libblkid":"2.37.2-r0","apk:libbz2":"1.0.8-r1","apk:libcap":"2.50-r0","apk:libcrypto1.1":"1.1.1l-r0","apk:libcurl":"7.79.1-r0","apk:libffi":"3.3-r2","apk:libgcc":"10.3.1_git20210424-r2","apk:libgcrypt":"1.9.4-r0","apk:libgpg-error":"1.42-r0","apk:libintl":"0.21-r0","apk:libksba":"1.5.1-r0","apk:libldap":"2.4.58-r0","apk:libmount":"2.37.2-r0","apk:libsasl":"2.1.27-r12","apk:libsecret":"0.20.4-r1","apk:libssl1.1":"1.1.1l-r0","apk:libstdc++":"10.3.1_git20210424-r2","apk:libtasn1":"4.17.0-r0","apk:libucontext":"1.1-r0","apk:libunistring":"0.9.10-r1","apk:musl":"1.2.2-r3","apk:musl-obstack":"1.2.2-r0","apk:ncurses-libs":"6.2_p20210612-r0","apk:ncurses-terminfo-base":"6.2_p20210612-r0","apk:nettle":"3.7.3-r0","apk:nghttp2-libs":"1.43.0-r0","apk:npth":"1.6-r0","apk:p11-kit":"0.23.22-r0","apk:pcre":"8.44-r0","apk:pinentry":"1.1.1-r0","apk:popt":"1.18-r0","apk:readline":"8.1.0-r0","apk:rsync":"3.2.3-r4","apk:sqlite-libs":"3.35.5-r0","apk:tar":"1.34-r0","apk:xz":"5.2.5-r0","apk:xz-libs":"5.2.5-r0","apk:zlib":"1.2.11-r3","apk:zstd-libs":"1.4.9-r1","github:nodejs/node":"v17.1.0","image:alpine":"6c5733fa0e3f4ef241e64a81b5bd95ad8138fb2351e3fb3a4b08425c31a798fa"}
+# BOM: {"apk:bash":"5.1.8-r0","apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.34.1-r3","apk:ca-certificates":"20191127-r7","apk:curl":"7.80.0-r0","apk:expat":"2.4.1-r0","apk:gcompat":"1.0.0-r4","apk:gdbm":"1.22-r0","apk:git":"2.34.1-r0","apk:gmp":"6.2.1-r0","apk:gnupg":"2.2.31-r1","apk:gnupg-dirmngr":"2.2.31-r1","apk:gnupg-gpgconf":"2.2.31-r1","apk:gnupg-utils":"2.2.31-r1","apk:gnupg-wks-client":"2.2.31-r1","apk:gnutls":"3.7.1-r0","apk:gpg":"2.2.31-r1","apk:gpg-agent":"2.2.31-r1","apk:gpg-wks-server":"2.2.31-r1","apk:gpgsm":"2.2.31-r1","apk:gpgv":"2.2.31-r1","apk:libacl":"2.2.53-r0","apk:libassuan":"2.5.5-r0","apk:libbz2":"1.0.8-r1","apk:libcap":"2.61-r0","apk:libcrypto1.1":"1.1.1l-r7","apk:libcurl":"7.80.0-r0","apk:libffi":"3.4.2-r1","apk:libgcc":"10.3.1_git20211027-r0","apk:libgcrypt":"1.9.4-r0","apk:libgpg-error":"1.42-r1","apk:libksba":"1.6.0-r0","apk:libldap":"2.6.0-r0","apk:libsasl":"2.1.27-r14","apk:libssl1.1":"1.1.1l-r7","apk:libstdc++":"10.3.1_git20211027-r0","apk:libtasn1":"4.18.0-r0","apk:libucontext":"1.1-r0","apk:libunistring":"0.9.10-r1","apk:lz4-libs":"1.9.3-r0","apk:musl":"1.2.2-r7","apk:musl-obstack":"1.2.2-r0","apk:ncurses-libs":"6.3_p20211120-r0","apk:ncurses-terminfo-base":"6.3_p20211120-r0","apk:nettle":"3.7.3-r0","apk:nghttp2-libs":"1.46.0-r0","apk:npth":"1.6-r1","apk:p11-kit":"0.24.0-r1","apk:pcre2":"10.39-r0","apk:pinentry":"1.2.0-r0","apk:popt":"1.18-r0","apk:readline":"8.1.1-r0","apk:rsync":"3.2.3-r5","apk:sqlite-libs":"3.36.0-r0","apk:tar":"1.34-r0","apk:xz":"5.2.5-r0","apk:xz-libs":"5.2.5-r0","apk:zlib":"1.2.11-r3","apk:zstd-libs":"1.5.0-r0","github:nodejs/node":"v17.1.0","image:alpine":"ef95559f475cdf56e55db71c168f1616d497e2215bbd9f6bc63398036ae546a1"}
 
-FROM reg.g5d.dev/alpine@sha256:6c5733fa0e3f4ef241e64a81b5bd95ad8138fb2351e3fb3a4b08425c31a798fa as build
+FROM reg.g5d.dev/alpine@sha256:ef95559f475cdf56e55db71c168f1616d497e2215bbd9f6bc63398036ae546a1 as build
 
 ARG TAG="v17.1.0"
 
 RUN set -eux; \
     apk add --no-cache \
-        bash=5.1.4-r0\
+        bash=5.1.8-r0\
         brotli-libs=1.0.9-r5\
-        busybox=1.33.1-r6\
-        ca-certificates=20191127-r5\
-        curl=7.79.1-r0\
-        gcompat=1.0.0-r2\
-        gdbm=1.19-r0\
-        glib=2.68.3-r0\
+        busybox=1.34.1-r3\
+        ca-certificates=20191127-r7\
+        curl=7.80.0-r0\
+        gcompat=1.0.0-r4\
+        gdbm=1.22-r0\
         gmp=6.2.1-r0\
-        gnupg=2.2.31-r0\
+        gnupg=2.2.31-r1\
+        gnupg-dirmngr=2.2.31-r1\
+        gnupg-gpgconf=2.2.31-r1\
+        gnupg-utils=2.2.31-r1\
+        gnupg-wks-client=2.2.31-r1\
         gnutls=3.7.1-r0\
+        gpg=2.2.31-r1\
+        gpg-agent=2.2.31-r1\
+        gpg-wks-server=2.2.31-r1\
+        gpgsm=2.2.31-r1\
+        gpgv=2.2.31-r1\
         libacl=2.2.53-r0\
         libassuan=2.5.5-r0\
-        libblkid=2.37.2-r0\
         libbz2=1.0.8-r1\
-        libcap=2.50-r0\
-        libcrypto1.1=1.1.1l-r0\
-        libcurl=7.79.1-r0\
-        libffi=3.3-r2\
-        libgcc=10.3.1_git20210424-r2\
+        libcap=2.61-r0\
+        libcrypto1.1=1.1.1l-r7\
+        libcurl=7.80.0-r0\
+        libffi=3.4.2-r1\
+        libgcc=10.3.1_git20211027-r0\
         libgcrypt=1.9.4-r0\
-        libgpg-error=1.42-r0\
-        libintl=0.21-r0\
-        libksba=1.5.1-r0\
-        libldap=2.4.58-r0\
-        libmount=2.37.2-r0\
-        libsasl=2.1.27-r12\
-        libsecret=0.20.4-r1\
-        libssl1.1=1.1.1l-r0\
-        libstdc++=10.3.1_git20210424-r2\
-        libtasn1=4.17.0-r0\
+        libgpg-error=1.42-r1\
+        libksba=1.6.0-r0\
+        libldap=2.6.0-r0\
+        libsasl=2.1.27-r14\
+        libssl1.1=1.1.1l-r7\
+        libstdc++=10.3.1_git20211027-r0\
+        libtasn1=4.18.0-r0\
         libucontext=1.1-r0\
         libunistring=0.9.10-r1\
-        musl=1.2.2-r3\
+        lz4-libs=1.9.3-r0\
+        musl=1.2.2-r7\
         musl-obstack=1.2.2-r0\
-        ncurses-libs=6.2_p20210612-r0\
-        ncurses-terminfo-base=6.2_p20210612-r0\
+        ncurses-libs=6.3_p20211120-r0\
+        ncurses-terminfo-base=6.3_p20211120-r0\
         nettle=3.7.3-r0\
-        nghttp2-libs=1.43.0-r0\
-        npth=1.6-r0\
-        p11-kit=0.23.22-r0\
-        pcre=8.44-r0\
-        pinentry=1.1.1-r0\
+        nghttp2-libs=1.46.0-r0\
+        npth=1.6-r1\
+        p11-kit=0.24.0-r1\
+        pinentry=1.2.0-r0\
         popt=1.18-r0\
-        readline=8.1.0-r0\
-        rsync=3.2.3-r4\
-        sqlite-libs=3.35.5-r0\
+        readline=8.1.1-r0\
+        rsync=3.2.3-r5\
+        sqlite-libs=3.36.0-r0\
         tar=1.34-r0\
         xz=5.2.5-r0\
         xz-libs=5.2.5-r0\
         zlib=1.2.11-r3\
-        zstd-libs=1.4.9-r1\
+        zstd-libs=1.5.0-r0\
         ;\
     curl -sfLo /checksums.txt.asc https://nodejs.org/dist/$TAG/SHASUMS256.txt.asc; \
     gpg --keyserver hkps://keys.openpgp.org --keyserver-options auto-key-retrieve --verify /checksums.txt.asc; \
@@ -72,16 +76,27 @@ RUN set -eux; \
     rm -rf /usr/local/LICENSE; \
     rm -rf /usr/local/README.md;
 
-FROM reg.g5d.dev/alpine@sha256:6c5733fa0e3f4ef241e64a81b5bd95ad8138fb2351e3fb3a4b08425c31a798fa
+FROM reg.g5d.dev/alpine@sha256:ef95559f475cdf56e55db71c168f1616d497e2215bbd9f6bc63398036ae546a1
 
 RUN set -eux; \
     apk add --no-cache \
-        gcompat=1.0.0-r2\
-        libgcc=10.3.1_git20210424-r2\
-        libstdc++=10.3.1_git20210424-r2\
+        brotli-libs=1.0.9-r5\
+        busybox=1.34.1-r3\
+        ca-certificates=20191127-r7\
+        expat=2.4.1-r0\
+        gcompat=1.0.0-r4\
+        git=2.34.1-r0\
+        libcrypto1.1=1.1.1l-r7\
+        libcurl=7.80.0-r0\
+        libgcc=10.3.1_git20211027-r0\
+        libssl1.1=1.1.1l-r7\
+        libstdc++=10.3.1_git20211027-r0\
         libucontext=1.1-r0\
-        musl=1.2.2-r3\
+        musl=1.2.2-r7\
         musl-obstack=1.2.2-r0\
+        nghttp2-libs=1.46.0-r0\
+        pcre2=10.39-r0\
+        zlib=1.2.11-r3\
         ;
 
 COPY --from=build /usr/local /usr/local
