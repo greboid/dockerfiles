@@ -1,6 +1,6 @@
 FROM {{image "alpine"}} AS build
 
-ARG TAG="{{github_tag "haproxy/haproxy"}}"
+ARG TAG="v2.4.0"
 
 COPY buildstatic.patch /src/buildstatic.patch
 
@@ -12,7 +12,7 @@ RUN set -eux; \
      git clone --depth=1 -b $TAG --single-branch git://github.com/haproxy/haproxy /src/haproxy; \
      cd /src/haproxy; \
      patch Makefile < /src/buildstatic.patch; \
-     make TARGET=linux-musl USE_OPENSSL=1 USE_PCRE=1; \
+     make -j$(nproc) TARGET=linux-musl USE_OPENSSL=1 USE_PCRE=1; \
      make install-bin; \
      strip /usr/local/sbin/haproxy; \
      touch --date=@0 /src/haproxy; \
