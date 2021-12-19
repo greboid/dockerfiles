@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/greboid.gay/Dockerfile.gotpl
-# BOM: {"apk:bash":"5.1.8-r0","apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.34.1-r3","apk:ca-certificates":"20191127-r7","apk:coreutils":"9.0-r2","apk:expat":"2.4.1-r0","apk:giflib":"5.2.1-r0","apk:git":"2.34.1-r0","apk:libacl":"2.2.53-r0","apk:libattr":"2.5.1-r1","apk:libcrypto1.1":"1.1.1l-r7","apk:libcurl":"7.80.0-r0","apk:libjpeg-turbo":"2.1.2-r0","apk:libpng":"1.6.37-r1","apk:libssl1.1":"1.1.1l-r7","apk:libwebp":"1.2.1-r0","apk:libwebp-tools":"1.2.1-r0","apk:musl":"1.2.2-r7","apk:ncurses-libs":"6.3_p20211120-r0","apk:ncurses-terminfo-base":"6.3_p20211120-r0","apk:nghttp2-libs":"1.46.0-r0","apk:pcre2":"10.39-r0","apk:readline":"8.1.1-r0","apk:s6-ipcserver":"2.11.0.0-r0","apk:skalibs":"2.11.0.0-r0","apk:utmps":"0.1.0.3-r0","apk:zlib":"1.2.11-r3","github:greboid/greboid.gay":"v1.0.0","image:alpine":"ef95559f475cdf56e55db71c168f1616d497e2215bbd9f6bc63398036ae546a1","image:base":"e0de705f0d65b2dab86345626fa5ef6279e04bfbfe189ad9dfa3c5d678428ed9","image:golang":"68c6fe47db01205c75d50f261e03289de0e5ae14c9f21465c036d99d8d52b0bd"}
+# BOM: {"apk:bash":"5.1.8-r0","apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.34.1-r3","apk:ca-certificates":"20191127-r7","apk:coreutils":"9.0-r2","apk:expat":"2.4.1-r0","apk:giflib":"5.2.1-r0","apk:git":"2.34.1-r0","apk:libacl":"2.2.53-r0","apk:libattr":"2.5.1-r1","apk:libcrypto1.1":"1.1.1l-r8","apk:libcurl":"7.80.0-r0","apk:libjpeg-turbo":"2.1.2-r0","apk:libpng":"1.6.37-r1","apk:libssl1.1":"1.1.1l-r8","apk:libwebp":"1.2.1-r0","apk:libwebp-tools":"1.2.1-r0","apk:musl":"1.2.2-r7","apk:ncurses-libs":"6.3_p20211120-r0","apk:ncurses-terminfo-base":"6.3_p20211120-r0","apk:nghttp2-libs":"1.46.0-r0","apk:pcre2":"10.39-r0","apk:readline":"8.1.1-r0","apk:s6-ipcserver":"2.11.0.0-r0","apk:skalibs":"2.11.0.0-r0","apk:utmps":"0.1.0.3-r0","apk:zlib":"1.2.11-r3","github:greboid/greboid.gay":"v1.0.0","image:alpine":"ef95559f475cdf56e55db71c168f1616d497e2215bbd9f6bc63398036ae546a1","image:base":"e0de705f0d65b2dab86345626fa5ef6279e04bfbfe189ad9dfa3c5d678428ed9","image:golang":"f557a7d00babf16543fcb06b60cfb581b6895d615cf0abe7b8e589681fca0fd0"}
 
 FROM reg.g5d.dev/alpine@sha256:ef95559f475cdf56e55db71c168f1616d497e2215bbd9f6bc63398036ae546a1 AS images
 
@@ -18,11 +18,11 @@ RUN set -eux; \
         git=2.34.1-r0 \
         libacl=2.2.53-r0 \
         libattr=2.5.1-r1 \
-        libcrypto1.1=1.1.1l-r7 \
+        libcrypto1.1=1.1.1l-r8 \
         libcurl=7.80.0-r0 \
         libjpeg-turbo=2.1.2-r0 \
         libpng=1.6.37-r1 \
-        libssl1.1=1.1.1l-r7 \
+        libssl1.1=1.1.1l-r8 \
         libwebp=1.2.1-r0 \
         libwebp-tools=1.2.1-r0 \
         musl=1.2.2-r7 \
@@ -43,7 +43,7 @@ RUN set -eux; \
     chmod +x minify.sh; \
     ./minify.sh
 
-FROM reg.g5d.dev/golang@sha256:68c6fe47db01205c75d50f261e03289de0e5ae14c9f21465c036d99d8d52b0bd AS build
+FROM reg.g5d.dev/golang@sha256:f557a7d00babf16543fcb06b60cfb581b6895d615cf0abe7b8e589681fca0fd0 AS build
 
 ARG TAG="v1.0.0"
 
@@ -54,9 +54,9 @@ RUN set -eux; \
         ca-certificates=20191127-r7\
         expat=2.4.1-r0\
         git=2.34.1-r0\
-        libcrypto1.1=1.1.1l-r7\
+        libcrypto1.1=1.1.1l-r8\
         libcurl=7.80.0-r0\
-        libssl1.1=1.1.1l-r7\
+        libssl1.1=1.1.1l-r8\
         musl=1.2.2-r7\
         nghttp2-libs=1.46.0-r0\
         pcre2=10.39-r0\
