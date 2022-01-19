@@ -27,8 +27,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run:  |
-          buildah version
-          buildah login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io
           echo "Running contempt"
           "${GITHUB_WORKSPACE}/.github/contempt.sh"
           echo "Mirroring images"
