@@ -15,12 +15,19 @@ RUN set -eux; \
     chmod +x minify.sh; \
     ./minify.sh
 
+FROM ghcr.io/greboid/cv:latest as cv
+
+COPY --from=images /lib/ld-musl-x86_64.so.1 /lib/ld-musl-x86_64.so.1
+COPY --from=images /bin/busybox /bin/busybox
+COPY --from=images /bin/sh /bin/sh
+RUN busybox ls /
+
 FROM {{image "golang"}} AS build
 
 ARG TAG="{{github_tag "greboid/greboid.com"}}"
 
 COPY --from=images /app/static/images /images
-COPY --from="ghcr.io/greboid/cv:latest" /cv.pdf /cv.pdf
+COPY --from=cv /cv.pdf /cv.pdf
 
 RUN set -eux; \
     apk add --no-cache \
