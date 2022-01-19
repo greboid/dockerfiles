@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/soju/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.34.1-r3","apk:ca-certificates":"20191127-r7","apk:expat":"2.4.1-r0","apk:git":"2.34.1-r0","apk:libcrypto1.1":"1.1.1l-r7","apk:libcurl":"7.80.0-r0","apk:libssl1.1":"1.1.1l-r7","apk:musl":"1.2.2-r7","apk:nghttp2-libs":"1.46.0-r0","apk:patch":"2.7.6-r7","apk:pcre2":"10.39-r0","apk:zlib":"1.2.11-r3","github:csmith/certwrapper":"v4.0.0","github:emersion/soju":"v0.3.0","image:base":"e0de705f0d65b2dab86345626fa5ef6279e04bfbfe189ad9dfa3c5d678428ed9","image:golang":"68c6fe47db01205c75d50f261e03289de0e5ae14c9f21465c036d99d8d52b0bd"}
+# BOM: {"apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.34.1-r3","apk:ca-certificates":"20211220-r0","apk:expat":"2.4.3-r0","apk:git":"2.34.1-r0","apk:libcrypto1.1":"1.1.1l-r8","apk:libcurl":"7.80.0-r0","apk:libssl1.1":"1.1.1l-r8","apk:musl":"1.2.2-r7","apk:nghttp2-libs":"1.46.0-r0","apk:patch":"2.7.6-r7","apk:pcre2":"10.39-r0","apk:zlib":"1.2.11-r3","github:csmith/certwrapper":"v4.0.0","github:emersion/soju":"v0.3.0","image:base":"e390636a8773e2b84066cdbde990e80b3c97b8e7e25428df9f4b8f097323f861","image:golang":"f8753ea32d01bc996aa890cdd0c598ebe1243c0b78e969c1788f207f01fffb7e"}
 
-FROM reg.g5d.dev/golang@sha256:68c6fe47db01205c75d50f261e03289de0e5ae14c9f21465c036d99d8d52b0bd AS build
+FROM reg.g5d.dev/golang@sha256:f8753ea32d01bc996aa890cdd0c598ebe1243c0b78e969c1788f207f01fffb7e AS build
 
 ARG SOJUTAG="v0.3.0"
 ARG CERTTAG="v4.0.0"
@@ -10,12 +10,12 @@ RUN set -eux; \
     apk add --no-cache \
         brotli-libs=1.0.9-r5 \
         busybox=1.34.1-r3 \
-        ca-certificates=20191127-r7 \
-        expat=2.4.1-r0 \
+        ca-certificates=20211220-r0 \
+        expat=2.4.3-r0 \
         git=2.34.1-r0 \
-        libcrypto1.1=1.1.1l-r7 \
+        libcrypto1.1=1.1.1l-r8 \
         libcurl=7.80.0-r0 \
-        libssl1.1=1.1.1l-r7 \
+        libssl1.1=1.1.1l-r8 \
         musl=1.2.2-r7 \
         nghttp2-libs=1.46.0-r0 \
         patch=2.7.6-r7 \
@@ -36,7 +36,7 @@ RUN set -eux; \
     touch --date=@0 /go/src/github.com/csmith/certwrapper/certwrapper; \
     mkdir /data
 
-FROM reg.g5d.dev/base@sha256:e0de705f0d65b2dab86345626fa5ef6279e04bfbfe189ad9dfa3c5d678428ed9
+FROM reg.g5d.dev/base@sha256:e390636a8773e2b84066cdbde990e80b3c97b8e7e25428df9f4b8f097323f861
 
 COPY --from=build /go/src/github.com/emersion/soju/soju /soju
 COPY --from=build /go/src/github.com/emersion/soju/sojuctl /sojuctl
