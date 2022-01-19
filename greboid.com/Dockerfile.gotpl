@@ -22,7 +22,7 @@ FROM {{image "golang"}} AS build
 ARG TAG="{{github_tag "greboid/greboid.com"}}"
 
 COPY --from=images /app/static/images /images
-COPY --from=cv /cv.pdf /cv.pdf
+COPY --from=ghcr.io/greboid/cv:latest /cv.pdf /cv.pdf
 
 RUN set -eux; \
     apk add --no-cache \
