@@ -43,11 +43,14 @@ RUN set -eux; \
     chmod +x minify.sh; \
     ./minify.sh
 
+FROM ghcr.io/greboid/cv:latest as cv
+
 FROM reg.g5d.dev/golang@sha256:f8753ea32d01bc996aa890cdd0c598ebe1243c0b78e969c1788f207f01fffb7e AS build
 
 ARG TAG="v1.0.1"
 
 COPY --from=images /app/static/images /images
+COPY --from=cv /cv.pdf /cv.pdf
 
 RUN set -eux; \
     apk add --no-cache \
@@ -67,6 +70,7 @@ RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/greboid.com /go/src/github.com/greboid/greboid.com; \
     cd /go/src/github.com/greboid/greboid.com; \
     cp -r /images/* static/images/; \
+    cp /cv.pdf static/cv.pdf; \
     CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
     # Clobber all the timestamps to make the build more reproducible
     touch --date=@0 /go/src/github.com/greboid/greboid.com/main;
