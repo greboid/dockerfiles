@@ -4,6 +4,6 @@ RUN set -eux; \
    apk add --no-cache \
         {{range $key, $value := alpine_packages "rsync" "texlive" "texlive-xetex" "texmf-dist-latexextra" -}}
         {{$key}}={{$value}} \
-        {{end}}; \
+        {{end}}
 
 WORKDIR /home/nonroot
