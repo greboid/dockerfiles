@@ -15,7 +15,7 @@ RUN set -eux; \
     chmod +x minify.sh; \
     ./minify.sh
 
-FROM ghcr.io/greboid/cv:dev as cv
+FROM ghcr.io/greboid/cv:latest as cv
 
 FROM {{image "golang"}} AS build
 
