@@ -49,4 +49,6 @@ RUN set -eux; \
         texmf-dist-latexextra=2021.58710-r2 \
         zlib=1.2.11-r3 \
         zstd-libs=1.5.0-r0 \
-        ; \
+        ;
+
+WORKDIR /home/nonroot
