@@ -17,8 +17,6 @@ RUN set -eux; \
 
 FROM ghcr.io/greboid/cv:latest as cv
 
-ARG TAG="{{github_tag "greboid/cv"}}"
-
 FROM {{image "golang"}} AS build
 
 ARG TAG="{{github_tag "greboid/greboid.com"}}"
