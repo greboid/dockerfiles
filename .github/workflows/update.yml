@@ -16,8 +16,6 @@ jobs:
       - name: Update dockerfiles
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
           MIRROR_IMAGES: base baseroot alpine golang texlive
