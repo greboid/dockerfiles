@@ -1,0 +1,237 @@
+diff --git a/internal/flags/flags.go b/internal/flags/flags.go
+index a02dbd7..71fd5e8 100644
+--- a/internal/flags/flags.go
++++ b/internal/flags/flags.go
+@@ -177,7 +177,7 @@ func RegisterNotificationFlags(rootCmd *cobra.Command) {
+ 		"notifications",
+ 		"n",
+ 		viper.GetStringSlice("WATCHTOWER_NOTIFICATIONS"),
+-		" Notification types to send (valid: email, slack, msteams, gotify, shoutrrr)")
++		" Notification types to send (valid: email, msteams, gotify, shoutrrr)")
+ 
+ 	flags.String(
+ 		"notifications-level",
+@@ -245,36 +245,6 @@ Should only be used for testing.`)
+ 		viper.GetString("WATCHTOWER_NOTIFICATION_EMAIL_SUBJECTTAG"),
+ 		"Subject prefix tag for notifications via mail")
+ 
+-	flags.StringP(
+-		"notification-slack-hook-url",
+-		"",
+-		viper.GetString("WATCHTOWER_NOTIFICATION_SLACK_HOOK_URL"),
+-		"The Slack Hook URL to send notifications to")
+-
+-	flags.StringP(
+-		"notification-slack-identifier",
+-		"",
+-		viper.GetString("WATCHTOWER_NOTIFICATION_SLACK_IDENTIFIER"),
+-		"A string which will be used to identify the messages coming from this watchtower instance")
+-
+-	flags.StringP(
+-		"notification-slack-channel",
+-		"",
+-		viper.GetString("WATCHTOWER_NOTIFICATION_SLACK_CHANNEL"),
+-		"A string which overrides the webhook's default channel. Example: #my-custom-channel")
+-
+-	flags.StringP(
+-		"notification-slack-icon-emoji",
+-		"",
+-		viper.GetString("WATCHTOWER_NOTIFICATION_SLACK_ICON_EMOJI"),
+-		"An emoji code string to use in place of the default icon")
+-
+-	flags.StringP(
+-		"notification-slack-icon-url",
+-		"",
+-		viper.GetString("WATCHTOWER_NOTIFICATION_SLACK_ICON_URL"),
+-		"An icon image URL string to use in place of the default icon")
+-
+ 	flags.StringP(
+ 		"notification-msteams-hook",
+ 		"",
+@@ -339,7 +309,6 @@ func SetDefaults() {
+ 	viper.SetDefault("WATCHTOWER_NOTIFICATIONS_LEVEL", "info")
+ 	viper.SetDefault("WATCHTOWER_NOTIFICATION_EMAIL_SERVER_PORT", 25)
+ 	viper.SetDefault("WATCHTOWER_NOTIFICATION_EMAIL_SUBJECTTAG", "")
+-	viper.SetDefault("WATCHTOWER_NOTIFICATION_SLACK_IDENTIFIER", "watchtower")
+ }
+ 
+ // EnvConfig translates the command-line options into environment variables
+@@ -424,7 +393,6 @@ func GetSecretsFromFiles(rootCmd *cobra.Command) {
+ 
+ 	secrets := []string{
+ 		"notification-email-server-password",
+-		"notification-slack-hook-url",
+ 		"notification-msteams-hook",
+ 		"notification-gotify-token",
+ 	}
+diff --git a/pkg/notifications/notifier.go b/pkg/notifications/notifier.go
+index 61861fb..abc3be4 100644
+--- a/pkg/notifications/notifier.go
++++ b/pkg/notifications/notifier.go
+@@ -5,7 +5,6 @@ import (
+ 	"time"
+ 
+ 	ty "github.com/containrrr/watchtower/pkg/types"
+-	"github.com/johntdyer/slackrus"
+ 	log "github.com/sirupsen/logrus"
+ 	"github.com/spf13/cobra"
+ )
+@@ -20,68 +19,14 @@ func NewNotifier(c *cobra.Command) ty.Notifier {
+ 		log.Fatalf("Notifications invalid log level: %s", err.Error())
+ 	}
+ 
+-	acceptedLogLevels := slackrus.LevelThreshold(logLevel)
+-	// slackrus does not allow log level TRACE, even though it's an accepted log level for logrus
+-	if len(acceptedLogLevels) == 0 {
+-		log.Fatalf("Unsupported notification log level provided: %s", level)
+-	}
+-
++	log.SetLevel(logLevel)
+ 	reportTemplate, _ := f.GetBool("notification-report")
+ 	tplString, _ := f.GetString("notification-template")
+ 	urls, _ := f.GetStringArray("notification-url")
+ 
+ 	hostname := GetHostname(c)
+-	urls, delay := AppendLegacyUrls(urls, c, GetTitle(hostname))
+-
+-	return newShoutrrrNotifier(tplString, acceptedLogLevels, !reportTemplate, hostname, delay, urls...)
+-}
+-
+-// AppendLegacyUrls creates shoutrrr equivalent URLs from legacy notification flags
+-func AppendLegacyUrls(urls []string, cmd *cobra.Command, title string) ([]string, time.Duration) {
+-
+-	// Parse types and create notifiers.
+-	types, err := cmd.Flags().GetStringSlice("notifications")
+-	if err != nil {
+-		log.WithError(err).Fatal("could not read notifications argument")
+-	}
+ 
+-	delay := time.Duration(0)
+-
+-	for _, t := range types {
+-
+-		var legacyNotifier ty.ConvertibleNotifier
+-		var err error
+-
+-		switch t {
+-		case emailType:
+-			legacyNotifier = newEmailNotifier(cmd, []log.Level{})
+-		case slackType:
+-			legacyNotifier = newSlackNotifier(cmd, []log.Level{})
+-		case msTeamsType:
+-			legacyNotifier = newMsTeamsNotifier(cmd, []log.Level{})
+-		case gotifyType:
+-			legacyNotifier = newGotifyNotifier(cmd, []log.Level{})
+-		case shoutrrrType:
+-			continue
+-		default:
+-			log.Fatalf("Unknown notification type %q", t)
+-			// Not really needed, used for nil checking static analysis
+-			continue
+-		}
+-
+-		shoutrrrURL, err := legacyNotifier.GetURL(cmd, title)
+-		if err != nil {
+-			log.Fatal("failed to create notification config: ", err)
+-		}
+-		urls = append(urls, shoutrrrURL)
+-
+-		if delayNotifier, ok := legacyNotifier.(ty.DelayNotifier); ok {
+-			delay = delayNotifier.GetDelay()
+-		}
+-
+-		log.WithField("URL", shoutrrrURL).Trace("created Shoutrrr URL from legacy notifier")
+-	}
+-	return urls, delay
++	return newShoutrrrNotifier(tplString, log.AllLevels, !reportTemplate, hostname, time.Duration(0), urls...)
+ }
+ 
+ // GetTitle returns a common notification title with hostname appended
+diff --git a/pkg/notifications/slack.go b/pkg/notifications/slack.go
+deleted file mode 100644
+index faff944..0000000
+--- a/pkg/notifications/slack.go
++++ /dev/null
+@@ -1,82 +0,0 @@
+-package notifications
+-
+-import (
+-	"strings"
+-
+-	shoutrrrDisco "github.com/containrrr/shoutrrr/pkg/services/discord"
+-	shoutrrrSlack "github.com/containrrr/shoutrrr/pkg/services/slack"
+-	t "github.com/containrrr/watchtower/pkg/types"
+-	"github.com/johntdyer/slackrus"
+-	log "github.com/sirupsen/logrus"
+-	"github.com/spf13/cobra"
+-)
+-
+-const (
+-	slackType = "slack"
+-)
+-
+-type slackTypeNotifier struct {
+-	slackrus.SlackrusHook
+-}
+-
+-func newSlackNotifier(c *cobra.Command, acceptedLogLevels []log.Level) t.ConvertibleNotifier {
+-	flags := c.PersistentFlags()
+-
+-	hookURL, _ := flags.GetString("notification-slack-hook-url")
+-	userName, _ := flags.GetString("notification-slack-identifier")
+-	channel, _ := flags.GetString("notification-slack-channel")
+-	emoji, _ := flags.GetString("notification-slack-icon-emoji")
+-	iconURL, _ := flags.GetString("notification-slack-icon-url")
+-
+-	n := &slackTypeNotifier{
+-		SlackrusHook: slackrus.SlackrusHook{
+-			HookURL:        hookURL,
+-			Username:       userName,
+-			Channel:        channel,
+-			IconEmoji:      emoji,
+-			IconURL:        iconURL,
+-			AcceptedLevels: acceptedLogLevels,
+-		},
+-	}
+-	return n
+-}
+-
+-func (s *slackTypeNotifier) GetURL(c *cobra.Command, title string) (string, error) {
+-	trimmedURL := strings.TrimRight(s.HookURL, "/")
+-	trimmedURL = strings.TrimLeft(trimmedURL, "https://")
+-	parts := strings.Split(trimmedURL, "/")
+-
+-	if parts[0] == "discord.com" || parts[0] == "discordapp.com" {
+-		log.Debug("Detected a discord slack wrapper URL, using shoutrrr discord service")
+-		conf := &shoutrrrDisco.Config{
+-			WebhookID:  parts[len(parts)-3],
+-			Token:      parts[len(parts)-2],
+-			Color:      ColorInt,
+-			Title:      title,
+-			SplitLines: true,
+-			Username:   s.Username,
+-		}
+-		return conf.GetURL().String(), nil
+-	}
+-
+-	webhookToken := strings.Replace(s.HookURL, "https://hooks.slack.com/services/", "", 1)
+-
+-	conf := &shoutrrrSlack.Config{
+-		BotName: s.Username,
+-		Color:   ColorHex,
+-		Channel: "webhook",
+-		Title:   title,
+-	}
+-
+-	if s.IconURL != "" {
+-		conf.Icon = s.IconURL
+-	} else if s.IconEmoji != "" {
+-		conf.Icon = s.IconEmoji
+-	}
+-
+-	if err := conf.Token.SetFromProp(webhookToken); err != nil {
+-		return "", err
+-	}
+-
+-	return conf.GetURL().String(), nil
+-}
