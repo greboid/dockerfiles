@@ -22,6 +22,8 @@ jobs:
           GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
           GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
           REPO_OWNER: ${{ github.repository_owner }}
+          REG_USER: ${{ secrets.REGISTRY_USER }}
+          REG_PASS: ${{ secrets.REGISTRY_PASS }}
           GITHUB_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run:  |
