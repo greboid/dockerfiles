@@ -17,8 +17,6 @@ mv /tmp/rust-* /tmp/rust; \
 cd /tmp/rust; \
 /tmp/rust/install.sh --verbose
 
-ENV VAULTTAG=async
-
 RUN set -eux; \
 apk add git; \
 git clone --depth=1 -b $VAULTTAG --single-branch https://github.com/dani-garcia/vaultwarden /src; \
@@ -26,8 +24,6 @@ cd /src
 
 WORKDIR /src
 
-ENV RUSTFLAGS=$RUSTFLAGS" -L native=/usr/lib -l static=clang -l static=icui18n -l static=icuuc -l static=icudata -l static=stdc++"
-ENV RUSTFLAGS=$RUSTFLAGS" -C target-feature=+crt-static -C link-self-contained=yes"
 ENV RUSTC_BOOTSTRAP=1
 
 RUN set -eux; \
