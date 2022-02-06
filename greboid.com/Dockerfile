@@ -1,9 +1,9 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/greboid.com/Dockerfile.gotpl
-# BOM: {"apk:bash":"5.1.8-r0","apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.34.1-r4","apk:ca-certificates":"20211220-r0","apk:coreutils":"9.0-r2","apk:expat":"2.4.4-r0","apk:giflib":"5.2.1-r0","apk:git":"2.34.1-r0","apk:libacl":"2.2.53-r0","apk:libattr":"2.5.1-r1","apk:libcrypto1.1":"1.1.1l-r8","apk:libcurl":"7.80.0-r0","apk:libjpeg-turbo":"2.1.2-r0","apk:libpng":"1.6.37-r1","apk:libssl1.1":"1.1.1l-r8","apk:libwebp":"1.2.2-r0","apk:libwebp-tools":"1.2.2-r0","apk:musl":"1.2.2-r7","apk:ncurses-libs":"6.3_p20211120-r0","apk:ncurses-terminfo-base":"6.3_p20211120-r0","apk:nghttp2-libs":"1.46.0-r0","apk:pcre2":"10.39-r0","apk:readline":"8.1.1-r0","apk:s6-ipcserver":"2.11.0.0-r0","apk:skalibs":"2.11.0.0-r0","apk:utmps":"0.1.0.3-r0","apk:zlib":"1.2.11-r3","github:greboid/greboid.com":"v1.0.1","image:alpine":"ef95559f475cdf56e55db71c168f1616d497e2215bbd9f6bc63398036ae546a1","image:base":"e390636a8773e2b84066cdbde990e80b3c97b8e7e25428df9f4b8f097323f861","image:ghcr.io/greboid/cv":"40902ab8a82ac509db05e85cea35e6d33a00f53939848cb9f8cb6c32d80c0799","image:golang":"c95ee28250ac7528e2fa20c93583ede123110abf8d0f4b7456070b022d52beab"}
+# BOM: {"apk:bash":"5.1.8-r0","apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.34.1-r4","apk:ca-certificates":"20211220-r0","apk:coreutils":"9.0-r2","apk:expat":"2.4.4-r0","apk:giflib":"5.2.1-r0","apk:git":"2.34.1-r0","apk:libacl":"2.2.53-r0","apk:libattr":"2.5.1-r1","apk:libcrypto1.1":"1.1.1l-r8","apk:libcurl":"7.80.0-r0","apk:libjpeg-turbo":"2.1.2-r0","apk:libpng":"1.6.37-r1","apk:libssl1.1":"1.1.1l-r8","apk:libwebp":"1.2.2-r0","apk:libwebp-tools":"1.2.2-r0","apk:musl":"1.2.2-r7","apk:ncurses-libs":"6.3_p20211120-r0","apk:ncurses-terminfo-base":"6.3_p20211120-r0","apk:nghttp2-libs":"1.46.0-r0","apk:pcre2":"10.39-r0","apk:readline":"8.1.1-r0","apk:s6-ipcserver":"2.11.0.0-r0","apk:skalibs":"2.11.0.0-r0","apk:utmps":"0.1.0.3-r0","apk:zlib":"1.2.11-r3","github:greboid/greboid.com":"v1.0.2","image:alpine":"ef95559f475cdf56e55db71c168f1616d497e2215bbd9f6bc63398036ae546a1","image:base":"e390636a8773e2b84066cdbde990e80b3c97b8e7e25428df9f4b8f097323f861","image:ghcr.io/greboid/cv":"68f1d5d8637938a09f6dfa6bd712765a746183812538872abbb66e593d89c287","image:golang":"c95ee28250ac7528e2fa20c93583ede123110abf8d0f4b7456070b022d52beab"}
 
 FROM reg.g5d.dev/alpine@sha256:ef95559f475cdf56e55db71c168f1616d497e2215bbd9f6bc63398036ae546a1 AS images
 
-ARG TAG="v1.0.1"
+ARG TAG="v1.0.2"
 
 RUN set -eux; \
     # Dependencies and source for bootstrapping go
@@ -43,14 +43,15 @@ RUN set -eux; \
     chmod +x minify.sh; \
     ./minify.sh
 
-FROM ghcr.io/greboid/cv@sha256:40902ab8a82ac509db05e85cea35e6d33a00f53939848cb9f8cb6c32d80c0799 as cv
+FROM ghcr.io/greboid/cv@sha256:68f1d5d8637938a09f6dfa6bd712765a746183812538872abbb66e593d89c287 as cv
 
 FROM reg.g5d.dev/golang@sha256:c95ee28250ac7528e2fa20c93583ede123110abf8d0f4b7456070b022d52beab AS build
 
-ARG TAG="v1.0.1"
+ARG TAG="v1.0.2"
 
 COPY --from=images /app/static/images /images
 COPY --from=cv /cv.pdf /cv.pdf
+COPY --from=cv /reversed.pdf /reversed.pdf
 
 RUN set -eux; \
     apk add --no-cache \
@@ -71,6 +72,7 @@ RUN set -eux; \
     cd /go/src/github.com/greboid/greboid.com; \
     cp -r /images/* static/images/; \
     cp /cv.pdf static/cv.pdf; \
+    cp /reversed.pdf static/reversed.pdf; \
     CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
     # Clobber all the timestamps to make the build more reproducible
     touch --date=@0 /go/src/github.com/greboid/greboid.com/main;

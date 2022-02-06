@@ -23,6 +23,7 @@ ARG TAG="{{github_tag "greboid/greboid.com"}}"
 
 COPY --from=images /app/static/images /images
 COPY --from=cv /cv.pdf /cv.pdf
+COPY --from=cv /reversed.pdf /reversed.pdf
 
 RUN set -eux; \
     apk add --no-cache \
@@ -33,6 +34,7 @@ RUN set -eux; \
     cd /go/src/github.com/greboid/greboid.com; \
     cp -r /images/* static/images/; \
     cp /cv.pdf static/cv.pdf; \
+    cp /reversed.pdf static/reversed.pdf; \
     CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
     # Clobber all the timestamps to make the build more reproducible
     touch --date=@0 /go/src/github.com/greboid/greboid.com/main;
