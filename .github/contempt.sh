@@ -2,7 +2,7 @@
 
 set -eux
 
-rm $HOME/.docker/config.json $DOCKER_CONFIG/config.json || true
+rm $HOME/.docker/config.json || true
 
 go install github.com/csmith/contempt/cmd/contempt@latest
 git config user.name "$GIT_USERNAME"
