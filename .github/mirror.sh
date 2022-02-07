@@ -2,7 +2,7 @@
 
 set -eux
 
-buildah login -u $REGISTRY_USER -p $REGISTRY_PASS $REGISTRY
+buildah login -u $REG_USER -p $REG_PASS $REGISTRY
 buildah login -u $REPO_OWNER -p $GITHUB_TOKEN $MIRROR_TARGET
 
 for IMAGE in $MIRROR_IMAGES; do
