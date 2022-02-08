@@ -13,6 +13,18 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: '1.17'
+      - name: Login to private registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
       - name: Update dockerfiles
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
