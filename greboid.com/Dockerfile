@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/greboid.com/Dockerfile.gotpl
-# BOM: {"apk:bash":"5.1.8-r0","apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.34.1-r4","apk:ca-certificates":"20211220-r0","apk:coreutils":"9.0-r2","apk:expat":"2.4.4-r0","apk:giflib":"5.2.1-r0","apk:git":"2.34.1-r0","apk:libacl":"2.2.53-r0","apk:libattr":"2.5.1-r1","apk:libcrypto1.1":"1.1.1l-r8","apk:libcurl":"7.80.0-r0","apk:libjpeg-turbo":"2.1.2-r0","apk:libpng":"1.6.37-r1","apk:libssl1.1":"1.1.1l-r8","apk:libwebp":"1.2.2-r0","apk:libwebp-tools":"1.2.2-r0","apk:musl":"1.2.2-r7","apk:ncurses-libs":"6.3_p20211120-r0","apk:ncurses-terminfo-base":"6.3_p20211120-r0","apk:nghttp2-libs":"1.46.0-r0","apk:pcre2":"10.39-r0","apk:readline":"8.1.1-r0","apk:s6-ipcserver":"2.11.0.0-r0","apk:skalibs":"2.11.0.0-r0","apk:utmps":"0.1.0.3-r0","apk:zlib":"1.2.11-r3","github:greboid/greboid.com":"v1.0.2","image:alpine":"ef95559f475cdf56e55db71c168f1616d497e2215bbd9f6bc63398036ae546a1","image:base":"e390636a8773e2b84066cdbde990e80b3c97b8e7e25428df9f4b8f097323f861","image:ghcr.io/greboid/livecv":"e4d19684aabef66fbe956cf89d2ad3cff00f40dadc93a8fbf41bb3d819f80249","image:golang":"c95ee28250ac7528e2fa20c93583ede123110abf8d0f4b7456070b022d52beab"}
+# BOM: {"apk:bash":"5.1.8-r0","apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.34.1-r4","apk:ca-certificates":"20211220-r0","apk:coreutils":"9.0-r2","apk:expat":"2.4.4-r0","apk:giflib":"5.2.1-r0","apk:git":"2.34.1-r0","apk:libacl":"2.2.53-r0","apk:libattr":"2.5.1-r1","apk:libcrypto1.1":"1.1.1l-r8","apk:libcurl":"7.80.0-r0","apk:libjpeg-turbo":"2.1.2-r0","apk:libpng":"1.6.37-r1","apk:libssl1.1":"1.1.1l-r8","apk:libwebp":"1.2.2-r0","apk:libwebp-tools":"1.2.2-r0","apk:musl":"1.2.2-r7","apk:ncurses-libs":"6.3_p20211120-r0","apk:ncurses-terminfo-base":"6.3_p20211120-r0","apk:nghttp2-libs":"1.46.0-r0","apk:pcre2":"10.39-r0","apk:readline":"8.1.1-r0","apk:s6-ipcserver":"2.11.0.0-r0","apk:skalibs":"2.11.0.0-r0","apk:utmps":"0.1.0.3-r0","apk:zlib":"1.2.11-r3","github:greboid/greboid.com":"v1.0.2","image:alpine":"ef95559f475cdf56e55db71c168f1616d497e2215bbd9f6bc63398036ae546a1","image:base":"e390636a8773e2b84066cdbde990e80b3c97b8e7e25428df9f4b8f097323f861","image:ghcr.io/greboid/livecv":"254731ad26cf7388187eee9e751e5087890b28973042b16649db075f65bacb76","image:golang":"c95ee28250ac7528e2fa20c93583ede123110abf8d0f4b7456070b022d52beab"}
 
 FROM reg.g5d.dev/alpine@sha256:ef95559f475cdf56e55db71c168f1616d497e2215bbd9f6bc63398036ae546a1 AS images
 
@@ -43,7 +43,7 @@ RUN set -eux; \
     chmod +x minify.sh; \
     ./minify.sh
 
-FROM ghcr.io/greboid/livecv@sha256:e4d19684aabef66fbe956cf89d2ad3cff00f40dadc93a8fbf41bb3d819f80249 as cv
+FROM ghcr.io/greboid/livecv@sha256:254731ad26cf7388187eee9e751e5087890b28973042b16649db075f65bacb76 as cv
 
 FROM reg.g5d.dev/golang@sha256:c95ee28250ac7528e2fa20c93583ede123110abf8d0f4b7456070b022d52beab AS build
 
