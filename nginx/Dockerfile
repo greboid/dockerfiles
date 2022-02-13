@@ -71,17 +71,19 @@ RUN set -eux; \
               /usr/local/nginx/uwsgi_temp \
               /usr/local/nginx/scgi_temp; \
       ln -s /dev/stdout /usr/local/nginx/logs/access.log; \
-      ln -s /dev/stderr /usr/local/nginx/logs/error.log
+      ln -s /dev/stderr /usr/local/nginx/logs/error.log; \
+      mkdir -p /nginx/conf; \
+      cp -r /usr/local/nginx/logs /nginx; \
+      cp -r /usr/local/nginx/logs /nginx; \
+      cp -r /usr/local/nginx/uwsgi_temp /nginx; \
+      cp -r /usr/local/nginx/fastcgi_temp /nginx; \
+      cp -r /usr/local/nginx/proxy_temp /nginx; \
+      cp -r /usr/local/nginx/client_body_temp /nginx; \
+      cp -r /usr/local/nginx/conf/mime.types /nginx/conf/mime.types;
 
 FROM reg.g5d.dev/base@sha256:e390636a8773e2b84066cdbde990e80b3c97b8e7e25428df9f4b8f097323f861
 
-COPY --from=build --chown=65532:65532 /usr/local/nginx/logs /usr/local/nginx/logs
-COPY --from=build --chown=65532:65532 /usr/local/nginx/scgi_temp /usr/local/nginx/scgi_temp
-COPY --from=build --chown=65532:65532 /usr/local/nginx/uwsgi_temp /usr/local/nginx/uwsgi_tmp
-COPY --from=build --chown=65532:65532 /usr/local/nginx/fastcgi_temp /usr/local/nginx/fastcgi_temp
-COPY --from=build --chown=65532:65532 /usr/local/nginx/proxy_temp /usr/local/nginx/proxy_temp
-COPY --from=build --chown=65532:65532 /usr/local/nginx/client_body_temp /usr/local/nginx/client_body_temp
-COPY --from=build --chown=65532:65532 /usr/local/nginx/conf/mime.types /usr/local/nginx/conf/mime.types
+COPY --from=build --chown=65532:65532 /nginx /usr/local/nginx
 COPY --from=build --chown=65532:65532 /usr/local/nginx/sbin/nginx /nginx
 
 ENTRYPOINT ["/nginx"]
