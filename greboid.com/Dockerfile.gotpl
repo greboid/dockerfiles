@@ -1,46 +1,36 @@
-FROM {{image "alpine"}} AS images
+FROM {{image "ghcr.io/greboid/cv"}} as cv
+
+FROM {{image "alpine"}} as site
 
 ARG TAG="{{github_tag "greboid/greboid.com"}}"
 
 RUN set -eux; \
-    # Dependencies and source for bootstrapping go
     apk add --no-cache --virtual .build-deps \
-        {{range $key, $value := alpine_packages "libwebp-tools" "git" "coreutils" "bash" -}}
-        {{$key}}={{$value}} \
-        {{end}}; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/greboid.com /go/src/github.com/greboid/greboid.com; \
-    cd /go/src/github.com/greboid/greboid.com; \
-    mkdir -p /app/static/images; \
-    cp -r static/images /app/static; \
-    chmod +x minify.sh; \
-    ./minify.sh
+    {{range $key, $value := alpine_packages "git" -}}
+    {{$key}}={{$value}} \
+    {{end -}}; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/greboid.com /build;
 
-FROM {{image "ghcr.io/greboid/livecv"}} as cv
+FROM {{image "hugo"}} as hugo
 
-FROM {{image "golang"}} AS build
+COPY --from=site --chown=65532:65532 /build /build
+COPY --from=cv --chown=65532:65532 /cv.pdf /build/site/static/cv.pdf
+RUN ["/usr/bin/hugo", "-s", "/build/site", "-d", "/build/public"]
 
-ARG TAG="{{github_tag "greboid/greboid.com"}}"
-
-COPY --from=images /app/static/images /images
-COPY --from=cv /cv.pdf /cv.pdf
-COPY --from=cv /reversed.pdf /reversed.pdf
-
+FROM {{image "alpine"}} as minify
 RUN set -eux; \
-    apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
-        {{$key}}={{$value}}\
-        {{end}}; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/greboid.com /go/src/github.com/greboid/greboid.com; \
-    cd /go/src/github.com/greboid/greboid.com; \
-    cp -r /images/* static/images/; \
-    cp /cv.pdf static/cv.pdf; \
-    cp /reversed.pdf static/reversed.pdf; \
-    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
-    # Clobber all the timestamps to make the build more reproducible
-    touch --date=@0 /go/src/github.com/greboid/greboid.com/main;
+    apk add --no-cache --virtual .build-deps \
+    {{range $key, $value := alpine_packages "libwebp-tools" -}}
+    {{$key}}={{$value}} \
+    {{end}};
 
-FROM {{image "base"}}
+COPY --from=hugo --chown=65532:65532 /build/public /tmp/public
+USER 65532:65532
+RUN set -eux; \
+    find /tmp/public \( -name '*.jpg' -o -name '*.png' -o -name '*.jpeg' \) -exec cwebp -q 60 "{}" -o "{}.webp" \;;
 
-COPY --from=build /go/src/github.com/greboid/greboid.com/main /greboid.com
-EXPOSE 8080
-ENTRYPOINT ["/greboid.com"]
+FROM {{image "nginx"}} AS nginx
+COPY --from=minify /tmp/public /src/public
+COPY --from=site /build/nginx.conf /usr/local/nginx/conf/nginx.conf
+
+ENTRYPOINT ["/nginx"]
