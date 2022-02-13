@@ -14,10 +14,10 @@ RUN set -eux; \
     apk add --no-cache \
         {{range $key, $value := alpine_packages "binutils" "grep" -}}
         {{$key}}={{$value}} \
-        {{end}}; \
-     # This is a bit ugly, but should copy the required dependencies
-     mkdir /reqlibs; \
-     for library in $(objdump -p /src/hugo/main | grep NEEDED | awk '{print $2}'); do find / -name $library -exec cp -L {} /reqlibs/ \;; done;
+        {{end}};
+# This is a bit ugly, but should copy the required dependencies
+RUN  mkdir /reqlibs; \
+     for library in $(objdump -p /src/hugo/main | grep NEEDED | awk '{print $2}'); do find / -name $library -exec cp -L {} /reqlibs/ \; || true; done;
 
 FROM {{image "base"}}
 
