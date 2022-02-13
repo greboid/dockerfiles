@@ -26,15 +26,15 @@ RUN set -eux; \
     chmod 01777 /tmp; \
     # Copy packages into rootfs
     apk add --no-cache libc6-compat=1.2.2-r7; \
-    	apk info -qL libc6-compat | rsync -aq --files-from=- / /rootfs/; \
+      apk info -qL libc6-compat | rsync -aq --files-from=- / /rootfs/; \
     apk add --no-cache libgcc=10.3.1_git20211027-r0; \
-    	apk info -qL libgcc | rsync -aq --files-from=- / /rootfs/; \
+      apk info -qL libgcc | rsync -aq --files-from=- / /rootfs/; \
     apk add --no-cache libstdc++=10.3.1_git20211027-r0; \
-    	apk info -qL libstdc++ | rsync -aq --files-from=- / /rootfs/; \
+      apk info -qL libstdc++ | rsync -aq --files-from=- / /rootfs/; \
     apk add --no-cache musl=1.2.2-r7; \
-    	apk info -qL musl | rsync -aq --files-from=- / /rootfs/; \
+      apk info -qL musl | rsync -aq --files-from=- / /rootfs/; \
     apk add --no-cache tzdata=2021e-r0; \
-    	apk info -qL tzdata | rsync -aq --files-from=- / /rootfs/; \
+      apk info -qL tzdata | rsync -aq --files-from=- / /rootfs/; \
     # Create special mount points
     mkdir /rootfs/proc /rootfs/dev /rootfs/sys; \
     # Generate thw CA certificates file and copy the result
