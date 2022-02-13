@@ -15,15 +15,10 @@ RUN set -eux; \
         {{range $key, $value := alpine_packages "binutils" "grep" -}}
         {{$key}}={{$value}} \
         {{end}};
-# This is a bit ugly, but should copy the required dependencies
-RUN  mkdir /reqlibs; \
-     for library in $(objdump -p /src/hugo/main | grep NEEDED | awk '{print $2}'); do find / -name $library -exec cp -L {} /reqlibs/ \; || true; done;
 
-FROM {{image "base"}}
+FROM {{image "baseglibc"}}
 
 ENV HUGO_CACHEDIR="/build/cache"
-
-COPY --from=build /reqlibs/ /lib
 COPY --from=build /src/hugo/main /usr/bin/hugo
 COPY --from=build --chown=65532:65532 /tmp/site /build
 WORKDIR /build
