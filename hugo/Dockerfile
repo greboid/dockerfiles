@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/hugo/Dockerfile.gotpl
-# BOM: {"apk:binutils":"2.37-r3","apk:g++":"10.3.1_git20211027-r0","apk:gcc":"10.3.1_git20211027-r0","apk:gmp":"6.2.1-r1","apk:grep":"3.7-r0","apk:isl22":"0.22-r0","apk:libatomic":"10.3.1_git20211027-r0","apk:libc-dev":"0.7.2-r3","apk:libgcc":"10.3.1_git20211027-r0","apk:libgomp":"10.3.1_git20211027-r0","apk:libgphobos":"10.3.1_git20211027-r0","apk:libstdc++":"10.3.1_git20211027-r0","apk:mpc1":"1.2.1-r0","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.2-r7","apk:musl-dev":"1.2.2-r7","apk:pcre":"8.45-r1","apk:zlib":"1.2.11-r3","github:gohugoio/hugo":"v0.92.2","image:base":"e390636a8773e2b84066cdbde990e80b3c97b8e7e25428df9f4b8f097323f861","image:golang":"979b3cd61fff5d19b385001fcdb3c21c3b2ebd98bba79c32acb4ca99d37bf092"}
+# BOM: {"apk:binutils":"2.37-r3","apk:g++":"10.3.1_git20211027-r0","apk:gcc":"10.3.1_git20211027-r0","apk:gmp":"6.2.1-r1","apk:grep":"3.7-r0","apk:isl22":"0.22-r0","apk:libatomic":"10.3.1_git20211027-r0","apk:libc-dev":"0.7.2-r3","apk:libgcc":"10.3.1_git20211027-r0","apk:libgomp":"10.3.1_git20211027-r0","apk:libgphobos":"10.3.1_git20211027-r0","apk:libstdc++":"10.3.1_git20211027-r0","apk:mpc1":"1.2.1-r0","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.2-r7","apk:musl-dev":"1.2.2-r7","apk:pcre":"8.45-r1","apk:zlib":"1.2.11-r3","github:gohugoio/hugo":"v0.92.2","image:baseglibc":"1f97086aa574975d0fb60c94559ea6700c592bc48af21f77edb40bb982d82066","image:golang":"979b3cd61fff5d19b385001fcdb3c21c3b2ebd98bba79c32acb4ca99d37bf092"}
 
 FROM reg.g5d.dev/golang@sha256:979b3cd61fff5d19b385001fcdb3c21c3b2ebd98bba79c32acb4ca99d37bf092 AS build
 
@@ -37,15 +37,10 @@ RUN set -eux; \
         pcre=8.45-r1 \
         zlib=1.2.11-r3 \
         ;
-# This is a bit ugly, but should copy the required dependencies
-RUN  mkdir /reqlibs; \
-     for library in $(objdump -p /src/hugo/main | grep NEEDED | awk '{print $2}'); do find / -name $library -exec cp -L {} /reqlibs/ \; || true; done;
 
-FROM reg.g5d.dev/base@sha256:e390636a8773e2b84066cdbde990e80b3c97b8e7e25428df9f4b8f097323f861
+FROM reg.g5d.dev/baseglibc@sha256:1f97086aa574975d0fb60c94559ea6700c592bc48af21f77edb40bb982d82066
 
 ENV HUGO_CACHEDIR="/build/cache"
-
-COPY --from=build /reqlibs/ /lib
 COPY --from=build /src/hugo/main /usr/bin/hugo
 COPY --from=build --chown=65532:65532 /tmp/site /build
 WORKDIR /build
