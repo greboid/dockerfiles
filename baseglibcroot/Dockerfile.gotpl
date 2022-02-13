@@ -15,8 +15,8 @@ RUN set -eux; \
     chmod 01777 /tmp; \
     # Copy packages into rootfs
     {{ range $key, $value := alpine_packages "musl" "tzdata" "libstdc++" "libc6-compat" -}}
-        apk add --no-cache {{$key}}={{$value}}; \
-    	apk info -qL {{$key}} | rsync -aq --files-from=- / /rootfs/; \
+      apk add --no-cache {{$key}}={{$value}}; \
+      apk info -qL {{$key}} | rsync -aq --files-from=- / /rootfs/; \
     {{ end -}}
     # Create special mount points
     mkdir /rootfs/proc /rootfs/dev /rootfs/sys; \
