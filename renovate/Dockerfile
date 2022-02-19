@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/renovate/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.34.1-r4","apk:c-ares":"1.18.1-r0","apk:ca-certificates":"20211220-r0","apk:expat":"2.4.4-r0","apk:git":"2.34.1-r0","apk:libcrypto1.1":"1.1.1l-r8","apk:libcurl":"7.80.0-r0","apk:libgcc":"10.3.1_git20211027-r0","apk:libssl1.1":"1.1.1l-r8","apk:libstdc++":"10.3.1_git20211027-r0","apk:musl":"1.2.2-r7","apk:nghttp2-libs":"1.46.0-r0","apk:nodejs":"16.14.0-r0","apk:pcre2":"10.39-r0","apk:yarn":"1.22.17-r0","apk:zlib":"1.2.11-r3","image:alpine":"ef95559f475cdf56e55db71c168f1616d497e2215bbd9f6bc63398036ae546a1","image:golang":"979b3cd61fff5d19b385001fcdb3c21c3b2ebd98bba79c32acb4ca99d37bf092"}
+# BOM: {"apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.34.1-r4","apk:c-ares":"1.18.1-r0","apk:ca-certificates":"20211220-r0","apk:expat":"2.4.4-r0","apk:git":"2.34.1-r0","apk:libcrypto1.1":"1.1.1l-r8","apk:libcurl":"7.80.0-r0","apk:libgcc":"10.3.1_git20211027-r0","apk:libssl1.1":"1.1.1l-r8","apk:libstdc++":"10.3.1_git20211027-r0","apk:musl":"1.2.2-r7","apk:nghttp2-libs":"1.46.0-r0","apk:nodejs":"16.14.0-r0","apk:pcre2":"10.39-r0","apk:yarn":"1.22.17-r0","apk:zlib":"1.2.11-r3","image:alpine":"ef95559f475cdf56e55db71c168f1616d497e2215bbd9f6bc63398036ae546a1","image:golang":"2146e0378de72c82ad1ffd5234431384ac071a68e2931faf9ab57d07ba214ad8"}
 
 FROM reg.g5d.dev/alpine@sha256:ef95559f475cdf56e55db71c168f1616d497e2215bbd9f6bc63398036ae546a1 as yarnbase
 
@@ -44,6 +44,6 @@ ENV NODE_ENV=production;\
     PATH=/usr/local/go/bin:$PATH
 
 WORKDIR /app
-COPY --from=reg.g5d.dev/golang@sha256:979b3cd61fff5d19b385001fcdb3c21c3b2ebd98bba79c32acb4ca99d37bf092 /usr/local/go /usr/local/go
+COPY --from=reg.g5d.dev/golang@sha256:2146e0378de72c82ad1ffd5234431384ac071a68e2931faf9ab57d07ba214ad8 /usr/local/go /usr/local/go
 COPY --from=deps /js/src/github.com/renovatebot/renovate /app
 CMD ["/app/renovate"]
