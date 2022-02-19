@@ -3,6 +3,8 @@
 
 FROM reg.g5d.dev/golang@sha256:2146e0378de72c82ad1ffd5234431384ac071a68e2931faf9ab57d07ba214ad8 AS build
 
+COPY *.patch /go
+
 ARG REPO="caddyserver/caddy"
 ARG TAG="v2.4.6"
 
@@ -23,6 +25,7 @@ RUN set -eux; \
         ; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/$REPO /go/src; \
     cd /go/src; \
+    git apply --ignore-space-change --ignore-whitespace /go/removeserverheader.patch; \
     GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main ./cmd/caddy/main.go; \
     chmod +x /go/src/main; \
     # Clobber all the timestamps to make the build more reproducible

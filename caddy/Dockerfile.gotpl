@@ -1,5 +1,7 @@
 FROM {{image "golang"}} AS build
 
+COPY *.patch /go
+
 ARG REPO="caddyserver/caddy"
 ARG TAG="{{github_tag "caddyserver/caddy"}}"
 
@@ -10,6 +12,7 @@ RUN set -eux; \
         {{end}}; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/$REPO /go/src; \
     cd /go/src; \
+    git apply --ignore-space-change --ignore-whitespace /go/removeserverheader.patch; \
     GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main ./cmd/caddy/main.go; \
     chmod +x /go/src/main; \
     # Clobber all the timestamps to make the build more reproducible
