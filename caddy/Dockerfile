@@ -25,13 +25,12 @@ RUN set -eux; \
     cd /go/src; \
     GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main ./cmd/caddy/main.go; \
     chmod +x /go/src/main; \
-    #go run github.com/google/go-licenses@latest save ./... --save_path=/notices; \
     # Clobber all the timestamps to make the build more reproducible
     touch --date=@0 /go/src;
 
 FROM reg.g5d.dev/base@sha256:e390636a8773e2b84066cdbde990e80b3c97b8e7e25428df9f4b8f097323f861
 
 COPY --from=build /go/src/main /caddy
-#COPY --from=build /notices /notices
+COPY CaddyLicense /notices/LICENSE
 EXPOSE 8080
 ENTRYPOINT ["/caddy", "run", "-config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
