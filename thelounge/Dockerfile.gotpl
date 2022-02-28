@@ -1,32 +1,27 @@
-FROM {{image "alpine"}} as yarnbase
+FROM {{image "node"}} as yarnbase
 
-RUN set -eux; \
-    apk add --no-cache \
-            {{range $key, $value := alpine_packages "yarn" "git" -}}
-            {{$key}}={{$value}}\
-            {{end}};
+WORKDIR /app
 
-FROM yarnbase as deps
+RUN corepack enable
+
+FROM yarnbase as builder
 
 ARG TAG="{{github_tag "thelounge/thelounge"}}"
 
+WORKDIR  /app
 RUN set -eux; \
     apk add --no-cache \
         {{range $key, $value := alpine_packages "git" -}}
         {{$key}}={{$value}}\
         {{end}}; \
-        git clone --depth=1 -b $TAG --single-branch https://github.com/thelounge/thelounge /js/src/github.com/thelounge/thelounge; \
-        cd /js/src/github.com/thelounge/thelounge; \
-        yarn install --silent --ignore-optional --non-interactive --link-duplicates; \
-        yarn build; \
-        touch --date=@0 /js/src/github.com/thelounge/thelounge
+    yarn global add thelounge@4.3.0; \
+    mkdir /home/nonroot; \
+    chown -R 65532:65532 /home/nonroot
 
-FROM yarnbase
-
-ENV NODE_ENV=production
-
-WORKDIR /app
-COPY --from=deps /js/src/github.com/thelounge/thelounge .
-RUN yarn install --production --silent --ignore-optional --non-interactive --link-duplicates
 EXPOSE 5050
-CMD ["yarn", "run", "start"]
+ENV THELOUNGE_HOME /home/nonroot
+WORKDIR /home/nonroot
+
+USER 65532
+
+CMD ["/usr/local/bin/thelounge"]
