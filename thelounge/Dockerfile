@@ -31,10 +31,10 @@ RUN set -eux; \
     mkdir /home/nonroot; \
     chown -R 65532:65532 /home/nonroot
 
-EXPOSE 5050
+EXPOSE 9000
 ENV THELOUNGE_HOME /home/nonroot
 WORKDIR /home/nonroot
 
 USER 65532
 
-CMD ["/usr/local/bin/thelounge"]
+ENTRYPOINT ["/usr/local/bin/thelounge"]
