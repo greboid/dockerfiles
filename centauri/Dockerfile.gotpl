@@ -11,13 +11,11 @@ RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/$REPO /go/src; \
     cd /go/src; \
     GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -tags lego_httpreq -o main ./cmd/centauri/main.go; \
-    chmod +x /go/src/main; \
-    go-licenses save ./... --save_path=/notices;
+    chmod +x /go/src/main;
 
 FROM {{image "base"}}
 
 COPY --from=build /go/src/main /centauri
-COPY --from=build /notices /notices
 EXPOSE 8080
 EXPOSE 8443
 ENTRYPOINT ["/centauri]
