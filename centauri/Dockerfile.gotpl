@@ -12,9 +12,7 @@ RUN set -eux; \
     cd /go/src; \
     GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -tags lego_httpreq -o main ./cmd/centauri/main.go; \
     chmod +x /go/src/main; \
-    go-licenses save ./... --save_path=/notices; \
-    # Clobber all the timestamps to make the build more reproducible
-    touch --date=@0 /go/src;
+    go-licenses save ./... --save_path=/notices;
 
 FROM {{image "base"}}
 

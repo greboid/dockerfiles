@@ -13,9 +13,7 @@ RUN set -eux; \
     cd /go/src/github.com/containrrr/watchtower; \
     git apply /disable-slack.patch; \
     CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -ldflags "-X github.com/containrrr/watchtower/internal/meta.Version=$TAG" -o main .; \
-    go-licenses save ./... --save_path=/notices; \
-    # Clobber all the timestamps to make the build more reproducible
-    touch --date=@0 /go/src/github.com/containrrr/watchtower/main;
+    go-licenses save ./... --save_path=/notices;
 
 FROM {{image "base"}}
 

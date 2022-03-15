@@ -16,10 +16,6 @@ RUN set -eux; \
     cd /go/src/github.com/csmith/certwrapper;\
     GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -tags lego_httpreq -o certwrapper .; \
     go-licenses save ./... --save_path=/notices; \
-    # Clobber all the timestamps to make the build more reproducible
-    touch --date=@0 /go/src/github.com/emersion/soju/soju; \
-    touch --date=@0 /go/src/github.com/emersion/soju/sojuctl; \
-    touch --date=@0 /go/src/github.com/csmith/certwrapper/certwrapper; \
     mkdir /data
 
 FROM {{image "base"}}

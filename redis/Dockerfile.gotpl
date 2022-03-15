@@ -16,8 +16,7 @@ RUN set -eux; \
      make distclean; \
      make; \
      mkdir /data; \
-     strip /src/redis/src/redis-server; \
-     touch --date=@0 /src/redis/src/redis-server /data /redis.conf
+     strip /src/redis/src/redis-server;
 
 FROM {{image "base"}}
 

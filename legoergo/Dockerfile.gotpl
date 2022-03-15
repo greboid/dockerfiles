@@ -14,10 +14,7 @@ RUN set -eux; \
     git clone --depth=1 -b $ERGOTAG --single-branch https://github.com/ergochat/ergo /go/src/github.com/ergochat/ergo; \
     cd /go/src/github.com/ergochat/ergo; \
     CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
-    go-licenses save ./... --save_path=/notices; \
-    # Clobber all the timestamps to make the build more reproducible
-    touch --date=@0 /go/src/github.com/ergochat/ergo; \
-    touch --date=@0 /go/src/github.com/csmith/certwrapper
+    go-licenses save ./... --save_path=/notices;
 
 FROM {{image "base"}}
 

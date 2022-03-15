@@ -17,8 +17,7 @@ RUN set -eux; \
         yarn cache clean; \
         yarn build; \
         chmod +x dist/renovate.js; \
-        ln -sf dist/renovate.js renovate; \
-        touch --date=@0 /js/src/github.com/renovatebot/renovate
+        ln -sf dist/renovate.js renovate;
 
 FROM yarnbase
 

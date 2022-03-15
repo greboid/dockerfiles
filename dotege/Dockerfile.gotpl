@@ -10,9 +10,7 @@ RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/dotege /go/src/github.com/csmith/dotege; \
     cd /go/src/github.com/csmith/dotege; \
     CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -tags lego_httpreq -ldflags=-buildid= -o main ./cmd/dotege; \
-    go-licenses save ./... --save_path=/notices; \
-    # Clobber all the timestamps to make the build more reproducible
-    touch --date=@0 /go/src/github.com/csmith/dotege/main;
+    go-licenses save ./... --save_path=/notices;
 
 FROM {{image "base"}}
 

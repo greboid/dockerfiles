@@ -15,8 +15,6 @@ RUN set -eux; \
      make -j$(nproc) TARGET=linux-musl USE_OPENSSL=1 USE_PCRE=1; \
      make install-bin; \
      strip /usr/local/sbin/haproxy; \
-     touch --date=@0 /src/haproxy; \
-     touch --date=@0 /usr/local/sbin/haproxy; \
      apk del --no-network .build-deps
 
 FROM {{image "base"}}
