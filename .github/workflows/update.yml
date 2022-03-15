@@ -30,7 +30,7 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-          MIRROR_IMAGES: base baseroot alpine golang texlive
+          MIRROR_IMAGES: base baseroot alpine golang texlive caddy hugo
           GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
           GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
           REPO_OWNER: ${{ github.repository_owner }}
