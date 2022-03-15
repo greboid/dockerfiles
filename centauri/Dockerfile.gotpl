@@ -1,0 +1,25 @@
+FROM {{image "golang"}} AS build
+
+ARG REPO="csmith/centauri"
+ARG TAG="{{github_tag "csmith/centauri"}}"
+
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "git" -}}
+        {{$key}}={{$value}}\
+        {{end}}; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/$REPO /go/src; \
+    cd /go/src; \
+    GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -tags lego_httpreq -o main ./cmd/centauri/main.go; \
+    chmod +x /go/src/main; \
+    go-licenses save ./... --save_path=/notices; \
+    # Clobber all the timestamps to make the build more reproducible
+    touch --date=@0 /go/src;
+
+FROM {{image "base"}}
+
+COPY --from=build /go/src/main /centauri
+COPY --from=build /notices /notices
+EXPOSE 8080
+EXPOSE 8443
+ENTRYPOINT ["/centauri]
