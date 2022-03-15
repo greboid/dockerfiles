@@ -13,7 +13,7 @@ RUN set -eux; \
     for plugin in $(ls plugins); do go build -o $plugin.so -buildmode=plugin ./plugins/$plugin/cmd; done; \
     #Build goplum
     go build -o main ./cmd/goplum; \
-    go run github.com/google/go-licenses@latest save ./... --save_path=/notices; \
+    go-licenses save ./... --save_path=/notices; \
     # Clobber all the timestamps to make the build more reproducible
     touch --date=@0 /go/src/github.com/csmith/goplum/main;
 
