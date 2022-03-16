@@ -24,7 +24,7 @@ RUN set -eux; \
         musl-dev=1.2.2-r7 \
         zlib=1.2.11-r3 \
         ; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/gohugoio/hugo /src/hugo; \
+    git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/gohugoio/hugo /src/hugo; \
     cd /src/hugo; \
     CGO_ENABLED=1 go build -a -ldflags "-s" -ldflags "-w" -ldflags "-X github.com/gohugoio/hugo/common/hugo.buildDate=Unknown" -ldflags "-X github.com/gohugoio/hugo/common/hugo.commitHash=$TAG"  -ldflags "-X github.com/gohugoio/hugo/common/hugo.vendorInfo=greboid" -trimpath -tags extended -o main .; \
     mkdir -p /tmp/site;\
