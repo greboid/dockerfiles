@@ -20,7 +20,7 @@ RUN set -eux; \
         pcre2=10.39-r0\
         zlib=1.2.11-r3\
         ; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/goplum /go/src/github.com/csmith/goplum; \
+    git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/csmith/goplum /go/src/github.com/csmith/goplum; \
     cd /go/src/github.com/csmith/goplum; \
     #Build the plugins (all, its easier)
     for plugin in $(ls plugins); do go build -o $plugin.so -buildmode=plugin ./plugins/$plugin/cmd; done; \
