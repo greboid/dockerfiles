@@ -20,7 +20,7 @@ RUN set -eux; \
         pcre2=10.39-r0\
         zlib=1.2.11-r3\
         ; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/webhooked /go/src/github.com/csmith/webhooked; \
+    git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/csmith/webhooked /go/src/github.com/csmith/webhooked; \
     cd /go/src/github.com/csmith/webhooked; \
     CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
     go-licenses save ./... --save_path=/notices;
