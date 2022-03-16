@@ -20,7 +20,7 @@ RUN set -eux; \
         pcre2=10.39-r0\
         zlib=1.2.11-r3\
         ; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/irc-github /go/src/github.com/greboid/irc-github; \
+    git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/greboid/irc-github /go/src/github.com/greboid/irc-github; \
     cd /go/src/github.com/greboid/irc-github; \
     CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main ./cmd/github; \
     go-licenses save ./... --save_path=/notices;
