@@ -11,7 +11,7 @@ RUN set -eux; \
         {{range $key, $value := alpine_packages "git" "build-base" "tzdata" "ca-certificates" "linux-headers" "pcre-dev" "musl-dev" "openssl-dev" "openssl-libs-static" "zlib-dev" "zlib-static" -}}
         {{$key}}={{$value}} \
         {{end}}; \
-     git clone --depth=1 -b $TAG --single-branch https://github.com/redis/redis /src/redis; \
+     git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/redis/redis /src/redis; \
      cd /src/redis; \
      make distclean; \
      make; \

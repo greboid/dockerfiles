@@ -19,7 +19,7 @@ cd /tmp/rust; \
 
 RUN set -eux; \
 apk add git; \
-git clone --depth=1 -b $VAULTTAG --single-branch https://github.com/dani-garcia/vaultwarden /src; \
+git -c advice.detachedHead=false clone --depth=1 -b $VAULTTAG --single-branch https://github.com/dani-garcia/vaultwarden /src; \
 cd /src
 
 WORKDIR /src
