@@ -56,7 +56,7 @@ RUN set -eux; \
         zlib-dev=1.2.11-r3 \
         zlib-static=1.2.11-r3 \
         ; \
-     git clone --depth=1 -b $TAG --single-branch https://github.com/redis/redis /src/redis; \
+     git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/redis/redis /src/redis; \
      cd /src/redis; \
      make distclean; \
      make; \
