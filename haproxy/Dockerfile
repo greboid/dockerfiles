@@ -54,7 +54,7 @@ RUN set -eux; \
         zlib-dev=1.2.11-r3 \
         zlib-static=1.2.11-r3 \
         ; \
-     git clone --depth=1 -b $TAG --single-branch https://github.com/haproxy/haproxy /src/haproxy; \
+     git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/haproxy/haproxy /src/haproxy; \
      cd /src/haproxy; \
      patch Makefile < /src/buildstatic.patch; \
      make -j$(nproc) TARGET=linux-musl USE_OPENSSL=1 USE_PCRE=1; \
