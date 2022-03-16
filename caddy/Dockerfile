@@ -23,7 +23,7 @@ RUN set -eux; \
         pcre2=10.39-r0\
         zlib=1.2.11-r3\
         ; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/$REPO /go/src; \
+    git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/$REPO /go/src; \
     cd /go/src; \
     git apply --ignore-space-change --ignore-whitespace /go/quic-go-update.patch; \
     git apply --ignore-space-change --ignore-whitespace /go/removeserverheader.patch; \
