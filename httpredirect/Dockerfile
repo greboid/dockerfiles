@@ -20,7 +20,7 @@ RUN set -eux; \
         pcre2=10.39-r0\
         zlib=1.2.11-r3\
         ; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/httpredirect /go/src/github.com/greboid/httpredirect; \
+    git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/greboid/httpredirect /go/src/github.com/greboid/httpredirect; \
     cd /go/src/github.com/greboid/httpredirect; \
     CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
     go-licenses save ./... --save_path=/notices;
