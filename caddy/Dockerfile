@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/caddy/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.34.1-r4","apk:ca-certificates":"20211220-r0","apk:expat":"2.4.7-r0","apk:git":"2.34.1-r0","apk:libcrypto1.1":"1.1.1l-r8","apk:libcurl":"7.80.0-r0","apk:libssl1.1":"1.1.1l-r8","apk:musl":"1.2.2-r7","apk:nghttp2-libs":"1.46.0-r0","apk:pcre2":"10.39-r0","apk:zlib":"1.2.11-r3","github:caddyserver/caddy":"v2.4.6","image:base":"e390636a8773e2b84066cdbde990e80b3c97b8e7e25428df9f4b8f097323f861","image:golang":"4d334f9039eeb657925628b9ebb364944bbe6848b8bf98b3b57091fc971fc451"}
+# BOM: {"apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.34.1-r4","apk:ca-certificates":"20211220-r0","apk:expat":"2.4.7-r0","apk:git":"2.34.1-r0","apk:libcrypto1.1":"1.1.1n-r0","apk:libcurl":"7.80.0-r0","apk:libssl1.1":"1.1.1n-r0","apk:musl":"1.2.2-r7","apk:nghttp2-libs":"1.46.0-r0","apk:pcre2":"10.39-r0","apk:zlib":"1.2.11-r3","github:caddyserver/caddy":"v2.4.6","image:base":"e390636a8773e2b84066cdbde990e80b3c97b8e7e25428df9f4b8f097323f861","image:golang":"ea37a3316c6ae0721b3b887a736e6582f543ce04dd71fb9854dda6aca7d4693d"}
 
-FROM reg.g5d.dev/golang@sha256:4d334f9039eeb657925628b9ebb364944bbe6848b8bf98b3b57091fc971fc451 AS build
+FROM reg.g5d.dev/golang@sha256:ea37a3316c6ae0721b3b887a736e6582f543ce04dd71fb9854dda6aca7d4693d AS build
 
 COPY *.patch /go
 
@@ -15,9 +15,9 @@ RUN set -eux; \
         ca-certificates=20211220-r0\
         expat=2.4.7-r0\
         git=2.34.1-r0\
-        libcrypto1.1=1.1.1l-r8\
+        libcrypto1.1=1.1.1n-r0\
         libcurl=7.80.0-r0\
-        libssl1.1=1.1.1l-r8\
+        libssl1.1=1.1.1n-r0\
         musl=1.2.2-r7\
         nghttp2-libs=1.46.0-r0\
         pcre2=10.39-r0\
@@ -28,9 +28,7 @@ RUN set -eux; \
     git apply --ignore-space-change --ignore-whitespace /go/quic-go-update.patch; \
     git apply --ignore-space-change --ignore-whitespace /go/removeserverheader.patch; \
     GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main ./cmd/caddy/main.go; \
-    chmod +x /go/src/main; \
-    # Clobber all the timestamps to make the build more reproducible
-    touch --date=@0 /go/src;
+    chmod +x /go/src/main;
 
 FROM reg.g5d.dev/base@sha256:e390636a8773e2b84066cdbde990e80b3c97b8e7e25428df9f4b8f097323f861
 
