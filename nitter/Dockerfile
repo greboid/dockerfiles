@@ -107,7 +107,7 @@ RUN set -eux; \
         sqlite-libs=3.36.0-r0 \
         zlib=1.2.11-r3 \
         ; \
-    git clone -b master --single-branch https://github.com/zedeus/nitter /src/nitter; \
+    git -c advice.detachedHead=false clone -b master --single-branch https://github.com/zedeus/nitter /src/nitter; \
     mkdir -p /src/libs; \
     cp /usr/lib/libsqlite3* /src/libs; \
     cp /usr/lib/libssl* /src/libs; \
