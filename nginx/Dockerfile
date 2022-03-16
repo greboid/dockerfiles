@@ -52,7 +52,7 @@ RUN set -eux; \
         zlib-dev=1.2.11-r3 \
         zlib-static=1.2.11-r3 \
         ; \
-     git clone --depth=1 -b $TAG --single-branch https://github.com/nginx/nginx /src/nginx; \
+     git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/nginx/nginx /src/nginx; \
      cd /src/nginx; \
      ./auto/configure \
          --without-http_uwsgi_module \
