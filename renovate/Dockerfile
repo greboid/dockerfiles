@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/renovate/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.34.1-r4","apk:c-ares":"1.18.1-r0","apk:ca-certificates":"20211220-r0","apk:expat":"2.4.7-r0","apk:git":"2.34.1-r0","apk:libcrypto1.1":"1.1.1n-r0","apk:libcurl":"7.80.0-r0","apk:libgcc":"10.3.1_git20211027-r0","apk:libssl1.1":"1.1.1n-r0","apk:libstdc++":"10.3.1_git20211027-r0","apk:musl":"1.2.2-r7","apk:nghttp2-libs":"1.46.0-r0","apk:nodejs":"16.14.0-r0","apk:pcre2":"10.39-r0","apk:yarn":"1.22.17-r0","apk:zlib":"1.2.11-r3","image:alpine":"25fb69ad519fd7702759c8dea5971c27527220b259f850e1c16b81571f78245d","image:golang":"ea37a3316c6ae0721b3b887a736e6582f543ce04dd71fb9854dda6aca7d4693d"}
+# BOM: {"apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.34.1-r4","apk:c-ares":"1.18.1-r0","apk:ca-certificates":"20211220-r0","apk:expat":"2.4.7-r0","apk:git":"2.34.1-r0","apk:libcrypto1.1":"1.1.1n-r0","apk:libcurl":"7.80.0-r0","apk:libgcc":"10.3.1_git20211027-r0","apk:libssl1.1":"1.1.1n-r0","apk:libstdc++":"10.3.1_git20211027-r0","apk:musl":"1.2.2-r7","apk:nghttp2-libs":"1.46.0-r0","apk:nodejs":"16.14.0-r0","apk:pcre2":"10.39-r0","apk:yarn":"1.22.17-r0","apk:zlib":"1.2.11-r3","image:alpine":"c3db8fe7158d0aa43a37faf93b40adbfd33979c45e9c0d072a7d2082e7dc7741","image:golang":"be9a2dcd4ab1dee951f230a4544fb982d2c99366e25e900e5bfa1dd3d664c45c"}
 
-FROM reg.g5d.dev/alpine@sha256:25fb69ad519fd7702759c8dea5971c27527220b259f850e1c16b81571f78245d as yarnbase
+FROM reg.g5d.dev/alpine@sha256:c3db8fe7158d0aa43a37faf93b40adbfd33979c45e9c0d072a7d2082e7dc7741 as yarnbase
 
 RUN set -eux; \
     apk add --no-cache \
@@ -43,6 +43,6 @@ ENV NODE_ENV=production;\
     PATH=/usr/local/go/bin:$PATH
 
 WORKDIR /app
-COPY --from=reg.g5d.dev/golang@sha256:ea37a3316c6ae0721b3b887a736e6582f543ce04dd71fb9854dda6aca7d4693d /usr/local/go /usr/local/go
+COPY --from=reg.g5d.dev/golang@sha256:be9a2dcd4ab1dee951f230a4544fb982d2c99366e25e900e5bfa1dd3d664c45c /usr/local/go /usr/local/go
 COPY --from=deps /js/src/github.com/renovatebot/renovate /app
 CMD ["/app/renovate"]
