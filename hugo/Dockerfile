@@ -1,9 +1,9 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/hugo/Dockerfile.gotpl
-# BOM: {"apk:binutils":"2.37-r3","apk:g++":"10.3.1_git20211027-r0","apk:gcc":"10.3.1_git20211027-r0","apk:gmp":"6.2.1-r1","apk:grep":"3.7-r0","apk:isl22":"0.22-r0","apk:libatomic":"10.3.1_git20211027-r0","apk:libc-dev":"0.7.2-r3","apk:libgcc":"10.3.1_git20211027-r0","apk:libgomp":"10.3.1_git20211027-r0","apk:libgphobos":"10.3.1_git20211027-r0","apk:libstdc++":"10.3.1_git20211027-r0","apk:mpc1":"1.2.1-r0","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.2-r7","apk:musl-dev":"1.2.2-r7","apk:pcre":"8.45-r1","apk:zlib":"1.2.11-r3","github:gohugoio/hugo":"v0.94.2","image:baseglibc":"1f97086aa574975d0fb60c94559ea6700c592bc48af21f77edb40bb982d82066","image:golang":"ea37a3316c6ae0721b3b887a736e6582f543ce04dd71fb9854dda6aca7d4693d"}
+# BOM: {"apk:binutils":"2.37-r3","apk:g++":"10.3.1_git20211027-r0","apk:gcc":"10.3.1_git20211027-r0","apk:gmp":"6.2.1-r1","apk:grep":"3.7-r0","apk:isl22":"0.22-r0","apk:libatomic":"10.3.1_git20211027-r0","apk:libc-dev":"0.7.2-r3","apk:libgcc":"10.3.1_git20211027-r0","apk:libgomp":"10.3.1_git20211027-r0","apk:libgphobos":"10.3.1_git20211027-r0","apk:libstdc++":"10.3.1_git20211027-r0","apk:mpc1":"1.2.1-r0","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.2-r7","apk:musl-dev":"1.2.2-r7","apk:pcre":"8.45-r1","apk:zlib":"1.2.11-r3","github:gohugoio/hugo":"v0.95.0","image:baseglibc":"7c1ac1ad60a1c9c50ea2390149ea249ec823ae39acfcf22f3ed2e855f885be87","image:golang":"be9a2dcd4ab1dee951f230a4544fb982d2c99366e25e900e5bfa1dd3d664c45c"}
 
-FROM reg.g5d.dev/golang@sha256:ea37a3316c6ae0721b3b887a736e6582f543ce04dd71fb9854dda6aca7d4693d AS build
+FROM reg.g5d.dev/golang@sha256:be9a2dcd4ab1dee951f230a4544fb982d2c99366e25e900e5bfa1dd3d664c45c AS build
 
-ARG TAG="v0.94.2"
+ARG TAG="v0.95.0"
 
 RUN set -eux; \
     apk add --no-cache \
@@ -38,7 +38,7 @@ RUN set -eux; \
         zlib=1.2.11-r3 \
         ;
 
-FROM reg.g5d.dev/baseglibc@sha256:1f97086aa574975d0fb60c94559ea6700c592bc48af21f77edb40bb982d82066
+FROM reg.g5d.dev/baseglibc@sha256:7c1ac1ad60a1c9c50ea2390149ea249ec823ae39acfcf22f3ed2e855f885be87
 
 ENV HUGO_CACHEDIR="/build/cache"
 COPY --from=build /src/hugo/main /usr/bin/hugo
