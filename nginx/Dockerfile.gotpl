@@ -13,6 +13,7 @@ RUN set -eux; \
          --without-http_uwsgi_module \
          --without-http_scgi_module \
          --without-http_fastcgi_module \
+         --with-http_ssl_module \
          --with-http_realip_module \
          --with-ld-opt="-static"; \
      make install; \
