@@ -1,6 +1,6 @@
 FROM {{image "alpine"}} AS build
 
-ARG TAG="v2.4.0"
+ARG TAG="{{github_tag "haproxy/haproxy"}}"
 
 COPY buildstatic.patch /src/buildstatic.patch
 
