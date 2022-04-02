@@ -31,4 +31,4 @@ FROM reg.g5d.dev/base@sha256:ee8879a758bbe46a6b0b5b9d51a3cd3cb5660106d185b0f1fd9
 COPY --from=build /go/src/main /centauri
 EXPOSE 8080
 EXPOSE 8443
-ENTRYPOINT ["/centauri]
+ENTRYPOINT ["/centauri"]
