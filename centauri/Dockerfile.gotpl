@@ -18,4 +18,4 @@ FROM {{image "base"}}
 COPY --from=build /go/src/main /centauri
 EXPOSE 8080
 EXPOSE 8443
-ENTRYPOINT ["/centauri]
+ENTRYPOINT ["/centauri"]
