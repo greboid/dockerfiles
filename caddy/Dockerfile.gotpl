@@ -12,7 +12,6 @@ RUN set -eux; \
         {{end}}; \
     git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/$REPO /go/src; \
     cd /go/src; \
-    git apply --ignore-space-change --ignore-whitespace /go/quic-go-update.patch; \
     git apply --ignore-space-change --ignore-whitespace /go/removeserverheader.patch; \
     GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main ./cmd/caddy/main.go; \
     chmod +x /go/src/main;
