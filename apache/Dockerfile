@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/apache/Dockerfile.gotpl
-# BOM: {"apk:autoconf":"2.71-r0","apk:bash":"5.1.16-r0","apk:binutils":"2.37-r3","apk:brotli-libs":"1.0.9-r5","apk:build-base":"0.5-r2","apk:busybox":"1.34.1-r5","apk:ca-certificates":"20211220-r0","apk:expat":"2.4.7-r0","apk:expat-dev":"2.4.7-r0","apk:expat-static":"2.4.7-r0","apk:file":"5.41-r0","apk:fortify-headers":"1.1-r1","apk:g++":"10.3.1_git20211027-r0","apk:gcc":"10.3.1_git20211027-r0","apk:gdbm":"1.22-r0","apk:git":"2.34.2-r0","apk:gmp":"6.2.1-r1","apk:isl22":"0.22-r0","apk:libacl":"2.2.53-r0","apk:libatomic":"10.3.1_git20211027-r0","apk:libbz2":"1.0.8-r1","apk:libc-dev":"0.7.2-r3","apk:libcrypto1.1":"1.1.1n-r0","apk:libcurl":"7.80.0-r0","apk:libffi":"3.4.2-r1","apk:libgcc":"10.3.1_git20211027-r0","apk:libgomp":"10.3.1_git20211027-r0","apk:libgphobos":"10.3.1_git20211027-r0","apk:libltdl":"2.4.6-r7","apk:libmagic":"5.41-r0","apk:libpcre16":"8.45-r1","apk:libpcre32":"8.45-r1","apk:libpcrecpp":"8.45-r1","apk:libssl1.1":"1.1.1n-r0","apk:libstdc++":"10.3.1_git20211027-r0","apk:libtool":"2.4.6-r7","apk:linux-headers":"5.10.41-r0","apk:lz4-libs":"1.9.3-r1","apk:m4":"1.4.18-r2","apk:make":"4.3-r0","apk:mpc1":"1.2.1-r0","apk:mpdecimal":"2.5.1-r1","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.2-r7","apk:musl-dev":"1.2.2-r7","apk:ncurses-libs":"6.3_p20211120-r0","apk:ncurses-terminfo-base":"6.3_p20211120-r0","apk:nghttp2-libs":"1.46.0-r0","apk:openssl":"1.1.1n-r0","apk:openssl-dev":"1.1.1n-r0","apk:openssl-libs-static":"1.1.1n-r0","apk:patch":"2.7.6-r7","apk:pcre":"8.45-r1","apk:pcre-dev":"8.45-r1","apk:pcre2":"10.39-r0","apk:perl":"5.34.0-r1","apk:pkgconf":"1.8.0-r0","apk:popt":"1.18-r0","apk:python2":"2.7.18-r4","apk:python3":"3.9.7-r4","apk:readline":"8.1.1-r0","apk:rsync":"3.2.3-r5","apk:sqlite-libs":"3.36.0-r0","apk:tzdata":"2022a-r0","apk:xz-libs":"5.2.5-r1","apk:zlib":"1.2.12-r0","apk:zlib-dev":"1.2.12-r0","apk:zlib-static":"1.2.12-r0","apk:zstd-libs":"1.5.0-r0","github:apache/apr":"1.7.0","github:apache/apr-util":"1.6.1","github:apache/httpd":"2.4.53","image:alpine":"9f06ed7307f2d03a3d486b9b0bfe7737dfe3c7b3e2f8e906f5a2fcc9408867ac","image:base":"ee8879a758bbe46a6b0b5b9d51a3cd3cb5660106d185b0f1fd981e4475663d08"}
+# BOM: {"apk:autoconf":"2.71-r0","apk:bash":"5.1.16-r0","apk:binutils":"2.37-r3","apk:brotli-libs":"1.0.9-r5","apk:build-base":"0.5-r2","apk:busybox":"1.34.1-r5","apk:ca-certificates":"20211220-r0","apk:expat":"2.4.7-r0","apk:expat-dev":"2.4.7-r0","apk:expat-static":"2.4.7-r0","apk:file":"5.41-r0","apk:fortify-headers":"1.1-r1","apk:g++":"10.3.1_git20211027-r0","apk:gcc":"10.3.1_git20211027-r0","apk:gdbm":"1.22-r0","apk:git":"2.34.2-r0","apk:gmp":"6.2.1-r1","apk:isl22":"0.22-r0","apk:libacl":"2.2.53-r0","apk:libatomic":"10.3.1_git20211027-r0","apk:libbz2":"1.0.8-r1","apk:libc-dev":"0.7.2-r3","apk:libcrypto1.1":"1.1.1n-r0","apk:libcurl":"7.80.0-r1","apk:libffi":"3.4.2-r1","apk:libgcc":"10.3.1_git20211027-r0","apk:libgomp":"10.3.1_git20211027-r0","apk:libgphobos":"10.3.1_git20211027-r0","apk:libltdl":"2.4.6-r7","apk:libmagic":"5.41-r0","apk:libpcre16":"8.45-r1","apk:libpcre32":"8.45-r1","apk:libpcrecpp":"8.45-r1","apk:libssl1.1":"1.1.1n-r0","apk:libstdc++":"10.3.1_git20211027-r0","apk:libtool":"2.4.6-r7","apk:linux-headers":"5.10.41-r0","apk:lz4-libs":"1.9.3-r1","apk:m4":"1.4.18-r2","apk:make":"4.3-r0","apk:mpc1":"1.2.1-r0","apk:mpdecimal":"2.5.1-r1","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.2-r7","apk:musl-dev":"1.2.2-r7","apk:ncurses-libs":"6.3_p20211120-r0","apk:ncurses-terminfo-base":"6.3_p20211120-r0","apk:nghttp2-libs":"1.46.0-r0","apk:openssl":"1.1.1n-r0","apk:openssl-dev":"1.1.1n-r0","apk:openssl-libs-static":"1.1.1n-r0","apk:patch":"2.7.6-r7","apk:pcre":"8.45-r1","apk:pcre-dev":"8.45-r1","apk:pcre2":"10.39-r0","apk:perl":"5.34.0-r1","apk:pkgconf":"1.8.0-r0","apk:popt":"1.18-r0","apk:python2":"2.7.18-r4","apk:python3":"3.9.7-r4","apk:readline":"8.1.1-r0","apk:rsync":"3.2.3-r5","apk:sqlite-libs":"3.36.0-r0","apk:tzdata":"2022a-r0","apk:xz-libs":"5.2.5-r1","apk:zlib":"1.2.12-r1","apk:zlib-dev":"1.2.12-r1","apk:zlib-static":"1.2.12-r1","apk:zstd-libs":"1.5.0-r0","github:apache/apr":"1.7.0","github:apache/apr-util":"1.6.1","github:apache/httpd":"2.4.53","image:alpine":"9f06ed7307f2d03a3d486b9b0bfe7737dfe3c7b3e2f8e906f5a2fcc9408867ac","image:base":"ee8879a758bbe46a6b0b5b9d51a3cd3cb5660106d185b0f1fd981e4475663d08"}
 
 FROM reg.g5d.dev/alpine@sha256:9f06ed7307f2d03a3d486b9b0bfe7737dfe3c7b3e2f8e906f5a2fcc9408867ac AS build
 
@@ -35,7 +35,7 @@ RUN set -eux; \
       libbz2=1.0.8-r1 \
       libc-dev=0.7.2-r3 \
       libcrypto1.1=1.1.1n-r0 \
-      libcurl=7.80.0-r0 \
+      libcurl=7.80.0-r1 \
       libffi=3.4.2-r1 \
       libgcc=10.3.1_git20211027-r0 \
       libgomp=10.3.1_git20211027-r0 \
@@ -76,9 +76,9 @@ RUN set -eux; \
       sqlite-libs=3.36.0-r0 \
       tzdata=2022a-r0 \
       xz-libs=5.2.5-r1 \
-      zlib=1.2.12-r0 \
-      zlib-dev=1.2.12-r0 \
-      zlib-static=1.2.12-r0 \
+      zlib=1.2.12-r1 \
+      zlib-dev=1.2.12-r1 \
+      zlib-static=1.2.12-r1 \
       zstd-libs=1.5.0-r0 \
       ; \
     git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/apache/httpd /src/httpd; \
@@ -120,7 +120,7 @@ RUN set -eux; \
     apk info -qL readline | rsync -aq --files-from=- / /rootfs/; \
     apk add tzdata=2022a-r0; \
     apk info -qL tzdata | rsync -aq --files-from=- / /rootfs/; \
-    apk add zlib=1.2.12-r0; \
+    apk add zlib=1.2.12-r1; \
     apk info -qL zlib | rsync -aq --files-from=- / /rootfs/; \
      \
     mkdir -p /rootfs/usr/local/apache2/bin /rootfs/usr/local/apache2/lib /rootfs/usr/local/apache2/modules /rootfs/usr/local/apache2/logs /rootfs/usr/local/apache2/conf; \
