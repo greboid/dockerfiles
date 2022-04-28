@@ -1,9 +1,9 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/hugo/Dockerfile.gotpl
-# BOM: {"apk:binutils":"2.37-r3","apk:g++":"10.3.1_git20211027-r0","apk:gcc":"10.3.1_git20211027-r0","apk:gmp":"6.2.1-r1","apk:grep":"3.7-r0","apk:isl22":"0.22-r0","apk:libatomic":"10.3.1_git20211027-r0","apk:libc-dev":"0.7.2-r3","apk:libgcc":"10.3.1_git20211027-r0","apk:libgomp":"10.3.1_git20211027-r0","apk:libgphobos":"10.3.1_git20211027-r0","apk:libstdc++":"10.3.1_git20211027-r0","apk:mpc1":"1.2.1-r0","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.2-r7","apk:musl-dev":"1.2.2-r7","apk:pcre":"8.45-r1","apk:zlib":"1.2.12-r0","github:gohugoio/hugo":"v0.97.3","image:baseglibc":"7c1ac1ad60a1c9c50ea2390149ea249ec823ae39acfcf22f3ed2e855f885be87","image:golang":"9bdb14312a9c1387e49536c145075bc1d52c93324bf8d82eef36ba2782ff1eb2"}
+# BOM: {"apk:binutils":"2.37-r3","apk:g++":"10.3.1_git20211027-r0","apk:gcc":"10.3.1_git20211027-r0","apk:gmp":"6.2.1-r1","apk:grep":"3.7-r0","apk:isl22":"0.22-r0","apk:libatomic":"10.3.1_git20211027-r0","apk:libc-dev":"0.7.2-r3","apk:libgcc":"10.3.1_git20211027-r0","apk:libgomp":"10.3.1_git20211027-r0","apk:libgphobos":"10.3.1_git20211027-r0","apk:libstdc++":"10.3.1_git20211027-r0","apk:mpc1":"1.2.1-r0","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.2-r7","apk:musl-dev":"1.2.2-r7","apk:pcre":"8.45-r1","apk:zlib":"1.2.12-r1","github:gohugoio/hugo":"v0.98.0","image:baseglibc":"7c1ac1ad60a1c9c50ea2390149ea249ec823ae39acfcf22f3ed2e855f885be87","image:golang":"aaa376cf1233f7da5f117e9f3a7fd16f4bb8d6927d56ef9eb71f1d0fcc37c8f7"}
 
-FROM reg.g5d.dev/golang@sha256:9bdb14312a9c1387e49536c145075bc1d52c93324bf8d82eef36ba2782ff1eb2 AS build
+FROM reg.g5d.dev/golang@sha256:aaa376cf1233f7da5f117e9f3a7fd16f4bb8d6927d56ef9eb71f1d0fcc37c8f7 AS build
 
-ARG TAG="v0.97.3"
+ARG TAG="v0.98.0"
 
 RUN set -eux; \
     apk add --no-cache \
@@ -22,7 +22,7 @@ RUN set -eux; \
         mpfr4=4.1.0-r0 \
         musl=1.2.2-r7 \
         musl-dev=1.2.2-r7 \
-        zlib=1.2.12-r0 \
+        zlib=1.2.12-r1 \
         ; \
     git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/gohugoio/hugo /src/hugo; \
     cd /src/hugo; \
@@ -35,7 +35,7 @@ RUN set -eux; \
         libstdc++=10.3.1_git20211027-r0 \
         musl=1.2.2-r7 \
         pcre=8.45-r1 \
-        zlib=1.2.12-r0 \
+        zlib=1.2.12-r1 \
         ;
 
 FROM reg.g5d.dev/baseglibc@sha256:7c1ac1ad60a1c9c50ea2390149ea249ec823ae39acfcf22f3ed2e855f885be87
