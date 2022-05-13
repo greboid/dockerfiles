@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/docker-socket-proxy/Dockerfile.gotpl
-# BOM: {"image:baseroot":"6d131c89e231e9a653da086b59d83f269f52924449a9ab8e7cbd6e86fe35d74f","image:haproxy":"477a750415d205b5351ddc39dfdff64d77fd514143167bb96abfffc120457a39"}
+# BOM: {"image:baseroot":"6d131c89e231e9a653da086b59d83f269f52924449a9ab8e7cbd6e86fe35d74f","image:haproxy":"4680b8e9431fbee8700e6c4b320d2e8144cf64afcc929209d6d0b9119d51edda"}
 
-FROM reg.g5d.dev/haproxy@sha256:477a750415d205b5351ddc39dfdff64d77fd514143167bb96abfffc120457a39 AS haproxy
+FROM reg.g5d.dev/haproxy@sha256:4680b8e9431fbee8700e6c4b320d2e8144cf64afcc929209d6d0b9119d51edda AS haproxy
 
 FROM reg.g5d.dev/baseroot@sha256:6d131c89e231e9a653da086b59d83f269f52924449a9ab8e7cbd6e86fe35d74f
 
