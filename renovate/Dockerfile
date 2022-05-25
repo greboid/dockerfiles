@@ -1,26 +1,28 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/renovate/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.34.1-r5","apk:c-ares":"1.18.1-r0","apk:ca-certificates":"20211220-r0","apk:expat":"2.4.7-r0","apk:git":"2.34.2-r0","apk:libcrypto1.1":"1.1.1o-r0","apk:libcurl":"7.80.0-r1","apk:libgcc":"10.3.1_git20211027-r0","apk:libssl1.1":"1.1.1o-r0","apk:libstdc++":"10.3.1_git20211027-r0","apk:musl":"1.2.2-r7","apk:nghttp2-libs":"1.46.0-r0","apk:nodejs":"16.14.2-r0","apk:pcre2":"10.39-r0","apk:yarn":"1.22.17-r0","apk:zlib":"1.2.12-r1","image:alpine":"9f06ed7307f2d03a3d486b9b0bfe7737dfe3c7b3e2f8e906f5a2fcc9408867ac","image:golang":"ea6b232c8aa3ba3b8c81feff8256a9561596d017b375cfdf87d0381b94283cfd"}
+# BOM: {"apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r13","apk:c-ares":"1.18.1-r0","apk:ca-certificates":"20211220-r0","apk:expat":"2.4.8-r0","apk:git":"2.36.1-r0","apk:icu-data-en":"71.1-r2","apk:icu-libs":"71.1-r2","apk:libcrypto1.1":"1.1.1o-r0","apk:libcurl":"7.83.1-r1","apk:libgcc":"11.2.1_git20220219-r2","apk:libssl1.1":"1.1.1o-r0","apk:libstdc++":"11.2.1_git20220219-r2","apk:musl":"1.2.3-r0","apk:nghttp2-libs":"1.47.0-r0","apk:nodejs":"16.15.0-r1","apk:pcre2":"10.39-r0","apk:yarn":"1.22.19-r0","apk:zlib":"1.2.12-r1","image:alpine":"e1af61331d46ce7a5770c5083e1c81e297fbf3fcc97b63542b0ac62a8f3900a3","image:golang":"24fc01a756ea5e1d28bc722b8581c9b0d7f97d52f948ff9d66e264c68e27bf21"}
 
-FROM reg.g5d.dev/alpine@sha256:9f06ed7307f2d03a3d486b9b0bfe7737dfe3c7b3e2f8e906f5a2fcc9408867ac as yarnbase
+FROM reg.g5d.dev/alpine@sha256:e1af61331d46ce7a5770c5083e1c81e297fbf3fcc97b63542b0ac62a8f3900a3 as yarnbase
 
 RUN set -eux; \
     apk add --no-cache \
-            brotli-libs=1.0.9-r5\
-            busybox=1.34.1-r5\
+            brotli-libs=1.0.9-r6\
+            busybox=1.35.0-r13\
             c-ares=1.18.1-r0\
             ca-certificates=20211220-r0\
-            expat=2.4.7-r0\
-            git=2.34.2-r0\
+            expat=2.4.8-r0\
+            git=2.36.1-r0\
+            icu-data-en=71.1-r2\
+            icu-libs=71.1-r2\
             libcrypto1.1=1.1.1o-r0\
-            libcurl=7.80.0-r1\
-            libgcc=10.3.1_git20211027-r0\
+            libcurl=7.83.1-r1\
+            libgcc=11.2.1_git20220219-r2\
             libssl1.1=1.1.1o-r0\
-            libstdc++=10.3.1_git20211027-r0\
-            musl=1.2.2-r7\
-            nghttp2-libs=1.46.0-r0\
-            nodejs=16.14.2-r0\
+            libstdc++=11.2.1_git20220219-r2\
+            musl=1.2.3-r0\
+            nghttp2-libs=1.47.0-r0\
+            nodejs=16.15.0-r1\
             pcre2=10.39-r0\
-            yarn=1.22.17-r0\
+            yarn=1.22.19-r0\
             zlib=1.2.12-r1\
             ;
 
@@ -43,6 +45,6 @@ ENV NODE_ENV=production;\
     PATH=/usr/local/go/bin:$PATH
 
 WORKDIR /app
-COPY --from=reg.g5d.dev/golang@sha256:ea6b232c8aa3ba3b8c81feff8256a9561596d017b375cfdf87d0381b94283cfd /usr/local/go /usr/local/go
+COPY --from=reg.g5d.dev/golang@sha256:24fc01a756ea5e1d28bc722b8581c9b0d7f97d52f948ff9d66e264c68e27bf21 /usr/local/go /usr/local/go
 COPY --from=deps /js/src/github.com/renovatebot/renovate /app
 CMD ["/app/renovate"]
