@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/postgres-13/Dockerfile.gotpl
-# BOM: {"image:alpine":"9f06ed7307f2d03a3d486b9b0bfe7737dfe3c7b3e2f8e906f5a2fcc9408867ac","postgres13":"13.7"}
+# BOM: {"image:alpine":"e1af61331d46ce7a5770c5083e1c81e297fbf3fcc97b63542b0ac62a8f3900a3","postgres13":"13.7"}
 
 # Based on https://github.com/docker-library/postgres/blob/6bbf1c7b308d1c4288251d73c37f6caf75f8a3d4/13/alpine/Dockerfile
 # Original version released under the MIT licence, Copyright (c) 2014, Docker PostgreSQL Authors (See AUTHORS).
@@ -7,7 +7,7 @@
 # See LICENCE for a copy of the MIT licence.
 # See https://github.com/docker-library/postgres/blob/517c64f87e6661366b415df3f2273c76cea428b0/AUTHORS for upstream authors.
 
-FROM reg.g5d.dev/alpine@sha256:9f06ed7307f2d03a3d486b9b0bfe7737dfe3c7b3e2f8e906f5a2fcc9408867ac
+FROM reg.g5d.dev/alpine@sha256:e1af61331d46ce7a5770c5083e1c81e297fbf3fcc97b63542b0ac62a8f3900a3
 
 ARG ARCHIVE_URL="https://ftp.postgresql.org/pub/source/v13.7/postgresql-13.7.tar.bz2"
 ARG ARCHIVE_SUM="1b905bf4f3d83614a393b3c51fd345910fd261e4f5124a68d9a1fdd3a2a46399"
@@ -42,7 +42,7 @@ RUN set -eux; \
 		libxml2-dev \
 		libxslt-dev \
 		linux-headers \
-		llvm11-dev clang g++ \
+		llvm13-dev clang g++ \
 		make \
 		openssl-dev \
 		perl-utils \
@@ -50,7 +50,6 @@ RUN set -eux; \
 		util-linux-dev \
 		zlib-dev \
 		icu-dev \
-		llvm12-dev \
 	; \
 	\
 	cd /usr/src/postgresql; \
