@@ -1,22 +1,22 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/httpredirect/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r5","apk:busybox":"1.34.1-r5","apk:ca-certificates":"20211220-r0","apk:expat":"2.4.7-r0","apk:git":"2.34.2-r0","apk:libcrypto1.1":"1.1.1o-r0","apk:libcurl":"7.80.0-r1","apk:libssl1.1":"1.1.1o-r0","apk:musl":"1.2.2-r7","apk:nghttp2-libs":"1.46.0-r0","apk:pcre2":"10.39-r0","apk:zlib":"1.2.12-r1","github:greboid/httpredirect":"v1.0.0","image:base":"ee8879a758bbe46a6b0b5b9d51a3cd3cb5660106d185b0f1fd981e4475663d08","image:golang":"ea6b232c8aa3ba3b8c81feff8256a9561596d017b375cfdf87d0381b94283cfd"}
+# BOM: {"apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r13","apk:ca-certificates":"20211220-r0","apk:expat":"2.4.8-r0","apk:git":"2.36.1-r0","apk:libcrypto1.1":"1.1.1o-r0","apk:libcurl":"7.83.1-r1","apk:libssl1.1":"1.1.1o-r0","apk:musl":"1.2.3-r0","apk:nghttp2-libs":"1.47.0-r0","apk:pcre2":"10.39-r0","apk:zlib":"1.2.12-r1","github:greboid/httpredirect":"v1.0.0","image:base":"301b2ca14deb4f6e198c90f332d09a6b3d00ae5d0d229020f89cd9105589408a","image:golang":"24fc01a756ea5e1d28bc722b8581c9b0d7f97d52f948ff9d66e264c68e27bf21"}
 
-FROM reg.g5d.dev/golang@sha256:ea6b232c8aa3ba3b8c81feff8256a9561596d017b375cfdf87d0381b94283cfd AS build
+FROM reg.g5d.dev/golang@sha256:24fc01a756ea5e1d28bc722b8581c9b0d7f97d52f948ff9d66e264c68e27bf21 AS build
 
 ARG TAG="v1.0.0"
 
 RUN set -eux; \
     apk add --no-cache \
-        brotli-libs=1.0.9-r5\
-        busybox=1.34.1-r5\
+        brotli-libs=1.0.9-r6\
+        busybox=1.35.0-r13\
         ca-certificates=20211220-r0\
-        expat=2.4.7-r0\
-        git=2.34.2-r0\
+        expat=2.4.8-r0\
+        git=2.36.1-r0\
         libcrypto1.1=1.1.1o-r0\
-        libcurl=7.80.0-r1\
+        libcurl=7.83.1-r1\
         libssl1.1=1.1.1o-r0\
-        musl=1.2.2-r7\
-        nghttp2-libs=1.46.0-r0\
+        musl=1.2.3-r0\
+        nghttp2-libs=1.47.0-r0\
         pcre2=10.39-r0\
         zlib=1.2.12-r1\
         ; \
@@ -25,7 +25,7 @@ RUN set -eux; \
     CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
     go-licenses save ./... --save_path=/notices;
 
-FROM reg.g5d.dev/base@sha256:ee8879a758bbe46a6b0b5b9d51a3cd3cb5660106d185b0f1fd981e4475663d08
+FROM reg.g5d.dev/base@sha256:301b2ca14deb4f6e198c90f332d09a6b3d00ae5d0d229020f89cd9105589408a
 
 COPY --from=build /go/src/github.com/greboid/httpredirect/main /httpredirect
 COPY --from=build /notices /notices
