@@ -9,7 +9,7 @@ COPY servertokensoff.patch /servertokensoff.patch
 
 RUN set -eux; \
     apk add --no-cache \
-      {{range $key, $value := alpine_packages "rsync" "git" "build-base" "tzdata" "ca-certificates" "linux-headers" "pcre-dev" "musl-dev" "openssl-dev" "openssl-libs-static" "zlib-dev" "zlib-static" "python3" "autoconf" "libtool" "python2" "expat-static" "expat-dev" -}}
+      {{range $key, $value := alpine_packages "rsync" "git" "build-base" "tzdata" "ca-certificates" "linux-headers" "pcre-dev" "musl-dev" "openssl-dev" "openssl-libs-static" "zlib-dev" "zlib-static" "python3" "pythonispython3" "autoconf" "libtool" "expat-static" "expat-dev" -}}
       {{$key}}={{$value}} \
       {{end}}; \
     git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/apache/httpd /src/httpd; \
