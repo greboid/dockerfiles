@@ -1,14 +1,14 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/webhooked/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r13","apk:ca-certificates":"20211220-r0","apk:expat":"2.4.8-r0","apk:git":"2.36.1-r0","apk:libcrypto1.1":"1.1.1o-r0","apk:libcurl":"7.83.1-r1","apk:libssl1.1":"1.1.1o-r0","apk:musl":"1.2.3-r0","apk:nghttp2-libs":"1.47.0-r0","apk:pcre2":"10.39-r0","apk:zlib":"1.2.12-r1","github:csmith/webhooked":"v1.0.0","image:base":"301b2ca14deb4f6e198c90f332d09a6b3d00ae5d0d229020f89cd9105589408a","image:golang":"353ced216369febeb109bf954245bae83aff25374ce0d270144b3de95fc1fac8"}
+# BOM: {"apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r14","apk:ca-certificates":"20211220-r0","apk:expat":"2.4.8-r0","apk:git":"2.36.1-r0","apk:libcrypto1.1":"1.1.1o-r0","apk:libcurl":"7.83.1-r1","apk:libssl1.1":"1.1.1o-r0","apk:musl":"1.2.3-r0","apk:nghttp2-libs":"1.47.0-r0","apk:pcre2":"10.39-r0","apk:zlib":"1.2.12-r1","github:csmith/webhooked":"v1.0.0","image:base":"d8e173562b2af5c2d2a6bedc5af4a36a9fe9e9561aca25d22c947752a1695a64","image:golang":"9143b2b46e1fb4e0a0b026a681c413807ca3ba5969ad18b63d745573be2647c4"}
 
-FROM reg.g5d.dev/golang@sha256:353ced216369febeb109bf954245bae83aff25374ce0d270144b3de95fc1fac8 AS build
+FROM reg.g5d.dev/golang@sha256:9143b2b46e1fb4e0a0b026a681c413807ca3ba5969ad18b63d745573be2647c4 AS build
 
 ARG TAG="v1.0.0"
 
 RUN set -eux; \
     apk add --no-cache \
         brotli-libs=1.0.9-r6\
-        busybox=1.35.0-r13\
+        busybox=1.35.0-r14\
         ca-certificates=20211220-r0\
         expat=2.4.8-r0\
         git=2.36.1-r0\
@@ -25,7 +25,7 @@ RUN set -eux; \
     CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
     go-licenses save ./... --save_path=/notices;
 
-FROM reg.g5d.dev/base@sha256:301b2ca14deb4f6e198c90f332d09a6b3d00ae5d0d229020f89cd9105589408a
+FROM reg.g5d.dev/base@sha256:d8e173562b2af5c2d2a6bedc5af4a36a9fe9e9561aca25d22c947752a1695a64
 
 COPY --from=build /go/src/github.com/csmith/webhooked/main /webhooked
 COPY --from=build /notices /notices
