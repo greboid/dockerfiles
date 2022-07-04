@@ -27,7 +27,7 @@ RUN set -eux; \
         pcre2=10.40-r0\
         zlib=1.2.12-r1\
         ; \
-    yarn global add thelounge@4.3.0; \
+    yarn global add thelounge@$TAG; \
     mkdir /home/nonroot; \
     chown -R 65532:65532 /home/nonroot
 
