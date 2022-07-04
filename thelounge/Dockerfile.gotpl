@@ -14,7 +14,7 @@ RUN set -eux; \
         {{range $key, $value := alpine_packages "git" -}}
         {{$key}}={{$value}}\
         {{end}}; \
-    yarn global add thelounge@4.3.0; \
+    yarn global add thelounge@$TAG; \
     mkdir /home/nonroot; \
     chown -R 65532:65532 /home/nonroot
 
