@@ -1,13 +1,13 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/hugo/Dockerfile.gotpl
-# BOM: {"apk:binutils":"2.38-r2","apk:g++":"11.2.1_git20220219-r2","apk:gcc":"11.2.1_git20220219-r2","apk:gmp":"6.2.1-r2","apk:grep":"3.7-r0","apk:isl22":"0.22-r0","apk:libatomic":"11.2.1_git20220219-r2","apk:libc-dev":"0.7.2-r3","apk:libgcc":"11.2.1_git20220219-r2","apk:libgomp":"11.2.1_git20220219-r2","apk:libstdc++":"11.2.1_git20220219-r2","apk:mpc1":"1.2.1-r0","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.3-r0","apk:musl-dev":"1.2.3-r0","apk:pcre":"8.45-r2","apk:zlib":"1.2.12-r1","github:gohugoio/hugo":"v0.101.0","image:baseglibc":"bbf09277fe51933ba3e50cd5d7adb08ec22f391d7f9d93b82fd3dfe9c5fe5993","image:golang":"4a3ccb46bf63c89cf16ac4a509620f123145309ea2e7144a6bda927032328fac"}
+# BOM: {"apk:binutils":"2.38-r3","apk:g++":"11.2.1_git20220219-r2","apk:gcc":"11.2.1_git20220219-r2","apk:gmp":"6.2.1-r2","apk:grep":"3.7-r0","apk:isl22":"0.22-r0","apk:libatomic":"11.2.1_git20220219-r2","apk:libc-dev":"0.7.2-r3","apk:libgcc":"11.2.1_git20220219-r2","apk:libgomp":"11.2.1_git20220219-r2","apk:libstdc++":"11.2.1_git20220219-r2","apk:mpc1":"1.2.1-r0","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.3-r0","apk:musl-dev":"1.2.3-r0","apk:pcre":"8.45-r2","apk:zlib":"1.2.12-r1","github:gohugoio/hugo":"v0.101.0","image:baseglibc":"bbf09277fe51933ba3e50cd5d7adb08ec22f391d7f9d93b82fd3dfe9c5fe5993","image:golang":"acbd92535de0eedba3a1d5469ed30ba66cc7b6b6d105845498df382ff1db5a93"}
 
-FROM reg.g5d.dev/golang@sha256:4a3ccb46bf63c89cf16ac4a509620f123145309ea2e7144a6bda927032328fac AS build
+FROM reg.g5d.dev/golang@sha256:acbd92535de0eedba3a1d5469ed30ba66cc7b6b6d105845498df382ff1db5a93 AS build
 
 ARG TAG="v0.101.0"
 
 RUN set -eux; \
     apk add --no-cache \
-        binutils=2.38-r2 \
+        binutils=2.38-r3 \
         g++=11.2.1_git20220219-r2 \
         gcc=11.2.1_git20220219-r2 \
         gmp=6.2.1-r2 \
@@ -28,7 +28,7 @@ RUN set -eux; \
     CGO_ENABLED=1 go build -a -ldflags "-s" -ldflags "-w" -ldflags "-X github.com/gohugoio/hugo/common/hugo.buildDate=Unknown" -ldflags "-X github.com/gohugoio/hugo/common/hugo.commitHash=$TAG"  -ldflags "-X github.com/gohugoio/hugo/common/hugo.vendorInfo=greboid" -trimpath -tags extended -o main .; \
     mkdir -p /tmp/site;\
     apk add --no-cache \
-        binutils=2.38-r2 \
+        binutils=2.38-r3 \
         grep=3.7-r0 \
         libgcc=11.2.1_git20220219-r2 \
         libstdc++=11.2.1_git20220219-r2 \
