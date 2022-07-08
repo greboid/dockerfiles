@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/watchtower/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r14","apk:ca-certificates":"20211220-r0","apk:expat":"2.4.8-r0","apk:git":"2.36.1-r0","apk:libcrypto1.1":"1.1.1q-r0","apk:libcurl":"7.83.1-r2","apk:libssl1.1":"1.1.1q-r0","apk:musl":"1.2.3-r0","apk:nghttp2-libs":"1.47.0-r0","apk:pcre2":"10.40-r0","apk:zlib":"1.2.12-r1","github:containrrr/watchtower":"v1.4.0","image:base":"d8e173562b2af5c2d2a6bedc5af4a36a9fe9e9561aca25d22c947752a1695a64","image:golang":"4a3ccb46bf63c89cf16ac4a509620f123145309ea2e7144a6bda927032328fac"}
+# BOM: {"apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r14","apk:ca-certificates":"20211220-r0","apk:expat":"2.4.8-r0","apk:git":"2.36.1-r0","apk:libcrypto1.1":"1.1.1q-r0","apk:libcurl":"7.83.1-r2","apk:libssl1.1":"1.1.1q-r0","apk:musl":"1.2.3-r0","apk:nghttp2-libs":"1.47.0-r0","apk:pcre2":"10.40-r0","apk:zlib":"1.2.12-r1","github:containrrr/watchtower":"v1.4.0","image:base":"d8e173562b2af5c2d2a6bedc5af4a36a9fe9e9561aca25d22c947752a1695a64","image:golang":"acbd92535de0eedba3a1d5469ed30ba66cc7b6b6d105845498df382ff1db5a93"}
 
-FROM reg.g5d.dev/golang@sha256:4a3ccb46bf63c89cf16ac4a509620f123145309ea2e7144a6bda927032328fac AS build
+FROM reg.g5d.dev/golang@sha256:acbd92535de0eedba3a1d5469ed30ba66cc7b6b6d105845498df382ff1db5a93 AS build
 
 ARG TAG="v1.4.0"
 
