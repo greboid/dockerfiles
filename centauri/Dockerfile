@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/centauri/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r15","apk:ca-certificates":"20211220-r0","apk:expat":"2.4.8-r0","apk:git":"2.36.2-r0","apk:libcrypto1.1":"1.1.1q-r0","apk:libcurl":"7.83.1-r2","apk:libssl1.1":"1.1.1q-r0","apk:musl":"1.2.3-r0","apk:nghttp2-libs":"1.47.0-r0","apk:pcre2":"10.40-r0","apk:zlib":"1.2.12-r1","github:csmith/centauri":"v0.1.0","image:base":"d8e173562b2af5c2d2a6bedc5af4a36a9fe9e9561aca25d22c947752a1695a64","image:golang":"f483d1c9b6b3ef8f7a7ff130508ff238e6b53f642be3d5a85b23ab7889544ad1"}
+# BOM: {"apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r15","apk:ca-certificates":"20211220-r0","apk:expat":"2.4.8-r0","apk:git":"2.36.2-r0","apk:libcrypto1.1":"1.1.1q-r0","apk:libcurl":"7.83.1-r2","apk:libssl1.1":"1.1.1q-r0","apk:musl":"1.2.3-r0","apk:nghttp2-libs":"1.47.0-r0","apk:pcre2":"10.40-r0","apk:zlib":"1.2.12-r1","github:csmith/centauri":"v0.1.0","image:base":"d8e173562b2af5c2d2a6bedc5af4a36a9fe9e9561aca25d22c947752a1695a64","image:golang":"c1aa0e00c2c4780c59fb993595b1a21225cf532efb4fa81279c140c5efc77cff"}
 
-FROM reg.g5d.dev/golang@sha256:f483d1c9b6b3ef8f7a7ff130508ff238e6b53f642be3d5a85b23ab7889544ad1 AS build
+FROM reg.g5d.dev/golang@sha256:c1aa0e00c2c4780c59fb993595b1a21225cf532efb4fa81279c140c5efc77cff AS build
 
 ARG REPO="csmith/centauri"
 ARG TAG="v0.1.0"
