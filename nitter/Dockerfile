@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/nitter/Dockerfile.gotpl
-# BOM: {"apk:bash":"5.1.16-r2","apk:binutils":"2.38-r3","apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r16","apk:ca-certificates":"20211220-r0","apk:curl":"7.83.1-r2","apk:expat":"2.4.8-r0","apk:gcc":"11.2.1_git20220219-r2","apk:git":"2.36.2-r0","apk:gmp":"6.2.1-r2","apk:isl22":"0.22-r0","apk:libatomic":"11.2.1_git20220219-r2","apk:libcrypto1.1":"1.1.1q-r0","apk:libcurl":"7.83.1-r2","apk:libgcc":"11.2.1_git20220219-r2","apk:libgomp":"11.2.1_git20220219-r2","apk:libpcre16":"8.45-r2","apk:libpcre32":"8.45-r2","apk:libpcrecpp":"8.45-r2","apk:libsass":"3.6.5-r0","apk:libsass-dev":"3.6.5-r0","apk:libssl1.1":"1.1.1q-r0","apk:libstdc++":"11.2.1_git20220219-r2","apk:mpc1":"1.2.1-r0","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.3-r0","apk:musl-dev":"1.2.3-r0","apk:ncurses-libs":"6.3_p20220521-r0","apk:ncurses-terminfo-base":"6.3_p20220521-r0","apk:nghttp2-libs":"1.47.0-r0","apk:openssl":"1.1.1q-r0","apk:openssl-dev":"1.1.1q-r0","apk:pcre":"8.45-r2","apk:pcre-dev":"8.45-r2","apk:pcre2":"10.40-r0","apk:pkgconf":"1.8.0-r0","apk:readline":"8.1.2-r0","apk:sqlite-libs":"3.38.5-r0","apk:zlib":"1.2.12-r1","github:nim-lang/nim":"v1.6.6","image:alpine":"9169c79c67da14335d9f81a00e4910cd79d1811f9f44a47cd8e520fc4265e1ae","image:base":"d8e173562b2af5c2d2a6bedc5af4a36a9fe9e9561aca25d22c947752a1695a64"}
+# BOM: {"apk:bash":"5.1.16-r2","apk:binutils":"2.38-r3","apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r16","apk:ca-certificates":"20220614-r0","apk:curl":"7.83.1-r2","apk:expat":"2.4.8-r0","apk:gcc":"11.2.1_git20220219-r2","apk:git":"2.36.2-r0","apk:gmp":"6.2.1-r2","apk:isl22":"0.22-r0","apk:libatomic":"11.2.1_git20220219-r2","apk:libcrypto1.1":"1.1.1q-r0","apk:libcurl":"7.83.1-r2","apk:libgcc":"11.2.1_git20220219-r2","apk:libgomp":"11.2.1_git20220219-r2","apk:libpcre16":"8.45-r2","apk:libpcre32":"8.45-r2","apk:libpcrecpp":"8.45-r2","apk:libsass":"3.6.5-r0","apk:libsass-dev":"3.6.5-r0","apk:libssl1.1":"1.1.1q-r0","apk:libstdc++":"11.2.1_git20220219-r2","apk:mpc1":"1.2.1-r0","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.3-r0","apk:musl-dev":"1.2.3-r0","apk:ncurses-libs":"6.3_p20220521-r0","apk:ncurses-terminfo-base":"6.3_p20220521-r0","apk:nghttp2-libs":"1.47.0-r0","apk:openssl":"1.1.1q-r0","apk:openssl-dev":"1.1.1q-r0","apk:pcre":"8.45-r2","apk:pcre-dev":"8.45-r2","apk:pcre2":"10.40-r0","apk:pkgconf":"1.8.0-r0","apk:readline":"8.1.2-r0","apk:sqlite-libs":"3.38.5-r0","apk:zlib":"1.2.12-r1","github:nim-lang/nim":"v1.6.6","image:alpine":"9169c79c67da14335d9f81a00e4910cd79d1811f9f44a47cd8e520fc4265e1ae","image:base":"2bff9c8a562d79bf78edabbc323b647a7cccb691b2dd71f2c9c3a83df6c99f97"}
 
 FROM reg.g5d.dev/alpine@sha256:9169c79c67da14335d9f81a00e4910cd79d1811f9f44a47cd8e520fc4265e1ae as nimbuild
 
@@ -12,7 +12,7 @@ RUN set -eux; \
     apk add --no-cache --virtual .build-deps \
         brotli-libs=1.0.9-r6 \
         busybox=1.35.0-r16 \
-        ca-certificates=20211220-r0 \
+        ca-certificates=20220614-r0 \
         curl=7.83.1-r2 \
         libcrypto1.1=1.1.1q-r0 \
         libcurl=7.83.1-r2 \
@@ -37,7 +37,7 @@ RUN set -eux; \
         binutils=2.38-r3 \
         brotli-libs=1.0.9-r6 \
         busybox=1.35.0-r16 \
-        ca-certificates=20211220-r0 \
+        ca-certificates=20220614-r0 \
         expat=2.4.8-r0 \
         gcc=11.2.1_git20220219-r2 \
         git=2.36.2-r0 \
@@ -70,7 +70,7 @@ RUN set -eux; \
         binutils=2.38-r3 \
         brotli-libs=1.0.9-r6 \
         busybox=1.35.0-r16 \
-        ca-certificates=20211220-r0 \
+        ca-certificates=20220614-r0 \
         expat=2.4.8-r0 \
         gcc=11.2.1_git20220219-r2 \
         git=2.36.2-r0 \
@@ -117,7 +117,7 @@ RUN set -eux; \
     strip -s nitter; \
     nimble scss
 
-FROM reg.g5d.dev/base@sha256:d8e173562b2af5c2d2a6bedc5af4a36a9fe9e9561aca25d22c947752a1695a64
+FROM reg.g5d.dev/base@sha256:2bff9c8a562d79bf78edabbc323b647a7cccb691b2dd71f2c9c3a83df6c99f97
 
 COPY --from=build /src/libs/* /usr/lib/
 COPY --from=build /src/nitter/nitter /home/nonroot/nitter
