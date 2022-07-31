@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/caddy/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r16","apk:ca-certificates":"20211220-r0","apk:expat":"2.4.8-r0","apk:git":"2.36.2-r0","apk:libcrypto1.1":"1.1.1q-r0","apk:libcurl":"7.83.1-r2","apk:libssl1.1":"1.1.1q-r0","apk:musl":"1.2.3-r0","apk:nghttp2-libs":"1.47.0-r0","apk:pcre2":"10.40-r0","apk:zlib":"1.2.12-r1","github:caddyserver/caddy":"v2.5.2","image:base":"d8e173562b2af5c2d2a6bedc5af4a36a9fe9e9561aca25d22c947752a1695a64","image:golang":"cb52b6975b49f51a3114567f8d9cfdc889d47ef21ecda58b11d6a149a207a9dd"}
+# BOM: {"apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r16","apk:ca-certificates":"20220614-r0","apk:expat":"2.4.8-r0","apk:git":"2.36.2-r0","apk:libcrypto1.1":"1.1.1q-r0","apk:libcurl":"7.83.1-r2","apk:libssl1.1":"1.1.1q-r0","apk:musl":"1.2.3-r0","apk:nghttp2-libs":"1.47.0-r0","apk:pcre2":"10.40-r0","apk:zlib":"1.2.12-r1","github:caddyserver/caddy":"v2.5.2","image:base":"2bff9c8a562d79bf78edabbc323b647a7cccb691b2dd71f2c9c3a83df6c99f97","image:golang":"b3d0fc5d2f42fe670184b994966b93886611564c07f4dd3cd38765aca577466a"}
 
-FROM reg.g5d.dev/golang@sha256:cb52b6975b49f51a3114567f8d9cfdc889d47ef21ecda58b11d6a149a207a9dd AS build
+FROM reg.g5d.dev/golang@sha256:b3d0fc5d2f42fe670184b994966b93886611564c07f4dd3cd38765aca577466a AS build
 
 COPY *.patch /go
 
@@ -12,7 +12,7 @@ RUN set -eux; \
     apk add --no-cache \
         brotli-libs=1.0.9-r6\
         busybox=1.35.0-r16\
-        ca-certificates=20211220-r0\
+        ca-certificates=20220614-r0\
         expat=2.4.8-r0\
         git=2.36.2-r0\
         libcrypto1.1=1.1.1q-r0\
@@ -29,7 +29,7 @@ RUN set -eux; \
     GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main ./cmd/caddy/main.go; \
     chmod +x /go/src/main;
 
-FROM reg.g5d.dev/base@sha256:d8e173562b2af5c2d2a6bedc5af4a36a9fe9e9561aca25d22c947752a1695a64
+FROM reg.g5d.dev/base@sha256:2bff9c8a562d79bf78edabbc323b647a7cccb691b2dd71f2c9c3a83df6c99f97
 
 COPY --from=build /go/src/main /caddy
 COPY CaddyLicense /notices/LICENSE
