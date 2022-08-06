@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/node/Dockerfile.gotpl
-# BOM: {"apk:bash":"5.1.16-r2","apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r17","apk:ca-certificates":"20220614-r0","apk:curl":"7.83.1-r2","apk:expat":"2.4.8-r0","apk:gcompat":"1.0.0-r4","apk:gdbm":"1.23-r0","apk:git":"2.36.2-r0","apk:gmp":"6.2.1-r2","apk:gnupg":"2.2.35-r4","apk:gnupg-dirmngr":"2.2.35-r4","apk:gnupg-gpgconf":"2.2.35-r4","apk:gnupg-utils":"2.2.35-r4","apk:gnupg-wks-client":"2.2.35-r4","apk:gnutls":"3.7.7-r0","apk:gpg":"2.2.35-r4","apk:gpg-agent":"2.2.35-r4","apk:gpg-wks-server":"2.2.35-r4","apk:gpgsm":"2.2.35-r4","apk:gpgv":"2.2.35-r4","apk:libacl":"2.3.1-r0","apk:libassuan":"2.5.5-r0","apk:libbz2":"1.0.8-r1","apk:libcap":"2.64-r0","apk:libcrypto1.1":"1.1.1q-r0","apk:libcurl":"7.83.1-r2","apk:libffi":"3.4.2-r1","apk:libgcc":"11.2.1_git20220219-r2","apk:libgcrypt":"1.10.1-r0","apk:libgpg-error":"1.45-r0","apk:libksba":"1.6.0-r0","apk:libldap":"2.6.3-r0","apk:libsasl":"2.1.28-r0","apk:libssl1.1":"1.1.1q-r0","apk:libstdc++":"11.2.1_git20220219-r2","apk:libtasn1":"4.18.0-r0","apk:libucontext":"1.2-r0","apk:libunistring":"1.0-r0","apk:lz4-libs":"1.9.3-r1","apk:musl":"1.2.3-r0","apk:musl-obstack":"1.2.3-r0","apk:ncurses-libs":"6.3_p20220521-r0","apk:ncurses-terminfo-base":"6.3_p20220521-r0","apk:nettle":"3.7.3-r0","apk:nghttp2-libs":"1.47.0-r0","apk:npth":"1.6-r1","apk:p11-kit":"0.24.1-r0","apk:pcre2":"10.40-r0","apk:pinentry":"1.2.0-r0","apk:popt":"1.18-r0","apk:readline":"8.1.2-r0","apk:rsync":"3.2.4-r2","apk:sqlite-libs":"3.38.5-r0","apk:tar":"1.34-r0","apk:xz":"5.2.5-r1","apk:xz-libs":"5.2.5-r1","apk:zlib":"1.2.12-r1","apk:zstd-libs":"1.5.2-r1","github:nodejs/node":"v18.7.0","image:alpine":"9169c79c67da14335d9f81a00e4910cd79d1811f9f44a47cd8e520fc4265e1ae"}
+# BOM: {"apk:bash":"5.1.16-r2","apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r17","apk:ca-certificates":"20220614-r0","apk:curl":"7.83.1-r2","apk:expat":"2.4.8-r0","apk:gcompat":"1.0.0-r4","apk:gdbm":"1.23-r0","apk:git":"2.36.2-r0","apk:gmp":"6.2.1-r2","apk:gnupg":"2.2.35-r4","apk:gnupg-dirmngr":"2.2.35-r4","apk:gnupg-gpgconf":"2.2.35-r4","apk:gnupg-utils":"2.2.35-r4","apk:gnupg-wks-client":"2.2.35-r4","apk:gnutls":"3.7.7-r0","apk:gpg":"2.2.35-r4","apk:gpg-agent":"2.2.35-r4","apk:gpg-wks-server":"2.2.35-r4","apk:gpgsm":"2.2.35-r4","apk:gpgv":"2.2.35-r4","apk:libacl":"2.3.1-r0","apk:libassuan":"2.5.5-r0","apk:libbz2":"1.0.8-r1","apk:libcap":"2.64-r0","apk:libcrypto1.1":"1.1.1q-r0","apk:libcurl":"7.83.1-r2","apk:libffi":"3.4.2-r1","apk:libgcc":"11.2.1_git20220219-r2","apk:libgcrypt":"1.10.1-r0","apk:libgpg-error":"1.45-r0","apk:libksba":"1.6.0-r0","apk:libldap":"2.6.3-r0","apk:libsasl":"2.1.28-r0","apk:libssl1.1":"1.1.1q-r0","apk:libstdc++":"11.2.1_git20220219-r2","apk:libtasn1":"4.18.0-r0","apk:libucontext":"1.2-r0","apk:libunistring":"1.0-r0","apk:lz4-libs":"1.9.3-r1","apk:musl":"1.2.3-r0","apk:musl-obstack":"1.2.3-r0","apk:ncurses-libs":"6.3_p20220521-r0","apk:ncurses-terminfo-base":"6.3_p20220521-r0","apk:nettle":"3.7.3-r0","apk:nghttp2-libs":"1.47.0-r0","apk:npth":"1.6-r1","apk:p11-kit":"0.24.1-r0","apk:pcre2":"10.40-r0","apk:pinentry":"1.2.0-r0","apk:popt":"1.18-r0","apk:readline":"8.1.2-r0","apk:rsync":"3.2.4-r2","apk:sqlite-libs":"3.38.5-r0","apk:tar":"1.34-r0","apk:xz":"5.2.5-r1","apk:xz-libs":"5.2.5-r1","apk:zlib":"1.2.12-r2","apk:zstd-libs":"1.5.2-r1","github:nodejs/node":"v18.7.0","image:alpine":"9169c79c67da14335d9f81a00e4910cd79d1811f9f44a47cd8e520fc4265e1ae"}
 
 FROM reg.g5d.dev/alpine@sha256:9169c79c67da14335d9f81a00e4910cd79d1811f9f44a47cd8e520fc4265e1ae as build
 
@@ -61,7 +61,7 @@ RUN set -eux; \
         tar=1.34-r0\
         xz=5.2.5-r1\
         xz-libs=5.2.5-r1\
-        zlib=1.2.12-r1\
+        zlib=1.2.12-r2\
         zstd-libs=1.5.2-r1\
         ;\
     curl -sfLo /checksums.txt https://unofficial-builds.nodejs.org/download/release/$TAG/SHASUMS256.txt; \
@@ -95,7 +95,7 @@ RUN set -eux; \
         musl-obstack=1.2.3-r0\
         nghttp2-libs=1.47.0-r0\
         pcre2=10.40-r0\
-        zlib=1.2.12-r1\
+        zlib=1.2.12-r2\
         ;
 
 COPY --from=build /usr/local /usr/local
