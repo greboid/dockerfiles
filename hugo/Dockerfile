@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/hugo/Dockerfile.gotpl
-# BOM: {"apk:binutils":"2.38-r3","apk:g++":"11.2.1_git20220219-r2","apk:gcc":"11.2.1_git20220219-r2","apk:gmp":"6.2.1-r2","apk:grep":"3.7-r0","apk:isl22":"0.22-r0","apk:libatomic":"11.2.1_git20220219-r2","apk:libc-dev":"0.7.2-r3","apk:libgcc":"11.2.1_git20220219-r2","apk:libgomp":"11.2.1_git20220219-r2","apk:libstdc++":"11.2.1_git20220219-r2","apk:mpc1":"1.2.1-r0","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.3-r0","apk:musl-dev":"1.2.3-r0","apk:pcre":"8.45-r2","apk:zlib":"1.2.12-r3","github:gohugoio/hugo":"v0.101.0","image:baseglibc":"8b481ea1c7c72463cf066bf4cb448a3a5e50a4d739dc559f3c585b7fcd3b3ecb","image:golang":"2bf2ea4e192e0a259cfe76a159679ff837fc2ac3c154899ef0ecb485c57c0ffe"}
+# BOM: {"apk:binutils":"2.38-r3","apk:g++":"11.2.1_git20220219-r2","apk:gcc":"11.2.1_git20220219-r2","apk:gmp":"6.2.1-r2","apk:grep":"3.7-r0","apk:isl22":"0.22-r0","apk:libatomic":"11.2.1_git20220219-r2","apk:libc-dev":"0.7.2-r3","apk:libgcc":"11.2.1_git20220219-r2","apk:libgomp":"11.2.1_git20220219-r2","apk:libstdc++":"11.2.1_git20220219-r2","apk:mpc1":"1.2.1-r0","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.3-r0","apk:musl-dev":"1.2.3-r0","apk:pcre":"8.45-r2","apk:zlib":"1.2.12-r3","github:gohugoio/hugo":"v0.101.0","image:baseglibc":"55beac36359b1e618c81e169d886674384a098b17c74d04b1a514988921735d8","image:golang":"2bf2ea4e192e0a259cfe76a159679ff837fc2ac3c154899ef0ecb485c57c0ffe"}
 
 FROM reg.g5d.dev/golang@sha256:2bf2ea4e192e0a259cfe76a159679ff837fc2ac3c154899ef0ecb485c57c0ffe AS build
 
@@ -37,7 +37,7 @@ RUN set -eux; \
         zlib=1.2.12-r3 \
         ;
 
-FROM reg.g5d.dev/baseglibc@sha256:8b481ea1c7c72463cf066bf4cb448a3a5e50a4d739dc559f3c585b7fcd3b3ecb
+FROM reg.g5d.dev/baseglibc@sha256:55beac36359b1e618c81e169d886674384a098b17c74d04b1a514988921735d8
 
 ENV HUGO_CACHEDIR="/build/cache"
 COPY --from=build /src/hugo/main /usr/bin/hugo
