@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/renovate/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r17","apk:c-ares":"1.18.1-r0","apk:ca-certificates":"20220614-r0","apk:expat":"2.4.8-r0","apk:git":"2.36.2-r0","apk:icu-data-en":"71.1-r2","apk:icu-libs":"71.1-r2","apk:libcrypto1.1":"1.1.1q-r0","apk:libcurl":"7.83.1-r3","apk:libgcc":"11.2.1_git20220219-r2","apk:libssl1.1":"1.1.1q-r0","apk:libstdc++":"11.2.1_git20220219-r2","apk:musl":"1.2.3-r0","apk:nghttp2-libs":"1.47.0-r0","apk:nodejs":"16.16.0-r0","apk:pcre2":"10.40-r0","apk:yarn":"1.22.19-r0","apk:zlib":"1.2.12-r3","image:alpine":"a475fe9f28063dd6914342b78877af564ac1144cacba56ddb2aed1bce0c3fc14","image:golang":"dd9167d50a96d7bc7f9296a5465b4cfb6a19146b9774bfdfe05864787cc58b64"}
+# BOM: {"apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r17","apk:c-ares":"1.18.1-r0","apk:ca-certificates":"20220614-r0","apk:expat":"2.4.8-r0","apk:git":"2.36.2-r0","apk:icu-data-en":"71.1-r2","apk:icu-libs":"71.1-r2","apk:libcrypto1.1":"1.1.1q-r0","apk:libcurl":"7.83.1-r3","apk:libgcc":"11.2.1_git20220219-r2","apk:libssl1.1":"1.1.1q-r0","apk:libstdc++":"11.2.1_git20220219-r2","apk:musl":"1.2.3-r0","apk:nghttp2-libs":"1.47.0-r0","apk:nodejs":"16.16.0-r0","apk:pcre2":"10.40-r0","apk:yarn":"1.22.19-r0","apk:zlib":"1.2.12-r3","image:alpine":"a475fe9f28063dd6914342b78877af564ac1144cacba56ddb2aed1bce0c3fc14","image:golang":"1d858c110c95d06e6220de01081bc03822c90354a7263adb98881f0e91675e99"}
 
 FROM reg.g5d.dev/alpine@sha256:a475fe9f28063dd6914342b78877af564ac1144cacba56ddb2aed1bce0c3fc14 as yarnbase
 
@@ -45,6 +45,6 @@ ENV NODE_ENV=production;\
     PATH=/usr/local/go/bin:$PATH
 
 WORKDIR /app
-COPY --from=reg.g5d.dev/golang@sha256:dd9167d50a96d7bc7f9296a5465b4cfb6a19146b9774bfdfe05864787cc58b64 /usr/local/go /usr/local/go
+COPY --from=reg.g5d.dev/golang@sha256:1d858c110c95d06e6220de01081bc03822c90354a7263adb98881f0e91675e99 /usr/local/go /usr/local/go
 COPY --from=deps /js/src/github.com/renovatebot/renovate /app
 CMD ["/app/renovate"]
