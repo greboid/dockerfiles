@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/thelounge/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r17","apk:ca-certificates":"20220614-r0","apk:expat":"2.4.8-r0","apk:git":"2.36.2-r0","apk:libcrypto1.1":"1.1.1q-r0","apk:libcurl":"7.83.1-r3","apk:libssl1.1":"1.1.1q-r0","apk:musl":"1.2.3-r0","apk:nghttp2-libs":"1.47.0-r0","apk:pcre2":"10.40-r0","apk:zlib":"1.2.12-r3","github:thelounge/thelounge":"v4.3.1","image:node":"83bb5767e8bff1189d2cb8897c67f0eb44e3b2a655baf93b9f76a3b17a9b7389"}
+# BOM: {"apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r17","apk:ca-certificates":"20220614-r0","apk:expat":"2.4.9-r0","apk:git":"2.36.2-r0","apk:libcrypto1.1":"1.1.1q-r0","apk:libcurl":"7.83.1-r3","apk:libssl1.1":"1.1.1q-r0","apk:musl":"1.2.3-r0","apk:nghttp2-libs":"1.47.0-r0","apk:pcre2":"10.40-r0","apk:zlib":"1.2.12-r3","github:thelounge/thelounge":"v4.3.1","image:node":"47ba350488f42785cc8a7b0d26c9c8194d4879e05aed8692ff978d73718b6a65"}
 
-FROM reg.g5d.dev/node@sha256:83bb5767e8bff1189d2cb8897c67f0eb44e3b2a655baf93b9f76a3b17a9b7389 as yarnbase
+FROM reg.g5d.dev/node@sha256:47ba350488f42785cc8a7b0d26c9c8194d4879e05aed8692ff978d73718b6a65 as yarnbase
 
 WORKDIR /app
 
@@ -17,7 +17,7 @@ RUN set -eux; \
         brotli-libs=1.0.9-r6\
         busybox=1.35.0-r17\
         ca-certificates=20220614-r0\
-        expat=2.4.8-r0\
+        expat=2.4.9-r0\
         git=2.36.2-r0\
         libcrypto1.1=1.1.1q-r0\
         libcurl=7.83.1-r3\
