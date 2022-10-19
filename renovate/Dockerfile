@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/renovate/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r17","apk:c-ares":"1.18.1-r0","apk:ca-certificates":"20220614-r0","apk:expat":"2.4.9-r0","apk:git":"2.36.2-r0","apk:icu-data-en":"71.1-r2","apk:icu-libs":"71.1-r2","apk:libcrypto1.1":"1.1.1q-r0","apk:libcurl":"7.83.1-r3","apk:libgcc":"11.2.1_git20220219-r2","apk:libssl1.1":"1.1.1q-r0","apk:libstdc++":"11.2.1_git20220219-r2","apk:musl":"1.2.3-r0","apk:nghttp2-libs":"1.47.0-r0","apk:nodejs":"16.17.1-r0","apk:pcre2":"10.40-r0","apk:yarn":"1.22.19-r0","apk:zlib":"1.2.12-r3","image:alpine":"a475fe9f28063dd6914342b78877af564ac1144cacba56ddb2aed1bce0c3fc14","image:golang":"368937001ba1e5cff7833eb08567c1318e1e11ed2d1e5dc4d48d395526cdacf0"}
+# BOM: {"apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r17","apk:c-ares":"1.18.1-r0","apk:ca-certificates":"20220614-r0","apk:expat":"2.4.9-r0","apk:git":"2.36.3-r0","apk:icu-data-en":"71.1-r2","apk:icu-libs":"71.1-r2","apk:libcrypto1.1":"1.1.1q-r0","apk:libcurl":"7.83.1-r3","apk:libgcc":"11.2.1_git20220219-r2","apk:libssl1.1":"1.1.1q-r0","apk:libstdc++":"11.2.1_git20220219-r2","apk:musl":"1.2.3-r0","apk:nghttp2-libs":"1.47.0-r0","apk:nodejs":"16.17.1-r0","apk:pcre2":"10.40-r0","apk:yarn":"1.22.19-r0","apk:zlib":"1.2.12-r3","image:alpine":"a475fe9f28063dd6914342b78877af564ac1144cacba56ddb2aed1bce0c3fc14","image:golang":"15a9960c27d67316b3ba3da4c8c7a588e57ae6a7c811f6edda91aced6bb5f573"}
 
 FROM reg.g5d.dev/alpine@sha256:a475fe9f28063dd6914342b78877af564ac1144cacba56ddb2aed1bce0c3fc14 as yarnbase
 
@@ -10,7 +10,7 @@ RUN set -eux; \
             c-ares=1.18.1-r0\
             ca-certificates=20220614-r0\
             expat=2.4.9-r0\
-            git=2.36.2-r0\
+            git=2.36.3-r0\
             icu-data-en=71.1-r2\
             icu-libs=71.1-r2\
             libcrypto1.1=1.1.1q-r0\
@@ -45,6 +45,6 @@ ENV NODE_ENV=production;\
     PATH=/usr/local/go/bin:$PATH
 
 WORKDIR /app
-COPY --from=reg.g5d.dev/golang@sha256:368937001ba1e5cff7833eb08567c1318e1e11ed2d1e5dc4d48d395526cdacf0 /usr/local/go /usr/local/go
+COPY --from=reg.g5d.dev/golang@sha256:15a9960c27d67316b3ba3da4c8c7a588e57ae6a7c811f6edda91aced6bb5f573 /usr/local/go /usr/local/go
 COPY --from=deps /js/src/github.com/renovatebot/renovate /app
 CMD ["/app/renovate"]
