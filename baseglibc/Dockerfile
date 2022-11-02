@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/baseglibc/Dockerfile.gotpl
-# BOM: {"image:baseglibcroot":"3dafd2c2d6ecb6b31e527a103800fe846b1d98d5d2c4b8ecbeaa410153325fc8"}
+# BOM: {"image:baseglibcroot":"3a7a283ffc856be51e35a415dbc9311ec4a95d3769ec1d561e27e4af337f89e1"}
 
-FROM reg.g5d.dev/baseglibcroot@sha256:3dafd2c2d6ecb6b31e527a103800fe846b1d98d5d2c4b8ecbeaa410153325fc8
+FROM reg.g5d.dev/baseglibcroot@sha256:3a7a283ffc856be51e35a415dbc9311ec4a95d3769ec1d561e27e4af337f89e1
 USER nonroot
