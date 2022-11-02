@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/nitter/Dockerfile.gotpl
-# BOM: {"apk:bash":"5.1.16-r2","apk:binutils":"2.38-r3","apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r17","apk:ca-certificates":"20220614-r0","apk:curl":"7.83.1-r4","apk:expat":"2.5.0-r0","apk:gcc":"11.2.1_git20220219-r2","apk:git":"2.36.3-r0","apk:gmp":"6.2.1-r2","apk:isl22":"0.22-r0","apk:libatomic":"11.2.1_git20220219-r2","apk:libcrypto1.1":"1.1.1q-r0","apk:libcurl":"7.83.1-r4","apk:libgcc":"11.2.1_git20220219-r2","apk:libgomp":"11.2.1_git20220219-r2","apk:libpcre16":"8.45-r2","apk:libpcre32":"8.45-r2","apk:libpcrecpp":"8.45-r2","apk:libsass":"3.6.5-r0","apk:libsass-dev":"3.6.5-r0","apk:libssl1.1":"1.1.1q-r0","apk:libstdc++":"11.2.1_git20220219-r2","apk:mpc1":"1.2.1-r0","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.3-r0","apk:musl-dev":"1.2.3-r0","apk:ncurses-libs":"6.3_p20220521-r0","apk:ncurses-terminfo-base":"6.3_p20220521-r0","apk:nghttp2-libs":"1.47.0-r0","apk:openssl":"1.1.1q-r0","apk:openssl-dev":"1.1.1q-r0","apk:pcre":"8.45-r2","apk:pcre-dev":"8.45-r2","apk:pcre2":"10.40-r0","apk:pkgconf":"1.8.0-r1","apk:readline":"8.1.2-r0","apk:sqlite-libs":"3.38.5-r0","apk:zlib":"1.2.12-r3","github:nim-lang/nim":"v1.6.8","image:alpine":"a475fe9f28063dd6914342b78877af564ac1144cacba56ddb2aed1bce0c3fc14","image:base":"148dcee1d765d04d178e78cbf9e1c44b4c23af1097d0e79418893051e0e13c69"}
+# BOM: {"apk:bash":"5.1.16-r2","apk:binutils":"2.38-r3","apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r17","apk:ca-certificates":"20220614-r0","apk:curl":"7.83.1-r4","apk:expat":"2.5.0-r0","apk:gcc":"11.2.1_git20220219-r2","apk:git":"2.36.3-r0","apk:gmp":"6.2.1-r2","apk:isl22":"0.22-r0","apk:libatomic":"11.2.1_git20220219-r2","apk:libcrypto1.1":"1.1.1s-r0","apk:libcurl":"7.83.1-r4","apk:libgcc":"11.2.1_git20220219-r2","apk:libgomp":"11.2.1_git20220219-r2","apk:libpcre16":"8.45-r2","apk:libpcre32":"8.45-r2","apk:libpcrecpp":"8.45-r2","apk:libsass":"3.6.5-r0","apk:libsass-dev":"3.6.5-r0","apk:libssl1.1":"1.1.1s-r0","apk:libstdc++":"11.2.1_git20220219-r2","apk:mpc1":"1.2.1-r0","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.3-r0","apk:musl-dev":"1.2.3-r0","apk:ncurses-libs":"6.3_p20220521-r0","apk:ncurses-terminfo-base":"6.3_p20220521-r0","apk:nghttp2-libs":"1.47.0-r0","apk:openssl":"1.1.1s-r0","apk:openssl-dev":"1.1.1s-r0","apk:pcre":"8.45-r2","apk:pcre-dev":"8.45-r2","apk:pcre2":"10.40-r0","apk:pkgconf":"1.8.0-r1","apk:readline":"8.1.2-r0","apk:sqlite-libs":"3.38.5-r0","apk:zlib":"1.2.12-r3","github:nim-lang/nim":"v1.6.8","image:alpine":"a475fe9f28063dd6914342b78877af564ac1144cacba56ddb2aed1bce0c3fc14","image:base":"8b908b9450bc130ede6eb6f40f038563b8e35d64c8ac566c9ca647efa349bf2f"}
 
 FROM reg.g5d.dev/alpine@sha256:a475fe9f28063dd6914342b78877af564ac1144cacba56ddb2aed1bce0c3fc14 as nimbuild
 
@@ -14,9 +14,9 @@ RUN set -eux; \
         busybox=1.35.0-r17 \
         ca-certificates=20220614-r0 \
         curl=7.83.1-r4 \
-        libcrypto1.1=1.1.1q-r0 \
+        libcrypto1.1=1.1.1s-r0 \
         libcurl=7.83.1-r4 \
-        libssl1.1=1.1.1q-r0 \
+        libssl1.1=1.1.1s-r0 \
         musl=1.2.3-r0 \
         nghttp2-libs=1.47.0-r0 \
         zlib=1.2.12-r3 \
@@ -44,11 +44,11 @@ RUN set -eux; \
         gmp=6.2.1-r2 \
         isl22=0.22-r0 \
         libatomic=11.2.1_git20220219-r2 \
-        libcrypto1.1=1.1.1q-r0 \
+        libcrypto1.1=1.1.1s-r0 \
         libcurl=7.83.1-r4 \
         libgcc=11.2.1_git20220219-r2 \
         libgomp=11.2.1_git20220219-r2 \
-        libssl1.1=1.1.1q-r0 \
+        libssl1.1=1.1.1s-r0 \
         libstdc++=11.2.1_git20220219-r2 \
         mpc1=1.2.1-r0 \
         mpfr4=4.1.0-r0 \
@@ -77,7 +77,7 @@ RUN set -eux; \
         gmp=6.2.1-r2 \
         isl22=0.22-r0 \
         libatomic=11.2.1_git20220219-r2 \
-        libcrypto1.1=1.1.1q-r0 \
+        libcrypto1.1=1.1.1s-r0 \
         libcurl=7.83.1-r4 \
         libgcc=11.2.1_git20220219-r2 \
         libgomp=11.2.1_git20220219-r2 \
@@ -86,7 +86,7 @@ RUN set -eux; \
         libpcrecpp=8.45-r2 \
         libsass=3.6.5-r0 \
         libsass-dev=3.6.5-r0 \
-        libssl1.1=1.1.1q-r0 \
+        libssl1.1=1.1.1s-r0 \
         libstdc++=11.2.1_git20220219-r2 \
         mpc1=1.2.1-r0 \
         mpfr4=4.1.0-r0 \
@@ -95,8 +95,8 @@ RUN set -eux; \
         ncurses-libs=6.3_p20220521-r0 \
         ncurses-terminfo-base=6.3_p20220521-r0 \
         nghttp2-libs=1.47.0-r0 \
-        openssl=1.1.1q-r0 \
-        openssl-dev=1.1.1q-r0 \
+        openssl=1.1.1s-r0 \
+        openssl-dev=1.1.1s-r0 \
         pcre=8.45-r2 \
         pcre-dev=8.45-r2 \
         pcre2=10.40-r0 \
@@ -117,7 +117,7 @@ RUN set -eux; \
     strip -s nitter; \
     nimble scss
 
-FROM reg.g5d.dev/base@sha256:148dcee1d765d04d178e78cbf9e1c44b4c23af1097d0e79418893051e0e13c69
+FROM reg.g5d.dev/base@sha256:8b908b9450bc130ede6eb6f40f038563b8e35d64c8ac566c9ca647efa349bf2f
 
 COPY --from=build /src/libs/* /usr/lib/
 COPY --from=build /src/nitter/nitter /home/nonroot/nitter
