@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/soju/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r17","apk:ca-certificates":"20220614-r0","apk:expat":"2.5.0-r0","apk:git":"2.36.3-r0","apk:libcrypto1.1":"1.1.1q-r0","apk:libcurl":"7.83.1-r4","apk:libssl1.1":"1.1.1q-r0","apk:musl":"1.2.3-r0","apk:nghttp2-libs":"1.47.0-r0","apk:patch":"2.7.6-r7","apk:pcre2":"10.40-r0","apk:zlib":"1.2.12-r3","github:csmith/certwrapper":"v4.1.0","github:emersion/soju":"v0.5.2","image:base":"148dcee1d765d04d178e78cbf9e1c44b4c23af1097d0e79418893051e0e13c69","image:golang":"499dd27b63ad7bad5b692367dfa9b787d245fbcb09b52304a1cdfe2806c93599"}
+# BOM: {"apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r17","apk:ca-certificates":"20220614-r0","apk:expat":"2.5.0-r0","apk:git":"2.36.3-r0","apk:libcrypto1.1":"1.1.1s-r0","apk:libcurl":"7.83.1-r4","apk:libssl1.1":"1.1.1s-r0","apk:musl":"1.2.3-r0","apk:nghttp2-libs":"1.47.0-r0","apk:patch":"2.7.6-r7","apk:pcre2":"10.40-r0","apk:zlib":"1.2.12-r3","github:csmith/certwrapper":"v4.1.0","github:emersion/soju":"v0.5.2","image:base":"8b908b9450bc130ede6eb6f40f038563b8e35d64c8ac566c9ca647efa349bf2f","image:golang":"cdb40b219137c0fc711109b143ebbe41ee41d8b3f2e8aeac678412174c237941"}
 
-FROM reg.g5d.dev/golang@sha256:499dd27b63ad7bad5b692367dfa9b787d245fbcb09b52304a1cdfe2806c93599 AS build
+FROM reg.g5d.dev/golang@sha256:cdb40b219137c0fc711109b143ebbe41ee41d8b3f2e8aeac678412174c237941 AS build
 
 ARG SOJUTAG="v0.5.2"
 ARG CERTTAG="v4.1.0"
@@ -13,9 +13,9 @@ RUN set -eux; \
         ca-certificates=20220614-r0 \
         expat=2.5.0-r0 \
         git=2.36.3-r0 \
-        libcrypto1.1=1.1.1q-r0 \
+        libcrypto1.1=1.1.1s-r0 \
         libcurl=7.83.1-r4 \
-        libssl1.1=1.1.1q-r0 \
+        libssl1.1=1.1.1s-r0 \
         musl=1.2.3-r0 \
         nghttp2-libs=1.47.0-r0 \
         patch=2.7.6-r7 \
@@ -32,7 +32,7 @@ RUN set -eux; \
     go-licenses save ./... --save_path=/notices; \
     mkdir /data
 
-FROM reg.g5d.dev/base@sha256:148dcee1d765d04d178e78cbf9e1c44b4c23af1097d0e79418893051e0e13c69
+FROM reg.g5d.dev/base@sha256:8b908b9450bc130ede6eb6f40f038563b8e35d64c8ac566c9ca647efa349bf2f
 
 COPY --from=build /go/src/github.com/emersion/soju/soju /soju
 COPY --from=build /go/src/github.com/emersion/soju/sojuctl /sojuctl
