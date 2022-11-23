@@ -1,43 +1,44 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/hugo/Dockerfile.gotpl
-# BOM: {"apk:binutils":"2.38-r3","apk:g++":"11.2.1_git20220219-r2","apk:gcc":"11.2.1_git20220219-r2","apk:gmp":"6.2.1-r2","apk:grep":"3.7-r0","apk:isl22":"0.22-r0","apk:libatomic":"11.2.1_git20220219-r2","apk:libc-dev":"0.7.2-r3","apk:libgcc":"11.2.1_git20220219-r2","apk:libgomp":"11.2.1_git20220219-r2","apk:libstdc++":"11.2.1_git20220219-r2","apk:mpc1":"1.2.1-r0","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.3-r2","apk:musl-dev":"1.2.3-r2","apk:pcre":"8.45-r2","apk:zlib":"1.2.12-r3","github:gohugoio/hugo":"v0.106.0","image:baseglibc":"d83424b29ff87768f826661c499896fc9b83ad3aaa31917db2784ae92e46b7ea","image:golang":"32d7e7bbe25f01395b05f333e431a894887e1601281e923cc712d85b7e178cd7"}
+# BOM: {"apk:binutils":"2.39-r2","apk:g++":"12.2.1_git20220924-r4","apk:gcc":"12.2.1_git20220924-r4","apk:gmp":"6.2.1-r2","apk:grep":"3.8-r1","apk:isl24":"0.24-r1","apk:libatomic":"12.2.1_git20220924-r4","apk:libc-dev":"0.7.2-r3","apk:libgcc":"12.2.1_git20220924-r4","apk:libgomp":"12.2.1_git20220924-r4","apk:libstdc++":"12.2.1_git20220924-r4","apk:libstdc++-dev":"12.2.1_git20220924-r4","apk:mpc1":"1.2.1-r1","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.3-r4","apk:musl-dev":"1.2.3-r4","apk:pcre2":"10.40-r0","apk:zlib":"1.2.13-r0","github:gohugoio/hugo":"v0.106.0","image:baseglibc":"5400aeaae743c557874709c0a0c5208e77d89582014989e51a13e7cae6b429e4","image:golang":"4642bb640987c257a4b3581743fe1cc73f3f9b87252b9f1910be92368656c1e4"}
 
-FROM reg.g5d.dev/golang@sha256:32d7e7bbe25f01395b05f333e431a894887e1601281e923cc712d85b7e178cd7 AS build
+FROM reg.g5d.dev/golang@sha256:4642bb640987c257a4b3581743fe1cc73f3f9b87252b9f1910be92368656c1e4 AS build
 
 ARG TAG="v0.106.0"
 
 RUN set -eux; \
     apk add --no-cache \
-        binutils=2.38-r3 \
-        g++=11.2.1_git20220219-r2 \
-        gcc=11.2.1_git20220219-r2 \
+        binutils=2.39-r2 \
+        g++=12.2.1_git20220924-r4 \
+        gcc=12.2.1_git20220924-r4 \
         gmp=6.2.1-r2 \
-        isl22=0.22-r0 \
-        libatomic=11.2.1_git20220219-r2 \
+        isl24=0.24-r1 \
+        libatomic=12.2.1_git20220924-r4 \
         libc-dev=0.7.2-r3 \
-        libgcc=11.2.1_git20220219-r2 \
-        libgomp=11.2.1_git20220219-r2 \
-        libstdc++=11.2.1_git20220219-r2 \
-        mpc1=1.2.1-r0 \
+        libgcc=12.2.1_git20220924-r4 \
+        libgomp=12.2.1_git20220924-r4 \
+        libstdc++=12.2.1_git20220924-r4 \
+        libstdc++-dev=12.2.1_git20220924-r4 \
+        mpc1=1.2.1-r1 \
         mpfr4=4.1.0-r0 \
-        musl=1.2.3-r2 \
-        musl-dev=1.2.3-r2 \
-        zlib=1.2.12-r3 \
+        musl=1.2.3-r4 \
+        musl-dev=1.2.3-r4 \
+        zlib=1.2.13-r0 \
         ; \
     git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/gohugoio/hugo /src/hugo; \
     cd /src/hugo; \
     CGO_ENABLED=1 go build -a -ldflags "-s" -ldflags "-w" -ldflags "-X github.com/gohugoio/hugo/common/hugo.buildDate=Unknown" -ldflags "-X github.com/gohugoio/hugo/common/hugo.commitHash=$TAG"  -ldflags "-X github.com/gohugoio/hugo/common/hugo.vendorInfo=greboid" -trimpath -tags extended -o main .; \
     mkdir -p /tmp/site;\
     apk add --no-cache \
-        binutils=2.38-r3 \
-        grep=3.7-r0 \
-        libgcc=11.2.1_git20220219-r2 \
-        libstdc++=11.2.1_git20220219-r2 \
-        musl=1.2.3-r2 \
-        pcre=8.45-r2 \
-        zlib=1.2.12-r3 \
+        binutils=2.39-r2 \
+        grep=3.8-r1 \
+        libgcc=12.2.1_git20220924-r4 \
+        libstdc++=12.2.1_git20220924-r4 \
+        musl=1.2.3-r4 \
+        pcre2=10.40-r0 \
+        zlib=1.2.13-r0 \
         ;
 
-FROM reg.g5d.dev/baseglibc@sha256:d83424b29ff87768f826661c499896fc9b83ad3aaa31917db2784ae92e46b7ea
+FROM reg.g5d.dev/baseglibc@sha256:5400aeaae743c557874709c0a0c5208e77d89582014989e51a13e7cae6b429e4
 
 ENV HUGO_CACHEDIR="/build/cache"
 COPY --from=build /src/hugo/main /usr/bin/hugo
