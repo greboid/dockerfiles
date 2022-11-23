@@ -14,27 +14,36 @@ RUN set -eux; \
     tar -C /usr/local/postgres --strip-components 1 -xf postgresql.tar.bz2; \
     cd /usr/local/postgres; \
     ./configure \
-       --with-system-tzdata=/usr/share/zoneinfo \
+        --with-system-tzdata=/usr/share/zoneinfo \
+        --with-includes=/usr/local/include \
+        --with-libraries=/usr/local/lib \
         --with-ssl=openssl; \
-    make -j$(nproc); \
-    make install; \
+    make -j$(nproc) world; \
+    make install-world; \
+    make -C contrib install; \
     mkdir -p /src/libs; \
     cp /usr/lib/libreadline* /src/libs/; \
     cp /usr/lib/libncursesw* /src/libs/; \
     cp /usr/lib/libcrypto* /src/libs/; \
     cp /usr/lib/libssl* /src/libs/; \
-    mkdir /src/data
+    mkdir /src/data; \
+    mkdir /src/run; \
+    chmod 777 /src/run; \
+    mkdir -p /etc/postgresql/;
 
 FROM {{image "base"}}
 
 ENV LANG en_US.utf8
 ENV PGDATA=/var/lib/postgres/data
+ENV PGHOST=127.0.0.1
+ENV PGUSER=postgres
 
 COPY --from=build /bin/sh /bin/sh
 COPY --from=build /usr/bin/locale /usr/bin/locale
 COPY --from=build /src/libs /usr/lib/
 COPY --from=build /usr/local/pgsql /usr/local/
-COPY --from=build --chown=65532:65532 /src/data /var/lib/postgres
+COPY --from=build --chown=65532:65532 --chmod=750 /src/data /var/lib/postgres
+COPY --from=build --chown=65532:65532 --chmod=777 /src/run /var/run/psql
 COPY postgresql.conf /etc/postgresql.conf
 COPY entry.sh /usr/local/bin/
 
