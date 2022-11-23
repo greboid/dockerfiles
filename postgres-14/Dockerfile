@@ -1,48 +1,56 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/postgres-14/Dockerfile.gotpl
-# BOM: {"apk:binutils":"2.38-r3","apk:brotli-libs":"1.0.9-r6","apk:busybox":"1.35.0-r17","apk:ca-certificates":"20220614-r0","apk:curl":"7.83.1-r4","apk:g++":"11.2.1_git20220219-r2","apk:gcc":"11.2.1_git20220219-r2","apk:gmp":"6.2.1-r2","apk:isl22":"0.22-r0","apk:libatomic":"11.2.1_git20220219-r2","apk:libc-dev":"0.7.2-r3","apk:libcrypto1.1":"1.1.1s-r0","apk:libcurl":"7.83.1-r4","apk:libgcc":"11.2.1_git20220219-r2","apk:libgomp":"11.2.1_git20220219-r2","apk:libhistory":"8.1.2-r0","apk:libssl1.1":"1.1.1s-r0","apk:libstdc++":"11.2.1_git20220219-r2","apk:linux-headers":"5.16.7-r1","apk:make":"4.3-r0","apk:mpc1":"1.2.1-r0","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.3-r2","apk:musl-dev":"1.2.3-r2","apk:musl-locales":"0.1.0-r0","apk:ncurses-dev":"6.3_p20220521-r0","apk:ncurses-libs":"6.3_p20220521-r0","apk:ncurses-terminfo-base":"6.3_p20220521-r0","apk:nghttp2-libs":"1.47.0-r0","apk:openssl-dev":"1.1.1s-r0","apk:pkgconf":"1.8.0-r1","apk:readline":"8.1.2-r0","apk:readline-dev":"8.1.2-r0","apk:zlib":"1.2.12-r3","apk:zlib-dev":"1.2.12-r3","image:alpine":"1f6a4275acd73275186069c89bdb401e7dff76ebcd2fe8469a10d4b698d34512","image:base":"94a9a1a6a1fa72a3d617c43e69f1a125e82e49d5381b3ea37dfaafc2a21ef3ee","postgres14":"14.6"}
+# BOM: {"apk:binutils":"2.39-r2","apk:brotli-libs":"1.0.9-r9","apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:ca-certificates":"20220614-r2","apk:curl":"7.86.0-r1","apk:g++":"12.2.1_git20220924-r4","apk:gcc":"12.2.1_git20220924-r4","apk:gmp":"6.2.1-r2","apk:isl24":"0.24-r1","apk:libacl":"2.3.1-r1","apk:libatomic":"12.2.1_git20220924-r4","apk:libc-dev":"0.7.2-r3","apk:libcrypto3":"3.0.7-r0","apk:libcurl":"7.86.0-r1","apk:libgcc":"12.2.1_git20220924-r4","apk:libgomp":"12.2.1_git20220924-r4","apk:libhistory":"8.2.0-r0","apk:libssl3":"3.0.7-r0","apk:libstdc++":"12.2.1_git20220924-r4","apk:libstdc++-dev":"12.2.1_git20220924-r4","apk:linux-headers":"5.19.5-r0","apk:lz4-libs":"1.9.4-r1","apk:make":"4.3-r1","apk:mpc1":"1.2.1-r1","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.3-r4","apk:musl-dev":"1.2.3-r4","apk:musl-locales":"0.1.0-r0","apk:ncurses-dev":"6.3_p20221119-r0","apk:ncurses-libs":"6.3_p20221119-r0","apk:ncurses-terminfo-base":"6.3_p20221119-r0","apk:nghttp2-libs":"1.51.0-r0","apk:openssl-dev":"3.0.7-r0","apk:pkgconf":"1.9.3-r0","apk:popt":"1.19-r0","apk:readline":"8.2.0-r0","apk:readline-dev":"8.2.0-r0","apk:rsync":"3.2.7-r0","apk:scanelf":"1.3.5-r1","apk:zlib":"1.2.13-r0","apk:zlib-dev":"1.2.13-r0","apk:zstd-libs":"1.5.2-r9","image:alpine":"29ea114ee328eb42c2d032da36bff94b5e0804c9e9a3573d7c5fa052f14da082","image:base":"9af89525fe357fd63d99e49bba4aa94e6e88a7d436500c3588764112f8862109","postgres14":"14.6"}
 
-FROM reg.g5d.dev/alpine@sha256:1f6a4275acd73275186069c89bdb401e7dff76ebcd2fe8469a10d4b698d34512 as build
+FROM reg.g5d.dev/alpine@sha256:29ea114ee328eb42c2d032da36bff94b5e0804c9e9a3573d7c5fa052f14da082 as build
 
 ARG ARCHIVE_URL="https://ftp.postgresql.org/pub/source/v14.6/postgresql-14.6.tar.bz2"
 ARG ARCHIVE_SUM="508840fc1809d39ab72274d5f137dabb9fd7fb4f933da4168aeebb20069edf22"
 
 RUN set -eux; \
     apk add --no-cache \
-        binutils=2.38-r3 \
-        brotli-libs=1.0.9-r6 \
-        busybox=1.35.0-r17 \
-        ca-certificates=20220614-r0 \
-        curl=7.83.1-r4 \
-        g++=11.2.1_git20220219-r2 \
-        gcc=11.2.1_git20220219-r2 \
+        binutils=2.39-r2 \
+        brotli-libs=1.0.9-r9 \
+        busybox=1.35.0-r29 \
+        busybox-binsh=1.35.0-r29 \
+        ca-certificates=20220614-r2 \
+        curl=7.86.0-r1 \
+        g++=12.2.1_git20220924-r4 \
+        gcc=12.2.1_git20220924-r4 \
         gmp=6.2.1-r2 \
-        isl22=0.22-r0 \
-        libatomic=11.2.1_git20220219-r2 \
+        isl24=0.24-r1 \
+        libacl=2.3.1-r1 \
+        libatomic=12.2.1_git20220924-r4 \
         libc-dev=0.7.2-r3 \
-        libcrypto1.1=1.1.1s-r0 \
-        libcurl=7.83.1-r4 \
-        libgcc=11.2.1_git20220219-r2 \
-        libgomp=11.2.1_git20220219-r2 \
-        libhistory=8.1.2-r0 \
-        libssl1.1=1.1.1s-r0 \
-        libstdc++=11.2.1_git20220219-r2 \
-        linux-headers=5.16.7-r1 \
-        make=4.3-r0 \
-        mpc1=1.2.1-r0 \
+        libcrypto3=3.0.7-r0 \
+        libcurl=7.86.0-r1 \
+        libgcc=12.2.1_git20220924-r4 \
+        libgomp=12.2.1_git20220924-r4 \
+        libhistory=8.2.0-r0 \
+        libssl3=3.0.7-r0 \
+        libstdc++=12.2.1_git20220924-r4 \
+        libstdc++-dev=12.2.1_git20220924-r4 \
+        linux-headers=5.19.5-r0 \
+        lz4-libs=1.9.4-r1 \
+        make=4.3-r1 \
+        mpc1=1.2.1-r1 \
         mpfr4=4.1.0-r0 \
-        musl=1.2.3-r2 \
-        musl-dev=1.2.3-r2 \
+        musl=1.2.3-r4 \
+        musl-dev=1.2.3-r4 \
         musl-locales=0.1.0-r0 \
-        ncurses-dev=6.3_p20220521-r0 \
-        ncurses-libs=6.3_p20220521-r0 \
-        ncurses-terminfo-base=6.3_p20220521-r0 \
-        nghttp2-libs=1.47.0-r0 \
-        openssl-dev=1.1.1s-r0 \
-        pkgconf=1.8.0-r1 \
-        readline=8.1.2-r0 \
-        readline-dev=8.1.2-r0 \
-        zlib=1.2.12-r3 \
-        zlib-dev=1.2.12-r3 \
+        ncurses-dev=6.3_p20221119-r0 \
+        ncurses-libs=6.3_p20221119-r0 \
+        ncurses-terminfo-base=6.3_p20221119-r0 \
+        nghttp2-libs=1.51.0-r0 \
+        openssl-dev=3.0.7-r0 \
+        pkgconf=1.9.3-r0 \
+        popt=1.19-r0 \
+        readline=8.2.0-r0 \
+        readline-dev=8.2.0-r0 \
+        rsync=3.2.7-r0 \
+        scanelf=1.3.5-r1 \
+        zlib=1.2.13-r0 \
+        zlib-dev=1.2.13-r0 \
+        zstd-libs=1.5.2-r9 \
         ; \
     curl -sfLo postgresql.tar.bz2 $ARCHIVE_URL; \
     echo "$ARCHIVE_SUM *postgresql.tar.bz2" | sha256sum -wc -; \
@@ -50,27 +58,42 @@ RUN set -eux; \
     tar -C /usr/local/postgres --strip-components 1 -xf postgresql.tar.bz2; \
     cd /usr/local/postgres; \
     ./configure \
-       --with-system-tzdata=/usr/share/zoneinfo \
+        --with-system-tzdata=/usr/share/zoneinfo \
+        --with-includes=/usr/local/include \
+        --with-libraries=/usr/local/lib \
         --with-ssl=openssl; \
-    make -j$(nproc); \
-    make install; \
-    mkdir -p /src/libs; \
-    cp /usr/lib/libreadline* /src/libs/; \
-    cp /usr/lib/libncursesw* /src/libs/; \
-    cp /usr/lib/libcrypto* /src/libs/; \
-    cp /usr/lib/libssl* /src/libs/; \
-    mkdir /src/data
+    make -j$(nproc) world; \
+    make install-world; \
+    make -C contrib install; \
+    mkdir -p /src/data; \
+    mkdir -p /src/run; \
+    chmod 777 /src/run; \
+    mkdir -p /etc/postgresql/;
 
-FROM reg.g5d.dev/base@sha256:94a9a1a6a1fa72a3d617c43e69f1a125e82e49d5381b3ea37dfaafc2a21ef3ee
+RUN set -eux; \
+    DEPS=$(scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
+    | tr ',' '\n' \
+    | sort -u \
+    | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }');\
+    mkdir /rootfs; \
+    for dep in $DEPS; do \
+      apk add ${dep}; \
+      apk info -qL ${dep} | rsync -aq --files-from=- / /rootfs/; \
+    done;
+
+FROM reg.g5d.dev/base@sha256:9af89525fe357fd63d99e49bba4aa94e6e88a7d436500c3588764112f8862109
 
 ENV LANG en_US.utf8
 ENV PGDATA=/var/lib/postgres/data
+ENV PGHOST=127.0.0.1
+ENV PGUSER=postgres
 
 COPY --from=build /bin/sh /bin/sh
 COPY --from=build /usr/bin/locale /usr/bin/locale
-COPY --from=build /src/libs /usr/lib/
+COPY --from=build /rootfs/ /
 COPY --from=build /usr/local/pgsql /usr/local/
-COPY --from=build --chown=65532:65532 /src/data /var/lib/postgres
+COPY --from=build --chown=65532:65532 --chmod=750 /src/data /var/lib/postgres
+COPY --from=build --chown=65532:65532 --chmod=777 /src/run /var/run/psql
 COPY postgresql.conf /etc/postgresql.conf
 COPY entry.sh /usr/local/bin/
 
