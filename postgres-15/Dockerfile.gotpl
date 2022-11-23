@@ -1,0 +1,58 @@
+FROM {{image "alpine"}} as build
+
+ARG ARCHIVE_URL="{{postgres15_url}}"
+ARG ARCHIVE_SUM="{{postgres15_checksum}}"
+
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "curl" "gcc" "g++" "make" "readline-dev" "zlib-dev" "linux-headers" "musl-locales" "openssl-dev" "scanelf" "rsync" -}}
+        {{$key}}={{$value}} \
+        {{end}}; \
+    curl -sfLo postgresql.tar.bz2 $ARCHIVE_URL; \
+    echo "$ARCHIVE_SUM *postgresql.tar.bz2" | sha256sum -wc -; \
+    mkdir -p /usr/local/postgres; \
+    tar -C /usr/local/postgres --strip-components 1 -xf postgresql.tar.bz2; \
+    cd /usr/local/postgres; \
+    ./configure \
+        --with-system-tzdata=/usr/share/zoneinfo \
+        --with-includes=/usr/local/include \
+        --with-libraries=/usr/local/lib \
+        --with-ssl=openssl; \
+    make -j$(nproc) world; \
+    make install-world; \
+    make -C contrib install; \
+    mkdir -p /src/data; \
+    mkdir -p /src/run; \
+    chmod 777 /src/run; \
+    mkdir -p /etc/postgresql/;
+
+RUN set -eux; \
+    DEPS=$(scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \
+    | tr ',' '\n' \
+    | sort -u \
+    | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }');\
+    mkdir /rootfs; \
+    for dep in $DEPS; do \
+      apk add ${dep}; \
+      apk info -qL ${dep} | rsync -aq --files-from=- / /rootfs/; \
+    done;
+
+FROM {{image "base"}}
+
+ENV LANG en_US.utf8
+ENV PGDATA=/var/lib/postgres/data
+ENV PGHOST=127.0.0.1
+ENV PGUSER=postgres
+
+COPY --from=build /bin/sh /bin/sh
+COPY --from=build /usr/bin/locale /usr/bin/locale
+COPY --from=build /rootfs/ /
+COPY --from=build /usr/local/pgsql /usr/local/
+COPY --from=build --chown=65532:65532 --chmod=750 /src/data /var/lib/postgres
+COPY --from=build --chown=65532:65532 --chmod=777 /src/run /var/run/psql
+COPY postgresql.conf /etc/postgresql.conf
+COPY entry.sh /usr/local/bin/
+
+STOPSIGNAL SIGINT
+
+ENTRYPOINT ["/usr/local/bin/entry.sh"]
