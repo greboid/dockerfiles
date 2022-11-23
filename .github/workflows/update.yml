@@ -2,6 +2,12 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '33 12 * * *'
+  push:
+    paths-ignore:
+      - '**/Containerfile'
+      - '**/Dockerfile'
+      - '.github/**'
+      - 'READNE.md'
 name: update
 jobs:
   update:
