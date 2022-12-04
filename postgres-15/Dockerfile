@@ -84,7 +84,7 @@ RUN set -eux; \
 FROM reg.g5d.dev/base@sha256:9af89525fe357fd63d99e49bba4aa94e6e88a7d436500c3588764112f8862109
 
 ENV LANG en_US.utf8
-ENV PGDATA=/var/lib/postgres/data
+ENV PGDATA=/var/lib/postgresql/data
 ENV PGHOST=127.0.0.1
 ENV PGUSER=postgres
 
