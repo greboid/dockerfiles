@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/renovate/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r9","apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:c-ares":"1.18.1-r1","apk:ca-certificates":"20220614-r2","apk:git":"2.38.1-r0","apk:icu-data-en":"72.1-r1","apk:icu-libs":"72.1-r1","apk:libcrypto3":"3.0.7-r0","apk:libcurl":"7.86.0-r1","apk:libexpat":"2.5.0-r0","apk:libgcc":"12.2.1_git20220924-r4","apk:libssl3":"3.0.7-r0","apk:libstdc++":"12.2.1_git20220924-r4","apk:musl":"1.2.3-r4","apk:nghttp2-libs":"1.51.0-r0","apk:nodejs":"18.12.1-r0","apk:pcre2":"10.40-r0","apk:yarn":"1.22.19-r0","apk:zlib":"1.2.13-r0","image:alpine":"a511477ce0dad879d21b044feb8bcb146eb420de4982cd2b9aafa1347ee7a2ff","image:golang":"3277ef0b2cb0544aae554b8b9377d7af0a24c80bef792f613bbd6d176498c23b"}
+# BOM: {"apk:brotli-libs":"1.0.9-r9","apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:c-ares":"1.18.1-r1","apk:ca-certificates":"20220614-r2","apk:git":"2.38.1-r0","apk:icu-data-en":"72.1-r1","apk:icu-libs":"72.1-r1","apk:libcrypto3":"3.0.7-r0","apk:libcurl":"7.86.0-r1","apk:libexpat":"2.5.0-r0","apk:libgcc":"12.2.1_git20220924-r4","apk:libssl3":"3.0.7-r0","apk:libstdc++":"12.2.1_git20220924-r4","apk:musl":"1.2.3-r4","apk:nghttp2-libs":"1.51.0-r0","apk:nodejs":"18.12.1-r0","apk:pcre2":"10.40-r0","apk:yarn":"1.22.19-r0","apk:zlib":"1.2.13-r0","image:alpine":"a511477ce0dad879d21b044feb8bcb146eb420de4982cd2b9aafa1347ee7a2ff","image:golang":"5d66ad9a693ec7891f3ee88600d4cde9d58d37d479bcf5422fd9308cd1fa65ee"}
 
 FROM reg.g5d.dev/alpine@sha256:a511477ce0dad879d21b044feb8bcb146eb420de4982cd2b9aafa1347ee7a2ff as yarnbase
 
@@ -46,6 +46,6 @@ ENV NODE_ENV=production;\
     PATH=/usr/local/go/bin:$PATH
 
 WORKDIR /app
-COPY --from=reg.g5d.dev/golang@sha256:3277ef0b2cb0544aae554b8b9377d7af0a24c80bef792f613bbd6d176498c23b /usr/local/go /usr/local/go
+COPY --from=reg.g5d.dev/golang@sha256:5d66ad9a693ec7891f3ee88600d4cde9d58d37d479bcf5422fd9308cd1fa65ee /usr/local/go /usr/local/go
 COPY --from=deps /js/src/github.com/renovatebot/renovate /app
 CMD ["/app/renovate"]
