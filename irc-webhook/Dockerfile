@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/irc-webhook/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r9","apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:ca-certificates":"20220614-r2","apk:git":"2.38.1-r0","apk:libcrypto3":"3.0.7-r0","apk:libcurl":"7.86.0-r1","apk:libexpat":"2.5.0-r0","apk:libssl3":"3.0.7-r0","apk:musl":"1.2.3-r4","apk:nghttp2-libs":"1.51.0-r0","apk:pcre2":"10.40-r0","apk:zlib":"1.2.13-r0","github:greboid/irc-webhook":"v4.0.1","image:base":"9af89525fe357fd63d99e49bba4aa94e6e88a7d436500c3588764112f8862109","image:golang":"3277ef0b2cb0544aae554b8b9377d7af0a24c80bef792f613bbd6d176498c23b"}
+# BOM: {"apk:brotli-libs":"1.0.9-r9","apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:ca-certificates":"20220614-r2","apk:git":"2.38.1-r0","apk:libcrypto3":"3.0.7-r0","apk:libcurl":"7.86.0-r1","apk:libexpat":"2.5.0-r0","apk:libssl3":"3.0.7-r0","apk:musl":"1.2.3-r4","apk:nghttp2-libs":"1.51.0-r0","apk:pcre2":"10.40-r0","apk:zlib":"1.2.13-r0","github:greboid/irc-webhook":"v4.0.1","image:base":"9af89525fe357fd63d99e49bba4aa94e6e88a7d436500c3588764112f8862109","image:golang":"5d66ad9a693ec7891f3ee88600d4cde9d58d37d479bcf5422fd9308cd1fa65ee"}
 
-FROM reg.g5d.dev/golang@sha256:3277ef0b2cb0544aae554b8b9377d7af0a24c80bef792f613bbd6d176498c23b AS build
+FROM reg.g5d.dev/golang@sha256:5d66ad9a693ec7891f3ee88600d4cde9d58d37d479bcf5422fd9308cd1fa65ee AS build
 
 ARG TAG="v4.0.1"
 
