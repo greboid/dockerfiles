@@ -9,7 +9,7 @@ RUN set -eux; \
         {{range $key, $value := alpine_packages "git" -}}
         {{$key}}={{$value}} \
         {{end}}; \
-    git clone --depth=1 -b master --single-branch https://github.com/docker-library/postgres /src/docker-postgres; \
+    git clone -b master --single-branch https://github.com/docker-library/postgres /src/docker-postgres; \
     cd /src/docker-postgres; \
     git -c advice.detachedHead=false checkout $ENTRYPOINT;
 
