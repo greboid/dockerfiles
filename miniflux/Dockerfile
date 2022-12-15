@@ -23,7 +23,7 @@ RUN set -eux; \
         ; \
     git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/miniflux/v2 /go/src/github.com/miniflux/v2; \
     cd /go/src/github.com/miniflux/v2; \
-    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
+    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid= -X miniflux.app/version.Version=$TAG -X miniflux.app/version.Commit=$TAG" -o main .; \
     go-licenses save ./... --save_path=/notices;
 
 FROM reg.g5d.dev/base@sha256:9af89525fe357fd63d99e49bba4aa94e6e88a7d436500c3588764112f8862109
