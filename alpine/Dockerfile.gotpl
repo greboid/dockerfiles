@@ -9,6 +9,8 @@ RUN set -eux; \
     echo "$ARCHIVE_SUM *fs.tar.gz" | sha256sum -wc -; \
     mkdir /fs; \
     tar -C /fs -xzf fs.tar.gz;
+    echo "[advice]" > /fs/etc/gitconfig; \
+    echo "    detachedHead = false" >> /fs/etc/gitconfig;
 
 FROM scratch
 COPY --from=verify /fs/ /
