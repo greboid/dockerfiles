@@ -1,9 +1,9 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/docker-socket-proxy/Dockerfile.gotpl
-# BOM: {"image:baseroot":"1c975ebed03f0278f2a9aecd9637ea97b7d5b0efb5543da9f1e56c83b84450f0","image:haproxy":"0794814c052a66f27b695759db1c5ab15d70c2765d5e202aadbac9ae681c79df"}
+# BOM: {"image:baseroot":"fd51da47fdc6d0f778cc71f985d36559355d00bfbefdb6b92718ca47a594760f","image:haproxy":"f6f2af1d579f796bd6c92ac0041216c28a4883ba53074e2b031573c0322227c6"}
 
-FROM reg.g5d.dev/haproxy@sha256:0794814c052a66f27b695759db1c5ab15d70c2765d5e202aadbac9ae681c79df AS haproxy
+FROM reg.g5d.dev/haproxy@sha256:f6f2af1d579f796bd6c92ac0041216c28a4883ba53074e2b031573c0322227c6 AS haproxy
 
-FROM reg.g5d.dev/baseroot@sha256:1c975ebed03f0278f2a9aecd9637ea97b7d5b0efb5543da9f1e56c83b84450f0
+FROM reg.g5d.dev/baseroot@sha256:fd51da47fdc6d0f778cc71f985d36559355d00bfbefdb6b92718ca47a594760f
 
 STOPSIGNAL SIGUSR1
 
