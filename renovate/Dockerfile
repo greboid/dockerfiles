@@ -32,7 +32,7 @@ FROM yarnbase as deps
 ARG TAG="27.15.0"
 
 RUN set -eux; \
-        git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/renovatebot/renovate /js/src/github.com/renovatebot/renovate; \
+        git clone --depth=1 -b $TAG --single-branch https://github.com/renovatebot/renovate /js/src/github.com/renovatebot/renovate; \
         cd /js/src/github.com/renovatebot/renovate; \
         yarn install; \
         yarn cache clean; \
