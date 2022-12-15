@@ -11,7 +11,7 @@ RUN set -eux; \
         {{end}}; \
     git clone -b master --single-branch https://github.com/docker-library/postgres /src/docker-postgres; \
     cd /src/docker-postgres; \
-    git -c advice.detachedHead=false checkout $ENTRYPOINT;
+    git checkout $ENTRYPOINT;
 
 RUN set -eux; \
     apk add --no-cache \

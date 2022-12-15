@@ -8,7 +8,7 @@ RUN set -eux; \
         {{range $key, $value := alpine_packages "git" -}}
         {{$key}}={{$value}}\
         {{end}}; \
-    git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/$REPO /go/src; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/$REPO /go/src; \
     cd /go/src; \
     GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -tags lego_httpreq -o main ./cmd/centauri/main.go; \
     chmod +x /go/src/main;

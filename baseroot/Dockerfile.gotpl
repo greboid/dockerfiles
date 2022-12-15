@@ -20,7 +20,9 @@ RUN set -eux; \
     mkdir /rootfs/proc /rootfs/dev /rootfs/sys; \
     # Generate thw CA certificates file and copy the result
     /usr/sbin/update-ca-certificates; \
-    cp /etc/ssl/certs/ca-certificates.crt /rootfs/etc/ssl/certs/ca-certificates.crt;
+    cp /etc/ssl/certs/ca-certificates.crt /rootfs/etc/ssl/certs/ca-certificates.crt; \
+    echo "[advice]" > /rootfs/etc/gitconfig; \
+    echo "    detachedHead = false" >> /rootfs/etc/gitconfig;
 
 FROM scratch
 

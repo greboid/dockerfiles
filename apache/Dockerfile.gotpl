@@ -12,9 +12,9 @@ RUN set -eux; \
       {{range $key, $value := alpine_packages "rsync" "git" "build-base" "tzdata" "ca-certificates" "linux-headers" "pcre-dev" "musl-dev" "openssl-dev" "openssl-libs-static" "zlib-dev" "zlib-static" "python3" "pythonispython3" "autoconf" "libtool" "expat-static" "expat-dev" -}}
       {{$key}}={{$value}} \
       {{end}}; \
-    git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/apache/httpd /src/httpd; \
-    git -c advice.detachedHead=false clone --depth=1 -b $APRTAG --single-branch https://github.com/apache/apr /src/httpd/srclib/apr; \
-    git -c advice.detachedHead=false clone --depth=1 -b $APRUTILTAG --single-branch https://github.com/apache/apr-util /src/httpd/srclib/apr-util; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/apache/httpd /src/httpd; \
+    git clone --depth=1 -b $APRTAG --single-branch https://github.com/apache/apr /src/httpd/srclib/apr; \
+    git clone --depth=1 -b $APRUTILTAG --single-branch https://github.com/apache/apr-util /src/httpd/srclib/apr-util; \
     cd /src/httpd/srclib/apr; \
     git apply /apr-build.patch; \
     cd /src/httpd; \

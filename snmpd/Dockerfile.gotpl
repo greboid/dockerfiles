@@ -2,7 +2,7 @@ FROM {{ image "alpine" }} as build
 
 RUN set -eux; \
   apk add --update --no-cache git build-base linux-headers libnl3-dev && \
-  git -c advice.detachedHead=false clone https://github.com/net-snmp/net-snmp /src/snmp; \
+  git clone https://github.com/net-snmp/net-snmp /src/snmp; \
   cd /src/snmp; \
   find . -type f -print0 | xargs -0 sed -i 's/\"\/proc/\"\/host_proc/g'
 

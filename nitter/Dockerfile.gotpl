@@ -37,7 +37,7 @@ RUN set -eux; \
         {{range $key, $value := alpine_packages "binutils" "git" "bash" "gcc" "musl-dev" "pcre-dev" "openssl" "openssl-dev" "libsass" "libsass-dev" "sqlite-libs" -}}
         {{$key}}={{$value}} \
         {{end}}; \
-    git -c advice.detachedHead=false clone -b master --single-branch https://github.com/zedeus/nitter /src/nitter; \
+    git clone -b master --single-branch https://github.com/zedeus/nitter /src/nitter; \
     mkdir -p /src/libs; \
     cp /usr/lib/libsqlite3* /src/libs; \
     cp /usr/lib/libssl* /src/libs; \
