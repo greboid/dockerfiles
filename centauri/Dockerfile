@@ -1,10 +1,10 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/centauri/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r9","apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:ca-certificates":"20220614-r3","apk:git":"2.38.2-r0","apk:libcrypto3":"3.0.7-r0","apk:libcurl":"7.86.0-r1","apk:libexpat":"2.5.0-r0","apk:libssl3":"3.0.7-r0","apk:musl":"1.2.3-r4","apk:nghttp2-libs":"1.51.0-r0","apk:pcre2":"10.42-r0","apk:zlib":"1.2.13-r0","github:csmith/centauri":"v0.1.0","image:base":"ffd04efedafc54f5392c35a1045604c12a4329e5780407d5fe08dfe495d411b1","image:golang":"079d27d607d31c2a0f0531017af00dc1d9a24dfaa5d22b56eafe1646530eb813"}
+# BOM: {"apk:brotli-libs":"1.0.9-r9","apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:ca-certificates":"20220614-r3","apk:git":"2.38.2-r0","apk:libcrypto3":"3.0.7-r0","apk:libcurl":"7.87.0-r0","apk:libexpat":"2.5.0-r0","apk:libssl3":"3.0.7-r0","apk:musl":"1.2.3-r4","apk:nghttp2-libs":"1.51.0-r0","apk:pcre2":"10.42-r0","apk:zlib":"1.2.13-r0","image:base":"ffd04efedafc54f5392c35a1045604c12a4329e5780407d5fe08dfe495d411b1","image:golang":"e757e2dc7dfb98d57427ab55d1cd315535b9e4e779b1edf32e159afaf6132698"}
 
-FROM reg.g5d.dev/golang@sha256:079d27d607d31c2a0f0531017af00dc1d9a24dfaa5d22b56eafe1646530eb813 AS build
+FROM reg.g5d.dev/golang@sha256:e757e2dc7dfb98d57427ab55d1cd315535b9e4e779b1edf32e159afaf6132698 AS build
 
 ARG REPO="csmith/centauri"
-ARG TAG="v0.1.0"
+ARG TAG=0d973a7246c3b8d9c571b59cc463133476e97ade
 
 RUN set -eux; \
     apk add --no-cache \
@@ -14,7 +14,7 @@ RUN set -eux; \
         ca-certificates=20220614-r3\
         git=2.38.2-r0\
         libcrypto3=3.0.7-r0\
-        libcurl=7.86.0-r1\
+        libcurl=7.87.0-r0\
         libexpat=2.5.0-r0\
         libssl3=3.0.7-r0\
         musl=1.2.3-r4\
@@ -22,14 +22,18 @@ RUN set -eux; \
         pcre2=10.42-r0\
         zlib=1.2.13-r0\
         ; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/$REPO /go/src; \
+    git clone -b master --single-branch https://github.com/$REPO /go/src; \
     cd /go/src; \
-    GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -tags lego_httpreq -o main ./cmd/centauri/main.go; \
-    chmod +x /go/src/main;
+    git checkout $TAG; \
+    GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -tags lego_httpreq -o main ./cmd/centauri; \
+    chmod +x /go/src/main; \
+    mkdir -p /rootfs/home/nonroot/.config; \
+    mkdir -p /rootfs/data; \
+    mv /go/src/main /rootfs/centauri
 
 FROM reg.g5d.dev/base@sha256:ffd04efedafc54f5392c35a1045604c12a4329e5780407d5fe08dfe495d411b1
 
-COPY --from=build /go/src/main /centauri
+COPY --from=build --chown=65532:65532 /rootfs/ /
 EXPOSE 8080
 EXPOSE 8443
 ENTRYPOINT ["/centauri"]
