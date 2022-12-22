@@ -4,7 +4,7 @@
 FROM reg.g5d.dev/golang@sha256:87ec07251ae01a8d2c5674b799bc8d6334fad67bfddd7d25081b62597973a4b7 AS build
 
 ARG REPO="csmith/centauri"
-ARG TAG=0d973a7246c3b8d9c571b59cc463133476e97ade
+ARG TAG=4c2e02c5415926b85a5cf5bc75c4a23847b69525
 
 RUN set -eux; \
     apk add --no-cache \
