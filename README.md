@@ -1,7 +1,9 @@
 # Dockerfiles from the ground up
 
-Based almost exclusively on the work of [csmith/dockerfiles](https://github.com/csmith/dockerfiles) with my own images
-added in.
+This started with a fork of [csmith/dockerfiles](https://github.com/csmith/dockerfiles), but eventually 
+the templating code was moved out of the repo into [contempt](https://github.com/csmith/contempt).
+
+This is now just a collection of dockerfiles I use in my infrastructure.
 
 ## What? Why?
 
@@ -12,8 +14,8 @@ hit-or-miss on how they work, what base images are used, etc. Third-party images
 or just die off without warning, too. Building everything out from scratch ensures the images are standard,
 and can follow upstream updates as quickly or slowly as required.
 
-I'm intending to use these for production services, but won't vouch for their stability or usability for
-anyone else's purposes. Feel free to use them, and report any issues you do find, but at your own risk!
+I'm using these production services, but won't vouch for their stability or usability for anyone else's 
+purposes. Feel free to use them, and report any issues you do find, but at your own risk!
 
 ## Structure
 
