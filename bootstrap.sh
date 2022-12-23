@@ -40,7 +40,9 @@ echo "https://mirrors.melbourne.co.uk/alpine/edge/main" > /etc/apk/repositories
 echo "https://mirrors.melbourne.co.uk/alpine/edge/community" >> /etc/apk/repositories
 apk add buildah
 
-/apk.static -X https://mirrors.melbourne.co.uk/alpine/latest-stable/main --allow-untrusted -p /alpine --initdb add alpine-base
+/apk.static -X https://mirrors.melbourne.co.uk/alpine/latest-stable/main --allow-untrusted --root /alpine --initdb add alpine-baselayout alpine-keys apk-tools busybox libc-utils
+rm -Rf /alpine/var/cache/apk/*
+rm -rf /home /media/cdrom /media/floppy /media/usb /mnt /srv /usr/local/bin /usr/local/lib /usr/local/share
 cp /repositories /alpine/etc/apk/repositories
 
 buildah bud -t $1 -f /Dockerfile
