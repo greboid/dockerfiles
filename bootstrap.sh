@@ -27,6 +27,8 @@ echo "Downloading static apk"
 curl -qSs -o $DIR/apk.static $DL
 chmod +x $DIR/apk.static
 
+echo "https://mirrors.melbourne.co.uk/alpine/latest-stable/main" > $DIR/repositories
+
 #This script does
 #  - Adds edge repos and installs buildah
 #  - Bootstraps a new alpine into /alpine
@@ -39,6 +41,7 @@ echo "https://mirrors.melbourne.co.uk/alpine/edge/community" >> /etc/apk/reposit
 apk add buildah
 
 /apk.static -X https://mirrors.melbourne.co.uk/alpine/latest-stable/main --allow-untrusted -p /alpine --initdb add alpine-base
+cp /repositories /alpine/etc/apk/repositories
 
 buildah bud -t $1 -f /Dockerfile
 buildah push --authfile /config.json $1
@@ -49,12 +52,14 @@ chmod +x $DIR/run.sh
 cat << EOF > $DIR/Dockerfile2
 FROM scratch
 COPY /alpine /
+CMD ["/bin/sh"]
 EOF
 
 #This dockerfile bootstraps an alpine container so it can build the base image
 cat << EOF > $DIR/Dockerfile
 FROM scratch
 COPY apk.static /apk.static
+COPY repositories /repositories
 COPY run.sh /run.sh
 COPY Dockerfile2 /Dockerfile
 RUN ["/apk.static", "-X", "http://mirrors.melbourne.co.uk/alpine/latest-stable/main", "--allow-untrusted", "-p", "/", "--initdb", "add", "alpine-base"]
