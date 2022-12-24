@@ -63,6 +63,9 @@ COPY /alpine /
 CMD ["/bin/sh"]
 EOF
 
+git clone --depth 1 --filter=blob:none --sparse https://gitlab.alpinelinux.org/alpine/aports.git $DIR/aports;
+git --git-dir $DIR/aports/.git --work-tree $DIR/aports sparse-checkout set "main/alpine-keys"
+
 #This dockerfile bootstraps an alpine container so it can build the base image
 cat << EOF > $DIR/Dockerfile
 FROM scratch
@@ -70,7 +73,8 @@ COPY apk.static /apk.static
 COPY repositories /repositories
 COPY run.sh /run.sh
 COPY Dockerfile2 /Dockerfile
-RUN ["/apk.static", "-X", "http://mirrors.melbourne.co.uk/alpine/latest-stable/main", "--allow-untrusted", "-p", "/", "--initdb", "add", "alpine-baselayout", "alpine-keys", "apk-tools", "busybox"]
+COPY aports/main/alpine-keys/ /keys/
+RUN ["/apk.static", "-X", "http://mirrors.melbourne.co.uk/alpine/latest-stable/main", "--keys-dir", "keys", "-p", "/", "--initdb", "add", "alpine-baselayout", "alpine-keys", "apk-tools", "busybox"]
 CMD ["/run.sh"]
 EOF
 
