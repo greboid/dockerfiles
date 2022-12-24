@@ -8,6 +8,7 @@ on:
       - '**/Dockerfile'
       - '.github/**'
       - 'READNE.md'
+      - 'bootstrap.sh'
 name: update
 jobs:
   update:
