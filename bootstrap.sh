@@ -1,3 +1,4 @@
+
 #!/bin/sh
 
 if !command -v jq &> /dev/null; then
@@ -13,18 +14,24 @@ if [ -z "$1" ]; then
   exit 2
 fi
 
-#This is the base API path of the alpine/apk-tools repo on gitlab
-GL="https://gitlab.alpinelinux.org/api/v4/projects/5"
-#This gets the latest version of apk-tools
-VER=$(curl -s $GL/releases/ | jq '.[]' | jq -r '.name' | head -1)
-#This is the URL to download the static apk build
-DL="$GL/packages/generic/$VER/x86_64/apk.static"
-
 echo "Making temp dir"
 DIR=$(mktemp -d)
 
-echo "Downloading static apk"
-curl -qSs -o $DIR/apk.static $DL
+#Downloading latest version of apk.static and SHA
+GL=https://gitlab.alpinelinux.org/api/v4
+GLBASE=https://gitlab.alpinelinux.org/api/v4/projects/alpine%2Fapk-tools
+VERCOMMAND="curl -qSs $GLBASE/repository/tags | jq -r '.[0].name'"
+VER=$(eval "$VERCOMMAND")
+IDCOMMAND="curl -qSs https://gitlab.alpinelinux.org/api/v4/projects/alpine%2Fapk-tools/packages | jq -r '.[] | select(.name==\"$VER\") | select(.version==\"x86_64\").id'"
+ID=$(eval "$IDCOMMAND")
+INFOCOMMAND="curl -qSs $GLBASE/packages/$ID/package_files | jq -r '.[0] | .file_sha256'"
+SHA=$(eval "$INFOCOMMAND")
+curl -qSs -o $DIR/apk.static https://gitlab.alpinelinux.org/alpine/apk-tools/-/package_files/$ID/download
+FILESHA=$(sha256sum $DIR/apk.static | awk '{print $1}')
+if [ "$FILESHA" != "$SHA" ]; then
+  echo "Downloaded apk.static SHA256 doesn't match, aborting."
+  exit 2
+fi
 chmod +x $DIR/apk.static
 
 echo "https://mirrors.melbourne.co.uk/alpine/latest-stable/main" > $DIR/repositories
