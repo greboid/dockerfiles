@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/baseroot/Dockerfile.gotpl
-# BOM: {"apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:ca-certificates":"20220614-r3","apk:libacl":"2.3.1-r1","apk:libcrypto3":"3.0.7-r0","apk:lz4-libs":"1.9.4-r1","apk:musl":"1.2.3-r4","apk:popt":"1.19-r0","apk:rsync":"3.2.7-r0","apk:tzdata":"2022f-r1","apk:zlib":"1.2.13-r0","apk:zstd-libs":"1.5.2-r9","image:alpine":"3a97af24094652229c76b9dd8dd2895cf50ea52a22b1725db085070041e016ce"}
+# BOM: {"apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:ca-certificates":"20220614-r3","apk:libacl":"2.3.1-r1","apk:libcrypto3":"3.0.7-r0","apk:lz4-libs":"1.9.4-r1","apk:musl":"1.2.3-r4","apk:popt":"1.19-r0","apk:rsync":"3.2.7-r0","apk:tzdata":"2022f-r1","apk:zlib":"1.2.13-r0","apk:zstd-libs":"1.5.2-r9","image:alpine":"b49a27cfed4e1552dec9027ce598b993cf7a036b1cf7de569aeb62fddac5d70c"}
 
-FROM reg.g5d.dev/alpine@sha256:3a97af24094652229c76b9dd8dd2895cf50ea52a22b1725db085070041e016ce AS build
+FROM reg.g5d.dev/alpine@sha256:b49a27cfed4e1552dec9027ce598b993cf7a036b1cf7de569aeb62fddac5d70c AS build
 
 RUN set -eux; \
     # Sort out our dependencies (and sources)
