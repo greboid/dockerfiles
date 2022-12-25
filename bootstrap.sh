@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if !command -v yq &> /dev/null; then
-  echo "docker needs to be installed"
+  echo "yq needs to be installed"
   exit 2
 fi
 if !command -v docker &> /dev/null; then
@@ -26,9 +26,9 @@ SHA=$(echo $YAML | yq -r '.sha256')
 #Download and verify file
 curl -qSs -o $DIR/$FILE $RELBASE/$FILE
 if [ "$(echo "$SHA *$FILE" | sha256sum -c --status -)" -ne "0" ]; then
-  echo "Filesystem incorrect"
+  echo "Downloaded filesystem checksum does not match, exiting."
+  exit
 fi
-echo "File verifies, next"
 
 #Create Dockerfile
 echo "FROM scratch" > $DIR/Dockerfile
