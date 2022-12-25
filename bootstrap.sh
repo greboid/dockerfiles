@@ -64,7 +64,7 @@ CMD ["/bin/sh"]
 EOF
 
 git clone --depth 1 --filter=blob:none --sparse https://gitlab.alpinelinux.org/alpine/aports.git $DIR/aports;
-git --git-dir $DIR/aports/.git --work-tree $DIR/aports sparse-checkout set "main/alpine-keys"
+git -c $DIR/aports sparse-checkout set "main/alpine-keys"
 
 #This dockerfile bootstraps an alpine container so it can build the base image
 cat << EOF > $DIR/Dockerfile
