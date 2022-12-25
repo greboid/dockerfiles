@@ -44,9 +44,11 @@ cat << EOF > $DIR/run.sh
 #!/bin/sh
 echo "https://mirrors.melbourne.co.uk/alpine/edge/main" > /etc/apk/repositories
 echo "https://mirrors.melbourne.co.uk/alpine/edge/community" >> /etc/apk/repositories
-apk add buildah
+apk add buildah yq
 
-/apk.static -X https://mirrors.melbourne.co.uk/alpine/latest-stable/main --keys-dir ../etc/apk/keys --root /alpine --initdb add alpine-baselayout alpine-keys apk-tools busybox libc-utils
+VER=$(curl -qSs https://uk.alpinelinux.org/alpine/latest-stable/releases/x86_64/latest-releases.yaml | yq -r '.[0] | .branch')
+
+/apk.static -X https://mirrors.melbourne.co.uk/alpine/$VER/main --keys-dir ../etc/apk/keys --root /alpine --initdb add alpine-baselayout alpine-keys apk-tools busybox libc-utils
 rm -Rf /alpine/var/cache/apk/*
 rm -rf /home /media/cdrom /media/floppy /media/usb /mnt /srv /usr/local/bin /usr/local/lib /usr/local/share
 cp /repositories /alpine/etc/apk/repositories
@@ -64,7 +66,8 @@ CMD ["/bin/sh"]
 EOF
 
 git clone --depth 1 --filter=blob:none --sparse https://gitlab.alpinelinux.org/alpine/aports.git $DIR/aports;
-git -c $DIR/aports sparse-checkout set "main/alpine-keys"
+ls $DIR/aports
+git -C $DIR/aports sparse-checkout set "main/alpine-keys"
 
 #This dockerfile bootstraps an alpine container so it can build the base image
 cat << EOF > $DIR/Dockerfile
