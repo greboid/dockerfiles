@@ -30,9 +30,13 @@ if [ "$(echo "$SHA *$FILE" | sha256sum -c --status -)" -ne "0" ]; then
   exit
 fi
 
+echo "[advice]" > "$DIR/gitconfig"
+echo "    detachedHead = false" >> "$dir/gitconfig"
+
 #Create Dockerfile
 echo "FROM scratch" > $DIR/Dockerfile
 echo "ADD $FILE /" >> $DIR/Dockerfile
+echo "COPY gitconfig /etc/gitconfig" >> $DIR/Dockerfile
 echo "CMD [\"/bin/sh\"]" >> $DIR/Dockerfile
 
 #Build and push image
