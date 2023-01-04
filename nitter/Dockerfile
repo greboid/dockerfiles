@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/nitter/Dockerfile.gotpl
-# BOM: {"apk:bash":"5.2.15-r0","apk:binutils":"2.39-r2","apk:brotli-libs":"1.0.9-r9","apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:ca-certificates":"20220614-r3","apk:curl":"7.87.0-r0","apk:gcc":"12.2.1_git20220924-r4","apk:git":"2.38.2-r0","apk:gmp":"6.2.1-r2","apk:isl24":"0.24-r1","apk:libatomic":"12.2.1_git20220924-r4","apk:libcrypto3":"3.0.7-r0","apk:libcurl":"7.87.0-r0","apk:libexpat":"2.5.0-r0","apk:libgcc":"12.2.1_git20220924-r4","apk:libgomp":"12.2.1_git20220924-r4","apk:libpcre16":"8.45-r2","apk:libpcre32":"8.45-r2","apk:libpcrecpp":"8.45-r2","apk:libsass":"3.6.5-r0","apk:libsass-dev":"3.6.5-r0","apk:libssl3":"3.0.7-r0","apk:libstdc++":"12.2.1_git20220924-r4","apk:mpc1":"1.2.1-r1","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.3-r4","apk:musl-dev":"1.2.3-r4","apk:ncurses-libs":"6.3_p20221119-r0","apk:ncurses-terminfo-base":"6.3_p20221119-r0","apk:nghttp2-libs":"1.51.0-r0","apk:openssl":"3.0.7-r0","apk:openssl-dev":"3.0.7-r0","apk:pcre":"8.45-r2","apk:pcre-dev":"8.45-r2","apk:pcre2":"10.42-r0","apk:pkgconf":"1.9.3-r0","apk:readline":"8.2.0-r0","apk:sqlite-libs":"3.40.1-r0","apk:zlib":"1.2.13-r0","github:nim-lang/nim":"v1.6.10","image:alpine":"b49a27cfed4e1552dec9027ce598b993cf7a036b1cf7de569aeb62fddac5d70c","image:base":"ffd04efedafc54f5392c35a1045604c12a4329e5780407d5fe08dfe495d411b1"}
+# BOM: {"apk:bash":"5.2.15-r0","apk:binutils":"2.39-r2","apk:brotli-libs":"1.0.9-r9","apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:ca-certificates":"20220614-r3","apk:curl":"7.87.0-r0","apk:gcc":"12.2.1_git20220924-r4","apk:git":"2.38.2-r0","apk:gmp":"6.2.1-r2","apk:isl24":"0.24-r1","apk:libatomic":"12.2.1_git20220924-r4","apk:libcrypto3":"3.0.7-r2","apk:libcurl":"7.87.0-r0","apk:libexpat":"2.5.0-r0","apk:libgcc":"12.2.1_git20220924-r4","apk:libgomp":"12.2.1_git20220924-r4","apk:libpcre16":"8.45-r2","apk:libpcre32":"8.45-r2","apk:libpcrecpp":"8.45-r2","apk:libsass":"3.6.5-r0","apk:libsass-dev":"3.6.5-r0","apk:libssl3":"3.0.7-r2","apk:libstdc++":"12.2.1_git20220924-r4","apk:mpc1":"1.2.1-r1","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.3-r4","apk:musl-dev":"1.2.3-r4","apk:ncurses-libs":"6.3_p20221119-r0","apk:ncurses-terminfo-base":"6.3_p20221119-r0","apk:nghttp2-libs":"1.51.0-r0","apk:openssl":"3.0.7-r2","apk:openssl-dev":"3.0.7-r2","apk:pcre":"8.45-r2","apk:pcre-dev":"8.45-r2","apk:pcre2":"10.42-r0","apk:pkgconf":"1.9.3-r0","apk:readline":"8.2.0-r0","apk:sqlite-libs":"3.40.1-r0","apk:zlib":"1.2.13-r0","github:nim-lang/nim":"v1.6.10","image:alpine":"b49a27cfed4e1552dec9027ce598b993cf7a036b1cf7de569aeb62fddac5d70c","image:base":"ffd04efedafc54f5392c35a1045604c12a4329e5780407d5fe08dfe495d411b1"}
 
 FROM reg.g5d.dev/alpine@sha256:b49a27cfed4e1552dec9027ce598b993cf7a036b1cf7de569aeb62fddac5d70c as nimbuild
 
@@ -15,9 +15,9 @@ RUN set -eux; \
         busybox-binsh=1.35.0-r29 \
         ca-certificates=20220614-r3 \
         curl=7.87.0-r0 \
-        libcrypto3=3.0.7-r0 \
+        libcrypto3=3.0.7-r2 \
         libcurl=7.87.0-r0 \
-        libssl3=3.0.7-r0 \
+        libssl3=3.0.7-r2 \
         musl=1.2.3-r4 \
         nghttp2-libs=1.51.0-r0 \
         zlib=1.2.13-r0 \
@@ -45,12 +45,12 @@ RUN set -eux; \
         gmp=6.2.1-r2 \
         isl24=0.24-r1 \
         libatomic=12.2.1_git20220924-r4 \
-        libcrypto3=3.0.7-r0 \
+        libcrypto3=3.0.7-r2 \
         libcurl=7.87.0-r0 \
         libexpat=2.5.0-r0 \
         libgcc=12.2.1_git20220924-r4 \
         libgomp=12.2.1_git20220924-r4 \
-        libssl3=3.0.7-r0 \
+        libssl3=3.0.7-r2 \
         libstdc++=12.2.1_git20220924-r4 \
         mpc1=1.2.1-r1 \
         mpfr4=4.1.0-r0 \
@@ -79,7 +79,7 @@ RUN set -eux; \
         gmp=6.2.1-r2 \
         isl24=0.24-r1 \
         libatomic=12.2.1_git20220924-r4 \
-        libcrypto3=3.0.7-r0 \
+        libcrypto3=3.0.7-r2 \
         libcurl=7.87.0-r0 \
         libexpat=2.5.0-r0 \
         libgcc=12.2.1_git20220924-r4 \
@@ -89,7 +89,7 @@ RUN set -eux; \
         libpcrecpp=8.45-r2 \
         libsass=3.6.5-r0 \
         libsass-dev=3.6.5-r0 \
-        libssl3=3.0.7-r0 \
+        libssl3=3.0.7-r2 \
         libstdc++=12.2.1_git20220924-r4 \
         mpc1=1.2.1-r1 \
         mpfr4=4.1.0-r0 \
@@ -98,8 +98,8 @@ RUN set -eux; \
         ncurses-libs=6.3_p20221119-r0 \
         ncurses-terminfo-base=6.3_p20221119-r0 \
         nghttp2-libs=1.51.0-r0 \
-        openssl=3.0.7-r0 \
-        openssl-dev=3.0.7-r0 \
+        openssl=3.0.7-r2 \
+        openssl-dev=3.0.7-r2 \
         pcre=8.45-r2 \
         pcre-dev=8.45-r2 \
         pcre2=10.42-r0 \
