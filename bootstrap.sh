@@ -11,7 +11,7 @@ if !command -v docker &> /dev/null; then
   exit 2
 fi
 if [ -z "$1" ]; then
-  echo "You must specify a name for the bootstrapped image, this should be in the format registry/image"
+  echo "You must specify a name for the bootstrapped image, this should be in the format registry"
   exit 2
 fi
 
@@ -47,8 +47,9 @@ echo "CMD [\"/bin/sh\"]" >> $DIR/Dockerfile
 cat $DIR/Dockerfile
 
 #Build and push image
-docker build -t $1 $DIR
-docker push $1
+docker build -t $1/alpine $DIR
 
 #Removing temp dir
 rm -rf $DIR
+
+go run github.com/csmith/contempt/cmd/contempt@latest -force-build=1 -push=1 -commit=1 -registry $1 -source-link "https://github.com/greboid/dockerfiles/blob/master/" . .
