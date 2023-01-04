@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/bash
+
+set -e
 
 if !command -v yq &> /dev/null; then
   echo "yq needs to be installed"
@@ -25,19 +27,24 @@ SHA=$(echo $YAML | yq -r '.sha256')
 
 #Download and verify file
 curl -qSs -o $DIR/$FILE $RELBASE/$FILE
-if [ "$(echo "$SHA *$FILE" | sha256sum -c --status -)" -ne "0" ]; then
+
+if [[ "$(echo "$SHA *$DIR/$FILE" | sha256sum -c --status -)" -ne "0" ]]; then
   echo "Downloaded filesystem checksum does not match, exiting."
   exit
 fi
 
-echo "[advice]" > "$DIR/gitconfig"
-echo "    detachedHead = false" >> "$dir/gitconfig"
+mkdir -p $DIR/fs
+tar -C $DIR/fs -xzf $DIR/$FILE;
+
+echo "[advice]" > $DIR/fs/etc/gitconfig
+echo "    detachedHead = false" >> $DIR/fs/etc/gitconfig
 
 #Create Dockerfile
 echo "FROM scratch" > $DIR/Dockerfile
-echo "ADD $FILE /" >> $DIR/Dockerfile
-echo "COPY gitconfig /etc/gitconfig" >> $DIR/Dockerfile
+echo "ADD /fs /" >> $DIR/Dockerfile
 echo "CMD [\"/bin/sh\"]" >> $DIR/Dockerfile
+
+cat $DIR/Dockerfile
 
 #Build and push image
 docker build -t $1 $DIR
