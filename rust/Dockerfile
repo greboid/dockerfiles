@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/rust/Dockerfile.gotpl
-# BOM: {"github:rust-lang/rust":"1.66.0","image:alpine":"b49a27cfed4e1552dec9027ce598b993cf7a036b1cf7de569aeb62fddac5d70c"}
+# BOM: {"github:rust-lang/rust":"1.66.0","image:alpine":"f60c4cdd37a81d232187fb473f10107b8e955ed35cc884ba70f4d2a941167060"}
 
-FROM reg.g5d.dev/alpine@sha256:b49a27cfed4e1552dec9027ce598b993cf7a036b1cf7de569aeb62fddac5d70c AS rustbuild
+FROM reg.g5d.dev/alpine@sha256:f60c4cdd37a81d232187fb473f10107b8e955ed35cc884ba70f4d2a941167060 AS rustbuild
 
 ARG RUSTTAG="1.66.0"
 
