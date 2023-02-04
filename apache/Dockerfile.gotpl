@@ -16,7 +16,6 @@ RUN set -eux; \
     git clone --depth=1 -b $APRTAG --single-branch https://github.com/apache/apr /src/httpd/srclib/apr; \
     git clone --depth=1 -b $APRUTILTAG --single-branch https://github.com/apache/apr-util /src/httpd/srclib/apr-util; \
     cd /src/httpd/srclib/apr; \
-    git apply /apr-build.patch; \
     cd /src/httpd; \
     git apply /servertokensoff.patch; \
     ./buildconf; \
