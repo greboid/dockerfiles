@@ -4,7 +4,6 @@ ARG APRTAG="{{github_tag "apache/apr"}}"
 ARG APRUTILTAG="{{github_tag "apache/apr-util"}}"
 ARG TAG="{{github_tag "apache/httpd"}}"
 
-COPY apr-build.patch /apr-build.patch
 COPY servertokensoff.patch /servertokensoff.patch
 
 RUN set -eux; \
