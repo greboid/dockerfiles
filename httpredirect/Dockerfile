@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/httpredirect/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r9","apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:ca-certificates":"20220614-r4","apk:git":"2.38.4-r0","apk:libcrypto3":"3.0.8-r0","apk:libcurl":"7.87.0-r2","apk:libexpat":"2.5.0-r0","apk:libssl3":"3.0.8-r0","apk:musl":"1.2.3-r4","apk:nghttp2-libs":"1.51.0-r0","apk:pcre2":"10.42-r0","apk:zlib":"1.2.13-r0","github:greboid/httpredirect":"v1.0.1","image:base":"ffd04efedafc54f5392c35a1045604c12a4329e5780407d5fe08dfe495d411b1","image:golang":"3ab04ab9180d1ae346ed2449f7d74999017d2ffc825d13516be413285efb4eb7"}
+# BOM: {"apk:brotli-libs":"1.0.9-r9","apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:ca-certificates":"20220614-r4","apk:git":"2.38.4-r0","apk:libcrypto3":"3.0.8-r0","apk:libcurl":"7.88.1-r0","apk:libexpat":"2.5.0-r0","apk:libssl3":"3.0.8-r0","apk:musl":"1.2.3-r4","apk:nghttp2-libs":"1.51.0-r0","apk:pcre2":"10.42-r0","apk:zlib":"1.2.13-r0","github:greboid/httpredirect":"v1.0.1","image:base":"ffd04efedafc54f5392c35a1045604c12a4329e5780407d5fe08dfe495d411b1","image:golang":"ad30695b4438d105792a5607acd590b97dba1e4feb69a6e535e693aff35980a3"}
 
-FROM reg.g5d.dev/golang@sha256:3ab04ab9180d1ae346ed2449f7d74999017d2ffc825d13516be413285efb4eb7 AS build
+FROM reg.g5d.dev/golang@sha256:ad30695b4438d105792a5607acd590b97dba1e4feb69a6e535e693aff35980a3 AS build
 
 ARG TAG="v1.0.1"
 
@@ -13,7 +13,7 @@ RUN set -eux; \
         ca-certificates=20220614-r4\
         git=2.38.4-r0\
         libcrypto3=3.0.8-r0\
-        libcurl=7.87.0-r2\
+        libcurl=7.88.1-r0\
         libexpat=2.5.0-r0\
         libssl3=3.0.8-r0\
         musl=1.2.3-r4\
