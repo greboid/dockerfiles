@@ -1,9 +1,9 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/rust/Dockerfile.gotpl
-# BOM: {"github:rust-lang/rust":"1.67.1","image:alpine":"e3385453363598236b7e826530c55b70d4a1a3e53931d4e7b675d47c4c5c8f8d"}
+# BOM: {"github:rust-lang/rust":"1.68.0","image:alpine":"e3385453363598236b7e826530c55b70d4a1a3e53931d4e7b675d47c4c5c8f8d"}
 
 FROM reg.g5d.dev/alpine@sha256:e3385453363598236b7e826530c55b70d4a1a3e53931d4e7b675d47c4c5c8f8d AS rustbuild
 
-ARG RUSTTAG="1.67.1"
+ARG RUSTTAG="1.68.0"
 
 RUN set -eux; \
 apk add curl; \
