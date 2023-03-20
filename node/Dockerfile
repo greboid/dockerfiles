@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/node/Dockerfile.gotpl
-# BOM: {"apk:bash":"5.2.15-r0","apk:brotli-libs":"1.0.9-r9","apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:ca-certificates":"20220614-r4","apk:curl":"7.88.1-r0","apk:gcompat":"1.1.0-r0","apk:gdbm":"1.23-r0","apk:git":"2.38.4-r1","apk:gmp":"6.2.1-r2","apk:gnupg":"2.2.40-r0","apk:gnupg-dirmngr":"2.2.40-r0","apk:gnupg-gpgconf":"2.2.40-r0","apk:gnupg-utils":"2.2.40-r0","apk:gnupg-wks-client":"2.2.40-r0","apk:gnutls":"3.7.8-r3","apk:gpg":"2.2.40-r0","apk:gpg-agent":"2.2.40-r0","apk:gpg-wks-server":"2.2.40-r0","apk:gpgsm":"2.2.40-r0","apk:gpgv":"2.2.40-r0","apk:libacl":"2.3.1-r1","apk:libassuan":"2.5.5-r1","apk:libbz2":"1.0.8-r4","apk:libcrypto3":"3.0.8-r0","apk:libcurl":"7.88.1-r0","apk:libexpat":"2.5.0-r0","apk:libffi":"3.4.4-r0","apk:libgcc":"12.2.1_git20220924-r4","apk:libgcrypt":"1.10.1-r0","apk:libgpg-error":"1.46-r1","apk:libksba":"1.6.3-r0","apk:libldap":"2.6.3-r6","apk:libsasl":"2.1.28-r3","apk:libssl3":"3.0.8-r0","apk:libstdc++":"12.2.1_git20220924-r4","apk:libtasn1":"4.19.0-r0","apk:libucontext":"1.2-r0","apk:libunistring":"1.1-r0","apk:lz4-libs":"1.9.4-r1","apk:musl":"1.2.3-r4","apk:musl-obstack":"1.2.3-r0","apk:ncurses-libs":"6.3_p20221119-r0","apk:ncurses-terminfo-base":"6.3_p20221119-r0","apk:nettle":"3.8.1-r0","apk:nghttp2-libs":"1.51.0-r0","apk:npth":"1.6-r2","apk:p11-kit":"0.24.1-r1","apk:pcre2":"10.42-r0","apk:pinentry":"1.2.1-r0","apk:popt":"1.19-r0","apk:readline":"8.2.0-r0","apk:rsync":"3.2.7-r0","apk:sqlite-libs":"3.40.1-r0","apk:tar":"1.34-r2","apk:xz":"5.2.9-r0","apk:xz-libs":"5.2.9-r0","apk:zlib":"1.2.13-r0","apk:zstd-libs":"1.5.2-r9","github:nodejs/node":"v19.8.1","image:alpine":"e3385453363598236b7e826530c55b70d4a1a3e53931d4e7b675d47c4c5c8f8d"}
+# BOM: {"apk:bash":"5.2.15-r0","apk:brotli-libs":"1.0.9-r9","apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:ca-certificates":"20220614-r4","apk:curl":"7.88.1-r1","apk:gcompat":"1.1.0-r0","apk:gdbm":"1.23-r0","apk:git":"2.38.4-r1","apk:gmp":"6.2.1-r2","apk:gnupg":"2.2.40-r0","apk:gnupg-dirmngr":"2.2.40-r0","apk:gnupg-gpgconf":"2.2.40-r0","apk:gnupg-utils":"2.2.40-r0","apk:gnupg-wks-client":"2.2.40-r0","apk:gnutls":"3.7.8-r3","apk:gpg":"2.2.40-r0","apk:gpg-agent":"2.2.40-r0","apk:gpg-wks-server":"2.2.40-r0","apk:gpgsm":"2.2.40-r0","apk:gpgv":"2.2.40-r0","apk:libacl":"2.3.1-r1","apk:libassuan":"2.5.5-r1","apk:libbz2":"1.0.8-r4","apk:libcrypto3":"3.0.8-r0","apk:libcurl":"7.88.1-r1","apk:libexpat":"2.5.0-r0","apk:libffi":"3.4.4-r0","apk:libgcc":"12.2.1_git20220924-r4","apk:libgcrypt":"1.10.1-r0","apk:libgpg-error":"1.46-r1","apk:libksba":"1.6.3-r0","apk:libldap":"2.6.3-r6","apk:libsasl":"2.1.28-r3","apk:libssl3":"3.0.8-r0","apk:libstdc++":"12.2.1_git20220924-r4","apk:libtasn1":"4.19.0-r0","apk:libucontext":"1.2-r0","apk:libunistring":"1.1-r0","apk:lz4-libs":"1.9.4-r1","apk:musl":"1.2.3-r4","apk:musl-obstack":"1.2.3-r0","apk:ncurses-libs":"6.3_p20221119-r0","apk:ncurses-terminfo-base":"6.3_p20221119-r0","apk:nettle":"3.8.1-r0","apk:nghttp2-libs":"1.51.0-r0","apk:npth":"1.6-r2","apk:p11-kit":"0.24.1-r1","apk:pcre2":"10.42-r0","apk:pinentry":"1.2.1-r0","apk:popt":"1.19-r0","apk:readline":"8.2.0-r0","apk:rsync":"3.2.7-r0","apk:sqlite-libs":"3.40.1-r0","apk:tar":"1.34-r2","apk:xz":"5.2.9-r0","apk:xz-libs":"5.2.9-r0","apk:zlib":"1.2.13-r0","apk:zstd-libs":"1.5.2-r9","github:nodejs/node":"v19.8.1","image:alpine":"e3385453363598236b7e826530c55b70d4a1a3e53931d4e7b675d47c4c5c8f8d"}
 
 FROM reg.g5d.dev/alpine@sha256:e3385453363598236b7e826530c55b70d4a1a3e53931d4e7b675d47c4c5c8f8d as build
 
@@ -12,7 +12,7 @@ RUN set -eux; \
         busybox=1.35.0-r29\
         busybox-binsh=1.35.0-r29\
         ca-certificates=20220614-r4\
-        curl=7.88.1-r0\
+        curl=7.88.1-r1\
         gcompat=1.1.0-r0\
         gdbm=1.23-r0\
         gmp=6.2.1-r2\
@@ -31,7 +31,7 @@ RUN set -eux; \
         libassuan=2.5.5-r1\
         libbz2=1.0.8-r4\
         libcrypto3=3.0.8-r0\
-        libcurl=7.88.1-r0\
+        libcurl=7.88.1-r1\
         libffi=3.4.4-r0\
         libgcc=12.2.1_git20220924-r4\
         libgcrypt=1.10.1-r0\
@@ -86,7 +86,7 @@ RUN set -eux; \
         gcompat=1.1.0-r0\
         git=2.38.4-r1\
         libcrypto3=3.0.8-r0\
-        libcurl=7.88.1-r0\
+        libcurl=7.88.1-r1\
         libexpat=2.5.0-r0\
         libgcc=12.2.1_git20220924-r4\
         libssl3=3.0.8-r0\
