@@ -30,7 +30,7 @@ RUN set -eux; \
 FROM nimbuild as build
 
 #No tags on the project, will just have to update this as needed until some tags are made
-ENV TAG=22b51b414b62620633de8ba456eaebdd2de54934
+ENV TAG=bc219aa792cc0e4117888b2036a969559f4f2689
 
 RUN set -eux; \
     apk add --no-cache \
