@@ -119,6 +119,7 @@ RUN set -eux; \
     nimble build -y -d:release; \
     strip -s nitter; \
     nimble scss; \
+    nimble md; \
     mkdir -p /rootfs/home/nonroot/public; \
     cp /src/nitter/nitter /rootfs/home/nonroot/nitter; \
     cp -R /src/nitter/public /rootfs/home/nonroot/public
