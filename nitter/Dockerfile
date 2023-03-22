@@ -122,7 +122,7 @@ RUN set -eux; \
     nimble md; \
     mkdir -p /rootfs/home/nonroot/public; \
     cp /src/nitter/nitter /rootfs/home/nonroot/nitter; \
-    cp -R /src/nitter/public /rootfs/home/nonroot/public
+    rsync -ap /src/nitter/public/ /rootfs/home/nonroot/public/
 
 RUN set -eux; \
     DEPS=$(scanelf --needed --nobanner --format '%n#p' --recursive -l /src/nitter/nitter \
