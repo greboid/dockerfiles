@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/irc-notifier/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r9","apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:ca-certificates":"20220614-r4","apk:git":"2.38.4-r1","apk:libcrypto3":"3.0.8-r1","apk:libcurl":"7.88.1-r1","apk:libexpat":"2.5.0-r0","apk:libssl3":"3.0.8-r1","apk:musl":"1.2.3-r4","apk:nghttp2-libs":"1.51.0-r0","apk:pcre2":"10.42-r0","apk:zlib":"1.2.13-r0","github:greboid/irc-notifier":"v1.0.4","image:base":"6864cad4f0ad8d3dcdf9724a9fd7df80331f9558a60be2c4639ae8243e4fa116","image:golang":"56454cda03a0183a7ea886d24f6055e929dc7a4049bda881163bcbb8f2b3de6f"}
+# BOM: {"apk:brotli-libs":"1.0.9-r9","apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:ca-certificates":"20220614-r4","apk:git":"2.38.4-r1","apk:libcrypto3":"3.0.8-r2","apk:libcurl":"7.88.1-r1","apk:libexpat":"2.5.0-r0","apk:libssl3":"3.0.8-r2","apk:musl":"1.2.3-r4","apk:nghttp2-libs":"1.51.0-r0","apk:pcre2":"10.42-r0","apk:zlib":"1.2.13-r0","github:greboid/irc-notifier":"v1.0.4","image:base":"ef8b65fda5d776551a87f970b02ebd1aa67f98c60b68637d910429a4e18be9b9","image:golang":"f37fa1d54487659f3ef72dd9084dacfef3a8eae9a32410843f983da55f7eb16b"}
 
-FROM reg.g5d.dev/golang@sha256:56454cda03a0183a7ea886d24f6055e929dc7a4049bda881163bcbb8f2b3de6f AS build
+FROM reg.g5d.dev/golang@sha256:f37fa1d54487659f3ef72dd9084dacfef3a8eae9a32410843f983da55f7eb16b AS build
 
 ARG TAG="v1.0.4"
 
@@ -12,10 +12,10 @@ RUN set -eux; \
         busybox-binsh=1.35.0-r29\
         ca-certificates=20220614-r4\
         git=2.38.4-r1\
-        libcrypto3=3.0.8-r1\
+        libcrypto3=3.0.8-r2\
         libcurl=7.88.1-r1\
         libexpat=2.5.0-r0\
-        libssl3=3.0.8-r1\
+        libssl3=3.0.8-r2\
         musl=1.2.3-r4\
         nghttp2-libs=1.51.0-r0\
         pcre2=10.42-r0\
@@ -26,7 +26,7 @@ RUN set -eux; \
     CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main ./cmd/notifier; \
     go-licenses save ./... --save_path=/notices;
 
-FROM reg.g5d.dev/base@sha256:6864cad4f0ad8d3dcdf9724a9fd7df80331f9558a60be2c4639ae8243e4fa116
+FROM reg.g5d.dev/base@sha256:ef8b65fda5d776551a87f970b02ebd1aa67f98c60b68637d910429a4e18be9b9
 
 COPY --from=build /go/src/github.com/greboid/irc-notifier/main /irc-notifier
 COPY --from=build /notices /notices
