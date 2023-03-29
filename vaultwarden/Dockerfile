@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/vaultwarden/Dockerfile.gotpl
-# BOM: {"github:dani-garcia/vaultwarden":"1.28.0","image:base":"6864cad4f0ad8d3dcdf9724a9fd7df80331f9558a60be2c4639ae8243e4fa116","image:rust":"b09d947546144354f1f9efa68dab240c645680a8eef58b44c1ead62565ed390a"}
+# BOM: {"github:dani-garcia/vaultwarden":"1.28.0","image:base":"ef8b65fda5d776551a87f970b02ebd1aa67f98c60b68637d910429a4e18be9b9","image:rust":"b09d947546144354f1f9efa68dab240c645680a8eef58b44c1ead62565ed390a"}
 
 FROM reg.g5d.dev/rust@sha256:b09d947546144354f1f9efa68dab240c645680a8eef58b44c1ead62565ed390a as server
 
@@ -16,7 +16,7 @@ RUN set -eux; \
 apk add gcc musl-dev openssl-dev; \
 cargo build --features sqlite,enable_mimalloc --release
 
-FROM reg.g5d.dev/base@sha256:6864cad4f0ad8d3dcdf9724a9fd7df80331f9558a60be2c4639ae8243e4fa116
+FROM reg.g5d.dev/base@sha256:ef8b65fda5d776551a87f970b02ebd1aa67f98c60b68637d910429a4e18be9b9
 
 COPY --from=server /src/target/release/vaultwarden /
 
