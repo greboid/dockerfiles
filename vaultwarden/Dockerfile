@@ -1,9 +1,9 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/vaultwarden/Dockerfile.gotpl
-# BOM: {"github:dani-garcia/vaultwarden":"1.28.0","image:base":"ef8b65fda5d776551a87f970b02ebd1aa67f98c60b68637d910429a4e18be9b9","image:rust":"0b9baf158eb5a237110c44bf770949bb10247b64510ef30899dd18c8c535c250"}
+# BOM: {"github:dani-garcia/vaultwarden":"1.28.1","image:base":"ef8b65fda5d776551a87f970b02ebd1aa67f98c60b68637d910429a4e18be9b9","image:rust":"0b9baf158eb5a237110c44bf770949bb10247b64510ef30899dd18c8c535c250"}
 
 FROM reg.g5d.dev/rust@sha256:0b9baf158eb5a237110c44bf770949bb10247b64510ef30899dd18c8c535c250 as server
 
-ARG VAULTTAG="1.28.0"
+ARG VAULTTAG="1.28.1"
 
 RUN set -eux; \
 apk add git; \
