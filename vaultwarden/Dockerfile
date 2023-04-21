@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/vaultwarden/Dockerfile.gotpl
-# BOM: {"github:dani-garcia/vaultwarden":"1.28.1","image:base":"ef8b65fda5d776551a87f970b02ebd1aa67f98c60b68637d910429a4e18be9b9","image:rust":"0b9baf158eb5a237110c44bf770949bb10247b64510ef30899dd18c8c535c250"}
+# BOM: {"github:dani-garcia/vaultwarden":"1.28.1","image:base":"ef8b65fda5d776551a87f970b02ebd1aa67f98c60b68637d910429a4e18be9b9","image:rust":"e4c094eb9088218ad6722613f26d0cf8b1b2d58b98491cf8678a4d9dc85b14e7"}
 
-FROM reg.g5d.dev/rust@sha256:0b9baf158eb5a237110c44bf770949bb10247b64510ef30899dd18c8c535c250 as server
+FROM reg.g5d.dev/rust@sha256:e4c094eb9088218ad6722613f26d0cf8b1b2d58b98491cf8678a4d9dc85b14e7 as server
 
 ARG VAULTTAG="1.28.1"
 
