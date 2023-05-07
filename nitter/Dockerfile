@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/nitter/Dockerfile.gotpl
-# BOM: {"apk:bash":"5.2.15-r0","apk:binutils":"2.39-r2","apk:brotli-libs":"1.0.9-r9","apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:ca-certificates":"20220614-r4","apk:curl":"8.0.1-r0","apk:gcc":"12.2.1_git20220924-r4","apk:git":"2.38.5-r0","apk:gmp":"6.2.1-r2","apk:isl24":"0.24-r1","apk:libacl":"2.3.1-r1","apk:libatomic":"12.2.1_git20220924-r4","apk:libcrypto3":"3.0.8-r4","apk:libcurl":"8.0.1-r0","apk:libexpat":"2.5.0-r0","apk:libgcc":"12.2.1_git20220924-r4","apk:libgomp":"12.2.1_git20220924-r4","apk:libpcre16":"8.45-r2","apk:libpcre32":"8.45-r2","apk:libpcrecpp":"8.45-r2","apk:libsass":"3.6.5-r0","apk:libsass-dev":"3.6.5-r0","apk:libssl3":"3.0.8-r4","apk:libstdc++":"12.2.1_git20220924-r4","apk:lz4-libs":"1.9.4-r1","apk:mpc1":"1.2.1-r1","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.3-r4","apk:musl-dev":"1.2.3-r4","apk:ncurses-libs":"6.3_p20221119-r0","apk:ncurses-terminfo-base":"6.3_p20221119-r0","apk:nghttp2-libs":"1.51.0-r0","apk:openssl":"3.0.8-r4","apk:openssl-dev":"3.0.8-r4","apk:pcre":"8.45-r2","apk:pcre-dev":"8.45-r2","apk:pcre2":"10.42-r0","apk:pkgconf":"1.9.4-r0","apk:popt":"1.19-r0","apk:readline":"8.2.0-r0","apk:rsync":"3.2.7-r0","apk:sqlite-libs":"3.40.1-r0","apk:zlib":"1.2.13-r0","apk:zstd-libs":"1.5.5-r0","github:nim-lang/nim":"v1.6.12","image:alpine":"e05ad3477f38c022bccca78bf22d39f9355bd07a65f4b7d224324c328a84d51b","image:base":"ef8b65fda5d776551a87f970b02ebd1aa67f98c60b68637d910429a4e18be9b9"}
+# BOM: {"apk:bash":"5.2.15-r0","apk:binutils":"2.39-r2","apk:brotli-libs":"1.0.9-r9","apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:ca-certificates":"20230506-r0","apk:curl":"8.0.1-r0","apk:gcc":"12.2.1_git20220924-r4","apk:git":"2.38.5-r0","apk:gmp":"6.2.1-r2","apk:isl24":"0.24-r1","apk:libacl":"2.3.1-r1","apk:libatomic":"12.2.1_git20220924-r4","apk:libcrypto3":"3.0.8-r4","apk:libcurl":"8.0.1-r0","apk:libexpat":"2.5.0-r0","apk:libgcc":"12.2.1_git20220924-r4","apk:libgomp":"12.2.1_git20220924-r4","apk:libpcre16":"8.45-r2","apk:libpcre32":"8.45-r2","apk:libpcrecpp":"8.45-r2","apk:libsass":"3.6.5-r0","apk:libsass-dev":"3.6.5-r0","apk:libssl3":"3.0.8-r4","apk:libstdc++":"12.2.1_git20220924-r4","apk:lz4-libs":"1.9.4-r1","apk:mpc1":"1.2.1-r1","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.3-r4","apk:musl-dev":"1.2.3-r4","apk:ncurses-libs":"6.3_p20221119-r0","apk:ncurses-terminfo-base":"6.3_p20221119-r0","apk:nghttp2-libs":"1.51.0-r0","apk:openssl":"3.0.8-r4","apk:openssl-dev":"3.0.8-r4","apk:pcre":"8.45-r2","apk:pcre-dev":"8.45-r2","apk:pcre2":"10.42-r0","apk:pkgconf":"1.9.4-r0","apk:popt":"1.19-r0","apk:readline":"8.2.0-r0","apk:rsync":"3.2.7-r0","apk:sqlite-libs":"3.40.1-r0","apk:zlib":"1.2.13-r0","apk:zstd-libs":"1.5.5-r0","github:nim-lang/nim":"v1.6.12","image:alpine":"e05ad3477f38c022bccca78bf22d39f9355bd07a65f4b7d224324c328a84d51b","image:base":"2cf8662a916097fbef5fc9aa384be213a8bf229277931807b092431c9c77e90f"}
 
 FROM reg.g5d.dev/alpine@sha256:e05ad3477f38c022bccca78bf22d39f9355bd07a65f4b7d224324c328a84d51b as nimbuild
 
@@ -13,7 +13,7 @@ RUN set -eux; \
         brotli-libs=1.0.9-r9 \
         busybox=1.35.0-r29 \
         busybox-binsh=1.35.0-r29 \
-        ca-certificates=20220614-r4 \
+        ca-certificates=20230506-r0 \
         curl=8.0.1-r0 \
         libcrypto3=3.0.8-r4 \
         libcurl=8.0.1-r0 \
@@ -39,7 +39,7 @@ RUN set -eux; \
         brotli-libs=1.0.9-r9 \
         busybox=1.35.0-r29 \
         busybox-binsh=1.35.0-r29 \
-        ca-certificates=20220614-r4 \
+        ca-certificates=20230506-r0 \
         gcc=12.2.1_git20220924-r4 \
         git=2.38.5-r0 \
         gmp=6.2.1-r2 \
@@ -73,7 +73,7 @@ RUN set -eux; \
         brotli-libs=1.0.9-r9 \
         busybox=1.35.0-r29 \
         busybox-binsh=1.35.0-r29 \
-        ca-certificates=20220614-r4 \
+        ca-certificates=20230506-r0 \
         gcc=12.2.1_git20220924-r4 \
         git=2.38.5-r0 \
         gmp=6.2.1-r2 \
@@ -134,7 +134,7 @@ RUN set -eux; \
       apk info -qL "${DEP}" | rsync -aq '--files-from=-' / /rootfs/; \
     done;
 
-FROM reg.g5d.dev/base@sha256:ef8b65fda5d776551a87f970b02ebd1aa67f98c60b68637d910429a4e18be9b9
+FROM reg.g5d.dev/base@sha256:2cf8662a916097fbef5fc9aa384be213a8bf229277931807b092431c9c77e90f
 
 copy --from=build --chown=65532:65532 /rootfs/ /
 WORKDIR /home/nonroot
