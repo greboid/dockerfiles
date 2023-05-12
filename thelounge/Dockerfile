@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/thelounge/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r9","apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:ca-certificates":"20230506-r0","apk:git":"2.38.5-r0","apk:libcrypto3":"3.0.8-r4","apk:libcurl":"8.0.1-r0","apk:libexpat":"2.5.0-r0","apk:libssl3":"3.0.8-r4","apk:musl":"1.2.3-r4","apk:nghttp2-libs":"1.51.0-r0","apk:pcre2":"10.42-r0","apk:zlib":"1.2.13-r0","github:thelounge/thelounge":"v4.3.1","image:node":"7cf55bd037d6c2582aa3e967937ccc8b00135ead0c0214fa1e0f10a19909d622"}
+# BOM: {"apk:brotli-libs":"1.0.9-r14","apk:busybox":"1.36.0-r9","apk:busybox-binsh":"1.36.0-r9","apk:ca-certificates":"20230506-r0","apk:git":"2.40.1-r0","apk:libcrypto3":"3.1.0-r4","apk:libcurl":"8.0.1-r2","apk:libexpat":"2.5.0-r1","apk:libidn2":"2.3.4-r1","apk:libssl3":"3.1.0-r4","apk:libunistring":"1.1-r1","apk:musl":"1.2.4-r0","apk:nghttp2-libs":"1.53.0-r0","apk:pcre2":"10.42-r1","apk:zlib":"1.2.13-r1","github:thelounge/thelounge":"v4.3.1","image:node":"a06d1615e5ea0e213066ac531212ef5a08f425080c16508314abc5561d37b287"}
 
-FROM reg.g5d.dev/node@sha256:7cf55bd037d6c2582aa3e967937ccc8b00135ead0c0214fa1e0f10a19909d622 as yarnbase
+FROM reg.g5d.dev/node@sha256:a06d1615e5ea0e213066ac531212ef5a08f425080c16508314abc5561d37b287 as yarnbase
 
 WORKDIR /app
 
@@ -14,19 +14,21 @@ ARG TAG="v4.3.1"
 WORKDIR  /app
 RUN set -eux; \
     apk add --no-cache \
-        brotli-libs=1.0.9-r9\
-        busybox=1.35.0-r29\
-        busybox-binsh=1.35.0-r29\
+        brotli-libs=1.0.9-r14\
+        busybox=1.36.0-r9\
+        busybox-binsh=1.36.0-r9\
         ca-certificates=20230506-r0\
-        git=2.38.5-r0\
-        libcrypto3=3.0.8-r4\
-        libcurl=8.0.1-r0\
-        libexpat=2.5.0-r0\
-        libssl3=3.0.8-r4\
-        musl=1.2.3-r4\
-        nghttp2-libs=1.51.0-r0\
-        pcre2=10.42-r0\
-        zlib=1.2.13-r0\
+        git=2.40.1-r0\
+        libcrypto3=3.1.0-r4\
+        libcurl=8.0.1-r2\
+        libexpat=2.5.0-r1\
+        libidn2=2.3.4-r1\
+        libssl3=3.1.0-r4\
+        libunistring=1.1-r1\
+        musl=1.2.4-r0\
+        nghttp2-libs=1.53.0-r0\
+        pcre2=10.42-r1\
+        zlib=1.2.13-r1\
         ; \
     yarn global add thelounge@$TAG; \
     mkdir /home/nonroot; \
