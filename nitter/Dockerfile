@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/nitter/Dockerfile.gotpl
-# BOM: {"apk:bash":"5.2.15-r0","apk:binutils":"2.39-r2","apk:brotli-libs":"1.0.9-r9","apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:ca-certificates":"20230506-r0","apk:curl":"8.0.1-r0","apk:gcc":"12.2.1_git20220924-r4","apk:git":"2.38.5-r0","apk:gmp":"6.2.1-r2","apk:isl24":"0.24-r1","apk:libacl":"2.3.1-r1","apk:libatomic":"12.2.1_git20220924-r4","apk:libcrypto3":"3.0.8-r4","apk:libcurl":"8.0.1-r0","apk:libexpat":"2.5.0-r0","apk:libgcc":"12.2.1_git20220924-r4","apk:libgomp":"12.2.1_git20220924-r4","apk:libpcre16":"8.45-r2","apk:libpcre32":"8.45-r2","apk:libpcrecpp":"8.45-r2","apk:libsass":"3.6.5-r0","apk:libsass-dev":"3.6.5-r0","apk:libssl3":"3.0.8-r4","apk:libstdc++":"12.2.1_git20220924-r4","apk:lz4-libs":"1.9.4-r1","apk:mpc1":"1.2.1-r1","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.3-r4","apk:musl-dev":"1.2.3-r4","apk:ncurses-libs":"6.3_p20221119-r0","apk:ncurses-terminfo-base":"6.3_p20221119-r0","apk:nghttp2-libs":"1.51.0-r0","apk:openssl":"3.0.8-r4","apk:openssl-dev":"3.0.8-r4","apk:pcre":"8.45-r2","apk:pcre-dev":"8.45-r2","apk:pcre2":"10.42-r0","apk:pkgconf":"1.9.4-r0","apk:popt":"1.19-r0","apk:readline":"8.2.0-r0","apk:rsync":"3.2.7-r0","apk:sqlite-libs":"3.40.1-r0","apk:zlib":"1.2.13-r0","apk:zstd-libs":"1.5.5-r0","github:nim-lang/nim":"v1.6.12","image:alpine":"e05ad3477f38c022bccca78bf22d39f9355bd07a65f4b7d224324c328a84d51b","image:base":"2cf8662a916097fbef5fc9aa384be213a8bf229277931807b092431c9c77e90f"}
+# BOM: {"apk:bash":"5.2.15-r3","apk:binutils":"2.40-r5","apk:brotli-libs":"1.0.9-r14","apk:busybox":"1.36.0-r9","apk:busybox-binsh":"1.36.0-r9","apk:ca-certificates":"20230506-r0","apk:curl":"8.0.1-r2","apk:gcc":"12.2.1_git20220924-r10","apk:git":"2.40.1-r0","apk:gmp":"6.2.1-r3","apk:isl25":"0.25-r2","apk:libacl":"2.3.1-r3","apk:libatomic":"12.2.1_git20220924-r10","apk:libcrypto3":"3.1.0-r4","apk:libcurl":"8.0.1-r2","apk:libexpat":"2.5.0-r1","apk:libgcc":"12.2.1_git20220924-r10","apk:libgomp":"12.2.1_git20220924-r10","apk:libidn2":"2.3.4-r1","apk:libncursesw":"6.4_p20230506-r0","apk:libpcre16":"8.45-r3","apk:libpcre32":"8.45-r3","apk:libpcrecpp":"8.45-r3","apk:libsass":"3.6.5-r0","apk:libsass-dev":"3.6.5-r0","apk:libssl3":"3.1.0-r4","apk:libstdc++":"12.2.1_git20220924-r10","apk:libunistring":"1.1-r1","apk:libxxhash":"0.8.1-r4","apk:lz4-libs":"1.9.4-r4","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.0-r1","apk:musl":"1.2.4-r0","apk:musl-dev":"1.2.4-r0","apk:ncurses-terminfo-base":"6.4_p20230506-r0","apk:nghttp2-libs":"1.53.0-r0","apk:openssl":"3.1.0-r4","apk:openssl-dev":"3.1.0-r4","apk:pcre":"8.45-r3","apk:pcre-dev":"8.45-r3","apk:pcre2":"10.42-r1","apk:pkgconf":"1.9.5-r0","apk:popt":"1.19-r2","apk:readline":"8.2.1-r1","apk:rsync":"3.2.7-r3","apk:sqlite-libs":"3.41.2-r2","apk:zlib":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","github:nim-lang/nim":"v1.6.12","image:alpine":"5b99fedf90b1c3a4d68ed2cac55f46916b91fab77e98f59de05998368fcbf203","image:base":"a98010a83248020eabd68f86ab1c1711d43693c5bb2e0db86e227b37af2e7ec1"}
 
-FROM reg.g5d.dev/alpine@sha256:e05ad3477f38c022bccca78bf22d39f9355bd07a65f4b7d224324c328a84d51b as nimbuild
+FROM reg.g5d.dev/alpine@sha256:5b99fedf90b1c3a4d68ed2cac55f46916b91fab77e98f59de05998368fcbf203 as nimbuild
 
 ENV TAG=v1.6.12
 
@@ -10,17 +10,19 @@ ENV PATH=/opt/nim/bin:/opt/nimble/bin:$PATH
 RUN set -eux; \
     # Dependencies and source for bootstrapping
     apk add --no-cache --virtual .build-deps \
-        brotli-libs=1.0.9-r9 \
-        busybox=1.35.0-r29 \
-        busybox-binsh=1.35.0-r29 \
+        brotli-libs=1.0.9-r14 \
+        busybox=1.36.0-r9 \
+        busybox-binsh=1.36.0-r9 \
         ca-certificates=20230506-r0 \
-        curl=8.0.1-r0 \
-        libcrypto3=3.0.8-r4 \
-        libcurl=8.0.1-r0 \
-        libssl3=3.0.8-r4 \
-        musl=1.2.3-r4 \
-        nghttp2-libs=1.51.0-r0 \
-        zlib=1.2.13-r0 \
+        curl=8.0.1-r2 \
+        libcrypto3=3.1.0-r4 \
+        libcurl=8.0.1-r2 \
+        libidn2=2.3.4-r1 \
+        libssl3=3.1.0-r4 \
+        libunistring=1.1-r1 \
+        musl=1.2.4-r0 \
+        nghttp2-libs=1.53.0-r0 \
+        zlib=1.2.13-r1 \
         ; \
     curl -sfLo nim.tar.xz https://nim-lang.org/download/nim-${TAG:1}-linux_x64.tar.xz; \
     curl -sfLo nim.tar.xz.sha256 https://nim-lang.org/download/nim-${TAG:1}-linux_x64.tar.xz.sha256; \
@@ -35,30 +37,33 @@ RUN set -eux; \
         /nim.tar.* \
         /tmp/nim; \
     apk add --no-cache \
-        binutils=2.39-r2 \
-        brotli-libs=1.0.9-r9 \
-        busybox=1.35.0-r29 \
-        busybox-binsh=1.35.0-r29 \
+        binutils=2.40-r5 \
+        brotli-libs=1.0.9-r14 \
+        busybox=1.36.0-r9 \
+        busybox-binsh=1.36.0-r9 \
         ca-certificates=20230506-r0 \
-        gcc=12.2.1_git20220924-r4 \
-        git=2.38.5-r0 \
-        gmp=6.2.1-r2 \
-        isl24=0.24-r1 \
-        libatomic=12.2.1_git20220924-r4 \
-        libcrypto3=3.0.8-r4 \
-        libcurl=8.0.1-r0 \
-        libexpat=2.5.0-r0 \
-        libgcc=12.2.1_git20220924-r4 \
-        libgomp=12.2.1_git20220924-r4 \
-        libssl3=3.0.8-r4 \
-        libstdc++=12.2.1_git20220924-r4 \
-        mpc1=1.2.1-r1 \
-        mpfr4=4.1.0-r0 \
-        musl=1.2.3-r4 \
-        musl-dev=1.2.3-r4 \
-        nghttp2-libs=1.51.0-r0 \
-        pcre2=10.42-r0 \
-        zlib=1.2.13-r0 \
+        gcc=12.2.1_git20220924-r10 \
+        git=2.40.1-r0 \
+        gmp=6.2.1-r3 \
+        isl25=0.25-r2 \
+        libatomic=12.2.1_git20220924-r10 \
+        libcrypto3=3.1.0-r4 \
+        libcurl=8.0.1-r2 \
+        libexpat=2.5.0-r1 \
+        libgcc=12.2.1_git20220924-r10 \
+        libgomp=12.2.1_git20220924-r10 \
+        libidn2=2.3.4-r1 \
+        libssl3=3.1.0-r4 \
+        libstdc++=12.2.1_git20220924-r10 \
+        libunistring=1.1-r1 \
+        mpc1=1.3.1-r1 \
+        mpfr4=4.2.0-r1 \
+        musl=1.2.4-r0 \
+        musl-dev=1.2.4-r0 \
+        nghttp2-libs=1.53.0-r0 \
+        pcre2=10.42-r1 \
+        zlib=1.2.13-r1 \
+        zstd-libs=1.5.5-r4 \
         ;
 
 FROM nimbuild as build
@@ -68,50 +73,53 @@ ENV TAG=bc219aa792cc0e4117888b2036a969559f4f2689
 
 RUN set -eux; \
     apk add --no-cache \
-        bash=5.2.15-r0 \
-        binutils=2.39-r2 \
-        brotli-libs=1.0.9-r9 \
-        busybox=1.35.0-r29 \
-        busybox-binsh=1.35.0-r29 \
+        bash=5.2.15-r3 \
+        binutils=2.40-r5 \
+        brotli-libs=1.0.9-r14 \
+        busybox=1.36.0-r9 \
+        busybox-binsh=1.36.0-r9 \
         ca-certificates=20230506-r0 \
-        gcc=12.2.1_git20220924-r4 \
-        git=2.38.5-r0 \
-        gmp=6.2.1-r2 \
-        isl24=0.24-r1 \
-        libacl=2.3.1-r1 \
-        libatomic=12.2.1_git20220924-r4 \
-        libcrypto3=3.0.8-r4 \
-        libcurl=8.0.1-r0 \
-        libexpat=2.5.0-r0 \
-        libgcc=12.2.1_git20220924-r4 \
-        libgomp=12.2.1_git20220924-r4 \
-        libpcre16=8.45-r2 \
-        libpcre32=8.45-r2 \
-        libpcrecpp=8.45-r2 \
+        gcc=12.2.1_git20220924-r10 \
+        git=2.40.1-r0 \
+        gmp=6.2.1-r3 \
+        isl25=0.25-r2 \
+        libacl=2.3.1-r3 \
+        libatomic=12.2.1_git20220924-r10 \
+        libcrypto3=3.1.0-r4 \
+        libcurl=8.0.1-r2 \
+        libexpat=2.5.0-r1 \
+        libgcc=12.2.1_git20220924-r10 \
+        libgomp=12.2.1_git20220924-r10 \
+        libidn2=2.3.4-r1 \
+        libncursesw=6.4_p20230506-r0 \
+        libpcre16=8.45-r3 \
+        libpcre32=8.45-r3 \
+        libpcrecpp=8.45-r3 \
         libsass=3.6.5-r0 \
         libsass-dev=3.6.5-r0 \
-        libssl3=3.0.8-r4 \
-        libstdc++=12.2.1_git20220924-r4 \
-        lz4-libs=1.9.4-r1 \
-        mpc1=1.2.1-r1 \
-        mpfr4=4.1.0-r0 \
-        musl=1.2.3-r4 \
-        musl-dev=1.2.3-r4 \
-        ncurses-libs=6.3_p20221119-r0 \
-        ncurses-terminfo-base=6.3_p20221119-r0 \
-        nghttp2-libs=1.51.0-r0 \
-        openssl=3.0.8-r4 \
-        openssl-dev=3.0.8-r4 \
-        pcre=8.45-r2 \
-        pcre-dev=8.45-r2 \
-        pcre2=10.42-r0 \
-        pkgconf=1.9.4-r0 \
-        popt=1.19-r0 \
-        readline=8.2.0-r0 \
-        rsync=3.2.7-r0 \
-        sqlite-libs=3.40.1-r0 \
-        zlib=1.2.13-r0 \
-        zstd-libs=1.5.5-r0 \
+        libssl3=3.1.0-r4 \
+        libstdc++=12.2.1_git20220924-r10 \
+        libunistring=1.1-r1 \
+        libxxhash=0.8.1-r4 \
+        lz4-libs=1.9.4-r4 \
+        mpc1=1.3.1-r1 \
+        mpfr4=4.2.0-r1 \
+        musl=1.2.4-r0 \
+        musl-dev=1.2.4-r0 \
+        ncurses-terminfo-base=6.4_p20230506-r0 \
+        nghttp2-libs=1.53.0-r0 \
+        openssl=3.1.0-r4 \
+        openssl-dev=3.1.0-r4 \
+        pcre=8.45-r3 \
+        pcre-dev=8.45-r3 \
+        pcre2=10.42-r1 \
+        pkgconf=1.9.5-r0 \
+        popt=1.19-r2 \
+        readline=8.2.1-r1 \
+        rsync=3.2.7-r3 \
+        sqlite-libs=3.41.2-r2 \
+        zlib=1.2.13-r1 \
+        zstd-libs=1.5.5-r4 \
         ; \
     git clone -b master --single-branch https://github.com/zedeus/nitter /src/nitter; \
     cd /src/nitter; \
@@ -134,7 +142,7 @@ RUN set -eux; \
       apk info -qL "${DEP}" | rsync -aq '--files-from=-' / /rootfs/; \
     done;
 
-FROM reg.g5d.dev/base@sha256:2cf8662a916097fbef5fc9aa384be213a8bf229277931807b092431c9c77e90f
+FROM reg.g5d.dev/base@sha256:a98010a83248020eabd68f86ab1c1711d43693c5bb2e0db86e227b37af2e7ec1
 
 copy --from=build --chown=65532:65532 /rootfs/ /
 WORKDIR /home/nonroot
