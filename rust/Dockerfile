@@ -17,4 +17,5 @@ gpg --batch --verify rust.tar.gz.asc rust.tar.gz; \
 tar -C /tmp -xf rust.tar.gz; \
 mv /tmp/rust-* /tmp/rust; \
 cd /tmp/rust; \
-/tmp/rust/install.sh --verbose
+/tmp/rust/install.sh --verbose; \
+rm -rf /rmp/rust
