@@ -20,6 +20,6 @@ RUN set -eux; \
 apk add curl gpg gpg-agent musl-utils bash libgcc; \
 echo $(cat rustup-init.sha256 | awk '{print $1}') *rustup-init | sha256sum -wc -; \
 chmod +x rustup-init; \
-./rustup-init; \
+./rustup-init -y --no-modify-path --profile minimal --default-toolchain ${RUSTTAG} --default-host x86_64-unknown-linux-musl; \
 rm rustup-init*
 chmod -R a+w $RUSTUP_HOME $CARGO_HOME
