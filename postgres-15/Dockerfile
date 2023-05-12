@@ -1,27 +1,29 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/postgres-15/Dockerfile.gotpl
-# BOM: {"apk:bash":"5.2.15-r0","apk:binutils":"2.39-r2","apk:brotli-libs":"1.0.9-r9","apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:ca-certificates":"20230506-r0","apk:curl":"8.0.1-r0","apk:g++":"12.2.1_git20220924-r4","apk:gcc":"12.2.1_git20220924-r4","apk:git":"2.38.5-r0","apk:gmp":"6.2.1-r2","apk:isl24":"0.24-r1","apk:libacl":"2.3.1-r1","apk:libatomic":"12.2.1_git20220924-r4","apk:libc-dev":"0.7.2-r3","apk:libcrypto3":"3.0.8-r4","apk:libcurl":"8.0.1-r0","apk:libexpat":"2.5.0-r0","apk:libgcc":"12.2.1_git20220924-r4","apk:libgomp":"12.2.1_git20220924-r4","apk:libhistory":"8.2.0-r0","apk:libssl3":"3.0.8-r4","apk:libstdc++":"12.2.1_git20220924-r4","apk:libstdc++-dev":"12.2.1_git20220924-r4","apk:linux-headers":"5.19.5-r0","apk:lz4-libs":"1.9.4-r1","apk:make":"4.3-r1","apk:mpc1":"1.2.1-r1","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.3-r4","apk:musl-dev":"1.2.3-r4","apk:musl-locales":"0.1.0-r0","apk:ncurses-dev":"6.3_p20221119-r0","apk:ncurses-libs":"6.3_p20221119-r0","apk:ncurses-terminfo-base":"6.3_p20221119-r0","apk:nghttp2-libs":"1.51.0-r0","apk:openssl-dev":"3.0.8-r4","apk:pcre2":"10.42-r0","apk:pkgconf":"1.9.4-r0","apk:popt":"1.19-r0","apk:readline":"8.2.0-r0","apk:readline-dev":"8.2.0-r0","apk:rsync":"3.2.7-r0","apk:scanelf":"1.3.5-r1","apk:zlib":"1.2.13-r0","apk:zlib-dev":"1.2.13-r0","apk:zstd-libs":"1.5.5-r0","image:alpine":"e05ad3477f38c022bccca78bf22d39f9355bd07a65f4b7d224324c328a84d51b","image:baseroot":"fc134ce385569747e9c93e1f1e117040255d231e6173afc7ef2d3b176063e710","postgres15":"15.2"}
+# BOM: {"apk:bash":"5.2.15-r3","apk:binutils":"2.40-r5","apk:brotli-libs":"1.0.9-r14","apk:busybox":"1.36.0-r9","apk:busybox-binsh":"1.36.0-r9","apk:ca-certificates":"20230506-r0","apk:curl":"8.0.1-r2","apk:g++":"12.2.1_git20220924-r10","apk:gcc":"12.2.1_git20220924-r10","apk:git":"2.40.1-r0","apk:gmp":"6.2.1-r3","apk:isl25":"0.25-r2","apk:libacl":"2.3.1-r3","apk:libatomic":"12.2.1_git20220924-r10","apk:libc-dev":"0.7.2-r5","apk:libcrypto3":"3.1.0-r4","apk:libcurl":"8.0.1-r2","apk:libexpat":"2.5.0-r1","apk:libformw":"6.4_p20230506-r0","apk:libgcc":"12.2.1_git20220924-r10","apk:libgomp":"12.2.1_git20220924-r10","apk:libhistory":"8.2.1-r1","apk:libidn2":"2.3.4-r1","apk:libintl":"0.21.1-r5","apk:libmenuw":"6.4_p20230506-r0","apk:libncurses++":"6.4_p20230506-r0","apk:libncursesw":"6.4_p20230506-r0","apk:libpanelw":"6.4_p20230506-r0","apk:libssl3":"3.1.0-r4","apk:libstdc++":"12.2.1_git20220924-r10","apk:libstdc++-dev":"12.2.1_git20220924-r10","apk:libunistring":"1.1-r1","apk:libxxhash":"0.8.1-r4","apk:linux-headers":"6.3-r0","apk:lz4-libs":"1.9.4-r4","apk:make":"4.4.1-r1","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.0-r1","apk:musl":"1.2.4-r0","apk:musl-dev":"1.2.4-r0","apk:musl-locales":"0.1.0-r1","apk:ncurses-dev":"6.4_p20230506-r0","apk:ncurses-terminfo-base":"6.4_p20230506-r0","apk:nghttp2-libs":"1.53.0-r0","apk:openssl-dev":"3.1.0-r4","apk:pcre2":"10.42-r1","apk:pkgconf":"1.9.5-r0","apk:popt":"1.19-r2","apk:readline":"8.2.1-r1","apk:readline-dev":"8.2.1-r1","apk:rsync":"3.2.7-r3","apk:scanelf":"1.3.7-r1","apk:zlib":"1.2.13-r1","apk:zlib-dev":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","image:alpine":"5b99fedf90b1c3a4d68ed2cac55f46916b91fab77e98f59de05998368fcbf203","image:baseroot":"e8223af049600b52310ee1879444afc3d633fb3af91a2139ead53d22b4ad156d","postgres15":"15.3"}
 
-FROM reg.g5d.dev/alpine@sha256:e05ad3477f38c022bccca78bf22d39f9355bd07a65f4b7d224324c328a84d51b as build
+FROM reg.g5d.dev/alpine@sha256:5b99fedf90b1c3a4d68ed2cac55f46916b91fab77e98f59de05998368fcbf203 as build
 
-ARG ARCHIVE_URL="https://ftp.postgresql.org/pub/source/v15.2/postgresql-15.2.tar.bz2"
-ARG ARCHIVE_SUM="99a2171fc3d6b5b5f56b757a7a3cb85d509a38e4273805def23941ed2b8468c7"
+ARG ARCHIVE_URL="https://ftp.postgresql.org/pub/source/v15.3/postgresql-15.3.tar.bz2"
+ARG ARCHIVE_SUM="ffc7d4891f00ffbf5c3f4eab7fbbced8460b8c0ee63c5a5167133b9e6599d932"
 ARG ENTRYPOINT=39c3dc7046f5f7909179a51e25f2a61158781d57
 
 RUN set -eux; \
     apk add --no-cache \
-        brotli-libs=1.0.9-r9 \
-        busybox=1.35.0-r29 \
-        busybox-binsh=1.35.0-r29 \
+        brotli-libs=1.0.9-r14 \
+        busybox=1.36.0-r9 \
+        busybox-binsh=1.36.0-r9 \
         ca-certificates=20230506-r0 \
-        git=2.38.5-r0 \
-        libcrypto3=3.0.8-r4 \
-        libcurl=8.0.1-r0 \
-        libexpat=2.5.0-r0 \
-        libssl3=3.0.8-r4 \
-        musl=1.2.3-r4 \
-        nghttp2-libs=1.51.0-r0 \
-        pcre2=10.42-r0 \
-        zlib=1.2.13-r0 \
+        git=2.40.1-r0 \
+        libcrypto3=3.1.0-r4 \
+        libcurl=8.0.1-r2 \
+        libexpat=2.5.0-r1 \
+        libidn2=2.3.4-r1 \
+        libssl3=3.1.0-r4 \
+        libunistring=1.1-r1 \
+        musl=1.2.4-r0 \
+        nghttp2-libs=1.53.0-r0 \
+        pcre2=10.42-r1 \
+        zlib=1.2.13-r1 \
         ; \
     git clone -b master --single-branch https://github.com/docker-library/postgres /src/docker-postgres; \
     cd /src/docker-postgres; \
@@ -29,50 +31,58 @@ RUN set -eux; \
 
 RUN set -eux; \
     apk add --no-cache \
-        bash=5.2.15-r0 \
-        binutils=2.39-r2 \
-        brotli-libs=1.0.9-r9 \
-        busybox=1.35.0-r29 \
-        busybox-binsh=1.35.0-r29 \
+        bash=5.2.15-r3 \
+        binutils=2.40-r5 \
+        brotli-libs=1.0.9-r14 \
+        busybox=1.36.0-r9 \
+        busybox-binsh=1.36.0-r9 \
         ca-certificates=20230506-r0 \
-        curl=8.0.1-r0 \
-        g++=12.2.1_git20220924-r4 \
-        gcc=12.2.1_git20220924-r4 \
-        gmp=6.2.1-r2 \
-        isl24=0.24-r1 \
-        libacl=2.3.1-r1 \
-        libatomic=12.2.1_git20220924-r4 \
-        libc-dev=0.7.2-r3 \
-        libcrypto3=3.0.8-r4 \
-        libcurl=8.0.1-r0 \
-        libgcc=12.2.1_git20220924-r4 \
-        libgomp=12.2.1_git20220924-r4 \
-        libhistory=8.2.0-r0 \
-        libssl3=3.0.8-r4 \
-        libstdc++=12.2.1_git20220924-r4 \
-        libstdc++-dev=12.2.1_git20220924-r4 \
-        linux-headers=5.19.5-r0 \
-        lz4-libs=1.9.4-r1 \
-        make=4.3-r1 \
-        mpc1=1.2.1-r1 \
-        mpfr4=4.1.0-r0 \
-        musl=1.2.3-r4 \
-        musl-dev=1.2.3-r4 \
-        musl-locales=0.1.0-r0 \
-        ncurses-dev=6.3_p20221119-r0 \
-        ncurses-libs=6.3_p20221119-r0 \
-        ncurses-terminfo-base=6.3_p20221119-r0 \
-        nghttp2-libs=1.51.0-r0 \
-        openssl-dev=3.0.8-r4 \
-        pkgconf=1.9.4-r0 \
-        popt=1.19-r0 \
-        readline=8.2.0-r0 \
-        readline-dev=8.2.0-r0 \
-        rsync=3.2.7-r0 \
-        scanelf=1.3.5-r1 \
-        zlib=1.2.13-r0 \
-        zlib-dev=1.2.13-r0 \
-        zstd-libs=1.5.5-r0 \
+        curl=8.0.1-r2 \
+        g++=12.2.1_git20220924-r10 \
+        gcc=12.2.1_git20220924-r10 \
+        gmp=6.2.1-r3 \
+        isl25=0.25-r2 \
+        libacl=2.3.1-r3 \
+        libatomic=12.2.1_git20220924-r10 \
+        libc-dev=0.7.2-r5 \
+        libcrypto3=3.1.0-r4 \
+        libcurl=8.0.1-r2 \
+        libformw=6.4_p20230506-r0 \
+        libgcc=12.2.1_git20220924-r10 \
+        libgomp=12.2.1_git20220924-r10 \
+        libhistory=8.2.1-r1 \
+        libidn2=2.3.4-r1 \
+        libintl=0.21.1-r5 \
+        libmenuw=6.4_p20230506-r0 \
+        libncurses++=6.4_p20230506-r0 \
+        libncursesw=6.4_p20230506-r0 \
+        libpanelw=6.4_p20230506-r0 \
+        libssl3=3.1.0-r4 \
+        libstdc++=12.2.1_git20220924-r10 \
+        libstdc++-dev=12.2.1_git20220924-r10 \
+        libunistring=1.1-r1 \
+        libxxhash=0.8.1-r4 \
+        linux-headers=6.3-r0 \
+        lz4-libs=1.9.4-r4 \
+        make=4.4.1-r1 \
+        mpc1=1.3.1-r1 \
+        mpfr4=4.2.0-r1 \
+        musl=1.2.4-r0 \
+        musl-dev=1.2.4-r0 \
+        musl-locales=0.1.0-r1 \
+        ncurses-dev=6.4_p20230506-r0 \
+        ncurses-terminfo-base=6.4_p20230506-r0 \
+        nghttp2-libs=1.53.0-r0 \
+        openssl-dev=3.1.0-r4 \
+        pkgconf=1.9.5-r0 \
+        popt=1.19-r2 \
+        readline=8.2.1-r1 \
+        readline-dev=8.2.1-r1 \
+        rsync=3.2.7-r3 \
+        scanelf=1.3.7-r1 \
+        zlib=1.2.13-r1 \
+        zlib-dev=1.2.13-r1 \
+        zstd-libs=1.5.5-r4 \
         ; \
     curl -sfLo postgresql.tar.bz2 $ARCHIVE_URL; \
     echo "$ARCHIVE_SUM *postgresql.tar.bz2" | sha256sum -wc -; \
@@ -106,7 +116,7 @@ RUN set -eux; \
 
 RUN ls -lR /rootfs/
 
-FROM reg.g5d.dev/baseroot@sha256:fc134ce385569747e9c93e1f1e117040255d231e6173afc7ef2d3b176063e710
+FROM reg.g5d.dev/baseroot@sha256:e8223af049600b52310ee1879444afc3d633fb3af91a2139ead53d22b4ad156d
 
 ENV LANG en_US.utf8
 ENV PGDATA=/var/lib/postgresql/data
