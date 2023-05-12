@@ -1,44 +1,46 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/hugo/Dockerfile.gotpl
-# BOM: {"apk:binutils":"2.39-r2","apk:g++":"12.2.1_git20220924-r4","apk:gcc":"12.2.1_git20220924-r4","apk:gmp":"6.2.1-r2","apk:grep":"3.8-r1","apk:isl24":"0.24-r1","apk:libatomic":"12.2.1_git20220924-r4","apk:libc-dev":"0.7.2-r3","apk:libgcc":"12.2.1_git20220924-r4","apk:libgomp":"12.2.1_git20220924-r4","apk:libstdc++":"12.2.1_git20220924-r4","apk:libstdc++-dev":"12.2.1_git20220924-r4","apk:mpc1":"1.2.1-r1","apk:mpfr4":"4.1.0-r0","apk:musl":"1.2.3-r4","apk:musl-dev":"1.2.3-r4","apk:pcre2":"10.42-r0","apk:zlib":"1.2.13-r0","github:gohugoio/hugo":"v0.111.3","image:baseglibc":"81af729c5ad262d34e8de60f696d40c7233544c9f74b26de60722cf0ba26aee2","image:golang":"5bb7e1c27710c2d0390e6b1456c52ee9d1702cb5e6c4b54cad653b6d1cf7deb4"}
+# BOM: {"apk:binutils":"2.40-r5","apk:g++":"12.2.1_git20220924-r10","apk:gcc":"12.2.1_git20220924-r10","apk:gmp":"6.2.1-r3","apk:grep":"3.10-r1","apk:isl25":"0.25-r2","apk:libatomic":"12.2.1_git20220924-r10","apk:libc-dev":"0.7.2-r5","apk:libgcc":"12.2.1_git20220924-r10","apk:libgomp":"12.2.1_git20220924-r10","apk:libstdc++":"12.2.1_git20220924-r10","apk:libstdc++-dev":"12.2.1_git20220924-r10","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.0-r1","apk:musl":"1.2.4-r0","apk:musl-dev":"1.2.4-r0","apk:pcre2":"10.42-r1","apk:zlib":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","github:gohugoio/hugo":"v0.111.3","image:baseglibc":"295354168dcf93fb06f923ded7da7bef8b36912482da78bcc779166480fd5ab8","image:golang":"66a0f83f512913ab9f9520ee62f62dbd46cd69039b07fd44b0393f14d1f70866"}
 
-FROM reg.g5d.dev/golang@sha256:5bb7e1c27710c2d0390e6b1456c52ee9d1702cb5e6c4b54cad653b6d1cf7deb4 AS build
+FROM reg.g5d.dev/golang@sha256:66a0f83f512913ab9f9520ee62f62dbd46cd69039b07fd44b0393f14d1f70866 AS build
 
 ARG TAG="v0.111.3"
 
 RUN set -eux; \
     apk add --no-cache \
-        binutils=2.39-r2 \
-        g++=12.2.1_git20220924-r4 \
-        gcc=12.2.1_git20220924-r4 \
-        gmp=6.2.1-r2 \
-        isl24=0.24-r1 \
-        libatomic=12.2.1_git20220924-r4 \
-        libc-dev=0.7.2-r3 \
-        libgcc=12.2.1_git20220924-r4 \
-        libgomp=12.2.1_git20220924-r4 \
-        libstdc++=12.2.1_git20220924-r4 \
-        libstdc++-dev=12.2.1_git20220924-r4 \
-        mpc1=1.2.1-r1 \
-        mpfr4=4.1.0-r0 \
-        musl=1.2.3-r4 \
-        musl-dev=1.2.3-r4 \
-        zlib=1.2.13-r0 \
+        binutils=2.40-r5 \
+        g++=12.2.1_git20220924-r10 \
+        gcc=12.2.1_git20220924-r10 \
+        gmp=6.2.1-r3 \
+        isl25=0.25-r2 \
+        libatomic=12.2.1_git20220924-r10 \
+        libc-dev=0.7.2-r5 \
+        libgcc=12.2.1_git20220924-r10 \
+        libgomp=12.2.1_git20220924-r10 \
+        libstdc++=12.2.1_git20220924-r10 \
+        libstdc++-dev=12.2.1_git20220924-r10 \
+        mpc1=1.3.1-r1 \
+        mpfr4=4.2.0-r1 \
+        musl=1.2.4-r0 \
+        musl-dev=1.2.4-r0 \
+        zlib=1.2.13-r1 \
+        zstd-libs=1.5.5-r4 \
         ; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/gohugoio/hugo /src/hugo; \
     cd /src/hugo; \
     CGO_ENABLED=1 go build -a -ldflags "-s" -ldflags "-w" -ldflags "-X github.com/gohugoio/hugo/common/hugo.buildDate=Unknown" -ldflags "-X github.com/gohugoio/hugo/common/hugo.commitHash=$TAG"  -ldflags "-X github.com/gohugoio/hugo/common/hugo.vendorInfo=greboid" -trimpath -tags extended -o main .; \
     mkdir -p /tmp/site;\
     apk add --no-cache \
-        binutils=2.39-r2 \
-        grep=3.8-r1 \
-        libgcc=12.2.1_git20220924-r4 \
-        libstdc++=12.2.1_git20220924-r4 \
-        musl=1.2.3-r4 \
-        pcre2=10.42-r0 \
-        zlib=1.2.13-r0 \
+        binutils=2.40-r5 \
+        grep=3.10-r1 \
+        libgcc=12.2.1_git20220924-r10 \
+        libstdc++=12.2.1_git20220924-r10 \
+        musl=1.2.4-r0 \
+        pcre2=10.42-r1 \
+        zlib=1.2.13-r1 \
+        zstd-libs=1.5.5-r4 \
         ;
 
-FROM reg.g5d.dev/baseglibc@sha256:81af729c5ad262d34e8de60f696d40c7233544c9f74b26de60722cf0ba26aee2
+FROM reg.g5d.dev/baseglibc@sha256:295354168dcf93fb06f923ded7da7bef8b36912482da78bcc779166480fd5ab8
 
 ENV HUGO_CACHEDIR="/build/cache"
 COPY --from=build /src/hugo/main /usr/bin/hugo
