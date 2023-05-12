@@ -48,6 +48,7 @@ cat $DIR/Dockerfile
 
 #Build and push image
 docker build -t $1/alpine $DIR
+docker push $1/alpine
 
 #Removing temp dir
 rm -rf $DIR
