@@ -18,7 +18,7 @@ curl -sfLo rustup-init.sha256 https://static.rust-lang.org/rustup/archive/${RUST
 
 RUN set -eux; \
 apk add curl gpg gpg-agent musl-utils bash libgcc; \
-echo $(cat rustup-init.sha256) *rustup-init | sha256sum -wc -; \
+echo $(cat rustup-init.sha256 | awk '{print $1}') *rustup-init | sha256sum -wc -; \
 chmod +x rustup-init; \
 https://static.rust-lang.org/rustup/archive/1.26.0/x86_64-unknown-linux-musl/rustup-init; \
 rm rustup-init*
