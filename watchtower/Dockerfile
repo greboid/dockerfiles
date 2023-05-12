@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/watchtower/Dockerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r9","apk:busybox":"1.35.0-r29","apk:busybox-binsh":"1.35.0-r29","apk:ca-certificates":"20230506-r0","apk:git":"2.38.5-r0","apk:libcrypto3":"3.0.8-r4","apk:libcurl":"8.0.1-r0","apk:libexpat":"2.5.0-r0","apk:libssl3":"3.0.8-r4","apk:musl":"1.2.3-r4","apk:nghttp2-libs":"1.51.0-r0","apk:pcre2":"10.42-r0","apk:zlib":"1.2.13-r0","github:containrrr/watchtower":"v1.5.3","image:base":"2cf8662a916097fbef5fc9aa384be213a8bf229277931807b092431c9c77e90f","image:golang":"5bb7e1c27710c2d0390e6b1456c52ee9d1702cb5e6c4b54cad653b6d1cf7deb4"}
+# BOM: {"apk:brotli-libs":"1.0.9-r14","apk:busybox":"1.36.0-r9","apk:busybox-binsh":"1.36.0-r9","apk:ca-certificates":"20230506-r0","apk:git":"2.40.1-r0","apk:libcrypto3":"3.1.0-r4","apk:libcurl":"8.0.1-r2","apk:libexpat":"2.5.0-r1","apk:libidn2":"2.3.4-r1","apk:libssl3":"3.1.0-r4","apk:libunistring":"1.1-r1","apk:musl":"1.2.4-r0","apk:nghttp2-libs":"1.53.0-r0","apk:pcre2":"10.42-r1","apk:zlib":"1.2.13-r1","github:containrrr/watchtower":"v1.5.3","image:base":"a98010a83248020eabd68f86ab1c1711d43693c5bb2e0db86e227b37af2e7ec1","image:golang":"66a0f83f512913ab9f9520ee62f62dbd46cd69039b07fd44b0393f14d1f70866"}
 
-FROM reg.g5d.dev/golang@sha256:5bb7e1c27710c2d0390e6b1456c52ee9d1702cb5e6c4b54cad653b6d1cf7deb4 AS build
+FROM reg.g5d.dev/golang@sha256:66a0f83f512913ab9f9520ee62f62dbd46cd69039b07fd44b0393f14d1f70866 AS build
 
 ARG TAG="v1.5.3"
 
@@ -9,19 +9,21 @@ COPY disable-slack.patch /
 
 RUN set -eux; \
     apk add --no-cache \
-        brotli-libs=1.0.9-r9\
-        busybox=1.35.0-r29\
-        busybox-binsh=1.35.0-r29\
+        brotli-libs=1.0.9-r14\
+        busybox=1.36.0-r9\
+        busybox-binsh=1.36.0-r9\
         ca-certificates=20230506-r0\
-        git=2.38.5-r0\
-        libcrypto3=3.0.8-r4\
-        libcurl=8.0.1-r0\
-        libexpat=2.5.0-r0\
-        libssl3=3.0.8-r4\
-        musl=1.2.3-r4\
-        nghttp2-libs=1.51.0-r0\
-        pcre2=10.42-r0\
-        zlib=1.2.13-r0\
+        git=2.40.1-r0\
+        libcrypto3=3.1.0-r4\
+        libcurl=8.0.1-r2\
+        libexpat=2.5.0-r1\
+        libidn2=2.3.4-r1\
+        libssl3=3.1.0-r4\
+        libunistring=1.1-r1\
+        musl=1.2.4-r0\
+        nghttp2-libs=1.53.0-r0\
+        pcre2=10.42-r1\
+        zlib=1.2.13-r1\
         ; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/containrrr/watchtower /go/src/github.com/containrrr/watchtower; \
     cd /go/src/github.com/containrrr/watchtower; \
@@ -29,7 +31,7 @@ RUN set -eux; \
     CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -ldflags "-X github.com/containrrr/watchtower/internal/meta.Version=$TAG" -o main .; \
     go-licenses save ./... --save_path=/notices;
 
-FROM reg.g5d.dev/base@sha256:2cf8662a916097fbef5fc9aa384be213a8bf229277931807b092431c9c77e90f
+FROM reg.g5d.dev/base@sha256:a98010a83248020eabd68f86ab1c1711d43693c5bb2e0db86e227b37af2e7ec1
 
 COPY --from=build /go/src/github.com/containrrr/watchtower/main /watchtower
 #COPY --from=build /notices /notices
