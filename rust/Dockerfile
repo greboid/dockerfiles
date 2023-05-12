@@ -23,3 +23,4 @@ chmod +x rustup-init; \
 ./rustup-init -y --no-modify-path --profile minimal --default-toolchain ${RUSTTAG} --default-host x86_64-unknown-linux-musl; \
 rm rustup-init*; \
 chmod -R a+w $RUSTUP_HOME $CARGO_HOME
+RUN ln -s $CARGO_HOME/bin/cargo /usr/local/bin/cargo
