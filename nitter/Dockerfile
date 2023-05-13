@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/nitter/Dockerfile.gotpl
-# BOM: {"apk:bash":"5.2.15-r3","apk:binutils":"2.40-r5","apk:brotli-libs":"1.0.9-r14","apk:busybox":"1.36.0-r9","apk:busybox-binsh":"1.36.0-r9","apk:ca-certificates":"20230506-r0","apk:curl":"8.0.1-r2","apk:gcc":"12.2.1_git20220924-r10","apk:git":"2.40.1-r0","apk:gmp":"6.2.1-r3","apk:isl25":"0.25-r2","apk:libacl":"2.3.1-r3","apk:libatomic":"12.2.1_git20220924-r10","apk:libcrypto3":"3.1.0-r4","apk:libcurl":"8.0.1-r2","apk:libexpat":"2.5.0-r1","apk:libgcc":"12.2.1_git20220924-r10","apk:libgomp":"12.2.1_git20220924-r10","apk:libidn2":"2.3.4-r1","apk:libncursesw":"6.4_p20230506-r0","apk:libpcre16":"8.45-r3","apk:libpcre32":"8.45-r3","apk:libpcrecpp":"8.45-r3","apk:libsass":"3.6.5-r0","apk:libsass-dev":"3.6.5-r0","apk:libssl3":"3.1.0-r4","apk:libstdc++":"12.2.1_git20220924-r10","apk:libunistring":"1.1-r1","apk:libxxhash":"0.8.1-r4","apk:lz4-libs":"1.9.4-r4","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.0-r1","apk:musl":"1.2.4-r0","apk:musl-dev":"1.2.4-r0","apk:ncurses-terminfo-base":"6.4_p20230506-r0","apk:nghttp2-libs":"1.53.0-r0","apk:openssl":"3.1.0-r4","apk:openssl-dev":"3.1.0-r4","apk:pcre":"8.45-r3","apk:pcre-dev":"8.45-r3","apk:pcre2":"10.42-r1","apk:pkgconf":"1.9.5-r0","apk:popt":"1.19-r2","apk:readline":"8.2.1-r1","apk:rsync":"3.2.7-r3","apk:sqlite-libs":"3.41.2-r2","apk:zlib":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","github:nim-lang/nim":"v1.6.12","image:alpine":"5b99fedf90b1c3a4d68ed2cac55f46916b91fab77e98f59de05998368fcbf203","image:base":"a98010a83248020eabd68f86ab1c1711d43693c5bb2e0db86e227b37af2e7ec1"}
+# BOM: {"apk:bash":"5.2.15-r3","apk:binutils":"2.40-r5","apk:brotli-libs":"1.0.9-r14","apk:busybox":"1.36.0-r9","apk:busybox-binsh":"1.36.0-r9","apk:ca-certificates":"20230506-r0","apk:curl":"8.0.1-r2","apk:gcc":"12.2.1_git20220924-r10","apk:git":"2.40.1-r0","apk:gmp":"6.2.1-r3","apk:isl25":"0.25-r2","apk:libacl":"2.3.1-r3","apk:libatomic":"12.2.1_git20220924-r10","apk:libcrypto3":"3.1.0-r4","apk:libcurl":"8.0.1-r2","apk:libexpat":"2.5.0-r1","apk:libgcc":"12.2.1_git20220924-r10","apk:libgomp":"12.2.1_git20220924-r10","apk:libidn2":"2.3.4-r1","apk:libncursesw":"6.4_p20230506-r0","apk:libpcre16":"8.45-r3","apk:libpcre32":"8.45-r3","apk:libpcrecpp":"8.45-r3","apk:libsass":"3.6.5-r0","apk:libsass-dev":"3.6.5-r0","apk:libssl3":"3.1.0-r4","apk:libstdc++":"12.2.1_git20220924-r10","apk:libunistring":"1.1-r1","apk:libxxhash":"0.8.1-r4","apk:lz4-libs":"1.9.4-r4","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.0-r2","apk:musl":"1.2.4-r0","apk:musl-dev":"1.2.4-r0","apk:ncurses-terminfo-base":"6.4_p20230506-r0","apk:nghttp2-libs":"1.53.0-r0","apk:openssl":"3.1.0-r4","apk:openssl-dev":"3.1.0-r4","apk:pcre":"8.45-r3","apk:pcre-dev":"8.45-r3","apk:pcre2":"10.42-r1","apk:pkgconf":"1.9.5-r0","apk:popt":"1.19-r2","apk:readline":"8.2.1-r1","apk:rsync":"3.2.7-r3","apk:sqlite-libs":"3.41.2-r2","apk:zlib":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","github:nim-lang/nim":"v1.6.12","image:alpine":"5b99fedf90b1c3a4d68ed2cac55f46916b91fab77e98f59de05998368fcbf203","image:base":"a98010a83248020eabd68f86ab1c1711d43693c5bb2e0db86e227b37af2e7ec1"}
 
 FROM reg.g5d.dev/alpine@sha256:5b99fedf90b1c3a4d68ed2cac55f46916b91fab77e98f59de05998368fcbf203 as nimbuild
 
@@ -57,7 +57,7 @@ RUN set -eux; \
         libstdc++=12.2.1_git20220924-r10 \
         libunistring=1.1-r1 \
         mpc1=1.3.1-r1 \
-        mpfr4=4.2.0-r1 \
+        mpfr4=4.2.0-r2 \
         musl=1.2.4-r0 \
         musl-dev=1.2.4-r0 \
         nghttp2-libs=1.53.0-r0 \
@@ -103,7 +103,7 @@ RUN set -eux; \
         libxxhash=0.8.1-r4 \
         lz4-libs=1.9.4-r4 \
         mpc1=1.3.1-r1 \
-        mpfr4=4.2.0-r1 \
+        mpfr4=4.2.0-r2 \
         musl=1.2.4-r0 \
         musl-dev=1.2.4-r0 \
         ncurses-terminfo-base=6.4_p20230506-r0 \
