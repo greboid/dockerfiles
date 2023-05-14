@@ -1,13 +1,13 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/hugo/Dockerfile.gotpl
-# BOM: {"apk:binutils":"2.40-r5","apk:g++":"12.2.1_git20220924-r10","apk:gcc":"12.2.1_git20220924-r10","apk:gmp":"6.2.1-r3","apk:grep":"3.10-r1","apk:isl25":"0.25-r2","apk:libatomic":"12.2.1_git20220924-r10","apk:libc-dev":"0.7.2-r5","apk:libgcc":"12.2.1_git20220924-r10","apk:libgomp":"12.2.1_git20220924-r10","apk:libstdc++":"12.2.1_git20220924-r10","apk:libstdc++-dev":"12.2.1_git20220924-r10","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.0-r2","apk:musl":"1.2.4-r0","apk:musl-dev":"1.2.4-r0","apk:pcre2":"10.42-r1","apk:zlib":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","github:gohugoio/hugo":"v0.111.3","image:baseglibc":"295354168dcf93fb06f923ded7da7bef8b36912482da78bcc779166480fd5ab8","image:golang":"89d31e144ad23468190029aa512882c2b3709a73bc9360a55a6612f1fa0a8629"}
+# BOM: {"apk:binutils":"2.40-r6","apk:g++":"12.2.1_git20220924-r10","apk:gcc":"12.2.1_git20220924-r10","apk:gmp":"6.2.1-r3","apk:grep":"3.10-r1","apk:isl25":"0.25-r2","apk:libatomic":"12.2.1_git20220924-r10","apk:libc-dev":"0.7.2-r5","apk:libgcc":"12.2.1_git20220924-r10","apk:libgomp":"12.2.1_git20220924-r10","apk:libstdc++":"12.2.1_git20220924-r10","apk:libstdc++-dev":"12.2.1_git20220924-r10","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.0-r2","apk:musl":"1.2.4-r0","apk:musl-dev":"1.2.4-r0","apk:pcre2":"10.42-r1","apk:zlib":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","github:gohugoio/hugo":"v0.111.3","image:baseglibc":"295354168dcf93fb06f923ded7da7bef8b36912482da78bcc779166480fd5ab8","image:golang":"33bea2189416cc96cbc9e2c7a906fb75fe776c7f4a0fc8cdf04d9b60da49d013"}
 
-FROM reg.g5d.dev/golang@sha256:89d31e144ad23468190029aa512882c2b3709a73bc9360a55a6612f1fa0a8629 AS build
+FROM reg.g5d.dev/golang@sha256:33bea2189416cc96cbc9e2c7a906fb75fe776c7f4a0fc8cdf04d9b60da49d013 AS build
 
 ARG TAG="v0.111.3"
 
 RUN set -eux; \
     apk add --no-cache \
-        binutils=2.40-r5 \
+        binutils=2.40-r6 \
         g++=12.2.1_git20220924-r10 \
         gcc=12.2.1_git20220924-r10 \
         gmp=6.2.1-r3 \
@@ -30,7 +30,7 @@ RUN set -eux; \
     CGO_ENABLED=1 go build -a -ldflags "-s" -ldflags "-w" -ldflags "-X github.com/gohugoio/hugo/common/hugo.buildDate=Unknown" -ldflags "-X github.com/gohugoio/hugo/common/hugo.commitHash=$TAG"  -ldflags "-X github.com/gohugoio/hugo/common/hugo.vendorInfo=greboid" -trimpath -tags extended -o main .; \
     mkdir -p /tmp/site;\
     apk add --no-cache \
-        binutils=2.40-r5 \
+        binutils=2.40-r6 \
         grep=3.10-r1 \
         libgcc=12.2.1_git20220924-r10 \
         libstdc++=12.2.1_git20220924-r10 \
