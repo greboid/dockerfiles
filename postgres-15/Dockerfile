@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/postgres-15/Dockerfile.gotpl
-# BOM: {"apk:bash":"5.2.15-r3","apk:binutils":"2.40-r6","apk:brotli-libs":"1.0.9-r14","apk:busybox":"1.36.0-r9","apk:busybox-binsh":"1.36.0-r9","apk:ca-certificates":"20230506-r0","apk:curl":"8.0.1-r2","apk:g++":"12.2.1_git20220924-r10","apk:gcc":"12.2.1_git20220924-r10","apk:git":"2.40.1-r0","apk:gmp":"6.2.1-r3","apk:isl25":"0.25-r2","apk:libacl":"2.3.1-r3","apk:libatomic":"12.2.1_git20220924-r10","apk:libc-dev":"0.7.2-r5","apk:libcrypto3":"3.1.0-r4","apk:libcurl":"8.0.1-r2","apk:libexpat":"2.5.0-r1","apk:libformw":"6.4_p20230506-r0","apk:libgcc":"12.2.1_git20220924-r10","apk:libgomp":"12.2.1_git20220924-r10","apk:libhistory":"8.2.1-r1","apk:libidn2":"2.3.4-r1","apk:libintl":"0.21.1-r5","apk:libmenuw":"6.4_p20230506-r0","apk:libncurses++":"6.4_p20230506-r0","apk:libncursesw":"6.4_p20230506-r0","apk:libpanelw":"6.4_p20230506-r0","apk:libssl3":"3.1.0-r4","apk:libstdc++":"12.2.1_git20220924-r10","apk:libstdc++-dev":"12.2.1_git20220924-r10","apk:libunistring":"1.1-r1","apk:libxxhash":"0.8.1-r4","apk:linux-headers":"6.3-r0","apk:lz4-libs":"1.9.4-r4","apk:make":"4.4.1-r1","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.0-r2","apk:musl":"1.2.4-r0","apk:musl-dev":"1.2.4-r0","apk:musl-locales":"0.1.0-r1","apk:ncurses-dev":"6.4_p20230506-r0","apk:ncurses-terminfo-base":"6.4_p20230506-r0","apk:nghttp2-libs":"1.53.0-r0","apk:openssl-dev":"3.1.0-r4","apk:pcre2":"10.42-r1","apk:pkgconf":"1.9.5-r0","apk:popt":"1.19-r2","apk:readline":"8.2.1-r1","apk:readline-dev":"8.2.1-r1","apk:rsync":"3.2.7-r3","apk:scanelf":"1.3.7-r1","apk:zlib":"1.2.13-r1","apk:zlib-dev":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","image:alpine":"5b99fedf90b1c3a4d68ed2cac55f46916b91fab77e98f59de05998368fcbf203","image:baseroot":"e8223af049600b52310ee1879444afc3d633fb3af91a2139ead53d22b4ad156d","postgres15":"15.3"}
+# BOM: {"apk:bash":"5.2.15-r3","apk:binutils":"2.40-r6","apk:brotli-libs":"1.0.9-r14","apk:busybox":"1.36.0-r9","apk:busybox-binsh":"1.36.0-r9","apk:ca-certificates":"20230506-r0","apk:curl":"8.1.0-r0","apk:g++":"12.2.1_git20220924-r10","apk:gcc":"12.2.1_git20220924-r10","apk:git":"2.40.1-r0","apk:gmp":"6.2.1-r3","apk:isl25":"0.25-r2","apk:libacl":"2.3.1-r3","apk:libatomic":"12.2.1_git20220924-r10","apk:libc-dev":"0.7.2-r5","apk:libcrypto3":"3.1.0-r4","apk:libcurl":"8.1.0-r0","apk:libexpat":"2.5.0-r1","apk:libformw":"6.4_p20230506-r0","apk:libgcc":"12.2.1_git20220924-r10","apk:libgomp":"12.2.1_git20220924-r10","apk:libhistory":"8.2.1-r1","apk:libidn2":"2.3.4-r1","apk:libintl":"0.21.1-r7","apk:libmenuw":"6.4_p20230506-r0","apk:libncurses++":"6.4_p20230506-r0","apk:libncursesw":"6.4_p20230506-r0","apk:libpanelw":"6.4_p20230506-r0","apk:libssl3":"3.1.0-r4","apk:libstdc++":"12.2.1_git20220924-r10","apk:libstdc++-dev":"12.2.1_git20220924-r10","apk:libunistring":"1.1-r1","apk:libxxhash":"0.8.1-r4","apk:linux-headers":"6.3-r0","apk:lz4-libs":"1.9.4-r4","apk:make":"4.4.1-r1","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.0-r2","apk:musl":"1.2.4-r0","apk:musl-dev":"1.2.4-r0","apk:musl-locales":"0.1.0-r1","apk:ncurses-dev":"6.4_p20230506-r0","apk:ncurses-terminfo-base":"6.4_p20230506-r0","apk:nghttp2-libs":"1.53.0-r0","apk:openssl-dev":"3.1.0-r4","apk:pcre2":"10.42-r1","apk:pkgconf":"1.9.5-r0","apk:popt":"1.19-r2","apk:readline":"8.2.1-r1","apk:readline-dev":"8.2.1-r1","apk:rsync":"3.2.7-r4","apk:scanelf":"1.3.7-r1","apk:zlib":"1.2.13-r1","apk:zlib-dev":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","image:alpine":"5b99fedf90b1c3a4d68ed2cac55f46916b91fab77e98f59de05998368fcbf203","image:baseroot":"c0e2307d35f12546a86a703c9366d018619d61dae48cd16ebc6c10a51d3d7d91","postgres15":"15.3"}
 
 FROM reg.g5d.dev/alpine@sha256:5b99fedf90b1c3a4d68ed2cac55f46916b91fab77e98f59de05998368fcbf203 as build
 
@@ -15,7 +15,7 @@ RUN set -eux; \
         ca-certificates=20230506-r0 \
         git=2.40.1-r0 \
         libcrypto3=3.1.0-r4 \
-        libcurl=8.0.1-r2 \
+        libcurl=8.1.0-r0 \
         libexpat=2.5.0-r1 \
         libidn2=2.3.4-r1 \
         libssl3=3.1.0-r4 \
@@ -37,7 +37,7 @@ RUN set -eux; \
         busybox=1.36.0-r9 \
         busybox-binsh=1.36.0-r9 \
         ca-certificates=20230506-r0 \
-        curl=8.0.1-r2 \
+        curl=8.1.0-r0 \
         g++=12.2.1_git20220924-r10 \
         gcc=12.2.1_git20220924-r10 \
         gmp=6.2.1-r3 \
@@ -46,13 +46,13 @@ RUN set -eux; \
         libatomic=12.2.1_git20220924-r10 \
         libc-dev=0.7.2-r5 \
         libcrypto3=3.1.0-r4 \
-        libcurl=8.0.1-r2 \
+        libcurl=8.1.0-r0 \
         libformw=6.4_p20230506-r0 \
         libgcc=12.2.1_git20220924-r10 \
         libgomp=12.2.1_git20220924-r10 \
         libhistory=8.2.1-r1 \
         libidn2=2.3.4-r1 \
-        libintl=0.21.1-r5 \
+        libintl=0.21.1-r7 \
         libmenuw=6.4_p20230506-r0 \
         libncurses++=6.4_p20230506-r0 \
         libncursesw=6.4_p20230506-r0 \
@@ -78,7 +78,7 @@ RUN set -eux; \
         popt=1.19-r2 \
         readline=8.2.1-r1 \
         readline-dev=8.2.1-r1 \
-        rsync=3.2.7-r3 \
+        rsync=3.2.7-r4 \
         scanelf=1.3.7-r1 \
         zlib=1.2.13-r1 \
         zlib-dev=1.2.13-r1 \
@@ -116,7 +116,7 @@ RUN set -eux; \
 
 RUN ls -lR /rootfs/
 
-FROM reg.g5d.dev/baseroot@sha256:e8223af049600b52310ee1879444afc3d633fb3af91a2139ead53d22b4ad156d
+FROM reg.g5d.dev/baseroot@sha256:c0e2307d35f12546a86a703c9366d018619d61dae48cd16ebc6c10a51d3d7d91
 
 ENV LANG en_US.utf8
 ENV PGDATA=/var/lib/postgresql/data
