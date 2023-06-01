@@ -1,9 +1,9 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/rust/Dockerfile.gotpl
-# BOM: {"github:rust-lang/rust":"1.69.0","github:rust-lang/rustup":"1.26.0","image:alpine":"5b99fedf90b1c3a4d68ed2cac55f46916b91fab77e98f59de05998368fcbf203"}
+# BOM: {"github:rust-lang/rust":"1.70.0","github:rust-lang/rustup":"1.26.0","image:alpine":"5b99fedf90b1c3a4d68ed2cac55f46916b91fab77e98f59de05998368fcbf203"}
 
 FROM reg.g5d.dev/alpine@sha256:5b99fedf90b1c3a4d68ed2cac55f46916b91fab77e98f59de05998368fcbf203 AS rustbuild
 
-ARG RUSTTAG="1.69.0"
+ARG RUSTTAG="1.70.0"
 ARG RUSTUPTAG="1.26.0"
 
 ENV RUSTUP_HOME=/usr/local/rustup \
