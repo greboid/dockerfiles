@@ -1,0 +1,21 @@
+# Generated from https://github.com/greboid/dockerfiles/blob/master/libreddit/Containerfile.gotpl
+# BOM: {"github:libreddit/libreddit":"v3.0.0","image:base":"4ddff4468810fe9d9dc3285917d2923c41ae9fb6d1fa2b91c3f1d460cb94427a","image:rust":"b6253b87b8a3ddf481b0e8f01d54df24ef9efd6052336ee989b244d7dc77c4ed"}
+
+FROM reg.g5d.dev/rust@sha256:b6253b87b8a3ddf481b0e8f01d54df24ef9efd6052336ee989b244d7dc77c4ed as server
+
+ARG TAG="v3.0.0"
+
+RUN set -eux; \
+apk add git; \
+git clone --depth=1 -b $TAG --single-branch https://github.com/libreddit/libreddit /src; \
+cd /src
+
+WORKDIR /src
+
+RUN set -eux; \
+apk add musl-dev gcc openssl-dev; \
+cargo build --release
+
+FROM reg.g5d.dev/base@sha256:4ddff4468810fe9d9dc3285917d2923c41ae9fb6d1fa2b91c3f1d460cb94427a
+COPY --from=server /src/target/release/libreddit /
+ENTRYPOINT ["/libreddit"]
