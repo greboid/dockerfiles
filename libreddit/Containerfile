@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/libreddit/Containerfile.gotpl
-# BOM: {"github:libreddit/libreddit":"v3.0.0","image:base":"4ddff4468810fe9d9dc3285917d2923c41ae9fb6d1fa2b91c3f1d460cb94427a","image:rust":"b6253b87b8a3ddf481b0e8f01d54df24ef9efd6052336ee989b244d7dc77c4ed"}
+# BOM: {"github:libreddit/libreddit":"v3.0.0","image:base":"4ddff4468810fe9d9dc3285917d2923c41ae9fb6d1fa2b91c3f1d460cb94427a","image:rust":"f84218a449662ea3500955d3127361d2d65305a153bfde4e2de3778d58f60873"}
 
-FROM reg.g5d.dev/rust@sha256:b6253b87b8a3ddf481b0e8f01d54df24ef9efd6052336ee989b244d7dc77c4ed as server
+FROM reg.g5d.dev/rust@sha256:f84218a449662ea3500955d3127361d2d65305a153bfde4e2de3778d58f60873 as server
 
 ARG TAG="v3.0.0"
 
