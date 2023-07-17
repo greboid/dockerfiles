@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/libreddit/Containerfile.gotpl
-# BOM: {"github:libreddit/libreddit":"v3.0.0","image:base":"4ddff4468810fe9d9dc3285917d2923c41ae9fb6d1fa2b91c3f1d460cb94427a","image:rust":"f1d311385d512b28e602e80d99ad3ce859df9935341fb7d4f2fe9755846f6508"}
+# BOM: {"github:libreddit/libreddit":"v3.0.0","image:base":"5c298191cd12c92b8b3df64ab907f33118d5ddffa99f0c31d43c9623330c46e2","image:rust":"f1d311385d512b28e602e80d99ad3ce859df9935341fb7d4f2fe9755846f6508"}
 
 FROM reg.g5d.dev/rust@sha256:f1d311385d512b28e602e80d99ad3ce859df9935341fb7d4f2fe9755846f6508 as server
 
@@ -16,6 +16,6 @@ RUN set -eux; \
 apk add musl-dev gcc openssl-dev; \
 cargo build --release
 
-FROM reg.g5d.dev/base@sha256:4ddff4468810fe9d9dc3285917d2923c41ae9fb6d1fa2b91c3f1d460cb94427a
+FROM reg.g5d.dev/base@sha256:5c298191cd12c92b8b3df64ab907f33118d5ddffa99f0c31d43c9623330c46e2
 COPY --from=server /src/target/release/libreddit /
 ENTRYPOINT ["/libreddit"]
