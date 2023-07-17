@@ -3,24 +3,24 @@ FROM {{image "alpine"}} AS build
 RUN set -eux; \
     # Sort out our dependencies (and sources)
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "ca-certificates" "musl" "tzdata" "rsync" -}}
+        {{range $key, $value := alpine_packages "rsync" -}}
         {{$key}}={{$value}} \
         {{end}}; \
+    # Create special mount points
+    mkdir -p /rootfs/tmp /rootfs/proc /rootfs/dev /rootfs/sys; \
     # Set up directories and password file
-    mkdir -p /rootfs/etc/ssl/certs /rootfs/tmp /rootfs/home/nonroot /rootfs/root; \
+    mkdir -p /rootfs/etc /rootfs/home/nonroot /rootfs/root; \
     echo "root:x:0:0:root:/root:/sbin/nologin" >> /rootfs/etc/passwd; \
     echo "nobody:x:65534:65534:nobody:/nonexistent:/sbin/nologin" >> /rootfs/etc/passwd; \
     echo "nonroot:x:65532:65532:nonroot:/home/nonroot:/sbin/nologin" >> /rootfs/etc/passwd; \
     chown 65532:65532 /rootfs/home/nonroot; \
-    chmod 01777 /tmp; \
-    # Copy the tzdata files and musl
-    apk info -qL tzdata | rsync -aq --files-from=- / /rootfs/; \
-    apk info -qL musl | rsync -aq --files-from=- / /rootfs/; \
-    # Create special mount points
-    mkdir /rootfs/proc /rootfs/dev /rootfs/sys; \
-    # Generate thw CA certificates file and copy the result
-    /usr/sbin/update-ca-certificates; \
-    cp /etc/ssl/certs/ca-certificates.crt /rootfs/etc/ssl/certs/ca-certificates.crt; \
+    chmod 01777 /rootfs/tmp; \
+    # Add packages into rootfs
+    {{ range $key, $value := alpine_packages "ca-certificates-bundle" "musl" "tzdata" -}}
+      apk add --no-cache {{$key}}={{$value}}; \
+      apk info -qL {{$key}} | rsync -aq --files-from=- / /rootfs/; \
+    {{ end -}}
+    # Add general git config to avoid adding it in each image 
     echo "[advice]" > /rootfs/etc/gitconfig; \
     echo "    detachedHead = false" >> /rootfs/etc/gitconfig;
 
