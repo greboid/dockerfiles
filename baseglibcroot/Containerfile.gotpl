@@ -3,7 +3,7 @@ FROM {{image "alpine"}} AS build
 RUN set -eux; \
     # Sort out our dependencies (and sources)
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "ca-certificates-bundle" "rsync" -}}
+        {{range $key, $value := alpine_packages "ca-certificates" "rsync" -}}
         {{$key}}={{$value}} \
         {{end -}}; \
     # Set up directories and password file
@@ -19,7 +19,10 @@ RUN set -eux; \
       apk info -qL {{$key}} | rsync -aq --files-from=- / /rootfs/; \
     {{ end -}}
     # Create special mount points
-    mkdir /rootfs/proc /rootfs/dev /rootfs/sys;
+    mkdir /rootfs/proc /rootfs/dev /rootfs/sys; \
+    # Generate thw CA certificates file and copy the result
+    /usr/sbin/update-ca-certificates; \
+    cp /etc/ssl/certs/ca-certificates.crt /rootfs/etc/ssl/certs/ca-certificates.crt;
 
 FROM scratch
 

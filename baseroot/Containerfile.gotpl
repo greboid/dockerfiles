@@ -3,7 +3,7 @@ FROM {{image "alpine"}} AS build
 RUN set -eux; \
     # Sort out our dependencies (and sources)
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "ca-certificates-bundle" "musl" "tzdata" "rsync" -}}
+        {{range $key, $value := alpine_packages "ca-certificates" "musl" "tzdata" "rsync" -}}
         {{$key}}={{$value}} \
         {{end}}; \
     # Set up directories and password file
@@ -18,6 +18,9 @@ RUN set -eux; \
     apk info -qL musl | rsync -aq --files-from=- / /rootfs/; \
     # Create special mount points
     mkdir /rootfs/proc /rootfs/dev /rootfs/sys; \
+    # Generate thw CA certificates file and copy the result
+    /usr/sbin/update-ca-certificates; \
+    cp /etc/ssl/certs/ca-certificates.crt /rootfs/etc/ssl/certs/ca-certificates.crt; \
     echo "[advice]" > /rootfs/etc/gitconfig; \
     echo "    detachedHead = false" >> /rootfs/etc/gitconfig;
 
