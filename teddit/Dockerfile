@@ -1,0 +1,138 @@
+# Generated from https://github.com/greboid/dockerfiles/blob/master/teddit/Containerfile.gotpl
+# BOM: {"apk:alsa-lib":"1.2.9-r1","apk:aom-libs":"3.6.1-r0","apk:brotli-libs":"1.0.9-r14","apk:busybox":"1.36.1-r1","apk:busybox-binsh":"1.36.1-r1","apk:ca-certificates":"20230506-r0","apk:cjson":"1.7.15-r4","apk:dbus-libs":"1.14.8-r0","apk:ffmpeg":"6.0-r15","apk:ffmpeg-libavcodec":"6.0-r15","apk:ffmpeg-libavdevice":"6.0-r15","apk:ffmpeg-libavfilter":"6.0-r15","apk:ffmpeg-libavformat":"6.0-r15","apk:ffmpeg-libavutil":"6.0-r15","apk:ffmpeg-libpostproc":"6.0-r15","apk:ffmpeg-libswresample":"6.0-r15","apk:ffmpeg-libswscale":"6.0-r15","apk:flac-libs":"1.4.3-r0","apk:fontconfig":"2.14.2-r3","apk:freetype":"2.13.0-r5","apk:fribidi":"1.0.13-r0","apk:git":"2.40.1-r0","apk:glib":"2.76.4-r0","apk:glslang-libs":"1.3.243.0-r1","apk:gmp":"6.2.1-r3","apk:gnutls":"3.8.0-r2","apk:graphite2":"1.3.14-r5","apk:harfbuzz":"7.3.0-r0","apk:hwdata-pci":"0.370-r0","apk:lame-libs":"3.100-r5","apk:lcms2":"2.15-r2","apk:libass":"0.17.1-r0","apk:libasyncns":"0.8-r1","apk:libblkid":"2.38.1-r8","apk:libbluray":"1.3.4-r0","apk:libbsd":"0.11.7-r1","apk:libbz2":"1.0.8-r5","apk:libcrypto3":"3.1.1-r3","apk:libcurl":"8.2.0-r1","apk:libdav1d":"1.2.1-r0","apk:libdrm":"2.4.115-r4","apk:libexpat":"2.5.0-r1","apk:libffi":"3.4.4-r2","apk:libgcc":"12.2.1_git20220924-r10","apk:libgomp":"12.2.1_git20220924-r10","apk:libhwy":"1.0.4-r1","apk:libidn2":"2.3.4-r1","apk:libintl":"0.21.1-r7","apk:libjpeg-turbo":"2.1.5.1-r3","apk:libjxl":"0.8.2-r0","apk:libltdl":"2.4.7-r2","apk:libmd":"1.0.4-r2","apk:libmount":"2.38.1-r8","apk:libogg":"1.3.5-r4","apk:libopenmpt":"0.7.2-r0","apk:libpciaccess":"0.17-r2","apk:libplacebo":"5.264.1-r1","apk:libpng":"1.6.39-r3","apk:libpulse":"16.1-r10","apk:librist":"0.2.7-r0","apk:libsndfile":"1.2.0-r2","apk:libsodium":"1.0.18-r3","apk:libsrt":"1.5.2-r0","apk:libssh":"0.10.5-r0","apk:libssl3":"3.1.1-r3","apk:libstdc++":"12.2.1_git20220924-r10","apk:libtasn1":"4.19.0-r1","apk:libtheora":"1.1.1-r17","apk:libunibreak":"5.1-r0","apk:libunistring":"1.1-r1","apk:libva":"2.18.0-r1","apk:libvdpau":"1.5-r1","apk:libvorbis":"1.3.7-r1","apk:libvpx":"1.13.0-r1","apk:libwebp":"1.3.1-r0","apk:libx11":"1.8.4-r4","apk:libxau":"1.0.11-r2","apk:libxcb":"1.15-r1","apk:libxdmcp":"1.1.4-r2","apk:libxext":"1.3.5-r2","apk:libxfixes":"6.0.1-r2","apk:libxml2":"2.11.4-r0","apk:libzmq":"4.3.4-r4","apk:mbedtls":"2.28.3-r1","apk:mpg123-libs":"1.31.3-r1","apk:musl":"1.2.4-r0","apk:nettle":"3.8.1-r2","apk:nghttp2-libs":"1.55.1-r0","apk:numactl":"2.0.16-r4","apk:onevpl-libs":"2023.2.1-r0","apk:opus":"1.4-r0","apk:orc":"0.4.34-r0","apk:p11-kit":"0.24.1-r2","apk:pcre2":"10.42-r1","apk:sdl2":"2.26.5-r0","apk:shaderc":"2023.3-r1","apk:soxr":"0.1.3-r5","apk:speexdsp":"1.2.1-r1","apk:spirv-tools":"1.3.243.0-r1","apk:svt-av1-libs":"1.6.0-r0","apk:tdb-libs":"1.4.8-r1","apk:v4l-utils-libs":"1.24.1-r0","apk:vidstab":"1.1.1-r0","apk:vulkan-loader":"1.3.243.0-r1","apk:wayland-libs-client":"1.22.0-r2","apk:x264-libs":"0.164_git20220602-r1","apk:x265-libs":"3.5-r4","apk:xvidcore":"1.3.7-r1","apk:xz-libs":"5.4.3-r0","apk:zimg":"3.0.5-r0","apk:zlib":"1.2.13-r1","git:https://codeberg.org/teddit/teddit.git":"0.4.0","image:node":"d36705cfa5e27f2de4c9c43df0ab905e16ddfbf3690346e9322611a5303426bd"}
+
+FROM reg.g5d.dev/node@sha256:d36705cfa5e27f2de4c9c43df0ab905e16ddfbf3690346e9322611a5303426bd as yarnbase
+
+WORKDIR /app
+
+RUN corepack enable
+
+FROM yarnbase as builder
+
+ARG TAG="0.4.0"
+
+WORKDIR  /app
+RUN set -eux; \
+    apk add --no-cache \
+        alsa-lib=1.2.9-r1\
+        aom-libs=3.6.1-r0\
+        brotli-libs=1.0.9-r14\
+        busybox=1.36.1-r1\
+        busybox-binsh=1.36.1-r1\
+        ca-certificates=20230506-r0\
+        cjson=1.7.15-r4\
+        dbus-libs=1.14.8-r0\
+        ffmpeg=6.0-r15\
+        ffmpeg-libavcodec=6.0-r15\
+        ffmpeg-libavdevice=6.0-r15\
+        ffmpeg-libavfilter=6.0-r15\
+        ffmpeg-libavformat=6.0-r15\
+        ffmpeg-libavutil=6.0-r15\
+        ffmpeg-libpostproc=6.0-r15\
+        ffmpeg-libswresample=6.0-r15\
+        ffmpeg-libswscale=6.0-r15\
+        flac-libs=1.4.3-r0\
+        fontconfig=2.14.2-r3\
+        freetype=2.13.0-r5\
+        fribidi=1.0.13-r0\
+        git=2.40.1-r0\
+        glib=2.76.4-r0\
+        glslang-libs=1.3.243.0-r1\
+        gmp=6.2.1-r3\
+        gnutls=3.8.0-r2\
+        graphite2=1.3.14-r5\
+        harfbuzz=7.3.0-r0\
+        hwdata-pci=0.370-r0\
+        lame-libs=3.100-r5\
+        lcms2=2.15-r2\
+        libass=0.17.1-r0\
+        libasyncns=0.8-r1\
+        libblkid=2.38.1-r8\
+        libbluray=1.3.4-r0\
+        libbsd=0.11.7-r1\
+        libbz2=1.0.8-r5\
+        libcrypto3=3.1.1-r3\
+        libcurl=8.2.0-r1\
+        libdav1d=1.2.1-r0\
+        libdrm=2.4.115-r4\
+        libexpat=2.5.0-r1\
+        libffi=3.4.4-r2\
+        libgcc=12.2.1_git20220924-r10\
+        libgomp=12.2.1_git20220924-r10\
+        libhwy=1.0.4-r1\
+        libidn2=2.3.4-r1\
+        libintl=0.21.1-r7\
+        libjpeg-turbo=2.1.5.1-r3\
+        libjxl=0.8.2-r0\
+        libltdl=2.4.7-r2\
+        libmd=1.0.4-r2\
+        libmount=2.38.1-r8\
+        libogg=1.3.5-r4\
+        libopenmpt=0.7.2-r0\
+        libpciaccess=0.17-r2\
+        libplacebo=5.264.1-r1\
+        libpng=1.6.39-r3\
+        libpulse=16.1-r10\
+        librist=0.2.7-r0\
+        libsndfile=1.2.0-r2\
+        libsodium=1.0.18-r3\
+        libsrt=1.5.2-r0\
+        libssh=0.10.5-r0\
+        libssl3=3.1.1-r3\
+        libstdc++=12.2.1_git20220924-r10\
+        libtasn1=4.19.0-r1\
+        libtheora=1.1.1-r17\
+        libunibreak=5.1-r0\
+        libunistring=1.1-r1\
+        libva=2.18.0-r1\
+        libvdpau=1.5-r1\
+        libvorbis=1.3.7-r1\
+        libvpx=1.13.0-r1\
+        libwebp=1.3.1-r0\
+        libx11=1.8.4-r4\
+        libxau=1.0.11-r2\
+        libxcb=1.15-r1\
+        libxdmcp=1.1.4-r2\
+        libxext=1.3.5-r2\
+        libxfixes=6.0.1-r2\
+        libxml2=2.11.4-r0\
+        libzmq=4.3.4-r4\
+        mbedtls=2.28.3-r1\
+        mpg123-libs=1.31.3-r1\
+        musl=1.2.4-r0\
+        nettle=3.8.1-r2\
+        nghttp2-libs=1.55.1-r0\
+        numactl=2.0.16-r4\
+        onevpl-libs=2023.2.1-r0\
+        opus=1.4-r0\
+        orc=0.4.34-r0\
+        p11-kit=0.24.1-r2\
+        pcre2=10.42-r1\
+        sdl2=2.26.5-r0\
+        shaderc=2023.3-r1\
+        soxr=0.1.3-r5\
+        speexdsp=1.2.1-r1\
+        spirv-tools=1.3.243.0-r1\
+        svt-av1-libs=1.6.0-r0\
+        tdb-libs=1.4.8-r1\
+        v4l-utils-libs=1.24.1-r0\
+        vidstab=1.1.1-r0\
+        vulkan-loader=1.3.243.0-r1\
+        wayland-libs-client=1.22.0-r2\
+        x264-libs=0.164_git20220602-r1\
+        x265-libs=3.5-r4\
+        xvidcore=1.3.7-r1\
+        xz-libs=5.4.3-r0\
+        zimg=3.0.5-r0\
+        zlib=1.2.13-r1\
+        ; \
+    git clone --depth=1 -b $TAG --single-branch https://codeberg.org/teddit/teddit.git /app; \ 
+    npm install --omit=optional; \
+    cp config.js.template /app/config.js; \
+    chown -R 65532:65532 /app
+
+EXPOSE 8080
+WORKDIR /app
+USER 65532
+ENV HOME=/app
+ENTRYPOINT ["npm", "start"]
