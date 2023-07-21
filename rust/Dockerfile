@@ -1,0 +1,26 @@
+# Generated from https://github.com/greboid/dockerfiles/blob/master/rust/Containerfile.gotpl
+# BOM: {"github:rust-lang/rust":"1.71.0","github:rust-lang/rustup":"1.26.0","image:alpine":"347bebd1a359b0cccf62ebd4f65854ddf25331f9458011a2cc06a5e1679e3578"}
+
+FROM reg.g5d.dev/alpine@sha256:347bebd1a359b0cccf62ebd4f65854ddf25331f9458011a2cc06a5e1679e3578 AS rustbuild
+
+ARG RUSTTAG="1.71.0"
+ARG RUSTUPTAG="1.26.0"
+
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo \
+    PATH=/usr/local/cargo/bin;$PATH \
+    RUST_VERSION=${RUSTTAG}
+
+RUN set -eux; \
+apk add curl; \
+curl -sfLo rustup-init https://static.rust-lang.org/rustup/archive/${RUSTUPTAG}/x86_64-unknown-linux-musl/rustup-init; \
+curl -sfLo rustup-init.sha256 https://static.rust-lang.org/rustup/archive/${RUSTUPTAG}/x86_64-unknown-linux-musl/rustup-init.sha256
+
+RUN set -eux; \
+apk add curl gpg gpg-agent musl-utils bash libgcc; \
+echo $(cat rustup-init.sha256 | awk '{print $1}') *rustup-init | sha256sum -wc -; \
+chmod +x rustup-init; \
+./rustup-init -y --no-modify-path --profile minimal --default-toolchain ${RUSTTAG} --default-host x86_64-unknown-linux-musl; \
+rm rustup-init*; \
+chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
+ln -s $CARGO_HOME/bin/cargo /usr/local/bin/cargo
