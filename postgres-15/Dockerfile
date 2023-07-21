@@ -1,0 +1,149 @@
+# Generated from https://github.com/greboid/dockerfiles/blob/master/postgres-15/Containerfile.gotpl
+# BOM: {"apk:bash":"5.2.15-r5","apk:binutils":"2.40-r7","apk:brotli-libs":"1.0.9-r14","apk:busybox":"1.36.1-r1","apk:busybox-binsh":"1.36.1-r1","apk:ca-certificates":"20230506-r0","apk:curl":"8.2.0-r1","apk:g++":"12.2.1_git20220924-r10","apk:gcc":"12.2.1_git20220924-r10","apk:git":"2.40.1-r0","apk:gmp":"6.2.1-r3","apk:isl25":"0.25-r2","apk:libacl":"2.3.1-r3","apk:libatomic":"12.2.1_git20220924-r10","apk:libc-dev":"0.7.2-r5","apk:libcrypto3":"3.1.1-r3","apk:libcurl":"8.2.0-r1","apk:libexpat":"2.5.0-r1","apk:libformw":"6.4_p20230506-r0","apk:libgcc":"12.2.1_git20220924-r10","apk:libgomp":"12.2.1_git20220924-r10","apk:libhistory":"8.2.1-r1","apk:libidn2":"2.3.4-r1","apk:libintl":"0.21.1-r7","apk:libmenuw":"6.4_p20230506-r0","apk:libncurses++":"6.4_p20230506-r0","apk:libncursesw":"6.4_p20230506-r0","apk:libpanelw":"6.4_p20230506-r0","apk:libssl3":"3.1.1-r3","apk:libstdc++":"12.2.1_git20220924-r10","apk:libstdc++-dev":"12.2.1_git20220924-r10","apk:libunistring":"1.1-r1","apk:libxxhash":"0.8.1-r4","apk:linux-headers":"6.3-r0","apk:lz4-libs":"1.9.4-r4","apk:make":"4.4.1-r1","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.0_p12-r0","apk:musl":"1.2.4-r0","apk:musl-dev":"1.2.4-r0","apk:musl-locales":"0.1.0-r1","apk:ncurses-dev":"6.4_p20230506-r0","apk:ncurses-terminfo-base":"6.4_p20230506-r0","apk:nghttp2-libs":"1.55.1-r0","apk:openssl-dev":"3.1.1-r3","apk:pcre2":"10.42-r1","apk:pkgconf":"1.9.5-r0","apk:popt":"1.19-r2","apk:readline":"8.2.1-r1","apk:readline-dev":"8.2.1-r1","apk:rsync":"3.2.7-r4","apk:scanelf":"1.3.7-r1","apk:zlib":"1.2.13-r1","apk:zlib-dev":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","image:alpine":"347bebd1a359b0cccf62ebd4f65854ddf25331f9458011a2cc06a5e1679e3578","image:baseroot":"0ff388c461add6a09dde64f3bfe3cb62e3ca09f1fb4b69ca93a2f0aa0ae68137","postgres15":"15.3"}
+
+FROM reg.g5d.dev/alpine@sha256:347bebd1a359b0cccf62ebd4f65854ddf25331f9458011a2cc06a5e1679e3578 as build
+
+ARG ARCHIVE_URL="https://ftp.postgresql.org/pub/source/v15.3/postgresql-15.3.tar.bz2"
+ARG ARCHIVE_SUM="ffc7d4891f00ffbf5c3f4eab7fbbced8460b8c0ee63c5a5167133b9e6599d932"
+ARG ENTRYPOINT=39c3dc7046f5f7909179a51e25f2a61158781d57
+
+RUN set -eux; \
+    apk add --no-cache \
+        brotli-libs=1.0.9-r14 \
+        busybox=1.36.1-r1 \
+        busybox-binsh=1.36.1-r1 \
+        ca-certificates=20230506-r0 \
+        git=2.40.1-r0 \
+        libcrypto3=3.1.1-r3 \
+        libcurl=8.2.0-r1 \
+        libexpat=2.5.0-r1 \
+        libidn2=2.3.4-r1 \
+        libssl3=3.1.1-r3 \
+        libunistring=1.1-r1 \
+        musl=1.2.4-r0 \
+        nghttp2-libs=1.55.1-r0 \
+        pcre2=10.42-r1 \
+        zlib=1.2.13-r1 \
+        ; \
+    git clone -b master --single-branch https://github.com/docker-library/postgres /src/docker-postgres; \
+    cd /src/docker-postgres; \
+    git checkout $ENTRYPOINT;
+
+RUN set -eux; \
+    apk add --no-cache \
+        bash=5.2.15-r5 \
+        binutils=2.40-r7 \
+        brotli-libs=1.0.9-r14 \
+        busybox=1.36.1-r1 \
+        busybox-binsh=1.36.1-r1 \
+        ca-certificates=20230506-r0 \
+        curl=8.2.0-r1 \
+        g++=12.2.1_git20220924-r10 \
+        gcc=12.2.1_git20220924-r10 \
+        gmp=6.2.1-r3 \
+        isl25=0.25-r2 \
+        libacl=2.3.1-r3 \
+        libatomic=12.2.1_git20220924-r10 \
+        libc-dev=0.7.2-r5 \
+        libcrypto3=3.1.1-r3 \
+        libcurl=8.2.0-r1 \
+        libformw=6.4_p20230506-r0 \
+        libgcc=12.2.1_git20220924-r10 \
+        libgomp=12.2.1_git20220924-r10 \
+        libhistory=8.2.1-r1 \
+        libidn2=2.3.4-r1 \
+        libintl=0.21.1-r7 \
+        libmenuw=6.4_p20230506-r0 \
+        libncurses++=6.4_p20230506-r0 \
+        libncursesw=6.4_p20230506-r0 \
+        libpanelw=6.4_p20230506-r0 \
+        libssl3=3.1.1-r3 \
+        libstdc++=12.2.1_git20220924-r10 \
+        libstdc++-dev=12.2.1_git20220924-r10 \
+        libunistring=1.1-r1 \
+        libxxhash=0.8.1-r4 \
+        linux-headers=6.3-r0 \
+        lz4-libs=1.9.4-r4 \
+        make=4.4.1-r1 \
+        mpc1=1.3.1-r1 \
+        mpfr4=4.2.0_p12-r0 \
+        musl=1.2.4-r0 \
+        musl-dev=1.2.4-r0 \
+        musl-locales=0.1.0-r1 \
+        ncurses-dev=6.4_p20230506-r0 \
+        ncurses-terminfo-base=6.4_p20230506-r0 \
+        nghttp2-libs=1.55.1-r0 \
+        openssl-dev=3.1.1-r3 \
+        pkgconf=1.9.5-r0 \
+        popt=1.19-r2 \
+        readline=8.2.1-r1 \
+        readline-dev=8.2.1-r1 \
+        rsync=3.2.7-r4 \
+        scanelf=1.3.7-r1 \
+        zlib=1.2.13-r1 \
+        zlib-dev=1.2.13-r1 \
+        zstd-libs=1.5.5-r4 \
+        ; \
+    curl -sfLo postgresql.tar.bz2 $ARCHIVE_URL; \
+    echo "$ARCHIVE_SUM *postgresql.tar.bz2" | sha256sum -wc -; \
+    mkdir -p /usr/local/postgres; \
+    tar -C /usr/local/postgres --strip-components 1 -xf postgresql.tar.bz2; \
+    cd /usr/local/postgres; \
+    ./configure \
+        --with-system-tzdata=/usr/share/zoneinfo \
+        --with-includes=/usr/local/include \
+        --with-libraries=/usr/local/lib \
+        --with-ssl=openssl; \
+    make -j$(nproc) world; \
+    make install-world; \
+    make -C contrib install; \
+    mkdir -p /src/data; \
+    mkdir -p /src/run; \
+    chmod 777 /src/run; \
+    mkdir -p /etc/postgresql/; \
+    mkdir -p /docker-entrypoint-initdb.d/;
+
+RUN set -eux; \
+    DEPS=$(scanelf --needed --nobanner --format '%n#p' --recursive -l /usr/local /usr/local/bin/psql /usr/local/bin/postgres /usr/local/bin/initdb \
+    | tr ',' '\n' \
+    | sort -u \
+    | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }');\
+    mkdir /rootfs; \
+    for DEP in $DEPS; do \
+      apk add "${DEP}"; \
+      apk info -qL "${DEP}" | rsync -aq '--files-from=-' / /rootfs/; \
+    done;
+
+RUN ls -lR /rootfs/
+
+FROM reg.g5d.dev/baseroot@sha256:0ff388c461add6a09dde64f3bfe3cb62e3ca09f1fb4b69ca93a2f0aa0ae68137
+
+ENV LANG en_US.utf8
+ENV PGDATA=/var/lib/postgresql/data
+ENV PGHOST=127.0.0.1
+ENV PGUSER=postgres
+
+COPY --from=build /rootfs/ /
+COPY --from=build /usr/bin/env /usr/bin/env
+COPY --from=build /bin/sh /bin/sh
+COPY --from=build /bin/bash /bin/bash
+COPY --from=build /usr/bin/locale /usr/bin/locale
+COPY --from=build /bin/ls /bin/ls
+COPY --from=build /usr/bin/id /usr/bin/id
+COPY --from=build /bin/mkdir /bin/mkdir
+COPY --from=build /bin/chmod /bin/chmod
+COPY --from=build /usr/local/pgsql /usr/local/
+COPY --from=build --chown=65532:65532 --chmod=750 /src/data /var/lib/postgresql
+COPY --from=build --chown=65532:65532 --chmod=750 /src/data /var/lib/postgresql/data
+COPY --from=build --chown=65532:65532 --chmod=777 /src/run /var/run/psql
+COPY --from=build --chown=65532:65532 --chmod=777 /tmp /tmp
+COPY --from=build --chown=65532:65532 --chmod=644 /docker-entrypoint-initdb.d/ /docker-entrypoint-initdb.d/
+COPY --from=build --chown=65532:65532 --chmod=777 /src/docker-postgres/15/alpine/docker-entrypoint.sh /usr/local/bin/entry.sh
+RUN chmod -R 777 /tmp; chmod 777 /var/lib/postgresql
+
+USER nonroot
+STOPSIGNAL SIGINT
+
+EXPOSE 5432
+ENTRYPOINT ["/usr/local/bin/entry.sh"]
+CMD ["postgres", "-c", "listen_addresses=*"]
