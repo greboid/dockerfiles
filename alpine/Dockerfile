@@ -1,0 +1,22 @@
+# Generated from https://github.com/greboid/dockerfiles/blob/master/alpine/Containerfile.gotpl
+# BOM: {"alpine":"3.18.2"}
+
+FROM reg.g5d.dev/alpine AS verify
+
+ARG ARCHIVE_URL="https://mirrors.melbourne.co.uk/alpine/latest-stable/releases/x86_64/alpine-minirootfs-3.18.2-x86_64.tar.gz"
+ARG ARCHIVE_SUM="6c0be6213d2718087e1f4e7847e711cea288dd6cbd92c436af2c22756ac7db53"
+
+RUN set -eux; \
+    apk add --no-cache curl; \
+    curl -sfLo fs.tar.gz $ARCHIVE_URL; \
+    echo "$ARCHIVE_SUM *fs.tar.gz" | sha256sum -wc -; \
+    mkdir /fs; \
+    tar -C /fs -xzf fs.tar.gz; \
+    echo "[advice]" > /fs/etc/gitconfig; \
+    echo "    detachedHead = false" >> /fs/etc/gitconfig;
+
+FROM scratch
+COPY --from=verify /fs/ /
+
+ENV LANG=en_US.UTF-8
+CMD ["/bin/sh"]
