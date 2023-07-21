@@ -1,0 +1,58 @@
+# Generated from https://github.com/greboid/dockerfiles/blob/master/dex/Containerfile.gotpl
+# BOM: {"apk:binutils":"2.40-r7","apk:brotli-libs":"1.0.9-r14","apk:busybox":"1.36.1-r1","apk:busybox-binsh":"1.36.1-r1","apk:ca-certificates":"20230506-r0","apk:gcc":"12.2.1_git20220924-r10","apk:git":"2.40.1-r0","apk:gmp":"6.2.1-r3","apk:isl25":"0.25-r2","apk:libatomic":"12.2.1_git20220924-r10","apk:libcrypto3":"3.1.1-r3","apk:libcurl":"8.2.0-r1","apk:libexpat":"2.5.0-r1","apk:libgcc":"12.2.1_git20220924-r10","apk:libgomp":"12.2.1_git20220924-r10","apk:libidn2":"2.3.4-r1","apk:libncursesw":"6.4_p20230506-r0","apk:libssl3":"3.1.1-r3","apk:libstdc++":"12.2.1_git20220924-r10","apk:libunistring":"1.1-r1","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.0_p12-r0","apk:musl":"1.2.4-r0","apk:ncurses-terminfo-base":"6.4_p20230506-r0","apk:nghttp2-libs":"1.55.1-r0","apk:pcre2":"10.42-r1","apk:readline":"8.2.1-r1","apk:sqlite":"3.41.2-r2","apk:zlib":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","github:dexidp/dex":"v2.37.0","image:base":"5c298191cd12c92b8b3df64ab907f33118d5ddffa99f0c31d43c9623330c46e2","image:golang":"36190d5ec7bcb2ccd44dcffdcc6376553799520817f7654c1cf63883a285695f"}
+
+FROM reg.g5d.dev/golang@sha256:36190d5ec7bcb2ccd44dcffdcc6376553799520817f7654c1cf63883a285695f AS build
+
+ARG TAG="v2.37.0"
+
+RUN set -eux; \
+    apk add --no-cache \
+        binutils=2.40-r7\
+        brotli-libs=1.0.9-r14\
+        busybox=1.36.1-r1\
+        busybox-binsh=1.36.1-r1\
+        ca-certificates=20230506-r0\
+        gcc=12.2.1_git20220924-r10\
+        git=2.40.1-r0\
+        gmp=6.2.1-r3\
+        isl25=0.25-r2\
+        libatomic=12.2.1_git20220924-r10\
+        libcrypto3=3.1.1-r3\
+        libcurl=8.2.0-r1\
+        libexpat=2.5.0-r1\
+        libgcc=12.2.1_git20220924-r10\
+        libgomp=12.2.1_git20220924-r10\
+        libidn2=2.3.4-r1\
+        libncursesw=6.4_p20230506-r0\
+        libssl3=3.1.1-r3\
+        libstdc++=12.2.1_git20220924-r10\
+        libunistring=1.1-r1\
+        mpc1=1.3.1-r1\
+        mpfr4=4.2.0_p12-r0\
+        musl=1.2.4-r0\
+        ncurses-terminfo-base=6.4_p20230506-r0\
+        nghttp2-libs=1.55.1-r0\
+        pcre2=10.42-r1\
+        readline=8.2.1-r1\
+        sqlite=3.41.2-r2\
+        zlib=1.2.13-r1\
+        zstd-libs=1.5.5-r4\
+        ;
+
+RUN git clone --depth=1 -b $TAG --single-branch https://github.com/dexidp/dex /src;
+WORKDIR /src
+RUN CGO_ENABLED=1 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -ldflags "-X main.Version=$TAG" -o dex ./cmd/dex;
+RUN go-licenses save ./... --save_path=/notices --ignore github.com/dexidp/dex/api/v2;
+RUN mkdir /rootfs; \
+    cp dex /rootfs/; \
+    cp -r /notices /rootfs/; \
+    mkdir /rootfs/db; \
+    mkdir -p /rootfs/web/; \
+    cp -r /src/web/ /rootfs/; \
+    chown -R 65532:65532 /rootfs/
+
+FROM reg.g5d.dev/base@sha256:5c298191cd12c92b8b3df64ab907f33118d5ddffa99f0c31d43c9623330c46e2
+
+COPY --from=build /rootfs/ /
+EXPOSE 8000
+CMD ["/dex", "serve", "/config.yml"]
