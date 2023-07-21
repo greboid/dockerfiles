@@ -1,0 +1,42 @@
+# Generated from https://github.com/greboid/dockerfiles/blob/master/baseroot/Containerfile.gotpl
+# BOM: {"apk:ca-certificates-bundle":"20230506-r0","apk:libacl":"2.3.1-r3","apk:libxxhash":"0.8.1-r4","apk:lz4-libs":"1.9.4-r4","apk:musl":"1.2.4-r0","apk:popt":"1.19-r2","apk:rsync":"3.2.7-r4","apk:tzdata":"2023c-r1","apk:zlib":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","image:alpine":"347bebd1a359b0cccf62ebd4f65854ddf25331f9458011a2cc06a5e1679e3578"}
+
+FROM reg.g5d.dev/alpine@sha256:347bebd1a359b0cccf62ebd4f65854ddf25331f9458011a2cc06a5e1679e3578 AS build
+
+RUN set -eux; \
+    # Sort out our dependencies (and sources)
+    apk add --no-cache \
+        libacl=2.3.1-r3 \
+        libxxhash=0.8.1-r4 \
+        lz4-libs=1.9.4-r4 \
+        musl=1.2.4-r0 \
+        popt=1.19-r2 \
+        rsync=3.2.7-r4 \
+        zlib=1.2.13-r1 \
+        zstd-libs=1.5.5-r4 \
+        ; \
+    # Create special mount points
+    mkdir -p /rootfs/tmp /rootfs/proc /rootfs/dev /rootfs/sys; \
+    # Set up directories and password file
+    mkdir -p /rootfs/etc /rootfs/home/nonroot /rootfs/root; \
+    echo "root:x:0:0:root:/root:/sbin/nologin" >> /rootfs/etc/passwd; \
+    echo "nobody:x:65534:65534:nobody:/nonexistent:/sbin/nologin" >> /rootfs/etc/passwd; \
+    echo "nonroot:x:65532:65532:nonroot:/home/nonroot:/sbin/nologin" >> /rootfs/etc/passwd; \
+    chown 65532:65532 /rootfs/home/nonroot; \
+    chmod 01777 /rootfs/tmp; \
+    # Add packages into rootfs
+    apk add --no-cache ca-certificates-bundle=20230506-r0; \
+      apk info -qL ca-certificates-bundle | rsync -aq --files-from=- / /rootfs/; \
+    apk add --no-cache musl=1.2.4-r0; \
+      apk info -qL musl | rsync -aq --files-from=- / /rootfs/; \
+    apk add --no-cache tzdata=2023c-r1; \
+      apk info -qL tzdata | rsync -aq --files-from=- / /rootfs/; \
+    # Add general git config to avoid adding it in each image 
+    echo "[advice]" > /rootfs/etc/gitconfig; \
+    echo "    detachedHead = false" >> /rootfs/etc/gitconfig;
+
+FROM scratch
+
+COPY --from=build /rootfs/ /
+
+ENV SSL_CERT_FILE /etc/ssl/certs/ca-certificates.crt
