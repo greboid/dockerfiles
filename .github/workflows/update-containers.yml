@@ -1,4 +1,3 @@
-
 on:
   workflow_dispatch:
   schedule:
@@ -14,13 +13,12 @@ concurrency: dockerfiles
 permissions:
   contents: write
 jobs:
-  docker:
+
+  alpine:
+    name: Build alpine
     runs-on: ubuntu-latest
-    services:
-      registry:
-        image: registry:2
-        ports:
-          - 5000:5000
+
+
     steps:
       - name: Checkout source
         uses: actions/checkout@master
@@ -48,31 +46,6 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         run: go install github.com/csmith/contempt/cmd/contempt@latest
-      - name: Build base container
-        uses: redhat-actions/buildah-build@v2
-        with:
-          image: base
-          tags: latest
-          base-image: ubuntu-latest
-          content: |
-            .
-      - name: Push base container
-        uses: redhat-actions/push-to-registry@v2
-        with:
-           image: base
-           tags: latest
-           registry: localhost:5000
-
-
-  alpine:
-    name: Build alpine
-    runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
-
-
-    steps:
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -115,15 +88,39 @@ jobs:
   baseroot:
     name: Build baseroot
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - alpine
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -166,15 +163,39 @@ jobs:
   golang:
     name: Build golang
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - alpine
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -217,16 +238,40 @@ jobs:
   node:
     name: Build node
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - alpine
         - alpine
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -269,15 +314,39 @@ jobs:
   rust:
     name: Build rust
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - alpine
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -320,15 +389,39 @@ jobs:
   base:
     name: Build base
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - baseroot
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -371,16 +464,40 @@ jobs:
   baseglibcroot:
     name: Build baseglibcroot
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - alpine
         - baseroot
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -423,16 +540,40 @@ jobs:
   postgres-15:
     name: Build postgres-15
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - alpine
         - baseroot
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -475,15 +616,39 @@ jobs:
   thelounge:
     name: Build thelounge
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - node
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -526,16 +691,40 @@ jobs:
   apache:
     name: Build apache
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - alpine
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -578,15 +767,39 @@ jobs:
   baseglibc:
     name: Build baseglibc
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - baseglibcroot
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -629,16 +842,40 @@ jobs:
   centauri:
     name: Build centauri
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -681,16 +918,40 @@ jobs:
   dex:
     name: Build dex
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -733,16 +994,40 @@ jobs:
   dockercleanup:
     name: Build dockercleanup
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -785,16 +1070,40 @@ jobs:
   dotege:
     name: Build dotege
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -837,16 +1146,40 @@ jobs:
   githubmirror:
     name: Build githubmirror
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -889,16 +1222,40 @@ jobs:
   golink:
     name: Build golink
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -941,16 +1298,40 @@ jobs:
   goplum:
     name: Build goplum
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -993,16 +1374,40 @@ jobs:
   haproxy:
     name: Build haproxy
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - alpine
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1045,16 +1450,40 @@ jobs:
   httpredirect:
     name: Build httpredirect
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1097,16 +1526,40 @@ jobs:
   identd:
     name: Build identd
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1149,16 +1602,40 @@ jobs:
   irc-bot:
     name: Build irc-bot
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1201,16 +1678,40 @@ jobs:
   irc-distribution:
     name: Build irc-distribution
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1253,16 +1754,40 @@ jobs:
   irc-github:
     name: Build irc-github
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1305,16 +1830,40 @@ jobs:
   irc-goplum:
     name: Build irc-goplum
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1357,16 +1906,40 @@ jobs:
   irc-notifier:
     name: Build irc-notifier
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1409,16 +1982,40 @@ jobs:
   irc-webhook:
     name: Build irc-webhook
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1461,16 +2058,40 @@ jobs:
   legoergo:
     name: Build legoergo
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1513,16 +2134,40 @@ jobs:
   linx-server:
     name: Build linx-server
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1565,16 +2210,40 @@ jobs:
   miniflux:
     name: Build miniflux
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1617,16 +2286,40 @@ jobs:
   nitter:
     name: Build nitter
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - alpine
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1669,16 +2362,40 @@ jobs:
   puzzles:
     name: Build puzzles
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1721,16 +2438,40 @@ jobs:
   redis:
     name: Build redis
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - alpine
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1773,16 +2514,40 @@ jobs:
   registryauth:
     name: Build registryauth
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1825,16 +2590,40 @@ jobs:
   soju:
     name: Build soju
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1877,16 +2666,40 @@ jobs:
   tailscale:
     name: Build tailscale
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1929,16 +2742,40 @@ jobs:
   watchtower:
     name: Build watchtower
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1981,16 +2818,40 @@ jobs:
   webhooked:
     name: Build webhooked
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - base
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2033,16 +2894,40 @@ jobs:
   docker-socket-proxy:
     name: Build docker-socket-proxy
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - haproxy
         - baseroot
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2085,16 +2970,40 @@ jobs:
   hugo:
     name: Build hugo
     runs-on: ubuntu-latest
-    container: docker://localhost:5000/base:latest
-    needs:
-        - docker
 
+    needs:
 
         - golang
         - baseglibc
 
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
