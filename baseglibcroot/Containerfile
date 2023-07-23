@@ -1,11 +1,11 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/baseglibcroot/Containerfile.gotpl
-# BOM: {"apk:libacl":"2.3.1-r3","apk:libc6-compat":"1.2.4-r0","apk:libgcc":"12.2.1_git20220924-r10","apk:libstdc++":"12.2.1_git20220924-r10","apk:libxxhash":"0.8.1-r4","apk:lz4-libs":"1.9.4-r4","apk:musl":"1.2.4-r0","apk:popt":"1.19-r2","apk:rsync":"3.2.7-r4","apk:zlib":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","image:alpine":"bb09baaefa0022cb709bfb42e8852359b208eb2a6baa0beff38eaa3a610141a7","image:baseroot":"0ff388c461add6a09dde64f3bfe3cb62e3ca09f1fb4b69ca93a2f0aa0ae68137"}
+# BOM: {"apk:libacl":"2.3.1-r3","apk:libc6-compat":"1.2.4-r0","apk:libgcc":"12.2.1_git20220924-r10","apk:libstdc++":"12.2.1_git20220924-r10","apk:libxxhash":"0.8.2-r0","apk:lz4-libs":"1.9.4-r4","apk:musl":"1.2.4-r0","apk:popt":"1.19-r2","apk:rsync":"3.2.7-r4","apk:zlib":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","image:alpine":"bb09baaefa0022cb709bfb42e8852359b208eb2a6baa0beff38eaa3a610141a7","image:baseroot":"a5efa4dea57f696343d97dfc918f75dd8b3e0857cc431996e4a3840069a695d2"}
 
 FROM reg.g5d.dev/alpine@sha256:bb09baaefa0022cb709bfb42e8852359b208eb2a6baa0beff38eaa3a610141a7 AS build
 
 RUN set -eux; \
     apk add --no-cache libacl=2.3.1-r3; \
-    apk add --no-cache libxxhash=0.8.1-r4; \
+    apk add --no-cache libxxhash=0.8.2-r0; \
     apk add --no-cache lz4-libs=1.9.4-r4; \
     apk add --no-cache musl=1.2.4-r0; \
     apk add --no-cache popt=1.19-r2; \
@@ -23,6 +23,6 @@ RUN set -eux; \
       apk info -qL musl | rsync -aq --files-from=- / /rootfs/; \
     echo;
 
-FROM reg.g5d.dev/baseroot@sha256:0ff388c461add6a09dde64f3bfe3cb62e3ca09f1fb4b69ca93a2f0aa0ae68137
+FROM reg.g5d.dev/baseroot@sha256:a5efa4dea57f696343d97dfc918f75dd8b3e0857cc431996e4a3840069a695d2
 
 COPY --from=build /rootfs/ /
