@@ -8,8 +8,10 @@ on:
       - '**/Dockerfile'
       - '.github/**'
       - 'README.md'
-name: update
+name: Update Containers
 concurrency: dockerfiles
+permissions:
+  contents: write
 jobs:
 
   alpine:
@@ -3040,3 +3042,4 @@ jobs:
         uses: cutlerydrawer/action-git-try-push@v1
         with:
           tries: 5
+
