@@ -22,11 +22,11 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt orchestrator
         run: go install github.com/csmith/contempt/cmd/orchestrator@latest
-      - name: Run Contempt
+      - name: Run contempt orchestrator
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           TEMPLATE: .github/workflows/update-containers.yml.gotpl
           OUTPUT: .github/workflows/update-containers.yml
-        run: contempt .
+        run: orchestrator .
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v1
