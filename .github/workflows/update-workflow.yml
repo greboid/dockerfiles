@@ -20,8 +20,8 @@ jobs:
         with:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+      - name: Install contempt orchestrator
+        run: go install github.com/csmith/contempt/cmd/orchestrator@latest
       - name: Run Contempt
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
