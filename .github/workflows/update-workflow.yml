@@ -1,9 +1,6 @@
 on:
   workflow_dispatch:
   push:
-permissions:
-  contents: write
-  workflows: write
 jobs:
   update-workflow:
     name: Update Workflow
@@ -11,6 +8,8 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@master
+        with:
+          token: ${{ secrets.CONTEMPT_TOKEN }}
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
