@@ -53,6 +53,7 @@ jobs:
         with:
           image: base
           tags: latest
+          base-image: ubuntu-latest
           content: |
             .
       - name: Push base container
@@ -67,9 +68,9 @@ jobs:
     name: Build {{ target.name }}
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-{%- if target.needed.size > 0 -%}
     needs:
         - docker
+{%- if target.needed.size > 0 -%}
 {%- for dep in target.needed -%}
         - {{ dep -}}
 {%- endfor -%}
