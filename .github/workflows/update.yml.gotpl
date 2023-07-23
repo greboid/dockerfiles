@@ -84,7 +84,7 @@ jobs:
 {%- endraw -%}
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
       - name: Push changes
-        uses: greboid/action-git-try-push@v1
+        uses: cutlerydrawer/action-git-try-push@v1
         with:
           tries: 5
 {%- endfor -%}
