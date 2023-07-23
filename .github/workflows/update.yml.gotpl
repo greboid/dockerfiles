@@ -67,7 +67,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 {%- endraw -%}
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+        run: buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 {%- raw -%}
