@@ -3,7 +3,7 @@ on:
   push:
 permissions:
   contents: write
-  actions: write
+  workflows: write
 jobs:
   update-workflow:
     name: Update Workflow
