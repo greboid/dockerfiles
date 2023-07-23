@@ -74,13 +74,17 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/alpine
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
   baseroot:
     name: Build baseroot
     runs-on: ubuntu-latest
+
+    needs:
+
+        - alpine
 
 
     steps:
@@ -140,148 +144,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/baseroot
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
-        with:
-          tries: 5
-
-  base:
-    name: Build base
-    runs-on: ubuntu-latest
-
-    needs:
-
-        - baseroot
-
-
-    steps:
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        uses: redhat-actions/podman-login@v1
-        with:
-          registry: ${{ secrets.REGISTRY }}
-          username: ${{ secrets.REGISTRY_USER }}
-          password: ${{ secrets.REGISTRY_PASS }}
-      - name: Login to mirror target registry
-        uses: redhat-actions/podman-login@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.CONTEMPT_TOKEN }}
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
-      - name: Update
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project base . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v2
-        id: check_mirror
-        with:
-          files: "base/MIRROR"
-      - name: Retag image to mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/base $MIRROR_TARGET/$MIRROR_PATH/base
-      - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/base
-      - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
-        with:
-          tries: 5
-
-  baseglibcroot:
-    name: Build baseglibcroot
-    runs-on: ubuntu-latest
-
-    needs:
-
-        - alpine
-        - baseroot
-
-
-    steps:
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        uses: redhat-actions/podman-login@v1
-        with:
-          registry: ${{ secrets.REGISTRY }}
-          username: ${{ secrets.REGISTRY_USER }}
-          password: ${{ secrets.REGISTRY_PASS }}
-      - name: Login to mirror target registry
-        uses: redhat-actions/podman-login@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.CONTEMPT_TOKEN }}
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
-      - name: Update
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project baseglibcroot . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v2
-        id: check_mirror
-        with:
-          files: "baseglibcroot/MIRROR"
-      - name: Retag image to mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/baseglibcroot $MIRROR_TARGET/$MIRROR_PATH/baseglibcroot
-      - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/baseglibcroot
-      - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -351,7 +214,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/golang
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -422,7 +285,218 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/node
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
+        with:
+          tries: 5
+
+  rust:
+    name: Build rust
+    runs-on: ubuntu-latest
+
+    needs:
+
+        - alpine
+
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
+      - name: Update
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project rust . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v2
+        id: check_mirror
+        with:
+          files: "rust/MIRROR"
+      - name: Retag image to mirror
+        if: steps.check_mirror.outputs.files_exists == 'true'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/rust $MIRROR_TARGET/$MIRROR_PATH/rust
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/rust
+      - name: Push changes
+        uses: greboid/action-git-try-push@v1
+        with:
+          tries: 5
+
+  base:
+    name: Build base
+    runs-on: ubuntu-latest
+
+    needs:
+
+        - baseroot
+
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
+      - name: Update
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project base . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v2
+        id: check_mirror
+        with:
+          files: "base/MIRROR"
+      - name: Retag image to mirror
+        if: steps.check_mirror.outputs.files_exists == 'true'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/base $MIRROR_TARGET/$MIRROR_PATH/base
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/base
+      - name: Push changes
+        uses: greboid/action-git-try-push@v1
+        with:
+          tries: 5
+
+  baseglibcroot:
+    name: Build baseglibcroot
+    runs-on: ubuntu-latest
+
+    needs:
+
+        - alpine
+        - baseroot
+
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
+      - name: Update
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project baseglibcroot . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v2
+        id: check_mirror
+        with:
+          files: "baseglibcroot/MIRROR"
+      - name: Retag image to mirror
+        if: steps.check_mirror.outputs.files_exists == 'true'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/baseglibcroot $MIRROR_TARGET/$MIRROR_PATH/baseglibcroot
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/baseglibcroot
+      - name: Push changes
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -493,17 +567,17 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/postgres-15
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
-  rust:
-    name: Build rust
+  thelounge:
+    name: Build thelounge
     runs-on: ubuntu-latest
 
     needs:
 
-        - alpine
+        - node
 
 
     steps:
@@ -538,12 +612,12 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
 
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project rust . .
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project thelounge . .
       - name: Check mirror
         uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
-          files: "rust/MIRROR"
+          files: "thelounge/MIRROR"
       - name: Retag image to mirror
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -552,7 +626,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/rust $MIRROR_TARGET/$MIRROR_PATH/rust
+        run: buildah tag $REGISTRY/thelounge $MIRROR_TARGET/$MIRROR_PATH/thelounge
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -561,9 +635,9 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/rust
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/thelounge
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -634,7 +708,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/apache
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -704,7 +778,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/baseglibc
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -775,7 +849,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/centauri
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -846,7 +920,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dex
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -917,7 +991,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dockercleanup
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -988,7 +1062,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dotege
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -1059,7 +1133,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/githubmirror
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -1130,7 +1204,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/golink
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -1201,7 +1275,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/goplum
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -1272,7 +1346,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/haproxy
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -1343,7 +1417,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/httpredirect
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -1414,7 +1488,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/identd
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -1485,7 +1559,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-bot
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -1556,7 +1630,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-distribution
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -1627,7 +1701,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-github
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -1698,7 +1772,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-goplum
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -1769,7 +1843,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-notifier
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -1840,7 +1914,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-webhook
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -1911,7 +1985,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/legoergo
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -1982,7 +2056,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/linx-server
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -2053,7 +2127,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/miniflux
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -2124,7 +2198,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/nitter
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -2195,7 +2269,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/puzzles
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -2266,7 +2340,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/redis
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -2337,7 +2411,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/registryauth
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -2408,7 +2482,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/soju
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -2479,77 +2553,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/tailscale
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
-        with:
-          tries: 5
-
-  thelounge:
-    name: Build thelounge
-    runs-on: ubuntu-latest
-
-    needs:
-
-        - node
-
-
-    steps:
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        uses: redhat-actions/podman-login@v1
-        with:
-          registry: ${{ secrets.REGISTRY }}
-          username: ${{ secrets.REGISTRY_USER }}
-          password: ${{ secrets.REGISTRY_PASS }}
-      - name: Login to mirror target registry
-        uses: redhat-actions/podman-login@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.CONTEMPT_TOKEN }}
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
-      - name: Update
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project thelounge . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v2
-        id: check_mirror
-        with:
-          files: "thelounge/MIRROR"
-      - name: Retag image to mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/thelounge $MIRROR_TARGET/$MIRROR_PATH/thelounge
-      - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/thelounge
-      - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -2620,7 +2624,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/watchtower
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -2691,7 +2695,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/webhooked
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -2762,7 +2766,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/docker-socket-proxy
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
@@ -2833,7 +2837,7 @@ jobs:
 
         run: buildah push $MIRROR_TARGET/$MIRROR_PATH/hugo
       - name: Push changes
-        uses: dawidd6/action-git-try-push@v1
+        uses: greboid/action-git-try-push@v1
         with:
           tries: 5
 
