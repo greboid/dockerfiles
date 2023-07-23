@@ -1,0 +1,84 @@
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '42 12 * * *'
+  push:
+    paths-ignore:
+      - '**/Containerfile'
+      - '**/Dockerfile'
+      - '.github/**'
+      - 'README.md'
+name: update
+concurrency: dockerfiles
+jobs:
+{%- for target in targets -%}
+  {{ target.name -}}:
+    name: Build {{ target.name }}
+    runs-on: ubuntu-latest
+{%- if target.needed.size > 0 -%}
+    needs:
+{%- for dep in target.needed -%}
+        - {{ dep -}}
+{%- endfor -%}
+{%- endif -%}
+{%- raw -%}
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+      - name: Login to private registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Login to mirror target registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        run: go install github.com/csmith/cmd/contempt@latest
+      - name: Update
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+{%- endraw -%}
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project {{ target.name }} . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v2
+        id: check_mirror
+        with:
+          files: "{{ target.name }}/MIRROR"
+      - name: Retag image to mirror
+        if: steps.check_mirror.outputs.files_exists == 'true'
+{%- raw -%}
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+{%- endraw -%}
+        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+{%- raw -%}
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+{%- endraw -%}
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+      - name: Push changes
+        uses: dawidd6/action-git-try-push@v1
+        with:
+          tries: 5
+{%- endfor -%}
