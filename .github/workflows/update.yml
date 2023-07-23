@@ -42,7 +42,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -107,7 +107,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -176,7 +176,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -246,7 +246,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -315,7 +315,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -385,7 +385,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -455,7 +455,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -524,7 +524,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -594,7 +594,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -663,7 +663,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -733,7 +733,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -803,7 +803,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -873,7 +873,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -943,7 +943,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1013,7 +1013,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1083,7 +1083,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1153,7 +1153,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1223,7 +1223,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1293,7 +1293,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1363,7 +1363,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1433,7 +1433,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1503,7 +1503,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1573,7 +1573,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1643,7 +1643,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1713,7 +1713,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1783,7 +1783,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1853,7 +1853,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1923,7 +1923,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1993,7 +1993,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2063,7 +2063,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2133,7 +2133,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2203,7 +2203,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2273,7 +2273,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2343,7 +2343,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2413,7 +2413,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2482,7 +2482,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2552,7 +2552,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2622,7 +2622,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2692,7 +2692,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2762,7 +2762,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
-        run: go install github.com/csmith/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
