@@ -53,6 +53,7 @@ jobs:
         with:
           image: base
           tags: latest
+          base-image: ubuntu-latest
           content: |
             .
       - name: Push base container
@@ -67,6 +68,8 @@ jobs:
     name: Build alpine
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
+    needs:
+        - docker
 
 
     steps:
@@ -113,9 +116,9 @@ jobs:
     name: Build baseroot
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - alpine
 
@@ -164,9 +167,9 @@ jobs:
     name: Build golang
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - alpine
 
@@ -215,9 +218,9 @@ jobs:
     name: Build node
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - alpine
         - alpine
@@ -267,9 +270,9 @@ jobs:
     name: Build rust
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - alpine
 
@@ -318,9 +321,9 @@ jobs:
     name: Build base
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - baseroot
 
@@ -369,9 +372,9 @@ jobs:
     name: Build baseglibcroot
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - alpine
         - baseroot
@@ -421,9 +424,9 @@ jobs:
     name: Build postgres-15
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - alpine
         - baseroot
@@ -473,9 +476,9 @@ jobs:
     name: Build thelounge
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - node
 
@@ -524,9 +527,9 @@ jobs:
     name: Build apache
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - alpine
         - base
@@ -576,9 +579,9 @@ jobs:
     name: Build baseglibc
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - baseglibcroot
 
@@ -627,9 +630,9 @@ jobs:
     name: Build centauri
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -679,9 +682,9 @@ jobs:
     name: Build dex
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -731,9 +734,9 @@ jobs:
     name: Build dockercleanup
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -783,9 +786,9 @@ jobs:
     name: Build dotege
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -835,9 +838,9 @@ jobs:
     name: Build githubmirror
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -887,9 +890,9 @@ jobs:
     name: Build golink
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -939,9 +942,9 @@ jobs:
     name: Build goplum
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -991,9 +994,9 @@ jobs:
     name: Build haproxy
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - alpine
         - base
@@ -1043,9 +1046,9 @@ jobs:
     name: Build httpredirect
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -1095,9 +1098,9 @@ jobs:
     name: Build identd
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -1147,9 +1150,9 @@ jobs:
     name: Build irc-bot
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -1199,9 +1202,9 @@ jobs:
     name: Build irc-distribution
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -1251,9 +1254,9 @@ jobs:
     name: Build irc-github
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -1303,9 +1306,9 @@ jobs:
     name: Build irc-goplum
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -1355,9 +1358,9 @@ jobs:
     name: Build irc-notifier
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -1407,9 +1410,9 @@ jobs:
     name: Build irc-webhook
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -1459,9 +1462,9 @@ jobs:
     name: Build legoergo
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -1511,9 +1514,9 @@ jobs:
     name: Build linx-server
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -1563,9 +1566,9 @@ jobs:
     name: Build miniflux
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -1615,9 +1618,9 @@ jobs:
     name: Build nitter
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - alpine
         - base
@@ -1667,9 +1670,9 @@ jobs:
     name: Build puzzles
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -1719,9 +1722,9 @@ jobs:
     name: Build redis
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - alpine
         - base
@@ -1771,9 +1774,9 @@ jobs:
     name: Build registryauth
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -1823,9 +1826,9 @@ jobs:
     name: Build soju
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -1875,9 +1878,9 @@ jobs:
     name: Build tailscale
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -1927,9 +1930,9 @@ jobs:
     name: Build watchtower
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -1979,9 +1982,9 @@ jobs:
     name: Build webhooked
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - base
@@ -2031,9 +2034,9 @@ jobs:
     name: Build docker-socket-proxy
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - haproxy
         - baseroot
@@ -2083,9 +2086,9 @@ jobs:
     name: Build hugo
     runs-on: ubuntu-latest
     container: docker://localhost:5000/base:latest
-
     needs:
         - docker
+
 
         - golang
         - baseglibc
