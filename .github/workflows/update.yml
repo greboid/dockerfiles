@@ -55,8 +55,13 @@ jobs:
         id: check_mirror
         with:
           files: "alpine/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -65,7 +70,7 @@ jobs:
 
         run: buildah tag $REGISTRY/alpine $MIRROR_TARGET/$MIRROR_PATH/alpine
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -125,8 +130,13 @@ jobs:
         id: check_mirror
         with:
           files: "baseroot/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -135,7 +145,7 @@ jobs:
 
         run: buildah tag $REGISTRY/baseroot $MIRROR_TARGET/$MIRROR_PATH/baseroot
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -195,8 +205,13 @@ jobs:
         id: check_mirror
         with:
           files: "golang/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -205,7 +220,7 @@ jobs:
 
         run: buildah tag $REGISTRY/golang $MIRROR_TARGET/$MIRROR_PATH/golang
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -266,8 +281,13 @@ jobs:
         id: check_mirror
         with:
           files: "node/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -276,7 +296,7 @@ jobs:
 
         run: buildah tag $REGISTRY/node $MIRROR_TARGET/$MIRROR_PATH/node
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -336,8 +356,13 @@ jobs:
         id: check_mirror
         with:
           files: "rust/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -346,7 +371,7 @@ jobs:
 
         run: buildah tag $REGISTRY/rust $MIRROR_TARGET/$MIRROR_PATH/rust
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -406,8 +431,13 @@ jobs:
         id: check_mirror
         with:
           files: "base/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -416,7 +446,7 @@ jobs:
 
         run: buildah tag $REGISTRY/base $MIRROR_TARGET/$MIRROR_PATH/base
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -477,8 +507,13 @@ jobs:
         id: check_mirror
         with:
           files: "baseglibcroot/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -487,7 +522,7 @@ jobs:
 
         run: buildah tag $REGISTRY/baseglibcroot $MIRROR_TARGET/$MIRROR_PATH/baseglibcroot
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -548,8 +583,13 @@ jobs:
         id: check_mirror
         with:
           files: "postgres-15/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -558,7 +598,7 @@ jobs:
 
         run: buildah tag $REGISTRY/postgres-15 $MIRROR_TARGET/$MIRROR_PATH/postgres-15
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -618,8 +658,13 @@ jobs:
         id: check_mirror
         with:
           files: "thelounge/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -628,7 +673,7 @@ jobs:
 
         run: buildah tag $REGISTRY/thelounge $MIRROR_TARGET/$MIRROR_PATH/thelounge
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -689,8 +734,13 @@ jobs:
         id: check_mirror
         with:
           files: "apache/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -699,7 +749,7 @@ jobs:
 
         run: buildah tag $REGISTRY/apache $MIRROR_TARGET/$MIRROR_PATH/apache
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -759,8 +809,13 @@ jobs:
         id: check_mirror
         with:
           files: "baseglibc/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -769,7 +824,7 @@ jobs:
 
         run: buildah tag $REGISTRY/baseglibc $MIRROR_TARGET/$MIRROR_PATH/baseglibc
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -830,8 +885,13 @@ jobs:
         id: check_mirror
         with:
           files: "centauri/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -840,7 +900,7 @@ jobs:
 
         run: buildah tag $REGISTRY/centauri $MIRROR_TARGET/$MIRROR_PATH/centauri
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -901,8 +961,13 @@ jobs:
         id: check_mirror
         with:
           files: "dex/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -911,7 +976,7 @@ jobs:
 
         run: buildah tag $REGISTRY/dex $MIRROR_TARGET/$MIRROR_PATH/dex
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -972,8 +1037,13 @@ jobs:
         id: check_mirror
         with:
           files: "dockercleanup/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -982,7 +1052,7 @@ jobs:
 
         run: buildah tag $REGISTRY/dockercleanup $MIRROR_TARGET/$MIRROR_PATH/dockercleanup
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1043,8 +1113,13 @@ jobs:
         id: check_mirror
         with:
           files: "dotege/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1053,7 +1128,7 @@ jobs:
 
         run: buildah tag $REGISTRY/dotege $MIRROR_TARGET/$MIRROR_PATH/dotege
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1114,8 +1189,13 @@ jobs:
         id: check_mirror
         with:
           files: "githubmirror/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1124,7 +1204,7 @@ jobs:
 
         run: buildah tag $REGISTRY/githubmirror $MIRROR_TARGET/$MIRROR_PATH/githubmirror
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1185,8 +1265,13 @@ jobs:
         id: check_mirror
         with:
           files: "golink/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1195,7 +1280,7 @@ jobs:
 
         run: buildah tag $REGISTRY/golink $MIRROR_TARGET/$MIRROR_PATH/golink
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1256,8 +1341,13 @@ jobs:
         id: check_mirror
         with:
           files: "goplum/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1266,7 +1356,7 @@ jobs:
 
         run: buildah tag $REGISTRY/goplum $MIRROR_TARGET/$MIRROR_PATH/goplum
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1327,8 +1417,13 @@ jobs:
         id: check_mirror
         with:
           files: "haproxy/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1337,7 +1432,7 @@ jobs:
 
         run: buildah tag $REGISTRY/haproxy $MIRROR_TARGET/$MIRROR_PATH/haproxy
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1398,8 +1493,13 @@ jobs:
         id: check_mirror
         with:
           files: "httpredirect/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1408,7 +1508,7 @@ jobs:
 
         run: buildah tag $REGISTRY/httpredirect $MIRROR_TARGET/$MIRROR_PATH/httpredirect
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1469,8 +1569,13 @@ jobs:
         id: check_mirror
         with:
           files: "identd/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1479,7 +1584,7 @@ jobs:
 
         run: buildah tag $REGISTRY/identd $MIRROR_TARGET/$MIRROR_PATH/identd
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1540,8 +1645,13 @@ jobs:
         id: check_mirror
         with:
           files: "irc-bot/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1550,7 +1660,7 @@ jobs:
 
         run: buildah tag $REGISTRY/irc-bot $MIRROR_TARGET/$MIRROR_PATH/irc-bot
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1611,8 +1721,13 @@ jobs:
         id: check_mirror
         with:
           files: "irc-distribution/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1621,7 +1736,7 @@ jobs:
 
         run: buildah tag $REGISTRY/irc-distribution $MIRROR_TARGET/$MIRROR_PATH/irc-distribution
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1682,8 +1797,13 @@ jobs:
         id: check_mirror
         with:
           files: "irc-github/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1692,7 +1812,7 @@ jobs:
 
         run: buildah tag $REGISTRY/irc-github $MIRROR_TARGET/$MIRROR_PATH/irc-github
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1753,8 +1873,13 @@ jobs:
         id: check_mirror
         with:
           files: "irc-goplum/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1763,7 +1888,7 @@ jobs:
 
         run: buildah tag $REGISTRY/irc-goplum $MIRROR_TARGET/$MIRROR_PATH/irc-goplum
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1824,8 +1949,13 @@ jobs:
         id: check_mirror
         with:
           files: "irc-notifier/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1834,7 +1964,7 @@ jobs:
 
         run: buildah tag $REGISTRY/irc-notifier $MIRROR_TARGET/$MIRROR_PATH/irc-notifier
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1895,8 +2025,13 @@ jobs:
         id: check_mirror
         with:
           files: "irc-webhook/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1905,7 +2040,7 @@ jobs:
 
         run: buildah tag $REGISTRY/irc-webhook $MIRROR_TARGET/$MIRROR_PATH/irc-webhook
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1966,8 +2101,13 @@ jobs:
         id: check_mirror
         with:
           files: "legoergo/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -1976,7 +2116,7 @@ jobs:
 
         run: buildah tag $REGISTRY/legoergo $MIRROR_TARGET/$MIRROR_PATH/legoergo
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2037,8 +2177,13 @@ jobs:
         id: check_mirror
         with:
           files: "linx-server/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2047,7 +2192,7 @@ jobs:
 
         run: buildah tag $REGISTRY/linx-server $MIRROR_TARGET/$MIRROR_PATH/linx-server
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2108,8 +2253,13 @@ jobs:
         id: check_mirror
         with:
           files: "miniflux/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2118,7 +2268,7 @@ jobs:
 
         run: buildah tag $REGISTRY/miniflux $MIRROR_TARGET/$MIRROR_PATH/miniflux
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2179,8 +2329,13 @@ jobs:
         id: check_mirror
         with:
           files: "nitter/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2189,7 +2344,7 @@ jobs:
 
         run: buildah tag $REGISTRY/nitter $MIRROR_TARGET/$MIRROR_PATH/nitter
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2250,8 +2405,13 @@ jobs:
         id: check_mirror
         with:
           files: "puzzles/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2260,7 +2420,7 @@ jobs:
 
         run: buildah tag $REGISTRY/puzzles $MIRROR_TARGET/$MIRROR_PATH/puzzles
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2321,8 +2481,13 @@ jobs:
         id: check_mirror
         with:
           files: "redis/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2331,7 +2496,7 @@ jobs:
 
         run: buildah tag $REGISTRY/redis $MIRROR_TARGET/$MIRROR_PATH/redis
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2392,8 +2557,13 @@ jobs:
         id: check_mirror
         with:
           files: "registryauth/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2402,7 +2572,7 @@ jobs:
 
         run: buildah tag $REGISTRY/registryauth $MIRROR_TARGET/$MIRROR_PATH/registryauth
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2463,8 +2633,13 @@ jobs:
         id: check_mirror
         with:
           files: "soju/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2473,7 +2648,7 @@ jobs:
 
         run: buildah tag $REGISTRY/soju $MIRROR_TARGET/$MIRROR_PATH/soju
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2534,8 +2709,13 @@ jobs:
         id: check_mirror
         with:
           files: "tailscale/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2544,7 +2724,7 @@ jobs:
 
         run: buildah tag $REGISTRY/tailscale $MIRROR_TARGET/$MIRROR_PATH/tailscale
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2605,8 +2785,13 @@ jobs:
         id: check_mirror
         with:
           files: "watchtower/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2615,7 +2800,7 @@ jobs:
 
         run: buildah tag $REGISTRY/watchtower $MIRROR_TARGET/$MIRROR_PATH/watchtower
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2676,8 +2861,13 @@ jobs:
         id: check_mirror
         with:
           files: "webhooked/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2686,7 +2876,7 @@ jobs:
 
         run: buildah tag $REGISTRY/webhooked $MIRROR_TARGET/$MIRROR_PATH/webhooked
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2747,8 +2937,13 @@ jobs:
         id: check_mirror
         with:
           files: "docker-socket-proxy/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2757,7 +2952,7 @@ jobs:
 
         run: buildah tag $REGISTRY/docker-socket-proxy $MIRROR_TARGET/$MIRROR_PATH/docker-socket-proxy
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2818,8 +3013,13 @@ jobs:
         id: check_mirror
         with:
           files: "hugo/MIRROR"
-      - name: Retag image to mirror
+      - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -2828,7 +3028,7 @@ jobs:
 
         run: buildah tag $REGISTRY/hugo $MIRROR_TARGET/$MIRROR_PATH/hugo
       - name: Mirror the image
-        if: steps.check_mirror.outputs.files_exists == 'true'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
