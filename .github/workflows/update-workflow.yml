@@ -1,9 +1,9 @@
 on:
   workflow_dispatch:
   push:
+name: Update Workflow
 jobs:
   update-workflow:
-    name: Update Workflow
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source
