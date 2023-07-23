@@ -1,3 +1,4 @@
+{%- raw -%}
 on:
   workflow_dispatch:
   schedule:
@@ -13,17 +14,13 @@ concurrency: dockerfiles
 permissions:
   contents: write
 jobs:
-{%- for target in targets -%}
-  {{ target.name -}}:
-    name: Build {{ target.name }}
+  docker:
     runs-on: ubuntu-latest
-{%- if target.needed.size > 0 -%}
-    needs:
-{%- for dep in target.needed -%}
-        - {{ dep -}}
-{%- endfor -%}
-{%- endif -%}
-{%- raw -%}
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
     steps:
       - name: Checkout source
         uses: actions/checkout@master
@@ -51,6 +48,34 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         run: go install github.com/csmith/contempt/cmd/contempt@latest
+      - name: Build base container
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: base
+          tags: latest
+          content: |
+            .
+      - name: Push base container
+        uses: redhat-actions/push-to-registry@v2
+        with:
+           image: base
+           tags: latest
+           registry: localhost:5000
+{%- endraw -%}
+{%- for target in targets -%}
+  {{ target.name -}}:
+    name: Build {{ target.name }}
+    runs-on: ubuntu-latest
+    container: docker://localhost:5000/base:latest
+{%- if target.needed.size > 0 -%}
+    needs:
+        - docker
+{%- for dep in target.needed -%}
+        - {{ dep -}}
+{%- endfor -%}
+{%- endif -%}
+{%- raw -%}
+    steps:
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
