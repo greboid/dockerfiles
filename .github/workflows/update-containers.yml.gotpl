@@ -8,8 +8,10 @@ on:
       - '**/Dockerfile'
       - '.github/**'
       - 'README.md'
-name: update
+name: Update Containers
 concurrency: dockerfiles
+permissions:
+  contents: write
 jobs:
 {%- for target in targets -%}
   {{ target.name -}}:
