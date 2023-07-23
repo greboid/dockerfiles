@@ -62,7 +62,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/alpine
+        run: buildah tag $REGISTRY/alpine $MIRROR_TARGET/$MIRROR_PATH/alpine
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -127,7 +127,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/baseroot
+        run: buildah tag $REGISTRY/baseroot $MIRROR_TARGET/$MIRROR_PATH/baseroot
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -196,7 +196,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/base
+        run: buildah tag $REGISTRY/base $MIRROR_TARGET/$MIRROR_PATH/base
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -266,7 +266,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/baseglibcroot
+        run: buildah tag $REGISTRY/baseglibcroot $MIRROR_TARGET/$MIRROR_PATH/baseglibcroot
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -335,7 +335,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/golang
+        run: buildah tag $REGISTRY/golang $MIRROR_TARGET/$MIRROR_PATH/golang
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -405,7 +405,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/node
+        run: buildah tag $REGISTRY/node $MIRROR_TARGET/$MIRROR_PATH/node
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -475,7 +475,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/postgres-15
+        run: buildah tag $REGISTRY/postgres-15 $MIRROR_TARGET/$MIRROR_PATH/postgres-15
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -544,7 +544,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/rust
+        run: buildah tag $REGISTRY/rust $MIRROR_TARGET/$MIRROR_PATH/rust
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -614,7 +614,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/apache
+        run: buildah tag $REGISTRY/apache $MIRROR_TARGET/$MIRROR_PATH/apache
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -683,7 +683,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/baseglibc
+        run: buildah tag $REGISTRY/baseglibc $MIRROR_TARGET/$MIRROR_PATH/baseglibc
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -753,7 +753,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/centauri
+        run: buildah tag $REGISTRY/centauri $MIRROR_TARGET/$MIRROR_PATH/centauri
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -823,7 +823,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/dex
+        run: buildah tag $REGISTRY/dex $MIRROR_TARGET/$MIRROR_PATH/dex
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -893,7 +893,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/dockercleanup
+        run: buildah tag $REGISTRY/dockercleanup $MIRROR_TARGET/$MIRROR_PATH/dockercleanup
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -963,7 +963,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/dotege
+        run: buildah tag $REGISTRY/dotege $MIRROR_TARGET/$MIRROR_PATH/dotege
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -1033,7 +1033,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/githubmirror
+        run: buildah tag $REGISTRY/githubmirror $MIRROR_TARGET/$MIRROR_PATH/githubmirror
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -1103,7 +1103,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/golink
+        run: buildah tag $REGISTRY/golink $MIRROR_TARGET/$MIRROR_PATH/golink
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -1173,7 +1173,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/goplum
+        run: buildah tag $REGISTRY/goplum $MIRROR_TARGET/$MIRROR_PATH/goplum
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -1243,7 +1243,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/haproxy
+        run: buildah tag $REGISTRY/haproxy $MIRROR_TARGET/$MIRROR_PATH/haproxy
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -1313,7 +1313,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/httpredirect
+        run: buildah tag $REGISTRY/httpredirect $MIRROR_TARGET/$MIRROR_PATH/httpredirect
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -1383,7 +1383,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/identd
+        run: buildah tag $REGISTRY/identd $MIRROR_TARGET/$MIRROR_PATH/identd
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -1453,7 +1453,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/irc-bot
+        run: buildah tag $REGISTRY/irc-bot $MIRROR_TARGET/$MIRROR_PATH/irc-bot
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -1523,7 +1523,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/irc-distribution
+        run: buildah tag $REGISTRY/irc-distribution $MIRROR_TARGET/$MIRROR_PATH/irc-distribution
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -1593,7 +1593,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/irc-github
+        run: buildah tag $REGISTRY/irc-github $MIRROR_TARGET/$MIRROR_PATH/irc-github
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -1663,7 +1663,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/irc-goplum
+        run: buildah tag $REGISTRY/irc-goplum $MIRROR_TARGET/$MIRROR_PATH/irc-goplum
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -1733,7 +1733,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/irc-notifier
+        run: buildah tag $REGISTRY/irc-notifier $MIRROR_TARGET/$MIRROR_PATH/irc-notifier
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -1803,7 +1803,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/irc-webhook
+        run: buildah tag $REGISTRY/irc-webhook $MIRROR_TARGET/$MIRROR_PATH/irc-webhook
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -1873,7 +1873,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/legoergo
+        run: buildah tag $REGISTRY/legoergo $MIRROR_TARGET/$MIRROR_PATH/legoergo
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -1943,7 +1943,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/linx-server
+        run: buildah tag $REGISTRY/linx-server $MIRROR_TARGET/$MIRROR_PATH/linx-server
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -2013,7 +2013,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/miniflux
+        run: buildah tag $REGISTRY/miniflux $MIRROR_TARGET/$MIRROR_PATH/miniflux
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -2083,7 +2083,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/nitter
+        run: buildah tag $REGISTRY/nitter $MIRROR_TARGET/$MIRROR_PATH/nitter
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -2153,7 +2153,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/puzzles
+        run: buildah tag $REGISTRY/puzzles $MIRROR_TARGET/$MIRROR_PATH/puzzles
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -2223,7 +2223,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/redis
+        run: buildah tag $REGISTRY/redis $MIRROR_TARGET/$MIRROR_PATH/redis
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -2293,7 +2293,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/registryauth
+        run: buildah tag $REGISTRY/registryauth $MIRROR_TARGET/$MIRROR_PATH/registryauth
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -2363,7 +2363,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/soju
+        run: buildah tag $REGISTRY/soju $MIRROR_TARGET/$MIRROR_PATH/soju
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -2433,7 +2433,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/tailscale
+        run: buildah tag $REGISTRY/tailscale $MIRROR_TARGET/$MIRROR_PATH/tailscale
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -2502,7 +2502,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/thelounge
+        run: buildah tag $REGISTRY/thelounge $MIRROR_TARGET/$MIRROR_PATH/thelounge
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -2572,7 +2572,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/watchtower
+        run: buildah tag $REGISTRY/watchtower $MIRROR_TARGET/$MIRROR_PATH/watchtower
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -2642,7 +2642,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/webhooked
+        run: buildah tag $REGISTRY/webhooked $MIRROR_TARGET/$MIRROR_PATH/webhooked
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -2712,7 +2712,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/docker-socket-proxy
+        run: buildah tag $REGISTRY/docker-socket-proxy $MIRROR_TARGET/$MIRROR_PATH/docker-socket-proxy
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
@@ -2782,7 +2782,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/$IMAGE $MIRROR_TARGET/$MIRROR_PATH/hugo
+        run: buildah tag $REGISTRY/hugo $MIRROR_TARGET/$MIRROR_PATH/hugo
       - name: Mirror the image
         if: steps.check_mirror.outputs.files_exists == 'true'
 
