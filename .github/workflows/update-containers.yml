@@ -15,12 +15,14 @@ permissions:
   contents: write
 jobs:
   setup-cache:
+    name: Setup cache
+    runs-on: ubuntu-latest
     steps:
      - name: Get contempt version
        id: contempt
        uses: tdemin/find-latest-tag@v1
-         with:
-           repo: https://github.com/csmith/contempt.git
+       with:
+         repo: https://github.com/csmith/contempt.git
      - name: Get Paths
        id: go-paths
        run: |
