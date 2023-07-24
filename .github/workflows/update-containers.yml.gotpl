@@ -1,3 +1,4 @@
+{%- raw -%}
 on:
   workflow_dispatch:
   schedule:
@@ -35,6 +36,7 @@ jobs:
        with:
          path: ${{ steps.go-paths.outputs.go-mod }}
          key: ${{ runner.os }}-go-mod-${{ steps.contempt.outputs.tag }}
+{%- endraw -%}
 {%- for target in targets -%}
   {{ target.name -}}:
     name: Build {{ target.name }}
