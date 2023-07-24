@@ -18,26 +18,20 @@ jobs:
     name: Setup cache
     runs-on: ubuntu-latest
     steps:
-     - name: Get contempt version
-       id: contempt
-       uses: tdemin/find-latest-tag@v1
-       with:
-         repo: https://github.com/csmith/contempt.git
-     - name: Get Paths
-       id: go-paths
-       run: |
-         echo "go-build=$(go env GOCACHE)" >> $GITHUB_OUTPUT
-         echo "go-mod=$(go env GOMODCACHE)" >> $GITHUB_OUTPUT
-     - name: Go Build Cache
-       uses: actions/cache@v3
-       with:
-         path: ${{ steps.go-paths.outputs.go-build }}
-         key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-     - name: Go Mod Cache
-       uses: actions/cache@v2
-       with:
-         path: ${{ steps.go-paths.outputs.go-mod }}
-         key: ${{ runner.os }}-go-mod-${{ steps.contempt.outputs.tag }}
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin Cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
 {%- endraw -%}
 {%- for target in targets -%}
   {{ target.name -}}:
@@ -60,18 +54,13 @@ jobs:
       - name: Get Paths
         id: go-paths
         run: |
-          echo "go-build=$(go env GOCACHE)" >> $GITHUB_OUTPUT
-          echo "go-mod=$(go env GOMODCACHE)" >> $GITHUB_OUTPUT
-      - name: Go Build Cache
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
         uses: actions/cache@v3
         with:
-          path: ${{ steps.go-paths.outputs.go-build }}
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Go Mod Cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.go-paths.outputs.go-mod }}
-          key: ${{ runner.os }}-go-mod-${{ steps.contempt.outputs.tag }}
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
@@ -97,6 +86,7 @@ jobs:
           name: ${{ secrets.GIT_USERNAME }}
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
         run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
