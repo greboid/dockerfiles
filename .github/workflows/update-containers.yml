@@ -1,3 +1,4 @@
+
 on:
   workflow_dispatch:
   schedule:
@@ -28,13 +29,14 @@ jobs:
      - name: Go Build Cache
        uses: actions/cache@v3
        with:
-         path: $
-         key: $-go-build-$
+         path: ${{ steps.go-paths.outputs.go-build }}
+         key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
      - name: Go Mod Cache
        uses: actions/cache@v2
        with:
-         path: $
-         key: $-go-mod-$
+         path: ${{ steps.go-paths.outputs.go-mod }}
+         key: ${{ runner.os }}-go-mod-${{ steps.contempt.outputs.tag }}
+
 
   alpine:
     name: Build alpine
