@@ -13,10 +13,34 @@ concurrency: dockerfiles
 permissions:
   contents: write
 jobs:
+  setup-cache:
+    steps:
+     - name: Get contempt version
+       id: contempt
+       uses: tdemin/find-latest-tag@v1
+         with:
+           repo: https://github.com/csmith/contempt.git
+     - name: Get Paths
+       id: go-paths
+       run: |
+         echo "::set-output name=go-build::$(go env GOCACHE)"
+         echo "::set-output name=go-mod::$(go env GOMODCACHE)"
+     - name: Go Build Cache
+       uses: actions/cache@v3
+       with:
+         path: $
+         key: $-go-build-$
+     - name: Go Mod Cache
+       uses: actions/cache@v2
+       with:
+         path: $
+         key: $-go-mod-$
 
   alpine:
     name: Build alpine
     runs-on: ubuntu-latest
+    needs:
+        - setup-cache
 
 
     steps:
@@ -88,8 +112,9 @@ jobs:
   baseroot:
     name: Build baseroot
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - alpine
 
@@ -163,8 +188,9 @@ jobs:
   golang:
     name: Build golang
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - alpine
 
@@ -238,8 +264,9 @@ jobs:
   node:
     name: Build node
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - alpine
         - alpine
@@ -314,8 +341,9 @@ jobs:
   rust:
     name: Build rust
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - alpine
 
@@ -389,8 +417,9 @@ jobs:
   base:
     name: Build base
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - baseroot
 
@@ -464,8 +493,9 @@ jobs:
   baseglibcroot:
     name: Build baseglibcroot
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - alpine
         - baseroot
@@ -540,8 +570,9 @@ jobs:
   postgres-15:
     name: Build postgres-15
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - alpine
         - baseroot
@@ -616,8 +647,9 @@ jobs:
   thelounge:
     name: Build thelounge
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - node
 
@@ -691,8 +723,9 @@ jobs:
   apache:
     name: Build apache
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - alpine
         - base
@@ -767,8 +800,9 @@ jobs:
   baseglibc:
     name: Build baseglibc
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - baseglibcroot
 
@@ -842,8 +876,9 @@ jobs:
   centauri:
     name: Build centauri
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -918,8 +953,9 @@ jobs:
   dex:
     name: Build dex
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -994,8 +1030,9 @@ jobs:
   dockercleanup:
     name: Build dockercleanup
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -1070,8 +1107,9 @@ jobs:
   dotege:
     name: Build dotege
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -1146,8 +1184,9 @@ jobs:
   githubmirror:
     name: Build githubmirror
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -1222,8 +1261,9 @@ jobs:
   golink:
     name: Build golink
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -1298,8 +1338,9 @@ jobs:
   goplum:
     name: Build goplum
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -1374,8 +1415,9 @@ jobs:
   haproxy:
     name: Build haproxy
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - alpine
         - base
@@ -1450,8 +1492,9 @@ jobs:
   httpredirect:
     name: Build httpredirect
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -1526,8 +1569,9 @@ jobs:
   identd:
     name: Build identd
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -1602,8 +1646,9 @@ jobs:
   irc-bot:
     name: Build irc-bot
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -1678,8 +1723,9 @@ jobs:
   irc-distribution:
     name: Build irc-distribution
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -1754,8 +1800,9 @@ jobs:
   irc-github:
     name: Build irc-github
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -1830,8 +1877,9 @@ jobs:
   irc-goplum:
     name: Build irc-goplum
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -1906,8 +1954,9 @@ jobs:
   irc-notifier:
     name: Build irc-notifier
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -1982,8 +2031,9 @@ jobs:
   irc-webhook:
     name: Build irc-webhook
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -2058,8 +2108,9 @@ jobs:
   legoergo:
     name: Build legoergo
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -2134,8 +2185,9 @@ jobs:
   linx-server:
     name: Build linx-server
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -2210,8 +2262,9 @@ jobs:
   miniflux:
     name: Build miniflux
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -2286,8 +2339,9 @@ jobs:
   nitter:
     name: Build nitter
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - alpine
         - base
@@ -2362,8 +2416,9 @@ jobs:
   puzzles:
     name: Build puzzles
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -2438,8 +2493,9 @@ jobs:
   redis:
     name: Build redis
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - alpine
         - base
@@ -2514,8 +2570,9 @@ jobs:
   registryauth:
     name: Build registryauth
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -2590,8 +2647,9 @@ jobs:
   soju:
     name: Build soju
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -2666,8 +2724,9 @@ jobs:
   tailscale:
     name: Build tailscale
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -2742,8 +2801,9 @@ jobs:
   watchtower:
     name: Build watchtower
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -2818,8 +2878,9 @@ jobs:
   webhooked:
     name: Build webhooked
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - base
@@ -2894,8 +2955,9 @@ jobs:
   docker-socket-proxy:
     name: Build docker-socket-proxy
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - haproxy
         - baseroot
@@ -2970,8 +3032,9 @@ jobs:
   hugo:
     name: Build hugo
     runs-on: ubuntu-latest
-
     needs:
+        - setup-cache
+
 
         - golang
         - baseglibc
