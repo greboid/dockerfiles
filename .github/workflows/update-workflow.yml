@@ -1,6 +1,9 @@
 on:
   workflow_dispatch:
   push:
+    paths-ignore:
+      - '.github/workflows/update-containers.yml'
+      - 'README.md'
 name: Update Workflow
 jobs:
   update-workflow:
