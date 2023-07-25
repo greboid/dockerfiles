@@ -6,18 +6,16 @@ ARG ENTRYPOINT=39c3dc7046f5f7909179a51e25f2a61158781d57
 
 RUN set -eux; \
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
+        {{range $key, $value := alpine_packages "git" "curl" "gcc" "g++" "make" "readline-dev" "zlib-dev" "linux-headers" "musl-locales" "openssl-dev" "scanelf" "rsync" "bash" -}}
         {{$key}}={{$value}} \
-        {{end}}; \
-    git clone -b master --single-branch https://github.com/docker-library/postgres /src/docker-postgres; \
-    cd /src/docker-postgres; \
-    git checkout $ENTRYPOINT;
+        {{end}};
 
 RUN set -eux; \
-    apk add --no-cache \
-        {{range $key, $value := alpine_packages "curl" "gcc" "g++" "make" "readline-dev" "zlib-dev" "linux-headers" "musl-locales" "openssl-dev" "scanelf" "rsync" "bash" -}}
-        {{$key}}={{$value}} \
-        {{end}}; \
+    git clone -b master --single-branch https://github.com/docker-library/postgres /src/docker-postgres; \
+    cd /src/docker-postgres; \
+    git checkout $ENTRYPOINT
+
+RUN set -eux; \
     curl -sfLo postgresql.tar.bz2 $ARCHIVE_URL; \
     echo "$ARCHIVE_SUM *postgresql.tar.bz2" | sha256sum -wc -; \
     mkdir -p /usr/local/postgres; \
@@ -30,15 +28,10 @@ RUN set -eux; \
         --with-ssl=openssl; \
     make -j$(nproc) world; \
     make install-world; \
-    make -C contrib install; \
-    mkdir -p /src/data; \
-    mkdir -p /src/run; \
-    chmod 777 /src/run; \
-    mkdir -p /etc/postgresql/; \
-    mkdir -p /docker-entrypoint-initdb.d/;
+    make -C contrib install;
 
 RUN set -eux; \
-    DEPS=$(scanelf --needed --nobanner --format '%n#p' --recursive -l /usr/local /usr/local/bin/psql /usr/local/bin/postgres /usr/local/bin/initdb \
+    DEPS=$(scanelf --needed --nobanner --format '%n#p' --recursive -l /usr/local /usr/local/pgsql/bin /usr/bin/locale \
     | tr ',' '\n' \
     | sort -u \
     | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }');\
@@ -48,34 +41,56 @@ RUN set -eux; \
       apk info -qL "${DEP}" | rsync -aq '--files-from=-' / /rootfs/; \
     done;
 
-RUN ls -lR /rootfs/
+RUN set -eux; \
+    mkdir -p /rootfs/usr/bin; \
+    mkdir -p /rootfs/bin; \
+    mkdir -p /rootfs/usr/local/bin/; \
+    cp /usr/bin/env /rootfs/usr/bin/env; \
+    cp /bin/sh /rootfs/bin/sh; \
+    cp /bin/ls /rootfs/bin/ls; \
+    cp /bin/cat /rootfs/bin/cat; \
+    cp /bin/bash /rootfs/bin/bash; \
+    cp /usr/bin/locale /rootfs/usr/bin/locale; \
+    cp /bin/ls /rootfs/bin/ls; \
+    cp /usr/bin/id /rootfs/usr/bin/id; \
+    cp /bin/mkdir /rootfs/bin/mkdir; \
+    cp /bin/chmod /rootfs/bin/chmod
 
-FROM {{image "baseroot"}}
+RUN set -eux; \
+    cp /src/docker-postgres/15/alpine/docker-entrypoint.sh /rootfs/usr/local/bin/entry.sh; \
+    chmod 777 /rootfs/usr/local/bin/entry.sh; \
+    chown 65532:65532 /rootfs/usr/local/bin/entry.sh
 
-ENV LANG en_US.utf8
-ENV PGDATA=/var/lib/postgresql/data
-ENV PGHOST=127.0.0.1
-ENV PGUSER=postgres
+RUN set -eux; \
+    rsync -ap /usr/local/pgsql/ /rootfs/usr/local/pgsql/
+
+RUN set -eux; \
+    mkdir -p /rootfs/var/lib/postgresql/data; \
+    chown -R 65532:65532 /rootfs/var/lib/postgresql; \
+    chmod 750 /rootfs/var/lib/postgresql/data; \
+    chmod 777 /rootfs/var/lib/postgresql
+
+RUN set -eux; \
+    mkdir -p /rootfs/var/run; \
+    chown 65532:65532 /rootfs/var/run; \
+    chmod -R 777 /rootfs/var/run
+
+RUN set -eux; \
+    mkdir -p /rootfs/tmp; \
+    chown 65532:65532 /rootfs/tmp; \
+    chmod -R 777 /rootfs/tmp
+
+RUN set -eux; \
+    mkdir -p /rootfs/docker-entrypoint-initdb.d; \
+    chmod 644 /rootfs/docker-entrypoint-initdb.d/; \
+    chown 65532:65532 /rootfs/docker-entrypoint-initdb.d/
+
+FROM {{image "base"}}
+
+ENV PATH="/usr/local/pgsql/bin:$PATH" LANG=en_US.utf8 PGDATA=/var/lib/postgresql/data PGHOST=127.0.0.1 PGUSER=postgres
 
 COPY --from=build /rootfs/ /
-COPY --from=build /usr/bin/env /usr/bin/env
-COPY --from=build /bin/sh /bin/sh
-COPY --from=build /bin/bash /bin/bash
-COPY --from=build /usr/bin/locale /usr/bin/locale
-COPY --from=build /bin/ls /bin/ls
-COPY --from=build /usr/bin/id /usr/bin/id
-COPY --from=build /bin/mkdir /bin/mkdir
-COPY --from=build /bin/chmod /bin/chmod
-COPY --from=build /usr/local/pgsql /usr/local/
-COPY --from=build --chown=65532:65532 --chmod=750 /src/data /var/lib/postgresql
-COPY --from=build --chown=65532:65532 --chmod=750 /src/data /var/lib/postgresql/data
-COPY --from=build --chown=65532:65532 --chmod=777 /src/run /var/run/psql
-COPY --from=build --chown=65532:65532 --chmod=777 /tmp /tmp
-COPY --from=build --chown=65532:65532 --chmod=644 /docker-entrypoint-initdb.d/ /docker-entrypoint-initdb.d/
-COPY --from=build --chown=65532:65532 --chmod=777 /src/docker-postgres/15/alpine/docker-entrypoint.sh /usr/local/bin/entry.sh
-RUN chmod -R 777 /tmp; chmod 777 /var/lib/postgresql
 
-USER nonroot
 STOPSIGNAL SIGINT
 
 EXPOSE 5432
