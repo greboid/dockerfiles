@@ -1,15 +1,15 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/registryauth/Containerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r14","apk:busybox":"1.36.1-r1","apk:busybox-binsh":"1.36.1-r1","apk:ca-certificates":"20230506-r0","apk:git":"2.40.1-r0","apk:libcrypto3":"3.1.1-r3","apk:libcurl":"8.2.1-r0","apk:libexpat":"2.5.0-r1","apk:libidn2":"2.3.4-r1","apk:libssl3":"3.1.1-r3","apk:libunistring":"1.1-r1","apk:musl":"1.2.4-r0","apk:nghttp2-libs":"1.55.1-r0","apk:pcre2":"10.42-r1","apk:zlib":"1.2.13-r1","github:greboid/registryauth":"v1.0.20","image:base":"9e288621372d4df4cbfa7f4cb2a110fd0e7e00362bc156e902e808924388984b","image:golang":"b9af3df950d09b2448dde8eb551290231627db719a6e66fbef382ec1820a3108"}
+# BOM: {"apk:brotli-libs":"1.0.9-r14","apk:busybox":"1.36.1-r2","apk:busybox-binsh":"1.36.1-r2","apk:ca-certificates":"20230506-r0","apk:git":"2.40.1-r0","apk:libcrypto3":"3.1.1-r3","apk:libcurl":"8.2.1-r0","apk:libexpat":"2.5.0-r1","apk:libidn2":"2.3.4-r1","apk:libssl3":"3.1.1-r3","apk:libunistring":"1.1-r1","apk:musl":"1.2.4-r1","apk:nghttp2-libs":"1.55.1-r0","apk:pcre2":"10.42-r1","apk:zlib":"1.2.13-r1","github:greboid/registryauth":"v1.0.20","image:base":"5ece2ec95b5d00ad0f0b12f3f335b2f259f5c6851308f71562762c09f16b986c","image:golang":"c466edd3a038b25bc138e472e055d89d7ee20ad51cfe1d55592c43c7633d1ae8"}
 
-FROM reg.g5d.dev/golang@sha256:b9af3df950d09b2448dde8eb551290231627db719a6e66fbef382ec1820a3108 AS build
+FROM reg.g5d.dev/golang@sha256:c466edd3a038b25bc138e472e055d89d7ee20ad51cfe1d55592c43c7633d1ae8 AS build
 
 ARG TAG="v1.0.20"
 
 RUN set -eux; \
     apk add --no-cache \
         brotli-libs=1.0.9-r14\
-        busybox=1.36.1-r1\
-        busybox-binsh=1.36.1-r1\
+        busybox=1.36.1-r2\
+        busybox-binsh=1.36.1-r2\
         ca-certificates=20230506-r0\
         git=2.40.1-r0\
         libcrypto3=3.1.1-r3\
@@ -18,7 +18,7 @@ RUN set -eux; \
         libidn2=2.3.4-r1\
         libssl3=3.1.1-r3\
         libunistring=1.1-r1\
-        musl=1.2.4-r0\
+        musl=1.2.4-r1\
         nghttp2-libs=1.55.1-r0\
         pcre2=10.42-r1\
         zlib=1.2.13-r1\
@@ -29,7 +29,7 @@ RUN set -eux; \
     go-licenses save ./... --save_path=/notices; \
     mkdir /data
 
-FROM reg.g5d.dev/base@sha256:9e288621372d4df4cbfa7f4cb2a110fd0e7e00362bc156e902e808924388984b
+FROM reg.g5d.dev/base@sha256:5ece2ec95b5d00ad0f0b12f3f335b2f259f5c6851308f71562762c09f16b986c
 
 COPY --from=build /go/src/github.com/greboid/registryauth/main /authedreg
 COPY --from=build --chown=65532:65532 /data /data
