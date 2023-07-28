@@ -74,12 +74,6 @@ jobs:
           registry: ${{ secrets.REGISTRY }}
           username: ${{ secrets.REGISTRY_USER }}
           password: ${{ secrets.REGISTRY_PASS }}
-      - name: Login to mirror target registry
-        uses: redhat-actions/podman-login@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.CONTEMPT_TOKEN }}
       - name: Configure Git
         uses: snow-actions/git-config-user@v1.0.0
         with:
@@ -104,9 +98,16 @@ jobs:
         continue-on-error: true
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        uses: redhat-actions/podman-login@v1
+        with:
+{%- raw -%}
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CONTEMPT_TOKEN }}
       - name: Retag image to mirror
         if: steps.check_mirror_exists.outputs.status == 'success'
-{%- raw -%}
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
