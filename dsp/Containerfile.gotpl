@@ -12,7 +12,7 @@ RUN set -eux; \
     CGO_ENABLED=0 go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main ./cmd; \
     go-licenses save ./... --save_path=/notices;
 
-FROM {{image "base"}}
+FROM {{image "baseroot"}}
 
 COPY --from=build /src/main /dsp
 COPY --from=build /notices /notices
