@@ -15,3 +15,9 @@ WORKDIR /src
 
 RUN set -eux; \
     cargo build --release
+
+FROM {{image "base"}}
+
+COPY --from=build /src/target/release/static-web-server /sws
+
+ENTRYPOINT ["/sws"]
