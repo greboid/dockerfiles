@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/hugo/Containerfile.gotpl
-# BOM: {"apk:binutils":"2.40-r7","apk:g++":"12.2.1_git20220924-r10","apk:gcc":"12.2.1_git20220924-r10","apk:gmp":"6.2.1-r3","apk:grep":"3.10-r1","apk:isl25":"0.25-r2","apk:libatomic":"12.2.1_git20220924-r10","apk:libc-dev":"0.7.2-r5","apk:libgcc":"12.2.1_git20220924-r10","apk:libgomp":"12.2.1_git20220924-r10","apk:libstdc++":"12.2.1_git20220924-r10","apk:libstdc++-dev":"12.2.1_git20220924-r10","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.0_p12-r0","apk:musl":"1.2.4-r1","apk:musl-dev":"1.2.4-r1","apk:pcre2":"10.42-r1","apk:zlib":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","github:gohugoio/hugo":"v0.116.1","image:baseglibc":"ab52a9660b4f6e2b6ce9ba5408874f78190fbad2c649868b84b6d0b313bbc3a2","image:golang":"c466edd3a038b25bc138e472e055d89d7ee20ad51cfe1d55592c43c7633d1ae8"}
+# BOM: {"apk:binutils":"2.40-r7","apk:g++":"12.2.1_git20220924-r10","apk:gcc":"12.2.1_git20220924-r10","apk:gmp":"6.2.1-r3","apk:grep":"3.10-r1","apk:isl25":"0.25-r2","apk:libatomic":"12.2.1_git20220924-r10","apk:libc-dev":"0.7.2-r5","apk:libgcc":"12.2.1_git20220924-r10","apk:libgomp":"12.2.1_git20220924-r10","apk:libstdc++":"12.2.1_git20220924-r10","apk:libstdc++-dev":"12.2.1_git20220924-r10","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.0_p12-r0","apk:musl":"1.2.4-r1","apk:musl-dev":"1.2.4-r1","apk:pcre2":"10.42-r1","apk:zlib":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","github:gohugoio/hugo":"v0.116.1","image:baseglibc":"ab52a9660b4f6e2b6ce9ba5408874f78190fbad2c649868b84b6d0b313bbc3a2","image:golang":"a9b5e53aa1a3b382dd5a98700b2c731e14c984aa4b5c2fbf0e187ac98826a6be"}
 
-FROM reg.g5d.dev/golang@sha256:c466edd3a038b25bc138e472e055d89d7ee20ad51cfe1d55592c43c7633d1ae8 AS build
+FROM reg.g5d.dev/golang@sha256:a9b5e53aa1a3b382dd5a98700b2c731e14c984aa4b5c2fbf0e187ac98826a6be AS build
 
 ARG TAG="v0.116.1"
 
