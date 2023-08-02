@@ -1,2 +1,0 @@
-FROM {{image "baseglibcroot"}}
-USER nonroot
