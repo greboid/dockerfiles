@@ -81,7 +81,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/greboid/cmd/contempt@latest
+        run: go install github.com/greboid/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
