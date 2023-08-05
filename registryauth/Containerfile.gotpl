@@ -1,22 +1,10 @@
+{{ set "repo" "greboid/registryauth" -}}
+{{- set "cmd" "/cmd/authedreg" -}}
+{{- set "binary" "authedreg" -}}
+{{- set "volumes" (list "/data") -}}
+
 FROM {{image "golang"}} AS build
-
-ARG TAG="{{github_tag "greboid/registryauth"}}"
-
-RUN set -eux; \
-    apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
-        {{$key}}={{$value}}\
-        {{end}}; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/registryauth /go/src/github.com/greboid/registryauth; \
-    cd /go/src/github.com/greboid/registryauth; \
-    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main ./cmd/authedreg; \
-    go-licenses save ./... --save_path=/notices; \
-    mkdir /data
-
-FROM {{image "base"}}
-
-COPY --from=build /go/src/github.com/greboid/registryauth/main /authedreg
-COPY --from=build --chown=65532:65532 /data /data
-COPY --from=build /notices /notices
-EXPOSE 8080
-ENTRYPOINT ["/authedreg"]
+{{ partial "checkout-tag.gotpl" }}
+{{ partial "static-go-build.gotpl" }}
+{{ partial "create-directories.gotpl" }}
+{{ partial "from-base-add-binary.gotpl" }}

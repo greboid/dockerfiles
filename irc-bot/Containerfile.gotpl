@@ -1,20 +1,8 @@
+{{ set "repo" "greboid/irc-bot" -}}
+{{- set "cmd" "cmd/bot" -}}
+{{- set "binary" "irc-bot" -}}
+
 FROM {{image "golang"}} AS build
-
-ARG TAG="{{github_tag "greboid/irc-bot"}}"
-
-RUN set -eux; \
-    apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
-        {{$key}}={{$value}}\
-        {{end}}; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/irc-bot /go/src/github.com/greboid/irc-bot; \
-    cd /go/src/github.com/greboid/irc-bot; \
-    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main ./cmd/bot; \
-    go-licenses save ./... --save_path=/notices;
-
-FROM {{image "base"}}
-
-COPY --from=build /go/src/github.com/greboid/irc-bot/main /irc-bot
-COPY --from=build /notices /notices
-EXPOSE 8080
-ENTRYPOINT ["/irc-bot"]
+{{ partial "checkout-tag.gotpl" }}
+{{ partial "static-go-build.gotpl" }}
+{{ partial "from-base-add-binary.gotpl" }}

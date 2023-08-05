@@ -1,0 +1,11 @@
+ARG TAG{{tagsafe $.binary}}="{{ github_tag $.repo }}"
+{{- $packages := alpine_packages "git" -}}
+{{- $rIndex := 0 }}
+RUN set -eux; \
+#Ensure git is in the build environment
+    apk add --no-cache \
+    {{ range $key, $value := $packages -}}
+    {{- $rIndex = increment_int $rIndex -}}
+    {{$key}}={{$value}}{{ if ne $rIndex (len $packages) }} \{{ end }}
+    {{ end }}
+RUN git clone --depth=1 -b $TAG{{tagsafe $.binary}} --single-branch https://github.com/{{$.repo}} /src/{{$.repo}}

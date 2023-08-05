@@ -1,0 +1,10 @@
+{{ with $.buildDeps }}
+{{ $index := 0 }}
+RUN set -eux; \
+    #Install build dependencies
+    apk add --no-cache \
+        {{- range $key, $value := $.buildDeps -}}
+        {{- $index = increment_int $index -}}
+{{$key}}={{$value}} {{if ne $index (len $.buildDeps) }}\{{ end }}
+        {{ end -}}
+{{ end }}

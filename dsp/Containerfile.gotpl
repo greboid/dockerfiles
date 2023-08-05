@@ -1,20 +1,8 @@
+{{ set "repo" "greboid/dsp" -}}
+{{- set "cmd" "cmd" -}}
+{{- set "binary" "dsp" -}}
+
 FROM {{image "golang"}} AS build
-
-ARG TAG="{{github_tag "greboid/dsp"}}"
-
-RUN set -eux; \
-    apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
-        {{$key}}={{$value}}\
-        {{end}}; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/dsp /src; \
-    cd /src; \
-    CGO_ENABLED=0 go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main ./cmd; \
-    go-licenses save ./... --save_path=/notices;
-
-FROM {{image "baseroot"}}
-
-COPY --from=build /src/main /dsp
-COPY --from=build /notices /notices
-EXPOSE 8080
-ENTRYPOINT ["/dsp"]
+{{ partial "checkout-tag.gotpl" }}
+{{ partial "static-go-build.gotpl" }}
+{{ partial "from-base-add-binary.gotpl" }}

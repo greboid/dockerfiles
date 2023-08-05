@@ -1,28 +1,20 @@
 FROM {{image "golang"}} AS build
 
-ARG SOJUTAG="{{github_tag "emersion/soju"}}"
-ARG CERTTAG="{{github_tag "csmith/certwrapper"}}"
+{{ set "repo" "emersion/soju" -}}
+{{- set "cmd" "cmd/soju" -}}
+{{- set "binary" "soju" -}}
+{{ partial "checkout-tag.gotpl" }}
+{{ partial "static-go-build.gotpl" }}
+{{- set "cmd" "cmd/sojuctl" -}}
+{{- set "binary" "sojuctl" -}}
+{{ partial "static-go-build.gotpl" }}
 
-RUN set -eux; \
-    apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" "patch" -}}
-        {{$key}}={{$value}} \
-        {{end}}; \
-    git clone --depth=1 -b $SOJUTAG --single-branch https://github.com/emersion/soju /go/src/github.com/emersion/soju; \
-    cd /go/src/github.com/emersion/soju; \
-    GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o soju ./cmd/soju; \
-    GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o sojuctl ./cmd/sojuctl; \
-    git clone --depth=1 -b $CERTTAG --single-branch https://github.com/csmith/certwrapper /go/src/github.com/csmith/certwrapper; \
-    cd /go/src/github.com/csmith/certwrapper;\
-    GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -tags lego_httpreq -o certwrapper .; \
-    go-licenses save ./... --save_path=/notices; \
-    mkdir /data
+{{ set "repo" "csmith/certwrapper" -}}
+{{- set "binary" "certwrapper" -}}
+{{ partial "checkout-tag.gotpl" }}
+{{ partial "static-go-build.gotpl" }}
 
-FROM {{image "base"}}
-
-COPY --from=build /go/src/github.com/emersion/soju/soju /soju
-COPY --from=build /go/src/github.com/emersion/soju/sojuctl /sojuctl
-COPY --from=build /go/src/github.com/csmith/certwrapper/certwrapper /certwrapper
-COPY --from=build /notices /notices
-COPY --from=build --chown=65535:65535 /data /data
-ENTRYPOINT ["/certwrapper", "/soju"]
+{{- set "volumes" (list "/data") -}}
+{{- set "entrypointargs" (list "/soju") -}}
+{{ partial "create-directories.gotpl" }}
+{{ partial "from-base-add-binary.gotpl" }}

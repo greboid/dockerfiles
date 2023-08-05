@@ -1,45 +1,84 @@
-# Generated from https://github.com/greboid/dockerfiles/blob/master/soju/Containerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r14","apk:busybox":"1.36.1-r2","apk:busybox-binsh":"1.36.1-r2","apk:ca-certificates":"20230506-r0","apk:git":"2.40.1-r0","apk:libcrypto3":"3.1.2-r0","apk:libcurl":"8.2.1-r0","apk:libexpat":"2.5.0-r1","apk:libidn2":"2.3.4-r1","apk:libssl3":"3.1.2-r0","apk:libunistring":"1.1-r1","apk:musl":"1.2.4-r1","apk:nghttp2-libs":"1.55.1-r0","apk:patch":"2.7.6-r10","apk:pcre2":"10.42-r1","apk:zlib":"1.2.13-r1","github:csmith/certwrapper":"v4.2.0","github:emersion/soju":"v0.6.2","image:base":"5ece2ec95b5d00ad0f0b12f3f335b2f259f5c6851308f71562762c09f16b986c","image:golang":"ec393786cc6f404d375923f274ce0a957d99caef6942f94c9d6048eb3816ceb7"}
+# Generated from https://github.com/example/repo/blob/master/soju/Containerfile.gotpl
+# BOM: {"apk:brotli-libs":"1.0.9-r14","apk:busybox":"1.36.1-r2","apk:busybox-binsh":"1.36.1-r2","apk:ca-certificates":"20230506-r0","apk:git":"2.40.1-r0","apk:libcrypto3":"3.1.2-r0","apk:libcurl":"8.2.1-r0","apk:libexpat":"2.5.0-r1","apk:libidn2":"2.3.4-r1","apk:libssl3":"3.1.2-r0","apk:libunistring":"1.1-r1","apk:musl":"1.2.4-r1","apk:nghttp2-libs":"1.55.1-r0","apk:pcre2":"10.42-r1","apk:zlib":"1.2.13-r1","github:csmith/certwrapper":"v4.2.0","github:emersion/soju":"v0.6.2","image:base":"5ece2ec95b5d00ad0f0b12f3f335b2f259f5c6851308f71562762c09f16b986c","image:golang":"ec393786cc6f404d375923f274ce0a957d99caef6942f94c9d6048eb3816ceb7"}
 
 FROM reg.g5d.dev/golang@sha256:ec393786cc6f404d375923f274ce0a957d99caef6942f94c9d6048eb3816ceb7 AS build
 
-ARG SOJUTAG="v0.6.2"
-ARG CERTTAG="v4.2.0"
+ARG TAGsoju="v0.6.2"
+RUN set -eux; \
+#Ensure git is in the build environment
+    apk add --no-cache \
+    brotli-libs=1.0.9-r14 \
+    busybox=1.36.1-r2 \
+    busybox-binsh=1.36.1-r2 \
+    ca-certificates=20230506-r0 \
+    git=2.40.1-r0 \
+    libcrypto3=3.1.2-r0 \
+    libcurl=8.2.1-r0 \
+    libexpat=2.5.0-r1 \
+    libidn2=2.3.4-r1 \
+    libssl3=3.1.2-r0 \
+    libunistring=1.1-r1 \
+    musl=1.2.4-r1 \
+    nghttp2-libs=1.55.1-r0 \
+    pcre2=10.42-r1 \
+    zlib=1.2.13-r1
+    
+RUN git clone --depth=1 -b $TAGsoju --single-branch https://github.com/emersion/soju /src/emersion/soju
+
+WORKDIR /src/emersion/soju
+RUN CGO_ENABLED=1 go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-buildid= "  -o /rootfs/soju ./cmd/soju
+RUN go-licenses save ./... --save_path=/notices --force 
+RUN set -eux; \
+    chmod +x /rootfs/soju; \
+    cp -r /notices /rootfs/; \
+    chown 65532:65532 /rootfs/soju
+WORKDIR /src/emersion/soju
+RUN CGO_ENABLED=1 go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-buildid= "  -o /rootfs/sojuctl ./cmd/sojuctl
+RUN go-licenses save ./... --save_path=/notices --force 
+RUN set -eux; \
+    chmod +x /rootfs/sojuctl; \
+    cp -r /notices /rootfs/; \
+    chown 65532:65532 /rootfs/sojuctl
+
+
+ARG TAGcertwrapper="v4.2.0"
+RUN set -eux; \
+#Ensure git is in the build environment
+    apk add --no-cache \
+    brotli-libs=1.0.9-r14 \
+    busybox=1.36.1-r2 \
+    busybox-binsh=1.36.1-r2 \
+    ca-certificates=20230506-r0 \
+    git=2.40.1-r0 \
+    libcrypto3=3.1.2-r0 \
+    libcurl=8.2.1-r0 \
+    libexpat=2.5.0-r1 \
+    libidn2=2.3.4-r1 \
+    libssl3=3.1.2-r0 \
+    libunistring=1.1-r1 \
+    musl=1.2.4-r1 \
+    nghttp2-libs=1.55.1-r0 \
+    pcre2=10.42-r1 \
+    zlib=1.2.13-r1
+    
+RUN git clone --depth=1 -b $TAGcertwrapper --single-branch https://github.com/csmith/certwrapper /src/csmith/certwrapper
+
+WORKDIR /src/csmith/certwrapper
+RUN CGO_ENABLED=1 go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-buildid= "  -o /rootfs/certwrapper ./cmd/sojuctl
+RUN go-licenses save ./... --save_path=/notices --force 
+RUN set -eux; \
+    chmod +x /rootfs/certwrapper; \
+    cp -r /notices /rootfs/; \
+    chown 65532:65532 /rootfs/certwrapper
 
 RUN set -eux; \
-    apk add --no-cache \
-        brotli-libs=1.0.9-r14 \
-        busybox=1.36.1-r2 \
-        busybox-binsh=1.36.1-r2 \
-        ca-certificates=20230506-r0 \
-        git=2.40.1-r0 \
-        libcrypto3=3.1.2-r0 \
-        libcurl=8.2.1-r0 \
-        libexpat=2.5.0-r1 \
-        libidn2=2.3.4-r1 \
-        libssl3=3.1.2-r0 \
-        libunistring=1.1-r1 \
-        musl=1.2.4-r1 \
-        nghttp2-libs=1.55.1-r0 \
-        patch=2.7.6-r10 \
-        pcre2=10.42-r1 \
-        zlib=1.2.13-r1 \
-        ; \
-    git clone --depth=1 -b $SOJUTAG --single-branch https://github.com/emersion/soju /go/src/github.com/emersion/soju; \
-    cd /go/src/github.com/emersion/soju; \
-    GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o soju ./cmd/soju; \
-    GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o sojuctl ./cmd/sojuctl; \
-    git clone --depth=1 -b $CERTTAG --single-branch https://github.com/csmith/certwrapper /go/src/github.com/csmith/certwrapper; \
-    cd /go/src/github.com/csmith/certwrapper;\
-    GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -tags lego_httpreq -o certwrapper .; \
-    go-licenses save ./... --save_path=/notices; \
-    mkdir /data
+    #Create required directories
+    mkdir -p \
+        /rootfs/data; \
+        chown -R 65532:65532 /rootfs
 
 FROM reg.g5d.dev/base@sha256:5ece2ec95b5d00ad0f0b12f3f335b2f259f5c6851308f71562762c09f16b986c
 
-COPY --from=build /go/src/github.com/emersion/soju/soju /soju
-COPY --from=build /go/src/github.com/emersion/soju/sojuctl /sojuctl
-COPY --from=build /go/src/github.com/csmith/certwrapper/certwrapper /certwrapper
-COPY --from=build /notices /notices
-COPY --from=build --chown=65535:65535 /data /data
+COPY --from=build /rootfs/ /
 ENTRYPOINT ["/certwrapper", "/soju"]
+

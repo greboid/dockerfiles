@@ -1,20 +1,7 @@
+{{ set "repo" "csmith/webhooked" -}}
+{{- set "binary" "webhooked" -}}
+
 FROM {{image "golang"}} AS build
-
-ARG TAG="{{github_tag "csmith/webhooked"}}"
-
-RUN set -eux; \
-    apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
-        {{$key}}={{$value}}\
-        {{end}}; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/webhooked /go/src/github.com/csmith/webhooked; \
-    cd /go/src/github.com/csmith/webhooked; \
-    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
-    go-licenses save ./... --save_path=/notices;
-
-FROM {{image "base"}}
-
-COPY --from=build /go/src/github.com/csmith/webhooked/main /webhooked
-COPY --from=build /notices /notices
-
-ENTRYPOINT ["/webhooked"]
+{{ partial "checkout-tag.gotpl" }}
+{{ partial "static-go-build.gotpl" }}
+{{ partial "from-base-add-binary.gotpl" }}

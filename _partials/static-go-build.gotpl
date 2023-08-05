@@ -1,0 +1,7 @@
+WORKDIR /src/{{$.repo}}
+RUN CGO_ENABLED=1 go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-buildid= {{with $.buildvars}}{{range $.buildvars}} -X {{.}} {{end}}{{end}}" {{with $.tags}}-tags {{range $.tags}}{{.}}{{end}}{{ end}} -o /rootfs/{{$.binary}} ./{{or $.cmd ""}}
+RUN go-licenses save ./... --save_path=/notices --force {{with $.skipnotices}}--ignore{{range $.skipnotices}} {{.}}{{end}};{{end}}
+RUN set -eux; \
+    chmod +x /rootfs/{{$.binary}}; \
+    cp -r /notices /rootfs/; \
+    chown 65532:65532 /rootfs/{{$.binary}}

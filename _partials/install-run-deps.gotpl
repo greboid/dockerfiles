@@ -1,0 +1,18 @@
+{{ with $.runDeps }}
+{{- $rIndex := 0 -}}
+{{- $bIndex := 0 -}}
+{{- $packages := alpine_packages "rsync" -}}
+RUN set -eux; \
+    #Ensure rsync is in the build environment
+    apk add --no-cache \
+    {{- range $key, $value := alpine_packages "rsync" -}}
+    {{- $rIndex = increment_int $rIndex -}}
+    {{$key}}={{$value}}{{ if eq $rIndex (len $packages) -}};{{ end }} \
+    {{ end -}}
+    # Add packages into the runtime fs
+    {{ range $key, $value := $.runDeps -}}
+      {{- $bIndex = increment_int $bIndex -}}
+      apk add --no-cache {{$key}}={{$value}}; \
+    apk info -qL {{$key}} | rsync -aq --files-from=- / /rootfs/{{if ne $bIndex (len $.runDeps) -}}; \{{ end }}
+    {{ end -}}
+{{ end }}

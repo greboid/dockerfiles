@@ -1,22 +1,10 @@
+{{ set "repo" "containrrr/watchtower" -}}
+{{- set "binary" "watchtower" -}}
+{{- set "buildvars" (list (printf "github.com/containrrr/watchtower/internal/meta.Version=$TAG%s" (tagsafe (get "binary")))) -}}
+
 FROM {{image "golang"}} AS build
-
-ARG TAG="{{github_tag "containrrr/watchtower"}}"
-
+{{ partial "checkout-tag.gotpl" }}
 COPY disable-slack.patch /
-
-RUN set -eux; \
-    apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
-        {{$key}}={{$value}}\
-        {{end}}; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/containrrr/watchtower /go/src/github.com/containrrr/watchtower; \
-    cd /go/src/github.com/containrrr/watchtower; \
-    git apply /disable-slack.patch; \
-    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -ldflags "-X github.com/containrrr/watchtower/internal/meta.Version=$TAG" -o main .; \
-    go-licenses save ./... --save_path=/notices;
-
-FROM {{image "base"}}
-
-COPY --from=build /go/src/github.com/containrrr/watchtower/main /watchtower
-#COPY --from=build /notices /notices
-ENTRYPOINT ["/watchtower"]
+RUN git apply /disable-slack.patch
+{{ partial "static-go-build.gotpl" }}
+{{ partial "from-base-add-binary.gotpl" }}

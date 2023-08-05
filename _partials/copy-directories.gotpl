@@ -1,0 +1,21 @@
+{{ with $.directories }}
+{{ $rsyncDeps := alpine_packages "rsync" }}
+{{- $index := 0 -}}
+#Ensure rsync is available
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := $rsyncDeps -}}
+        {{- $index = increment_int $index -}}
+        {{$key}}={{$value}}{{- if eq $index (len $rsyncDeps) -}};{{else}} \{{ end }}
+        {{end}}
+{{ $index := 0 -}}
+WORKDIR /src/{{$.repo}}
+RUN set -eux; \
+    #Copy required directories
+    mkdir -p \
+        {{range $key, $value := $.directories -}}
+        {{- $index = increment_int $index -}}
+        rsync -ap {{$value}}/ /rootfs/{{$value}} {{- if eq $index (len $.directories) -}};{{ end }} \
+        {{ end -}}
+        chown -R 65532:65532 /rootfs
+{{ end -}}
