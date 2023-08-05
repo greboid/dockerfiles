@@ -1,4 +1,4 @@
-{{ set "repo" "greboid/irc-distribution" -}}
+{{ set "repo" "csmith/irc-distribution" -}}
 {{- set "cmd" "cmd/distribution" -}}
 {{- set "binary" "irc-distribution" -}}
 

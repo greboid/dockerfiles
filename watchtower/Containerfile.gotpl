@@ -5,6 +5,7 @@
 FROM {{image "golang"}} AS build
 {{ partial "checkout-tag.gotpl" }}
 COPY disable-slack.patch /
+WORKDIR /src/{{ get "repo" }}
 RUN git apply /disable-slack.patch
 {{ partial "static-go-build.gotpl" }}
 {{ partial "from-base-add-binary.gotpl" }}

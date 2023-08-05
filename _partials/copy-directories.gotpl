@@ -12,7 +12,6 @@ RUN set -eux; \
 WORKDIR /src/{{$.repo}}
 RUN set -eux; \
     #Copy required directories
-    mkdir -p \
         {{range $key, $value := $.directories -}}
         {{- $index = increment_int $index -}}
         rsync -ap {{$value}}/ /rootfs/{{$value}} {{- if eq $index (len $.directories) -}};{{ end }} \

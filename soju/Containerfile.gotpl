@@ -1,6 +1,7 @@
 FROM {{image "golang"}} AS build
 
-{{ set "repo" "emersion/soju" -}}
+{{ set "skipnotices" (list "git.sr.ht/~emersion/soju") -}}
+{{- set "repo" "emersion/soju" -}}
 {{- set "cmd" "cmd/soju" -}}
 {{- set "binary" "soju" -}}
 {{ partial "checkout-tag.gotpl" }}
@@ -10,7 +11,9 @@ FROM {{image "golang"}} AS build
 {{ partial "static-go-build.gotpl" }}
 
 {{ set "repo" "csmith/certwrapper" -}}
+{{- set "cmd" "" -}}
 {{- set "binary" "certwrapper" -}}
+{{- set "tags" (list "lego_httpreq") -}}
 {{ partial "checkout-tag.gotpl" }}
 {{ partial "static-go-build.gotpl" }}
 

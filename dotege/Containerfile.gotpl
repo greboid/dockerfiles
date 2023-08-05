@@ -2,7 +2,7 @@
 {{- set "cmd" "cmd/dotege" -}}
 {{- set "binary" "dotege" -}}
 {{- set "directories" "templates" -}}
-{{- set "volumes" "/config" "/certs" "/output" -}}
+{{- set "volumes" (list "/config" "/certs" "/output") -}}
 
 FROM {{image "golang"}} AS build
 {{ partial "checkout-tag.gotpl" }}
