@@ -14,7 +14,7 @@ RUN set -eux; \
     #Copy required directories
         {{range $key, $value := $.directories -}}
         {{- $index = increment_int $index -}}
-        rsync -ap {{$value}}/ /rootfs/{{$value}} {{- if eq $index (len $.directories) -}};{{ end }} \
+        rsync -ap /src/{{$.repo}}/{{$value}}/ /rootfs/{{$value}} {{- if eq $index (len $.directories) -}};{{ end }} \
         {{ end -}}
         chown -R 65532:65532 /rootfs
 {{ end -}}
