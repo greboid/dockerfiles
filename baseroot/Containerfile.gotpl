@@ -4,9 +4,9 @@ FROM {{image "alpine"}} AS build
 {{- set "runDeps" (alpine_packages "ca-certificates-bundle" "musl" "tzdata") -}}
 {{- set "volumes" (list "/tmp" "/proc" "/dev" "/sys" "/etc" "/root" "/home/nonroot") -}}
 
-{{ partial "builddeps.gotpl" }}
-{{ partial "rundeps.gotpl" }}
-{{ partial "volumes.gotpl" }}
+{{ partial "install-build-deps.gotpl" }}
+{{ partial "install-run-deps.gotpl" }}
+{{ partial "create-directories.gotpl" }}
 
 RUN set -eux; \
     #Create some required users
