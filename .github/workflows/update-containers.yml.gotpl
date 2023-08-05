@@ -22,7 +22,7 @@ jobs:
         id: contempt
         uses: tdemin/find-latest-tag@v1
         with:
-          repo: https://github.com/csmith/contempt.git
+          repo: https://github.com/greboid/contempt.git
       - name: Get Paths
         id: go-paths
         run: |
@@ -31,7 +31,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+          key: ${{ runner.os }}-contempt-fork-${{ steps.contempt.outputs.tag }}
 {%- endraw -%}
 {%- for target in targets -%}
   {{ target.name -}}:
@@ -50,7 +50,7 @@ jobs:
         id: contempt
         uses: tdemin/find-latest-tag@v1
         with:
-          repo: https://github.com/csmith/contempt.git
+          repo: https://github.com/greboid/contempt.git
       - name: Get Paths
         id: go-paths
         run: |
@@ -60,7 +60,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+          key: ${{ runner.os }}-contempt-fork-${{ steps.contempt.outputs.tag }}
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
@@ -81,7 +81,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/greboid/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
