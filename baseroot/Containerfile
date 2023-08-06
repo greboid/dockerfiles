@@ -38,15 +38,14 @@ RUN set -eux; \
 RUN set -eux; \
     #Create required directories
     mkdir -p \
-        /rootfs/tmp \
-        /rootfs/proc \
-        /rootfs/dev \
-        /rootfs/sys \
-        /rootfs/etc \
-        /rootfs/root \
-        /rootfs/home/nonroot; \
-        chown -R 65532:65532 /rootfs
-
+        /rootfs/tmp\
+        /rootfs/proc\
+        /rootfs/dev\
+        /rootfs/sys\
+        /rootfs/etc\
+        /rootfs/root\
+        /rootfs/home/nonroot
+        
 
 RUN set -eux; \
     #Create some required users
