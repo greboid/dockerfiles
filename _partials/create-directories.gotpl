@@ -5,7 +5,6 @@ RUN set -eux; \
     mkdir -p \
         {{range $key, $value := $.volumes -}}
         {{- $index = increment_int $index -}}
-        /rootfs{{$value}} {{- if eq $index (len $.volumes) -}};{{ end }} \
+        /rootfs{{$value}} {{- if ne $index (len $.volumes) -}} \{{ end }}
         {{ end -}}
-        chown -R 65532:65532 /rootfs
 {{ end -}}
