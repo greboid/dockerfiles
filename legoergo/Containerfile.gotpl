@@ -9,9 +9,7 @@ FROM {{image "golang"}} AS build
 {{- set "binary" "ergo" -}}
 {{ partial "checkout-tag.gotpl" }}
 {{ partial "static-go-build.gotpl" }}
-{{- set "directories" "/languages" }}
-
-FROM {{image "base"}}
-
-COPY --from=build /rootfs/ /
-CMD ["/certwrapper", "/ergo", "run", "--conf", "/ircd/ircd.yaml"]
+{{- set "directories" (list "/languages") }}
+{{ partial "copy-directories.gotpl" }}
+{{ set "entryargs" (list "/ergo" "run" "--conf" "/ircd/ircd.yaml") }}
+{{ partial "from-base-add-binary.gotpl" }}
