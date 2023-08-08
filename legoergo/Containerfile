@@ -75,9 +75,8 @@ RUN set -eux; \
     #Copy required directories
         rsync -ap /src/ergochat/ergo/languages/ /rootfs/languages
         
-
 FROM reg.g5d.dev/base@sha256:2efe0a4732e281176d0871d4e9db4d143156289192887a056d3eddd91d02d096
 
 COPY --from=build --chown=65532:65532 /rootfs/ /
-ENTRYPOINT ["/ergo", "/ergo", "run", "--conf", "/ircd/ircd.yaml"]
+ENTRYPOINT ["/certwrapper", "/ergo", "run", "--conf", "/ircd/ircd.yaml"]
 
