@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/thelounge/Containerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.0.9-r14","apk:busybox":"1.36.1-r2","apk:busybox-binsh":"1.36.1-r2","apk:ca-certificates":"20230506-r0","apk:git":"2.40.1-r0","apk:libcrypto3":"3.1.2-r0","apk:libcurl":"8.2.1-r0","apk:libexpat":"2.5.0-r1","apk:libidn2":"2.3.4-r1","apk:libssl3":"3.1.2-r0","apk:libunistring":"1.1-r1","apk:musl":"1.2.4-r1","apk:nghttp2-libs":"1.55.1-r0","apk:pcre2":"10.42-r1","apk:zlib":"1.2.13-r1","github:thelounge/thelounge":"v4.4.1","image:node":"68499698ebce7fbfd0c1f70981ffff8d5b0058925eeacd08dd1dc9cefedf9e3d"}
+# BOM: {"apk:brotli-libs":"1.0.9-r14","apk:busybox":"1.36.1-r2","apk:busybox-binsh":"1.36.1-r2","apk:ca-certificates":"20230506-r0","apk:git":"2.40.1-r0","apk:libcrypto3":"3.1.2-r0","apk:libcurl":"8.2.1-r0","apk:libexpat":"2.5.0-r1","apk:libidn2":"2.3.4-r1","apk:libssl3":"3.1.2-r0","apk:libunistring":"1.1-r1","apk:musl":"1.2.4-r1","apk:nghttp2-libs":"1.55.1-r0","apk:pcre2":"10.42-r1","apk:zlib":"1.2.13-r1","github:thelounge/thelounge":"v4.4.1","image:node":"4ee2a5189a7ee7b06f907b49e7c12b95b93473a9a66fc0979337fa0e23a26861"}
 
-FROM reg.g5d.dev/node@sha256:68499698ebce7fbfd0c1f70981ffff8d5b0058925eeacd08dd1dc9cefedf9e3d as yarnbase
+FROM reg.g5d.dev/node@sha256:4ee2a5189a7ee7b06f907b49e7c12b95b93473a9a66fc0979337fa0e23a26861 as yarnbase
 
 WORKDIR /app
 
