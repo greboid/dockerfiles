@@ -34,5 +34,3 @@ FROM {{ image "alpine" }}
 ENV GOPATH=/go
 ENV PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
 COPY --from=build /rootfs /
-RUN go version
-RUN go-licenses
