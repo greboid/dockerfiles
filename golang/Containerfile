@@ -107,5 +107,3 @@ FROM reg.g5d.dev/alpine@sha256:f7601e006c52c627a3f5501f404c6868fdf38308ad460fba9
 ENV GOPATH=/go
 ENV PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
 COPY --from=build /rootfs /
-RUN go version
-RUN go-licenses
