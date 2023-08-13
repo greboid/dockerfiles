@@ -10,7 +10,9 @@ on:
       - '.github/**'
       - 'README.md'
 name: Update Containers
-concurrency: dockerfiles
+concurrency:
+  group: dockerfiles
+  cancel-in-progress: true
 permissions:
   contents: write
 jobs:
@@ -209,6 +211,7 @@ jobs:
         - setup-cache
 
 
+        - alpine
         - alpine
 
 
