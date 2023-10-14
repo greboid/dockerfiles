@@ -1,16 +1,27 @@
-{{ set "repo" "tailscale/golink" -}}
-{{ set "hash" "3d62a353ac8b5467b433ad96d686d3388ad01e34" -}}
-{{ set "branch" "main" -}}
-{{- set "cmd" "cmd/golink" -}}
-{{- set "binary" "golink" -}}
-{{- set "runargs" (list "--sqlitedb" "/home/nonroot/golink.db") -}}
-{{- set "skipnotices" (list "modernc.org/mathutil") -}}
-
 FROM {{image "golang"}} AS build
-{{ partial "checkout-commit.gotpl" }}
+
+ARG TAG=5eb91a2ccfa4d2a3ebbcd8b3048ac54f10fc0731
 ARG TS={{github_tag "tailscale/tailscale"}}
-WORKDIR /src/{{ get "repo"}}
-RUN go get -u tailscale.com@$TS; \
-    go mod tidy
-{{ partial "static-go-build.gotpl" }}
-{{ partial "from-base-add-binary.gotpl" }}
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "git" -}}
+        {{$key}}={{$value}}\
+        {{end}}; \
+    git clone -b main --single-branch https://github.com/tailscale/golink /src; \
+    cd /src; \
+    git checkout $TAG; \
+#   git clone --depth=1 -b $TAG --single-branch https://github.com/tailscale/golink /src; \
+    cd /src; \
+    #This is a bit horrible, but I cant think of a nicer way to update the dependency and its tree
+    go get -u tailscale.com@$TS; \
+    go mod tidy; \
+    CGO_ENABLED=0 GOOS=linux go build -a -trimpath -ldflags="-extldflags \"-static\" -buildid= -s -w" -o main ./cmd/golink; \
+    go-licenses save ./... --save_path=/notices --ignore modernc.org/mathutil;
+
+FROM {{image "base"}}
+
+COPY --from=build /src/main /golink
+COPY --from=build /notices /notices
+EXPOSE 8080
+ENTRYPOINT ["/golink"]
+CMD ["--sqlitedb", "/home/nonroot/golink.db"]

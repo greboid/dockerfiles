@@ -1,10 +1,26 @@
-{{ set "repo" "cutlerydrawer/linx-server" -}}
-{{- set "binary" "linx" -}}
-{{- set "volumes" (list "/data/files" "/data/meta") -}}
-{{- set "entrypointargs" (list "-bind=0.0.0.0:8080" "-filespath=/data/files/" "-metapath=/data/meta/" "-sitename=linx" "-allowhotlink") -}}
-
 FROM {{image "golang"}} AS build
-{{ partial "checkout-tag.gotpl" }}
-{{ partial "static-go-build.gotpl" }}
-{{ partial "create-directories.gotpl" }}
-{{ partial "from-base-add-binary.gotpl" }}
+
+ARG TAG="{{github_tag "csmith/linx-server"}}"
+
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "git" -}}
+        {{$key}}={{$value}}\
+        {{end}}; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/linx-server /go/src/github.com/csmith/linx-server; \
+    cd /go/src/github.com/csmith/linx-server; \
+    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
+    go-licenses save ./... --save_path=/notices; \
+    mkdir -p /data/files /data/meta; \
+    chown -R 65532:65532 /data;
+
+FROM {{image "base"}}
+
+COPY --from=build /go/src/github.com/csmith/linx-server/main /linx-server
+COPY --from=build /data /data
+COPY --from=build /notices /notices
+
+VOLUME ["/data/files", "/data/meta"]
+EXPOSE 8080
+ENTRYPOINT ["/linx-server", "-bind=0.0.0.0:8080", "-filespath=/data/files/", "-metapath=/data/meta/"]
+CMD ["-sitename=linx", "-allowhotlink"]

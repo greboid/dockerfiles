@@ -3,12 +3,13 @@ FROM {{registry}}/alpine AS verify
 ARG ARCHIVE_URL="{{alpine_url}}"
 ARG ARCHIVE_SUM="{{alpine_checksum}}"
 
-RUN apk add --no-cache curl
-RUN curl -sfLo fs.tar.gz $ARCHIVE_URL; \
-    echo "$ARCHIVE_SUM *fs.tar.gz" | sha256sum -wc -
-RUN mkdir /fs
-RUN tar -C /fs -xzf fs.tar.gz
-RUN echo "[advice]" > /fs/etc/gitconfig; \
+RUN set -eux; \
+    apk add --no-cache curl; \
+    curl -sfLo fs.tar.gz $ARCHIVE_URL; \
+    echo "$ARCHIVE_SUM *fs.tar.gz" | sha256sum -wc -; \
+    mkdir /fs; \
+    tar -C /fs -xzf fs.tar.gz; \
+    echo "[advice]" > /fs/etc/gitconfig; \
     echo "    detachedHead = false" >> /fs/etc/gitconfig;
 
 FROM scratch

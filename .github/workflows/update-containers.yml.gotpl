@@ -10,9 +10,7 @@ on:
       - '.github/**'
       - 'README.md'
 name: Update Containers
-concurrency:
-  group: dockerfiles
-  cancel-in-progress: true
+concurrency: dockerfiles
 permissions:
   contents: write
 jobs:
@@ -20,6 +18,11 @@ jobs:
     name: Setup cache
     runs-on: ubuntu-latest
     steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
       - name: Get Paths
         id: go-paths
         run: |
@@ -28,7 +31,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-contempt-fork-v1.7.4
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
 {%- endraw -%}
 {%- for target in targets -%}
   {{ target.name -}}:
@@ -43,6 +46,11 @@ jobs:
 {%- endif -%}
 {%- raw -%}
     steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
       - name: Get Paths
         id: go-paths
         run: |
@@ -52,7 +60,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-contempt-fork-v1.7.4
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
@@ -73,7 +81,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/greboid/contempt/cmd/contempt@v1.7.4
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
           REGISTRY: ${{ secrets.REGISTRY }}

@@ -1,0 +1,23 @@
+# Generated from https://github.com/greboid/dockerfiles/blob/master/tailscale/Containerfile.gotpl
+# BOM: {"github:tailscale/tailscale":"v1.46.1","image:base":"5ece2ec95b5d00ad0f0b12f3f335b2f259f5c6851308f71562762c09f16b986c","image:golang":"ec393786cc6f404d375923f274ce0a957d99caef6942f94c9d6048eb3816ceb7"}
+
+FROM reg.g5d.dev/golang@sha256:ec393786cc6f404d375923f274ce0a957d99caef6942f94c9d6048eb3816ceb7 AS build
+
+ARG TAG="v1.46.1"
+
+RUN set -eux; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/tailscale/tailscale /src; \
+    cd /src; \
+    VERS=$(echo $TAG | tr -d 'v'); \
+    VERL=$VERS-t$(git rev-parse HEAD | cut -c1-9); \
+    VERC=$(git rev-parse HEAD); \
+    CGO_ENABLED=0 go build -trimpath -ldflags "-extldflags \"-static\" -buildid= -s -w -X tailscale.com/version.Long=$VERL -X tailscale.com/version.Short=$VERS -X tailscale.com/version.GitCommit=$VERC" ./cmd/tailscale; \
+    CGO_ENABLED=0 go build -trimpath -ldflags "-extldflags \"-static\" -buildid= -s -w -X tailscale.com/version.Long=$VERL -X tailscale.com/version.Short=$VERS -X tailscale.com/version.GitCommit=$VERC" ./cmd/tailscaled; \
+    mkdir -p /rootfs/state /rootfs/var/run/tailscale; \
+    cp /src/tailscaled /src/tailscale /rootfs/;
+
+FROM reg.g5d.dev/base@sha256:5ece2ec95b5d00ad0f0b12f3f335b2f259f5c6851308f71562762c09f16b986c
+
+COPY --from=build --chown=65532:65532 /rootfs/ /
+
+ENTRYPOINT ["/tailscaled", "--tun", "userspace-networking", "--statedir", "/state/"]

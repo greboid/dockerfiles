@@ -1,8 +1,0 @@
-FROM {{image "base"}}
-
-COPY --from=build --chown=65532:65532 /rootfs/ /
-ENTRYPOINT ["/{{$.binary}}"{{ with $.entrypointargs -}}{{- $index := 0 -}}{{range $.entrypointargs}}{{- $index = increment_int $index -}}, "{{.}}"{{end}}{{end}}]
-{{ with $.runargs -}}
-{{- $index := 0 -}}
-CMD [{{range $.runargs}}{{- $index = increment_int $index -}}"{{.}}"{{- if ne $index (len $.runargs) -}}, {{ end }}{{end}}]
-{{- end -}}

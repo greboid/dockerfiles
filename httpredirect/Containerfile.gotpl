@@ -1,7 +1,20 @@
-{{ set "repo" "greboid/httpredirect" -}}
-{{- set "binary" "httpredirect" -}}
-
 FROM {{image "golang"}} AS build
-{{ partial "checkout-tag.gotpl" }}
-{{ partial "static-go-build.gotpl" }}
-{{ partial "from-base-add-binary.gotpl" }}
+
+ARG TAG="{{github_tag "greboid/httpredirect"}}"
+
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "git" -}}
+        {{$key}}={{$value}}\
+        {{end}}; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/httpredirect /go/src/github.com/greboid/httpredirect; \
+    cd /go/src/github.com/greboid/httpredirect; \
+    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
+    go-licenses save ./... --save_path=/notices;
+
+FROM {{image "base"}}
+
+COPY --from=build /go/src/github.com/greboid/httpredirect/main /httpredirect
+COPY --from=build /notices /notices
+EXPOSE 8080
+ENTRYPOINT ["/httpredirect"]

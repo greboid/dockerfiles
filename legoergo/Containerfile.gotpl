@@ -1,15 +1,25 @@
 FROM {{image "golang"}} AS build
-{{ set "repo" "csmith/certwrapper" -}}
-{{- set "tags" (list "lego_httpreq") -}}
-{{- set "binary" "certwrapper" -}}
-{{ partial "checkout-tag.gotpl" }}
-{{ partial "static-go-build.gotpl" }}
 
-{{ set "repo" "ergochat/ergo" -}}
-{{- set "binary" "ergo" -}}
-{{ partial "checkout-tag.gotpl" }}
-{{ partial "static-go-build.gotpl" }}
-{{- set "directories" (list "/languages") }}
-{{ partial "copy-directories.gotpl" }}
-{{ set "entryargs" (list "/ergo" "run" "--conf" "/ircd/ircd.yaml") }}
-{{ partial "from-base-add-binary.gotpl" }}
+ARG CERTTAG="{{github_tag "csmith/certwrapper"}}"
+ARG ERGOTAG="{{github_tag "ergochat/ergo"}}"
+
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "git" -}}
+        {{$key}}={{$value}} \
+        {{end}}; \
+    git clone --depth=1 -b $CERTTAG --single-branch https://github.com/csmith/certwrapper /go/src/github.com/csmith/certwrapper; \
+    cd /go/src/github.com/csmith/certwrapper; \
+    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -tags lego_httpreq -o main .; \
+    git clone --depth=1 -b $ERGOTAG --single-branch https://github.com/ergochat/ergo /go/src/github.com/ergochat/ergo; \
+    cd /go/src/github.com/ergochat/ergo; \
+    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
+    go-licenses save ./... --save_path=/notices;
+
+FROM {{image "base"}}
+
+COPY --from=build /go/src/github.com/csmith/certwrapper/main /certwrapper
+COPY --from=build /go/src/github.com/ergochat/ergo/main /ergo
+COPY --from=build /go/src/github.com/ergochat/ergo/languages /ircd-bin/languages
+COPY --from=build /notices /notices
+CMD ["/certwrapper", "/ergo", "run", "--conf", "/ircd/ircd.yaml"]

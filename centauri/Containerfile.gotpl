@@ -1,11 +1,25 @@
-{{ set "repo" "csmith/centauri" -}}
-{{- set "cmd" "cmd/centauri" -}}
-{{- set "tags" (list "lego_httpreq") -}}
-{{- set "binary" "centauri" -}}
-{{- set "volumes" (list "/home/nonroot/.config" "/data") -}}
-
 FROM {{image "golang"}} AS build
-{{ partial "create-directories.gotpl" }}
-{{ partial "checkout-tag.gotpl" }}
-{{ partial "static-go-build.gotpl" }}
-{{ partial "from-base-add-binary.gotpl" }}
+
+ARG REPO="csmith/centauri"
+ARG TAG=4c2e02c5415926b85a5cf5bc75c4a23847b69525
+
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "git" -}}
+        {{$key}}={{$value}}\
+        {{end}}; \
+    git clone -b master --single-branch https://github.com/$REPO /go/src; \
+    cd /go/src; \
+    git checkout $TAG; \
+    GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -tags lego_httpreq -o main ./cmd/centauri; \
+    chmod +x /go/src/main; \
+    mkdir -p /rootfs/home/nonroot/.config; \
+    mkdir -p /rootfs/data; \
+    mv /go/src/main /rootfs/centauri
+
+FROM {{image "base"}}
+
+COPY --from=build --chown=65532:65532 /rootfs/ /
+EXPOSE 8080
+EXPOSE 8443
+ENTRYPOINT ["/centauri"]

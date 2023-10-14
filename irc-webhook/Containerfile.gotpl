@@ -1,8 +1,19 @@
-{{ set "repo" "greboid/irc-webhook" -}}
-{{- set "cmd" "cmd/webhook" -}}
-{{- set "binary" "irc-webhook" -}}
-
 FROM {{image "golang"}} AS build
-{{ partial "checkout-tag.gotpl" }}
-{{ partial "static-go-build.gotpl" }}
-{{ partial "from-base-add-binary.gotpl" }}
+
+ARG TAG="{{github_tag "greboid/irc-webhook"}}"
+
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "git" -}}
+        {{$key}}={{$value}}\
+        {{end}}; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/irc-webhook /go/src/github.com/greboid/irc-webhook; \
+    cd /go/src/github.com/greboid/irc-webhook; \
+    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main ./cmd/webhook; \
+    go-licenses save ./... --save_path=/notices;
+
+FROM {{image "base"}}
+
+COPY --from=build /go/src/github.com/greboid/irc-webhook/main /irc-webhook
+COPY --from=build /notices /notices
+ENTRYPOINT ["/irc-webhook"]

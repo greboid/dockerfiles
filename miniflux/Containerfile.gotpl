@@ -1,8 +1,19 @@
-{{ set "repo" "miniflux/v2" -}}
-{{- set "binary" "miniflux" -}}
-{{- set "buildvars" (list (printf "miniflux.app/version.Version=$TAG%s" (tagsafe (get "binary"))) (printf "miniflux.app/version.COMMIT=$TAG%s" (tagsafe (get "binary")))) -}}
-
 FROM {{image "golang"}} AS build
-{{ partial "checkout-tag.gotpl" }}
-{{ partial "static-go-build.gotpl" }}
-{{ partial "from-base-add-binary.gotpl" }}
+
+ARG TAG="{{github_tag "miniflux/v2"}}"
+
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "git" -}}
+        {{$key}}={{$value}}\
+        {{end}}; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/miniflux/v2 /go/src/github.com/miniflux/v2; \
+    cd /go/src/github.com/miniflux/v2; \
+    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid= -X miniflux.app/version.Version=$TAG -X miniflux.app/version.Commit=$TAG" -o main .; \
+    go-licenses save ./... --save_path=/notices;
+
+FROM {{image "base"}}
+
+COPY --from=build /go/src/github.com/miniflux/v2/main /miniflux
+COPY --from=build /notices /notices
+ENTRYPOINT ["/miniflux"]

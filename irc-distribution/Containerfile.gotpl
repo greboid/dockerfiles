@@ -1,8 +1,19 @@
-{{ set "repo" "csmith/irc-distribution" -}}
-{{- set "cmd" "cmd/distribution" -}}
-{{- set "binary" "irc-distribution" -}}
-
 FROM {{image "golang"}} AS build
-{{ partial "checkout-tag.gotpl" }}
-{{ partial "static-go-build.gotpl" }}
-{{ partial "from-base-add-binary.gotpl" }}
+
+ARG TAG="{{github_tag "csmith/irc-distribution"}}"
+
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "git" -}}
+        {{$key}}={{$value}}\
+        {{end}}; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/irc-distribution /go/src/github.com/csmith/irc-distribution; \
+    cd /go/src/github.com/csmith/irc-distribution; \
+    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main ./cmd/distribution; \
+    go-licenses save ./... --save_path=/notices;
+
+FROM {{image "base"}}
+
+COPY --from=build /go/src/github.com/csmith/irc-distribution/main /irc-distribution
+COPY --from=build /notices /notices
+ENTRYPOINT ["/irc-distribution"]

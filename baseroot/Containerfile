@@ -1,60 +1,37 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/baseroot/Containerfile.gotpl
-# BOM: {"apk:ca-certificates-bundle":"20230506-r0","apk:libacl":"2.3.1-r3","apk:libxxhash":"0.8.2-r0","apk:lz4-libs":"1.9.4-r4","apk:musl":"1.2.4-r1","apk:popt":"1.19-r2","apk:rsync":"3.2.7-r4","apk:tzdata":"2023c-r1","apk:zlib":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","image:alpine":"e2b43fe31f5609bc07265b709d41d65dcff433da4e96504e41fbd54861d393f9"}
+# BOM: {"apk:ca-certificates-bundle":"20230506-r0","apk:libacl":"2.3.1-r3","apk:libxxhash":"0.8.2-r0","apk:lz4-libs":"1.9.4-r4","apk:musl":"1.2.4-r1","apk:popt":"1.19-r2","apk:rsync":"3.2.7-r4","apk:tzdata":"2023c-r1","apk:zlib":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","image:alpine":"bb09baaefa0022cb709bfb42e8852359b208eb2a6baa0beff38eaa3a610141a7"}
 
-FROM reg.g5d.dev/alpine@sha256:e2b43fe31f5609bc07265b709d41d65dcff433da4e96504e41fbd54861d393f9 AS build
+FROM reg.g5d.dev/alpine@sha256:bb09baaefa0022cb709bfb42e8852359b208eb2a6baa0beff38eaa3a610141a7 AS build
 
 RUN set -eux; \
-    #Install build dependencies
-    apk add --no-cache \libacl=2.3.1-r3 \
+    # Sort out our dependencies (and sources)
+    apk add --no-cache \
+        libacl=2.3.1-r3 \
         libxxhash=0.8.2-r0 \
         lz4-libs=1.9.4-r4 \
         musl=1.2.4-r1 \
         popt=1.19-r2 \
         rsync=3.2.7-r4 \
         zlib=1.2.13-r1 \
-        zstd-libs=1.5.5-r4 
-        
-
-RUN set -eux; \
-    #Ensure rsync is in the build environment
-    apk add --no-cache \libacl=2.3.1-r3 \
-    libxxhash=0.8.2-r0 \
-    lz4-libs=1.9.4-r4 \
-    musl=1.2.4-r1 \
-    popt=1.19-r2 \
-    rsync=3.2.7-r4 \
-    zlib=1.2.13-r1 \
-    zstd-libs=1.5.5-r4; \
-    # Add packages into the runtime fs
-    apk add --no-cache ca-certificates-bundle=20230506-r0; \
-    apk info -qL ca-certificates-bundle | rsync -aq --files-from=- / /rootfs/; \
-    apk add --no-cache musl=1.2.4-r1; \
-    apk info -qL musl | rsync -aq --files-from=- / /rootfs/; \
-    apk add --no-cache tzdata=2023c-r1; \
-    apk info -qL tzdata | rsync -aq --files-from=- / /rootfs/
-    
-
-
-RUN set -eux; \
-    #Create required directories
-    mkdir -p \
-        /rootfs/tmp\
-        /rootfs/proc\
-        /rootfs/dev\
-        /rootfs/sys\
-        /rootfs/etc\
-        /rootfs/root\
-        /rootfs/home/nonroot
-        
-
-RUN set -eux; \
-    #Create some required users
+        zstd-libs=1.5.5-r4 \
+        ; \
+    # Create special mount points
+    mkdir -p /rootfs/tmp /rootfs/proc /rootfs/dev /rootfs/sys; \
+    # Set up directories and password file
+    mkdir -p /rootfs/etc /rootfs/home/nonroot /rootfs/root; \
     echo "root:x:0:0:root:/root:/sbin/nologin" >> /rootfs/etc/passwd; \
     echo "nobody:x:65534:65534:nobody:/nonexistent:/sbin/nologin" >> /rootfs/etc/passwd; \
-    echo "nonroot:x:65532:65532:nonroot:/home/nonroot:/sbin/nologin" >> /rootfs/etc/passwd
-
-RUN set -eux; \
-    # Add general git config to avoid adding it in each image
+    echo "nonroot:x:65532:65532:nonroot:/home/nonroot:/sbin/nologin" >> /rootfs/etc/passwd; \
+    chown 65532:65532 /rootfs/home/nonroot; \
+    chmod 01777 /rootfs/tmp; \
+    # Add packages into rootfs
+    apk add --no-cache ca-certificates-bundle=20230506-r0; \
+      apk info -qL ca-certificates-bundle | rsync -aq --files-from=- / /rootfs/; \
+    apk add --no-cache musl=1.2.4-r1; \
+      apk info -qL musl | rsync -aq --files-from=- / /rootfs/; \
+    apk add --no-cache tzdata=2023c-r1; \
+      apk info -qL tzdata | rsync -aq --files-from=- / /rootfs/; \
+    # Add general git config to avoid adding it in each image 
     echo "[advice]" > /rootfs/etc/gitconfig; \
     echo "    detachedHead = false" >> /rootfs/etc/gitconfig;
 

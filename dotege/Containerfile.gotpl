@@ -1,13 +1,25 @@
-{{ set "repo" "csmith/dotege" -}}
-{{- set "cmd" "cmd/dotege" -}}
-{{- set "binary" "dotege" -}}
-{{- set "directories" (list "/templates") -}}
-{{- set "volumes" (list "/config" "/certs" "/output") -}}
-{{- set "tags" (list "lego_httpreq") -}}
-
 FROM {{image "golang"}} AS build
-{{ partial "checkout-tag.gotpl" }}
-{{ partial "static-go-build.gotpl" }}
-{{ partial "copy-directories.gotpl" }}
-{{ partial "create-directories.gotpl" }}
-{{ partial "from-base-add-binary.gotpl" }}
+
+ARG TAG="{{github_tag "csmith/dotege"}}"
+
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "git" -}}
+        {{$key}}={{$value}}\
+        {{end}}; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/dotege /go/src/github.com/csmith/dotege; \
+    cd /go/src/github.com/csmith/dotege; \
+    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -tags lego_httpreq -ldflags=-buildid= -o main ./cmd/dotege; \
+    go-licenses save ./... --save_path=/notices;
+
+FROM {{image "base"}}
+
+COPY --from=build /go/src/github.com/csmith/dotege/main /dotege
+COPY --from=build /notices /notices
+COPY --from=build /go/src/github.com/csmith/dotege/templates /templates
+
+VOLUME /data/config
+VOLUME /data/certs
+VOLUME /data/output
+
+ENTRYPOINT ["/dotege"]
