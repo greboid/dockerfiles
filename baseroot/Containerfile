@@ -1,14 +1,14 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/baseroot/Containerfile.gotpl
-# BOM: {"apk:ca-certificates-bundle":"20230506-r0","apk:libacl":"2.3.1-r3","apk:libxxhash":"0.8.2-r0","apk:lz4-libs":"1.9.4-r4","apk:musl":"1.2.4-r1","apk:popt":"1.19-r2","apk:rsync":"3.2.7-r4","apk:tzdata":"2023c-r1","apk:zlib":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","image:alpine":"f7601e006c52c627a3f5501f404c6868fdf38308ad460fba97b7845aa2d7dd50"}
+# BOM: {"apk:ca-certificates-bundle":"20230506-r0","apk:libacl":"2.3.1-r3","apk:libxxhash":"0.8.2-r0","apk:lz4-libs":"1.9.4-r4","apk:musl":"1.2.4-r2","apk:popt":"1.19-r2","apk:rsync":"3.2.7-r4","apk:tzdata":"2023c-r1","apk:zlib":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","image:alpine":"e2b43fe31f5609bc07265b709d41d65dcff433da4e96504e41fbd54861d393f9"}
 
-FROM reg.g5d.dev/alpine@sha256:f7601e006c52c627a3f5501f404c6868fdf38308ad460fba97b7845aa2d7dd50 AS build
+FROM reg.g5d.dev/alpine@sha256:e2b43fe31f5609bc07265b709d41d65dcff433da4e96504e41fbd54861d393f9 AS build
 
 RUN set -eux; \
     #Install build dependencies
     apk add --no-cache \libacl=2.3.1-r3 \
         libxxhash=0.8.2-r0 \
         lz4-libs=1.9.4-r4 \
-        musl=1.2.4-r1 \
+        musl=1.2.4-r2 \
         popt=1.19-r2 \
         rsync=3.2.7-r4 \
         zlib=1.2.13-r1 \
@@ -20,7 +20,7 @@ RUN set -eux; \
     apk add --no-cache \libacl=2.3.1-r3 \
     libxxhash=0.8.2-r0 \
     lz4-libs=1.9.4-r4 \
-    musl=1.2.4-r1 \
+    musl=1.2.4-r2 \
     popt=1.19-r2 \
     rsync=3.2.7-r4 \
     zlib=1.2.13-r1 \
@@ -28,7 +28,7 @@ RUN set -eux; \
     # Add packages into the runtime fs
     apk add --no-cache ca-certificates-bundle=20230506-r0; \
     apk info -qL ca-certificates-bundle | rsync -aq --files-from=- / /rootfs/; \
-    apk add --no-cache musl=1.2.4-r1; \
+    apk add --no-cache musl=1.2.4-r2; \
     apk info -qL musl | rsync -aq --files-from=- / /rootfs/; \
     apk add --no-cache tzdata=2023c-r1; \
     apk info -qL tzdata | rsync -aq --files-from=- / /rootfs/

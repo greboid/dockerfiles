@@ -1,13 +1,8 @@
-{{ set "repo" "csmith/dotege" -}}
-{{- set "cmd" "cmd/dotege" -}}
-{{- set "binary" "dotege" -}}
-{{- set "directories" (list "/templates") -}}
-{{- set "volumes" (list "/config" "/certs" "/output") -}}
-{{- set "tags" (list "lego_httpreq") -}}
-
+{{- $repo := "csmith/dotege" -}}
+{{- $binary := "dotege" -}}
 FROM {{image "golang"}} AS build
-{{ partial "checkout-tag.gotpl" }}
-{{ partial "static-go-build.gotpl" }}
-{{ partial "copy-directories.gotpl" }}
-{{ partial "create-directories.gotpl" }}
-{{ partial "from-base-add-binary.gotpl" }}
+{{ create_volumes (list "/config" "/certs" "/output") }}
+{{ copy_directories $repo "/templates" }}
+{{ checkout_tag $repo }}
+{{ go_build $repo $binary "cmd/dotege" (list "lego_httpreq") (list) (list) }}
+{{ from_base_add_binary $binary (list) (list) }}

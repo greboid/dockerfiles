@@ -1,17 +1,9 @@
-{{ set "repo" "dexidp/dex" -}}
-{{- set "cmd" "cmd/dex" -}}
-{{- set "binary" "dex" -}}
-{{- set "runargs" (list "serve" "/config.yml") -}}
-{{- set "buildDeps" (alpine_packages "sqlite" "gcc") -}}
-{{- set "volumes" (list "/db") -}}
-{{- set "directories" (list "/web") -}}
-{{- set "skipnotices" (list "github.com/dexidp/dex/api/v2") -}}
-
+{{- $repo := "dexidp/dex" -}}
+{{- $binary := "dockercleanup" -}}
 FROM {{image "golang"}} AS build
-{{ partial "install-build-deps.gotpl" }}
-{{ partial "install-run-deps.gotpl" }}
-{{ partial "create-directories.gotpl" }}
-{{ partial "checkout-tag.gotpl" }}
-{{ partial "static-go-build.gotpl" }}
-{{ partial "copy-directories.gotpl" }}
-{{ partial "from-base-add-binary.gotpl" }}
+{{ install_build_deps "sqlite" "gcc" }}
+{{ create_volumes "/db" }}
+{{ checkout_tag $repo }}
+{{ go_build $repo $binary "cmd/dex" (list) (list) (list "github.com/dexidp/dex/api/v2") }}
+{{ copy_directories $repo "/web" }}
+{{ from_base_add_binary $binary (list) (list "serve" "/config.yml") }}

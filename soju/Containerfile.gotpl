@@ -1,23 +1,10 @@
+{{- $repo := "emersion/soju" -}}
 FROM {{image "golang"}} AS build
 
-{{ set "skipnotices" (list "git.sr.ht/~emersion/soju") -}}
-{{- set "repo" "emersion/soju" -}}
-{{- set "cmd" "cmd/soju" -}}
-{{- set "binary" "soju" -}}
-{{ partial "checkout-tag.gotpl" }}
-{{ partial "static-go-build.gotpl" }}
-{{- set "cmd" "cmd/sojuctl" -}}
-{{- set "binary" "sojuctl" -}}
-{{ partial "static-go-build.gotpl" }}
-
-{{ set "repo" "csmith/certwrapper" -}}
-{{- set "cmd" "" -}}
-{{- set "binary" "certwrapper" -}}
-{{- set "tags" (list "lego_httpreq") -}}
-{{ partial "checkout-tag.gotpl" }}
-{{ partial "static-go-build.gotpl" }}
-
-{{- set "volumes" (list "/data") -}}
-{{- set "entrypointargs" (list "/soju") -}}
-{{ partial "create-directories.gotpl" }}
-{{ partial "from-base-add-binary.gotpl" }}
+{{ checkout_tag "csmith/certwrapper" }}
+{{ go_build "csmith/certwrapper" "certwrapper" "" (list "lego_httpreq") (list) (list) }}
+{{ checkout_tag $repo }}
+{{ go_build $repo "soju" "cmd/soju" (list) (list) (list "git.sr.ht/~emersion/soju") }}
+{{ go_build $repo "sojuctl" "cmd/sojuctl" (list) (list) (list "git.sr.ht/~emersion/soju") }}
+{{ create_volumes "/data" }}
+{{ from_base_add_binary "centauri" (list) (list) }}

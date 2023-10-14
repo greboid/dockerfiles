@@ -1,11 +1,7 @@
-{{ set "repo" "csmith/centauri" -}}
-{{- set "cmd" "cmd/centauri" -}}
-{{- set "tags" (list "lego_httpreq") -}}
-{{- set "binary" "centauri" -}}
-{{- set "volumes" (list "/home/nonroot/.config" "/data") -}}
-
+{{- $repo := "csmith/centauri" -}}
+{{- $binary := "centauri" -}}
 FROM {{image "golang"}} AS build
-{{ partial "create-directories.gotpl" }}
-{{ partial "checkout-tag.gotpl" }}
-{{ partial "static-go-build.gotpl" }}
-{{ partial "from-base-add-binary.gotpl" }}
+{{ create_volumes "/home/nonroot/.config" "/data" }}
+{{ checkout_tag $repo }}
+{{ go_build $repo $binary "cmd/dex" (list "lego_httpreq") (list) (list) }}
+{{ from_base_add_binary $binary (list) (list) }}

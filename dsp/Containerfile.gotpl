@@ -1,8 +1,6 @@
-{{ set "repo" "greboid/dsp" -}}
-{{- set "cmd" "cmd" -}}
-{{- set "binary" "dsp" -}}
-
+{{- $repo := "greboid/dsp" -}}
+{{- $binary := "dsp" -}}
 FROM {{image "golang"}} AS build
-{{ partial "checkout-tag.gotpl" }}
-{{ partial "static-go-build.gotpl" }}
-{{ partial "from-base-add-binary.gotpl" }}
+{{ checkout_tag $repo }}
+{{ go_build $repo $binary "cmd" (list) (list) (list) }}
+{{ from_base_add_binary $binary (list) (list) }}

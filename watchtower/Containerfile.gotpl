@@ -1,11 +1,10 @@
-{{ set "repo" "containrrr/watchtower" -}}
-{{- set "binary" "watchtower" -}}
-{{- set "buildvars" (list (printf "github.com/containrrr/watchtower/internal/meta.Version=$TAG%s" (tagsafe (get "binary")))) -}}
-
+{{- $repo := "containrrr/watchtower" -}}
 FROM {{image "golang"}} AS build
-{{ partial "checkout-tag.gotpl" }}
+
+{{ checkout_tag $repo }}
 COPY disable-slack.patch /
-WORKDIR /src/{{ get "repo" }}
+WORKDIR /src/{{ $repo }}
 RUN git apply /disable-slack.patch
-{{ partial "static-go-build.gotpl" }}
-{{ partial "from-base-add-binary.gotpl" }}
+{{ go_build $repo "watchtower" "" (list) (list (printf "github.com/containrrr/watchtower/internal/meta.Version=$TAG%s" (tagify $repo))) (list) }}
+{{ create_volumes "/home/nonroot/.config" "/data" }}
+{{ from_base_add_binary "centauri" (list) (list) }}

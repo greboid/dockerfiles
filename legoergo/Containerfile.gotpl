@@ -11,5 +11,6 @@ FROM {{image "golang"}} AS build
 {{ partial "static-go-build.gotpl" }}
 {{- set "directories" (list "/languages") }}
 {{ partial "copy-directories.gotpl" }}
-{{ set "entryargs" (list "/ergo" "run" "--conf" "/ircd/ircd.yaml") }}
+{{- set "binary" "certwrapper" -}}
+{{ set "entrypointargs" (list "/ergo" "run" "--conf" "/ircd/ircd.yaml") }}
 {{ partial "from-base-add-binary.gotpl" }}

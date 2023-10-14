@@ -1,7 +1,7 @@
-{{ set "repo" "csmith/webhooked" -}}
-{{- set "binary" "webhooked" -}}
-
+{{- $repo := "csmith/webhooked" -}}
 FROM {{image "golang"}} AS build
-{{ partial "checkout-tag.gotpl" }}
-{{ partial "static-go-build.gotpl" }}
-{{ partial "from-base-add-binary.gotpl" }}
+
+{{ checkout_tag $repo }}
+{{ go_build $repo "webhooked" "" (list) (list) (list) }}
+{{ create_volumes "/home/nonroot/.config" "/data" }}
+{{ from_base_add_binary "centauri" (list) (list) }}

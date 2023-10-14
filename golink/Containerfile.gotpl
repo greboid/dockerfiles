@@ -1,16 +1,7 @@
-{{ set "repo" "tailscale/golink" -}}
-{{ set "hash" "3d62a353ac8b5467b433ad96d686d3388ad01e34" -}}
-{{ set "branch" "main" -}}
-{{- set "cmd" "cmd/golink" -}}
-{{- set "binary" "golink" -}}
-{{- set "runargs" (list "--sqlitedb" "/home/nonroot/golink.db") -}}
-{{- set "skipnotices" (list "modernc.org/mathutil") -}}
-
 FROM {{image "golang"}} AS build
-{{ partial "checkout-commit.gotpl" }}
+{{ checkout_commit "tailscale/golink" "main" "3d62a353ac8b5467b433ad96d686d3388ad01e34" }}
 ARG TS={{github_tag "tailscale/tailscale"}}
-WORKDIR /src/{{ get "repo"}}
 RUN go get -u tailscale.com@$TS; \
     go mod tidy
-{{ partial "static-go-build.gotpl" }}
-{{ partial "from-base-add-binary.gotpl" }}
+{{ go_build "tailscale/golink" "golink" "cmd/golink" (list) (list) (list "modernc.org/mathutil") }}
+{{ from_base_add_binary "golink" (list) (list "--sqlitedb" "/home/nonroot/golink.db") }}
