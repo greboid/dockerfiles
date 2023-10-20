@@ -1,80 +1,157 @@
-From 7987df8072b2aac561bd568254591ba330d5ad41 Mon Sep 17 00:00:00 2001
-From: Greg Holmes <git@greg.holmes.name>
-Date: Tue, 8 Nov 2022 17:54:36 +0000
-Subject: [PATCH] Remove slack and teams
-
----
- internal/flags/flags.go       | 46 +------------------
- pkg/notifications/msteams.go  | 53 ----------------------
- pkg/notifications/notifier.go |  4 --
- pkg/notifications/slack.go    | 85 -----------------------------------
- 4 files changed, 1 insertion(+), 187 deletions(-)
- delete mode 100644 pkg/notifications/msteams.go
- delete mode 100644 pkg/notifications/slack.go
-
+diff --git a/docs/arguments.md b/docs/arguments.md
+index 8b00de9..40e8141 100644
+--- a/docs/arguments.md
++++ b/docs/arguments.md
+@@ -35,8 +35,6 @@ This can be used to avoid putting secrets in the configuration file or command l
+ The following arguments are currently supported (including their corresponding `WATCHTOWER_` environment variables):
+  - `notification-url`
+  - `notification-email-server-password`
+- - `notification-slack-hook-url`
+- - `notification-msteams-hook`
+  - `notification-gotify-token`
+  - `http-api-token`
+ 
+diff --git a/docs/notifications.md b/docs/notifications.md
+index 3042919..63a19fa 100644
+--- a/docs/notifications.md
++++ b/docs/notifications.md
+@@ -180,8 +180,6 @@ The types of notifications to send are set by passing a comma-separated list of
+ (or corresponding environment variable `WATCHTOWER_NOTIFICATIONS`), which has the following valid values:
+ 
+ -   `email` to send notifications via e-mail
+--   `slack` to send notifications through a Slack webhook
+--   `msteams` to send notifications via MSTeams webhook
+ -   `gotify` to send notifications via Gotify
+ 
+ ### `notify-upgrade`
+@@ -321,51 +319,6 @@ networks:
+     external: false
+ ```
+ 
+-### Slack
+-
+-To receive notifications in Slack, add `slack` to the `--notifications` option or the `WATCHTOWER_NOTIFICATIONS` environment variable.
+-
+-Additionally, you should set the Slack webhook URL using the `--notification-slack-hook-url` option or the `WATCHTOWER_NOTIFICATION_SLACK_HOOK_URL` environment variable. This option can also reference a file, in which case the contents of the file are used.
+-
+-By default, watchtower will send messages under the name `watchtower`, you can customize this string through the `--notification-slack-identifier` option or the `WATCHTOWER_NOTIFICATION_SLACK_IDENTIFIER` environment variable.
+-
+-Other, optional, variables include:
+-
+--   `--notification-slack-channel` (env. `WATCHTOWER_NOTIFICATION_SLACK_CHANNEL`): A string which overrides the webhook's default channel. Example: #my-custom-channel.
+-
+-Example:
+-
+-```bash
+-docker run -d \
+-  --name watchtower \
+-  -v /var/run/docker.sock:/var/run/docker.sock \
+-  -e WATCHTOWER_NOTIFICATIONS=slack \
+-  -e WATCHTOWER_NOTIFICATION_SLACK_HOOK_URL="https://hooks.slack.com/services/xxx/yyyyyyyyyyyyyyy" \
+-  -e WATCHTOWER_NOTIFICATION_SLACK_IDENTIFIER=watchtower-server-1 \
+-  -e WATCHTOWER_NOTIFICATION_SLACK_CHANNEL=#my-custom-channel \
+-  containrrr/watchtower
+-```
+-
+-### Microsoft Teams
+-
+-To receive notifications in MSTeams channel, add `msteams` to the `--notifications` option or the `WATCHTOWER_NOTIFICATIONS` environment variable.
+-
+-Additionally, you should set the MSTeams webhook URL using the `--notification-msteams-hook` option or the `WATCHTOWER_NOTIFICATION_MSTEAMS_HOOK_URL` environment variable. This option can also reference a file, in which case the contents of the file are used.
+-
+-MSTeams notifier could send keys/values filled by `log.WithField` or `log.WithFields` as MSTeams message facts. To enable this feature add `--notification-msteams-data` flag or set `WATCHTOWER_NOTIFICATION_MSTEAMS_USE_LOG_DATA=true` environment variable.
+-
+-Example:
+-
+-```bash
+-docker run -d \
+-  --name watchtower \
+-  -v /var/run/docker.sock:/var/run/docker.sock \
+-  -e WATCHTOWER_NOTIFICATIONS=msteams \
+-  -e WATCHTOWER_NOTIFICATION_MSTEAMS_HOOK_URL="https://outlook.office.com/webhook/xxxxxxxx@xxxxxxx/IncomingWebhook/yyyyyyyy/zzzzzzzzzz" \
+-  -e WATCHTOWER_NOTIFICATION_MSTEAMS_USE_LOG_DATA=true \
+-  containrrr/watchtower
+-```
+-
+ ### Gotify
+ 
+ To push a notification to your Gotify instance, register a Gotify app and specify the Gotify URL and app token:
+@@ -383,4 +336,3 @@ docker run -d \
+ `-e WATCHTOWER_NOTIFICATION_GOTIFY_TOKEN` or `--notification-gotify-token` can also reference a file, in which case the contents of the file are used.
+ 
+ If you want to disable TLS verification for the Gotify instance, you can use either `-e WATCHTOWER_NOTIFICATION_GOTIFY_TLS_SKIP_VERIFY=true` or `--notification-gotify-tls-skip-verify`.
+-
 diff --git a/internal/flags/flags.go b/internal/flags/flags.go
-index 5428b95..71a1e18 100644
+index c11cdae..87f588c 100644
 --- a/internal/flags/flags.go
 +++ b/internal/flags/flags.go
-@@ -196,7 +196,7 @@ func RegisterNotificationFlags(rootCmd *cobra.Command) {
+@@ -221,7 +221,7 @@ func RegisterNotificationFlags(rootCmd *cobra.Command) {
  		"notifications",
  		"n",
- 		viper.GetStringSlice("WATCHTOWER_NOTIFICATIONS"),
+ 		envStringSlice("WATCHTOWER_NOTIFICATIONS"),
 -		" Notification types to send (valid: email, slack, msteams, gotify, shoutrrr)")
 +		" Notification types to send (valid: email, gotify, shoutrrr)")
  
  	flags.String(
  		"notifications-level",
-@@ -270,48 +270,6 @@ Should only be used for testing.`)
- 		viper.GetString("WATCHTOWER_NOTIFICATION_EMAIL_SUBJECTTAG"),
+@@ -295,48 +295,6 @@ Should only be used for testing.`)
+ 		envString("WATCHTOWER_NOTIFICATION_EMAIL_SUBJECTTAG"),
  		"Subject prefix tag for notifications via mail")
  
 -	flags.StringP(
 -		"notification-slack-hook-url",
 -		"",
--		viper.GetString("WATCHTOWER_NOTIFICATION_SLACK_HOOK_URL"),
+-		envString("WATCHTOWER_NOTIFICATION_SLACK_HOOK_URL"),
 -		"The Slack Hook URL to send notifications to")
 -
 -	flags.StringP(
 -		"notification-slack-identifier",
 -		"",
--		viper.GetString("WATCHTOWER_NOTIFICATION_SLACK_IDENTIFIER"),
+-		envString("WATCHTOWER_NOTIFICATION_SLACK_IDENTIFIER"),
 -		"A string which will be used to identify the messages coming from this watchtower instance")
 -
 -	flags.StringP(
 -		"notification-slack-channel",
 -		"",
--		viper.GetString("WATCHTOWER_NOTIFICATION_SLACK_CHANNEL"),
+-		envString("WATCHTOWER_NOTIFICATION_SLACK_CHANNEL"),
 -		"A string which overrides the webhook's default channel. Example: #my-custom-channel")
 -
 -	flags.StringP(
 -		"notification-slack-icon-emoji",
 -		"",
--		viper.GetString("WATCHTOWER_NOTIFICATION_SLACK_ICON_EMOJI"),
+-		envString("WATCHTOWER_NOTIFICATION_SLACK_ICON_EMOJI"),
 -		"An emoji code string to use in place of the default icon")
 -
 -	flags.StringP(
 -		"notification-slack-icon-url",
 -		"",
--		viper.GetString("WATCHTOWER_NOTIFICATION_SLACK_ICON_URL"),
+-		envString("WATCHTOWER_NOTIFICATION_SLACK_ICON_URL"),
 -		"An icon image URL string to use in place of the default icon")
 -
 -	flags.StringP(
 -		"notification-msteams-hook",
 -		"",
--		viper.GetString("WATCHTOWER_NOTIFICATION_MSTEAMS_HOOK_URL"),
+-		envString("WATCHTOWER_NOTIFICATION_MSTEAMS_HOOK_URL"),
 -		"The MSTeams WebHook URL to send notifications to")
 -
 -	flags.BoolP(
 -		"notification-msteams-data",
 -		"",
--		viper.GetBool("WATCHTOWER_NOTIFICATION_MSTEAMS_USE_LOG_DATA"),
+-		envBool("WATCHTOWER_NOTIFICATION_MSTEAMS_USE_LOG_DATA"),
 -		"The MSTeams notifier will try to extract log entry fields as MSTeams message facts")
 -
  	flags.StringP(
  		"notification-gotify-url",
  		"",
-@@ -463,8 +421,6 @@ func GetSecretsFromFiles(rootCmd *cobra.Command) {
+@@ -427,7 +385,6 @@ func SetDefaults() {
+ 	viper.SetDefault("WATCHTOWER_NOTIFICATIONS_LEVEL", "info")
+ 	viper.SetDefault("WATCHTOWER_NOTIFICATION_EMAIL_SERVER_PORT", 25)
+ 	viper.SetDefault("WATCHTOWER_NOTIFICATION_EMAIL_SUBJECTTAG", "")
+-	viper.SetDefault("WATCHTOWER_NOTIFICATION_SLACK_IDENTIFIER", "watchtower")
+ 	viper.SetDefault("WATCHTOWER_LOG_LEVEL", "info")
+ 	viper.SetDefault("WATCHTOWER_LOG_FORMAT", "auto")
+ }
+@@ -514,8 +471,6 @@ func GetSecretsFromFiles(rootCmd *cobra.Command) {
  
  	secrets := []string{
  		"notification-email-server-password",
@@ -82,7 +159,7 @@ index 5428b95..71a1e18 100644
 -		"notification-msteams-hook",
  		"notification-gotify-token",
  		"notification-url",
- 	}
+ 		"http-api-token",
 diff --git a/pkg/notifications/msteams.go b/pkg/notifications/msteams.go
 deleted file mode 100644
 index cfca30e..0000000
@@ -248,6 +325,3 @@ index 9118527..0000000
 -
 -	return conf.GetURL().String(), nil
 -}
--- 
-2.38.1
-
