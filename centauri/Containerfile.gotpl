@@ -1,7 +1,7 @@
 FROM {{image "golang"}} AS build
 
 ARG REPO="csmith/centauri"
-ARG TAG=4c2e02c5415926b85a5cf5bc75c4a23847b69525
+ARG TAG="{{github_tag "csmith/centauri"}}"
 
 RUN set -eux; \
     apk add --no-cache \
