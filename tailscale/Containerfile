@@ -1,9 +1,9 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/tailscale/Containerfile.gotpl
-# BOM: {"github:tailscale/tailscale":"v1.52.0","image:base":"51ad5647feb608ca88280348769b88e1ae6b749a7383f1ab29148c0c47bb6629","image:golang":"5a6bbbfdbb728e33e52eef822c2cd8e94b2e75c09ee3a3aab18040b3f422741b"}
+# BOM: {"github:tailscale/tailscale":"v1.52.1","image:base":"51ad5647feb608ca88280348769b88e1ae6b749a7383f1ab29148c0c47bb6629","image:golang":"5a6bbbfdbb728e33e52eef822c2cd8e94b2e75c09ee3a3aab18040b3f422741b"}
 
 FROM reg.g5d.dev/golang@sha256:5a6bbbfdbb728e33e52eef822c2cd8e94b2e75c09ee3a3aab18040b3f422741b AS build
 
-ARG TAG="v1.52.0"
+ARG TAG="v1.52.1"
 
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/tailscale/tailscale /src; \
