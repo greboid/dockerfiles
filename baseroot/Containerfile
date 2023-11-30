@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/baseroot/Containerfile.gotpl
-# BOM: {"apk:ca-certificates-bundle":"20230506-r0","apk:libacl":"2.3.1-r3","apk:libxxhash":"0.8.2-r0","apk:lz4-libs":"1.9.4-r4","apk:musl":"1.2.4-r2","apk:popt":"1.19-r2","apk:rsync":"3.2.7-r4","apk:tzdata":"2023c-r1","apk:zlib":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","image:alpine":"4f3f272839863bb8bcfc64190e649e8f5b39e1cb2997ee592f7ecebe964f21cf"}
+# BOM: {"apk:ca-certificates-bundle":"20230506-r0","apk:libacl":"2.3.1-r3","apk:libxxhash":"0.8.2-r0","apk:lz4-libs":"1.9.4-r4","apk:musl":"1.2.4-r2","apk:popt":"1.19-r2","apk:rsync":"3.2.7-r4","apk:tzdata":"2023c-r1","apk:zlib":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","image:alpine":"341205be06c0cfa09492706b988ca464c0995dd8d2e084598a01973046161577"}
 
-FROM reg.g5d.dev/alpine@sha256:4f3f272839863bb8bcfc64190e649e8f5b39e1cb2997ee592f7ecebe964f21cf AS build
+FROM reg.g5d.dev/alpine@sha256:341205be06c0cfa09492706b988ca464c0995dd8d2e084598a01973046161577 AS build
 
 RUN set -eux; \
     # Sort out our dependencies (and sources)
