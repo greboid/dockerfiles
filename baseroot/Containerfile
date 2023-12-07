@@ -1,19 +1,19 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/baseroot/Containerfile.gotpl
-# BOM: {"apk:ca-certificates-bundle":"20230506-r0","apk:libacl":"2.3.1-r3","apk:libxxhash":"0.8.2-r0","apk:lz4-libs":"1.9.4-r4","apk:musl":"1.2.4-r2","apk:popt":"1.19-r2","apk:rsync":"3.2.7-r4","apk:tzdata":"2023c-r1","apk:zlib":"1.2.13-r1","apk:zstd-libs":"1.5.5-r4","image:alpine":"341205be06c0cfa09492706b988ca464c0995dd8d2e084598a01973046161577"}
+# BOM: {"apk:ca-certificates-bundle":"20230506-r0","apk:libacl":"2.3.1-r4","apk:libxxhash":"0.8.2-r2","apk:lz4-libs":"1.9.4-r5","apk:musl":"1.2.4_git20230717-r4","apk:popt":"1.19-r3","apk:rsync":"3.2.7-r4","apk:tzdata":"2023c-r1","apk:zlib":"1.3-r2","apk:zstd-libs":"1.5.5-r8","image:alpine":"2f9fcbd9136d837c7b39b9298c385792e9884a7617c1f8828872de689814ed49"}
 
-FROM reg.g5d.dev/alpine@sha256:341205be06c0cfa09492706b988ca464c0995dd8d2e084598a01973046161577 AS build
+FROM reg.g5d.dev/alpine@sha256:2f9fcbd9136d837c7b39b9298c385792e9884a7617c1f8828872de689814ed49 AS build
 
 RUN set -eux; \
     # Sort out our dependencies (and sources)
     apk add --no-cache \
-        libacl=2.3.1-r3 \
-        libxxhash=0.8.2-r0 \
-        lz4-libs=1.9.4-r4 \
-        musl=1.2.4-r2 \
-        popt=1.19-r2 \
+        libacl=2.3.1-r4 \
+        libxxhash=0.8.2-r2 \
+        lz4-libs=1.9.4-r5 \
+        musl=1.2.4_git20230717-r4 \
+        popt=1.19-r3 \
         rsync=3.2.7-r4 \
-        zlib=1.2.13-r1 \
-        zstd-libs=1.5.5-r4 \
+        zlib=1.3-r2 \
+        zstd-libs=1.5.5-r8 \
         ; \
     # Create special mount points
     mkdir -p /rootfs/tmp /rootfs/proc /rootfs/dev /rootfs/sys; \
@@ -27,7 +27,7 @@ RUN set -eux; \
     # Add packages into rootfs
     apk add --no-cache ca-certificates-bundle=20230506-r0; \
       apk info -qL ca-certificates-bundle | rsync -aq --files-from=- / /rootfs/; \
-    apk add --no-cache musl=1.2.4-r2; \
+    apk add --no-cache musl=1.2.4_git20230717-r4; \
       apk info -qL musl | rsync -aq --files-from=- / /rootfs/; \
     apk add --no-cache tzdata=2023c-r1; \
       apk info -qL tzdata | rsync -aq --files-from=- / /rootfs/; \
