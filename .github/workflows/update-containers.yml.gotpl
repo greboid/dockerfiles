@@ -61,6 +61,8 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
