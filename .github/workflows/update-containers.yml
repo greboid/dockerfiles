@@ -57,10 +57,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -150,10 +152,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -243,10 +247,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -337,10 +343,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -430,10 +438,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -523,10 +533,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -617,10 +629,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -710,10 +724,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -804,10 +820,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -898,10 +916,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -992,10 +1012,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -1086,10 +1108,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -1180,10 +1204,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -1274,10 +1300,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -1368,10 +1396,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -1462,10 +1492,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -1556,10 +1588,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -1650,10 +1684,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -1744,10 +1780,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -1838,10 +1876,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -1932,10 +1972,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -2026,10 +2068,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -2120,10 +2164,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -2214,10 +2260,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -2308,10 +2356,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -2402,10 +2452,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -2496,10 +2548,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -2590,10 +2644,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -2684,10 +2740,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -2778,10 +2836,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -2872,10 +2932,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -2966,10 +3028,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -3060,10 +3124,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
@@ -3154,10 +3220,12 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Ensure docker config exists
+        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: 'stable'
           cache: false
