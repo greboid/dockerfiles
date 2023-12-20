@@ -61,8 +61,6 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Ensure docker config exists
-        run: mkdir -p ~/.docker && touch ~/.docker/config.json
       - name: Checkout source
         uses: actions/checkout@master
       - name: Setup Go
@@ -71,11 +69,8 @@ jobs:
           go-version: 'stable'
           cache: false
       - name: Login to private registry
-        uses: redhat-actions/podman-login@v1
-        with:
-          registry: ${{ secrets.REGISTRY }}
-          username: ${{ secrets.REGISTRY_USER }}
-          password: ${{ secrets.REGISTRY_PASS }}
+        run: |
+          /usr/bin/podman login ${{ secrets.REGISTRY }} -u ${{ secrets.REGISTRY_USER }} -p ${{ secrets.REGISTRY_PASS }} --verbose
       - name: Configure Git
         uses: snow-actions/git-config-user@v1.0.0
         with:
@@ -102,12 +97,9 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-        uses: redhat-actions/podman-login@v1
-        with:
 {%- raw -%}
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.CONTEMPT_TOKEN }}
+        run: |
+          /usr/bin/podman login ghcr.io -u ${{ github.repository_owner }} -p ${{ secrets.CONTEMPT_TOKEN }} --verbose
       - name: Retag image to mirror
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
