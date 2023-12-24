@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/dockercleanup/Containerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.1.0-r1","apk:busybox":"1.36.1-r15","apk:busybox-binsh":"1.36.1-r15","apk:c-ares":"1.22.1-r0","apk:ca-certificates":"20230506-r0","apk:git":"2.43.0-r0","apk:libcrypto3":"3.1.4-r2","apk:libcurl":"8.5.0-r0","apk:libexpat":"2.5.0-r2","apk:libidn2":"2.3.4-r4","apk:libssl3":"3.1.4-r2","apk:libunistring":"1.1-r2","apk:musl":"1.2.4_git20230717-r4","apk:nghttp2-libs":"1.58.0-r0","apk:pcre2":"10.42-r2","apk:zlib":"1.3-r2","github:greboid/dockercleanup":"v1.0.2","image:base":"7d312c647591e67ad9f5b439d211f7743bd1add4902c2f4696fc0aa4202b1ac3","image:golang":"f194d04ff26e4c8798a50c423150725890e80896366ceb6e687bc5f37411911f"}
+# BOM: {"apk:brotli-libs":"1.1.0-r1","apk:busybox":"1.36.1-r15","apk:busybox-binsh":"1.36.1-r15","apk:c-ares":"1.22.1-r0","apk:ca-certificates":"20230506-r0","apk:git":"2.43.0-r0","apk:libcrypto3":"3.1.4-r2","apk:libcurl":"8.5.0-r0","apk:libexpat":"2.5.0-r2","apk:libidn2":"2.3.4-r4","apk:libssl3":"3.1.4-r2","apk:libunistring":"1.1-r2","apk:musl":"1.2.4_git20230717-r4","apk:nghttp2-libs":"1.58.0-r0","apk:pcre2":"10.42-r2","apk:zlib":"1.3-r2","github:greboid/dockercleanup":"v1.0.2","image:base":"be27ab611ebaeb5497671f87f264356fc32300a5c49f3e04f493b8a709c5bff6","image:golang":"f194d04ff26e4c8798a50c423150725890e80896366ceb6e687bc5f37411911f"}
 
 FROM reg.g5d.dev/golang@sha256:f194d04ff26e4c8798a50c423150725890e80896366ceb6e687bc5f37411911f AS build
 
@@ -29,7 +29,7 @@ RUN set -eux; \
     CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
     go-licenses save ./... --save_path=/notices;
 
-FROM reg.g5d.dev/base@sha256:7d312c647591e67ad9f5b439d211f7743bd1add4902c2f4696fc0aa4202b1ac3
+FROM reg.g5d.dev/base@sha256:be27ab611ebaeb5497671f87f264356fc32300a5c49f3e04f493b8a709c5bff6
 
 COPY --from=build /go/src/github.com/greboid/dockercleanup/main /dockercleanup
 COPY --from=build /notices /notices
