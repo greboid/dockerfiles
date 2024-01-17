@@ -28,7 +28,7 @@ jobs:
         run: |
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -53,7 +53,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -140,7 +140,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -227,7 +227,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -315,7 +315,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -402,7 +402,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -489,7 +489,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -577,7 +577,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -664,7 +664,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -752,7 +752,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -840,7 +840,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -928,7 +928,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -1016,7 +1016,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -1104,7 +1104,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -1192,7 +1192,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -1280,7 +1280,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -1368,7 +1368,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -1456,7 +1456,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -1544,7 +1544,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -1632,7 +1632,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -1720,7 +1720,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -1808,7 +1808,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -1896,7 +1896,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -1984,7 +1984,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -2072,7 +2072,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -2160,7 +2160,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -2248,7 +2248,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -2336,7 +2336,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -2424,7 +2424,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -2512,7 +2512,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -2600,7 +2600,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -2688,7 +2688,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -2776,7 +2776,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -2864,7 +2864,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
@@ -2952,7 +2952,7 @@ jobs:
           echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
       - name: Go bin cache
         id: bin-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
