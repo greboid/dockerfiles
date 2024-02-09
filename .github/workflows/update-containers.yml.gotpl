@@ -86,7 +86,7 @@ jobs:
 {%- endraw -%}
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project {{ target.name }} . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v2
+        uses: andstor/file-existence-action@v3
         id: check_mirror
         with:
           files: "{{ target.name }}/MIRROR"
