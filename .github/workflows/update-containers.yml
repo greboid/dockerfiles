@@ -82,7 +82,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project alpine . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "alpine/MIRROR"
@@ -169,7 +169,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project baseroot . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "baseroot/MIRROR"
@@ -256,7 +256,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project golang . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "golang/MIRROR"
@@ -344,7 +344,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project node . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "node/MIRROR"
@@ -431,7 +431,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project rust . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "rust/MIRROR"
@@ -518,7 +518,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project base . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "base/MIRROR"
@@ -606,7 +606,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project dsp . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "dsp/MIRROR"
@@ -693,7 +693,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project thelounge . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "thelounge/MIRROR"
@@ -781,7 +781,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project centauri . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "centauri/MIRROR"
@@ -869,7 +869,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project dockercleanup . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "dockercleanup/MIRROR"
@@ -957,7 +957,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project dotege . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "dotege/MIRROR"
@@ -1045,7 +1045,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project githubmirror . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "githubmirror/MIRROR"
@@ -1133,7 +1133,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project golink . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "golink/MIRROR"
@@ -1221,7 +1221,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project goplum . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "goplum/MIRROR"
@@ -1309,7 +1309,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project httpredirect . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "httpredirect/MIRROR"
@@ -1397,7 +1397,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project identd . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "identd/MIRROR"
@@ -1485,7 +1485,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-bot . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "irc-bot/MIRROR"
@@ -1573,7 +1573,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-distribution . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "irc-distribution/MIRROR"
@@ -1661,7 +1661,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-github . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "irc-github/MIRROR"
@@ -1749,7 +1749,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-goplum . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "irc-goplum/MIRROR"
@@ -1837,7 +1837,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-notifier . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "irc-notifier/MIRROR"
@@ -1925,7 +1925,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-webhook . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "irc-webhook/MIRROR"
@@ -2013,7 +2013,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project legoergo . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "legoergo/MIRROR"
@@ -2101,7 +2101,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project linx-server . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "linx-server/MIRROR"
@@ -2189,7 +2189,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project miniflux . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "miniflux/MIRROR"
@@ -2277,7 +2277,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project postgres-15 . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "postgres-15/MIRROR"
@@ -2365,7 +2365,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project puzzles . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "puzzles/MIRROR"
@@ -2453,7 +2453,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project redis . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "redis/MIRROR"
@@ -2541,7 +2541,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project registryauth . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "registryauth/MIRROR"
@@ -2629,7 +2629,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project soju . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "soju/MIRROR"
@@ -2717,7 +2717,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project sws . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "sws/MIRROR"
@@ -2805,7 +2805,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project tailscale . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "tailscale/MIRROR"
@@ -2893,7 +2893,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project watchtower . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "watchtower/MIRROR"
@@ -2981,7 +2981,7 @@ jobs:
 
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project webhooked . .
       - name: Check mirror
-        uses: andstor/file-existence-action@v3
+        uses: andstor/file-existence-action@v2
         id: check_mirror
         with:
           files: "webhooked/MIRROR"
