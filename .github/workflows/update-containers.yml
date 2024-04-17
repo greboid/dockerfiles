@@ -43,6 +43,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -136,6 +138,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -229,6 +233,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -323,6 +329,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -416,6 +424,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -509,6 +519,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -603,6 +615,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -696,6 +710,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -790,6 +806,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -884,6 +902,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -978,6 +998,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -1072,6 +1094,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -1166,6 +1190,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -1260,6 +1286,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -1354,6 +1382,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -1448,6 +1478,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -1542,6 +1574,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -1636,6 +1670,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -1730,6 +1766,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -1824,6 +1862,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -1918,6 +1958,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -2012,6 +2054,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -2106,6 +2150,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -2200,6 +2246,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -2294,6 +2342,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -2388,6 +2438,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -2482,6 +2534,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -2576,6 +2630,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -2670,6 +2726,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -2764,6 +2822,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -2858,6 +2918,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -2952,6 +3014,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -3046,6 +3110,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
@@ -3140,6 +3206,8 @@ jobs:
 
     steps:
       - name: Update buildah
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           dpkg -i buildah.deb
