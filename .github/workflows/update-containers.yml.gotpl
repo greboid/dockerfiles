@@ -46,6 +46,12 @@ jobs:
 {%- endif -%}
 {%- raw -%}
     steps:
+      - name: Update buildah
+        run: |
+          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
+          dpkg -i buildah.deb
+      - name: Check buildah
+        run: buildah version
       - name: Get contempt version
         id: contempt
         uses: tdemin/find-latest-tag@v1
