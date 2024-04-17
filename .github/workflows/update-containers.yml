@@ -48,7 +48,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -144,7 +143,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -240,7 +238,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -337,7 +334,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -433,7 +429,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -529,7 +524,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -626,7 +620,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -722,7 +715,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -819,7 +811,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -916,7 +907,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -1013,7 +1003,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -1110,7 +1099,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -1207,7 +1195,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -1304,7 +1291,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -1401,7 +1387,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -1498,7 +1483,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -1595,7 +1579,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -1692,7 +1675,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -1789,7 +1771,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -1886,7 +1867,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -1983,7 +1963,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -2080,7 +2059,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -2177,7 +2155,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -2274,7 +2251,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -2371,7 +2347,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -2468,7 +2443,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -2565,7 +2539,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -2662,7 +2635,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -2759,7 +2731,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -2856,7 +2827,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -2953,7 +2923,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -3050,7 +3019,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -3147,7 +3115,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -3244,7 +3211,6 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          sudo ln -s /usr/local/bin/buildah /usr/bin/buidah
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
