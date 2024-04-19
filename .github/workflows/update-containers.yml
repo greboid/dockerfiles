@@ -48,12 +48,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -149,12 +149,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -250,12 +250,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -352,12 +352,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -453,12 +453,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -554,12 +554,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -656,12 +656,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -757,12 +757,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -859,12 +859,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -961,12 +961,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -1063,12 +1063,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -1165,12 +1165,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -1267,12 +1267,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -1369,12 +1369,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -1471,12 +1471,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -1573,12 +1573,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -1675,12 +1675,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -1777,12 +1777,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -1879,12 +1879,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -1981,12 +1981,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -2083,12 +2083,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -2185,12 +2185,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -2287,12 +2287,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -2389,12 +2389,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -2491,12 +2491,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -2593,12 +2593,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -2695,12 +2695,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -2797,12 +2797,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -2899,12 +2899,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -3001,12 +3001,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -3103,12 +3103,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -3205,12 +3205,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -3307,12 +3307,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
@@ -3409,12 +3409,12 @@ jobs:
         run: |
           gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
           sudo dpkg -i buildah.deb
-          mkdir -p /etc/cni/net.d/
-          echo '{' > /etc/cni/net.d/99-loopback.conf
-          echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
-          echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
-          echo '}' >> /etc/cni/net.d/99-loopback.conf
+          sudo mkdir -p /etc/cni/net.d/
+          sudo echo '{' > /etc/cni/net.d/99-loopback.conf
+          sudo echo '"cniVersion": "0.2.0",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"name": "lo",' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '"type": "loopback"' >> /etc/cni/net.d/99-loopback.conf
+          sudo echo '}' >> /etc/cni/net.d/99-loopback.conf
       - name: Check buildah
         run: buildah version
       - name: Get contempt version
