@@ -82,7 +82,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -178,7 +178,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -274,7 +274,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -371,7 +371,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -467,7 +467,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -563,7 +563,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -660,7 +660,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -756,7 +756,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -853,7 +853,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -950,7 +950,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -1047,7 +1047,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -1144,7 +1144,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -1241,7 +1241,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -1338,7 +1338,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -1435,7 +1435,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -1532,7 +1532,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -1629,7 +1629,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -1726,7 +1726,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -1823,7 +1823,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -1920,7 +1920,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -2017,7 +2017,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -2114,7 +2114,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -2211,7 +2211,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -2308,7 +2308,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -2405,7 +2405,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -2502,7 +2502,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -2599,7 +2599,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -2696,7 +2696,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -2793,7 +2793,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -2890,7 +2890,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -2987,7 +2987,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -3084,7 +3084,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -3181,7 +3181,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
@@ -3278,7 +3278,7 @@ jobs:
           email: ${{ secrets.GIT_EMAIL }}
       - name: Install contempt
         if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
       - name: Update
         env:
           BUILDAH_ISOLATION: chroot
