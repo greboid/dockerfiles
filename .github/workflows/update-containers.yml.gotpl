@@ -89,6 +89,7 @@ jobs:
         run: go install github.com/csmith/contempt/cmd/contempt@latest
       - name: Update
         env:
+          BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
 {%- endraw -%}
