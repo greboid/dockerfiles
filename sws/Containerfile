@@ -5,6 +5,8 @@ FROM reg.g5d.dev/rust@sha256:ee0c138cbf5480300bec232735c5904eb83bf6af138e18953c2
 
 ARG TAG=v2.31.1
 
+COPY keepqueriesonrewrites.diff /keepqueriesonrewrites.diff
+
 RUN set -eux; \
     apk add --no-cache \
         binutils=2.42-r0 \
@@ -41,7 +43,9 @@ RUN set -eux; \
         ;
 
 RUN set -eux; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/static-web-server/static-web-server /src
+    git clone --depth=1 -b $TAG --single-branch https://github.com/static-web-server/static-web-server /src; \
+    cd /src; \
+    git apply /keepqueriesonrewrites.diff
 
 WORKDIR /src
 
