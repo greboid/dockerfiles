@@ -2,6 +2,8 @@ FROM {{image "rust"}} AS build
 
 ARG TAG={{github_tag "static-web-server/static-web-server"}}
 
+COPY keepqueriesonrewrites.diff /keepqueriesonrewrites.diff
+
 RUN set -eux; \
     apk add --no-cache \
         {{range $key, $value := alpine_packages "git" "gcc" "musl-dev" "make" -}}
@@ -9,7 +11,9 @@ RUN set -eux; \
         {{end}};
 
 RUN set -eux; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/static-web-server/static-web-server /src
+    git clone --depth=1 -b $TAG --single-branch https://github.com/static-web-server/static-web-server /src; \
+    cd /src; \
+    git apply /keepqueriesonrewrites.diff
 
 WORKDIR /src
 
