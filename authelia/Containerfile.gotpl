@@ -1,0 +1,59 @@
+FROM {{image "node"}} as yarnbase
+
+WORKDIR /app
+
+RUN corepack enable
+
+FROM yarnbase as node
+
+ARG TAG="{{github_tag "authelia/authelia"}}"
+
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "git" -}}
+        {{$key}}={{$value}}\
+        {{end}}; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/authelia/authelia /src; \
+    mkdir -p /node/src/app; \
+    cd /node/src/app; \
+    cp -R /src/web/* ./; \
+    cp /src/web/.env.production ./.env; \
+    sed -i '2i "packageManager": "pnpm@v8.15.8",' package.json; \
+    pnpm install; \
+    pnpm build
+
+FROM {{image "golang"}} AS build
+
+ARG TAG="{{github_tag "authelia/authelia"}}"
+
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "git" -}}
+        {{$key}}={{$value}}\
+        {{end}}; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/authelia/authelia /go/src/app
+
+WORKDIR /go/src/app
+
+COPY --from=node /node/src/internal/server/public_html internal/server/public_html/
+
+RUN set -eux; \
+    cd /go/src/app; \
+    GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main ./cmd/authelia; \
+    go-licenses save ./... --save_path=/notices;
+
+RUN set -eux; \
+    mkdir /rootfs; \
+    mkdir /rootfs/config; \
+    mkdir /rootfs/notices; \
+    mv /go/src/app/main /rootfs/authelia; \
+    mv /notices /rootfs/notices
+
+FROM {{image "base"}}
+
+ENV X_AUTHELIA_CONFIG="/config/config.yml"
+
+COPY --chown=65532:65532 --from=build /rootfs/ /
+
+EXPOSE 8080
+ENTRYPOINT ["/authelia"]
