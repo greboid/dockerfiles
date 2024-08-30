@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/tailscale/Containerfile.gotpl
-# BOM: {"github:tailscale/tailscale":"v1.72.1","image:base":"6e5307f35c739a5ff44d5b65e92b8b9e76bbcdc6bbb42cb452ae4f08c95b433e","image:golang":"10bf4a42bb84fc320c3b943bd2e829c4fee2d54e9ead9dbed2b0835e93714701"}
+# BOM: {"github:tailscale/tailscale":"v1.72.1","image:base":"6e5307f35c739a5ff44d5b65e92b8b9e76bbcdc6bbb42cb452ae4f08c95b433e","image:golang":"09b1e471d1601bfbf092342558789f09acbe286162f4855dbdd610e4fe5279d1"}
 
-FROM reg.g5d.dev/golang@sha256:10bf4a42bb84fc320c3b943bd2e829c4fee2d54e9ead9dbed2b0835e93714701 AS build
+FROM reg.g5d.dev/golang@sha256:09b1e471d1601bfbf092342558789f09acbe286162f4855dbdd610e4fe5279d1 AS build
 
 ARG TAG="v1.72.1"
 
