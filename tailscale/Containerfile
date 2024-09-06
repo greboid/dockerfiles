@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/tailscale/Containerfile.gotpl
-# BOM: {"github:tailscale/tailscale":"v1.72.1","image:base":"6e5307f35c739a5ff44d5b65e92b8b9e76bbcdc6bbb42cb452ae4f08c95b433e","image:golang":"321d11327153935ac6ac08047c31903b6167de2f67a234b78b58d68a87d8f98f"}
+# BOM: {"github:tailscale/tailscale":"v1.72.1","image:base":"4ef3f4d0aebf884103b48a27e438f29752e3405f2fb94b23e6caee516d86f36f","image:golang":"9b3d6a58adb8bf89cf575e4148558ab22c654ad4e099384961627bbc1c8403d6"}
 
-FROM reg.g5d.dev/golang@sha256:321d11327153935ac6ac08047c31903b6167de2f67a234b78b58d68a87d8f98f AS build
+FROM reg.g5d.dev/golang@sha256:9b3d6a58adb8bf89cf575e4148558ab22c654ad4e099384961627bbc1c8403d6 AS build
 
 ARG TAG="v1.72.1"
 
@@ -16,7 +16,7 @@ RUN set -eux; \
     mkdir -p /rootfs/state /rootfs/var/run/tailscale; \
     cp /src/tailscaled /src/tailscale /rootfs/;
 
-FROM reg.g5d.dev/base@sha256:6e5307f35c739a5ff44d5b65e92b8b9e76bbcdc6bbb42cb452ae4f08c95b433e
+FROM reg.g5d.dev/base@sha256:4ef3f4d0aebf884103b48a27e438f29752e3405f2fb94b23e6caee516d86f36f
 
 COPY --from=build --chown=65532:65532 /rootfs/ /
 
