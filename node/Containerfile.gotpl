@@ -6,7 +6,7 @@ RUN set -eux; \
     apk add --no-cache \
         {{range $key, $value := alpine_packages "curl" "tar" "xz" "rsync" "gnupg" "bash" "libstdc++" "gcompat" -}}
         {{$key}}={{$value}}\
-        {{end}}
+        {{end}};
 RUN curl -sfLo /checksums.txt https://unofficial-builds.nodejs.org/download/release/$TAG/SHASUMS256.txt
 RUN curl -sfLo /node.tar.xz https://unofficial-builds.nodejs.org/download/release//$TAG/node-$TAG-linux-x64-musl.tar.xz
 RUN grep ".*linux-x64-musl.tar.xz" checksums.txt | echo $(awk '{print $1}') \*node.tar.xz | sha256sum -wc -; \
