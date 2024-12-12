@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/thelounge/Containerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.1.0-r2","apk:c-ares":"1.34.3-r0","apk:ca-certificates-bundle":"20241010-r0","apk:git":"2.47.1-r0","apk:libcrypto3":"3.3.2-r4","apk:libcurl":"8.11.0-r2","apk:libexpat":"2.6.4-r0","apk:libidn2":"2.3.7-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.3.2-r4","apk:libunistring":"1.2-r0","apk:musl":"1.2.5-r8","apk:nghttp2-libs":"1.64.0-r0","apk:pcre2":"10.43-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.6-r1","github:thelounge/thelounge":"v4.4.3","image:node":"b93c092271033c4817f0ef2c2b348afa170e43f2c2b39101d214b1c317f2fe57"}
+# BOM: {"apk:brotli-libs":"1.1.0-r2","apk:c-ares":"1.34.3-r0","apk:ca-certificates-bundle":"20241010-r0","apk:git":"2.47.1-r0","apk:libcrypto3":"3.3.2-r4","apk:libcurl":"8.11.1-r0","apk:libexpat":"2.6.4-r0","apk:libidn2":"2.3.7-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.3.2-r4","apk:libunistring":"1.2-r0","apk:musl":"1.2.5-r8","apk:nghttp2-libs":"1.64.0-r0","apk:pcre2":"10.43-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.6-r1","github:thelounge/thelounge":"v4.4.3","image:node":"e4f884d869c4c8ebba32fbbc4a5b98dcfe1b2387b60baf674e32f69d79b6e7de"}
 
-FROM reg.g5d.dev/node@sha256:b93c092271033c4817f0ef2c2b348afa170e43f2c2b39101d214b1c317f2fe57 as yarnbase
+FROM reg.g5d.dev/node@sha256:e4f884d869c4c8ebba32fbbc4a5b98dcfe1b2387b60baf674e32f69d79b6e7de as yarnbase
 
 WORKDIR /app
 
@@ -19,7 +19,7 @@ RUN set -eux; \
         ca-certificates-bundle=20241010-r0\
         git=2.47.1-r0\
         libcrypto3=3.3.2-r4\
-        libcurl=8.11.0-r2\
+        libcurl=8.11.1-r0\
         libexpat=2.6.4-r0\
         libidn2=2.3.7-r0\
         libpsl=0.21.5-r3\
