@@ -1,7 +1,7 @@
 FROM {{image "alpine"}} as build
 
-ARG ARCHIVE_URL="{{postgres15_url}}"
-ARG ARCHIVE_SUM="{{postgres15_checksum}}"
+ARG ARCHIVE_URL="{{postgres_url 15}}"
+ARG ARCHIVE_SUM="{{postgres_checksum 15}}"
 ARG ENTRYPOINT=39c3dc7046f5f7909179a51e25f2a61158781d57
 
 RUN set -eux; \
