@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/registryauth/Containerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.1.0-r2","apk:c-ares":"1.34.3-r0","apk:ca-certificates-bundle":"20241121-r0","apk:git":"2.47.1-r0","apk:libcrypto3":"3.3.2-r4","apk:libcurl":"8.11.1-r0","apk:libexpat":"2.6.4-r0","apk:libidn2":"2.3.7-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.3.2-r4","apk:libunistring":"1.2-r0","apk:musl":"1.2.5-r8","apk:nghttp2-libs":"1.64.0-r0","apk:pcre2":"10.43-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.6-r2","github:greboid/registryauth":"v1.0.20","image:base":"51efc81b068f43213730696487973bebe58e398fc499c7e823af8220ea66c0dc","image:golang":"a52f50d22f1fe3471a575aaddce657b711e041729aa9b73043a57a47a4d31281"}
+# BOM: {"apk:brotli-libs":"1.1.0-r2","apk:c-ares":"1.34.3-r0","apk:ca-certificates-bundle":"20241121-r1","apk:git":"2.47.1-r0","apk:libcrypto3":"3.3.2-r4","apk:libcurl":"8.11.1-r0","apk:libexpat":"2.6.4-r0","apk:libidn2":"2.3.7-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.3.2-r4","apk:libunistring":"1.2-r0","apk:musl":"1.2.5-r8","apk:nghttp2-libs":"1.64.0-r0","apk:pcre2":"10.43-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.6-r2","github:greboid/registryauth":"v1.0.20","image:base":"318428c86a577ab698e025401f3cde402878a00f731ba1aa045da7d448dcbb0b","image:golang":"9c9240f2751f9f9e241ad4b3fa981d537bc1edf83530e7066d2b3c1ae409e5e6"}
 
-FROM reg.g5d.dev/golang@sha256:a52f50d22f1fe3471a575aaddce657b711e041729aa9b73043a57a47a4d31281 AS build
+FROM reg.g5d.dev/golang@sha256:9c9240f2751f9f9e241ad4b3fa981d537bc1edf83530e7066d2b3c1ae409e5e6 AS build
 
 ARG TAG="v1.0.20"
 
@@ -9,7 +9,7 @@ RUN set -eux; \
     apk add --no-cache \
         brotli-libs=1.1.0-r2\
         c-ares=1.34.3-r0\
-        ca-certificates-bundle=20241121-r0\
+        ca-certificates-bundle=20241121-r1\
         git=2.47.1-r0\
         libcrypto3=3.3.2-r4\
         libcurl=8.11.1-r0\
@@ -30,7 +30,7 @@ RUN set -eux; \
     go-licenses save ./... --save_path=/notices; \
     mkdir /data
 
-FROM reg.g5d.dev/base@sha256:51efc81b068f43213730696487973bebe58e398fc499c7e823af8220ea66c0dc
+FROM reg.g5d.dev/base@sha256:318428c86a577ab698e025401f3cde402878a00f731ba1aa045da7d448dcbb0b
 
 COPY --from=build /go/src/github.com/greboid/registryauth/main /authedreg
 COPY --from=build --chown=65532:65532 /data /data
