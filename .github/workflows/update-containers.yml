@@ -42,14 +42,6 @@ jobs:
 
 
     steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
       - name: Get contempt version
         id: contempt
         uses: tdemin/find-latest-tag@v1
@@ -127,295 +119,6 @@ jobs:
         with:
           tries: 5
 
-  baseroot:
-    name: Build baseroot
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - alpine
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project baseroot . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "baseroot/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/baseroot $MIRROR_TARGET/$MIRROR_PATH/baseroot
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/baseroot
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  golang:
-    name: Build golang
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - alpine
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project golang . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "golang/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/golang $MIRROR_TARGET/$MIRROR_PATH/golang
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/golang
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  node:
-    name: Build node
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - alpine
-        - alpine
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project node . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "node/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/node $MIRROR_TARGET/$MIRROR_PATH/node
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/node
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
   rust:
     name: Build rust
     runs-on: ubuntu-latest
@@ -427,14 +130,6 @@ jobs:
 
 
     steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
       - name: Get contempt version
         id: contempt
         uses: tdemin/find-latest-tag@v1
@@ -512,25 +207,18 @@ jobs:
         with:
           tries: 5
 
-  base:
-    name: Build base
+  node:
+    name: Build node
     runs-on: ubuntu-latest
     needs:
         - setup-cache
 
 
-        - baseroot
+        - alpine
+        - alpine
 
 
     steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
       - name: Get contempt version
         id: contempt
         uses: tdemin/find-latest-tag@v1
@@ -570,12 +258,12 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
 
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project base . .
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project node . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
         with:
-          files: "base/MIRROR"
+          files: "node/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
@@ -593,7 +281,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/base $MIRROR_TARGET/$MIRROR_PATH/base
+        run: buildah tag $REGISTRY/node $MIRROR_TARGET/$MIRROR_PATH/node
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
 
@@ -602,32 +290,23 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/base
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/node
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
 
-  dsp:
-    name: Build dsp
+  golang:
+    name: Build golang
     runs-on: ubuntu-latest
     needs:
         - setup-cache
 
 
-        - golang
-        - baseroot
+        - alpine
 
 
     steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
       - name: Get contempt version
         id: contempt
         uses: tdemin/find-latest-tag@v1
@@ -667,12 +346,12 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
 
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project dsp . .
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project golang . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
         with:
-          files: "dsp/MIRROR"
+          files: "golang/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
@@ -690,7 +369,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/dsp $MIRROR_TARGET/$MIRROR_PATH/dsp
+        run: buildah tag $REGISTRY/golang $MIRROR_TARGET/$MIRROR_PATH/golang
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
 
@@ -699,7 +378,95 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dsp
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/golang
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  baseroot:
+    name: Build baseroot
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - alpine
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project baseroot . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "baseroot/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/baseroot $MIRROR_TARGET/$MIRROR_PATH/baseroot
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/baseroot
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
@@ -716,14 +483,6 @@ jobs:
 
 
     steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
       - name: Get contempt version
         id: contempt
         uses: tdemin/find-latest-tag@v1
@@ -801,8 +560,185 @@ jobs:
         with:
           tries: 5
 
-  centauri:
-    name: Build centauri
+  dsp:
+    name: Build dsp
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - golang
+        - baseroot
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project dsp . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "dsp/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/dsp $MIRROR_TARGET/$MIRROR_PATH/dsp
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dsp
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  base:
+    name: Build base
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - baseroot
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project base . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "base/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/base $MIRROR_TARGET/$MIRROR_PATH/base
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/base
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  webhooked:
+    name: Build webhooked
     runs-on: ubuntu-latest
     needs:
         - setup-cache
@@ -813,14 +749,6 @@ jobs:
 
 
     steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
       - name: Get contempt version
         id: contempt
         uses: tdemin/find-latest-tag@v1
@@ -860,12 +788,12 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
 
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project centauri . .
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project webhooked . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
         with:
-          files: "centauri/MIRROR"
+          files: "webhooked/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
@@ -883,7 +811,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/centauri $MIRROR_TARGET/$MIRROR_PATH/centauri
+        run: buildah tag $REGISTRY/webhooked $MIRROR_TARGET/$MIRROR_PATH/webhooked
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
 
@@ -892,2238 +820,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/centauri
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  dockercleanup:
-    name: Build dockercleanup
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - golang
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project dockercleanup . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "dockercleanup/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/dockercleanup $MIRROR_TARGET/$MIRROR_PATH/dockercleanup
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dockercleanup
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  dotege:
-    name: Build dotege
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - golang
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project dotege . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "dotege/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/dotege $MIRROR_TARGET/$MIRROR_PATH/dotege
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dotege
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  githubmirror:
-    name: Build githubmirror
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - golang
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project githubmirror . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "githubmirror/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/githubmirror $MIRROR_TARGET/$MIRROR_PATH/githubmirror
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/githubmirror
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  golink:
-    name: Build golink
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - golang
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project golink . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "golink/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/golink $MIRROR_TARGET/$MIRROR_PATH/golink
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/golink
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  goplum:
-    name: Build goplum
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - golang
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project goplum . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "goplum/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/goplum $MIRROR_TARGET/$MIRROR_PATH/goplum
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/goplum
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  httpredirect:
-    name: Build httpredirect
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - golang
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project httpredirect . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "httpredirect/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/httpredirect $MIRROR_TARGET/$MIRROR_PATH/httpredirect
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/httpredirect
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  identd:
-    name: Build identd
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - golang
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project identd . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "identd/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/identd $MIRROR_TARGET/$MIRROR_PATH/identd
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/identd
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  irc-bot:
-    name: Build irc-bot
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - golang
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-bot . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "irc-bot/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/irc-bot $MIRROR_TARGET/$MIRROR_PATH/irc-bot
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-bot
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  irc-distribution:
-    name: Build irc-distribution
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - golang
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-distribution . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "irc-distribution/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/irc-distribution $MIRROR_TARGET/$MIRROR_PATH/irc-distribution
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-distribution
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  irc-github:
-    name: Build irc-github
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - golang
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-github . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "irc-github/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/irc-github $MIRROR_TARGET/$MIRROR_PATH/irc-github
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-github
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  irc-goplum:
-    name: Build irc-goplum
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - golang
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-goplum . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "irc-goplum/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/irc-goplum $MIRROR_TARGET/$MIRROR_PATH/irc-goplum
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-goplum
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  irc-notifier:
-    name: Build irc-notifier
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - golang
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-notifier . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "irc-notifier/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/irc-notifier $MIRROR_TARGET/$MIRROR_PATH/irc-notifier
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-notifier
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  irc-webhook:
-    name: Build irc-webhook
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - golang
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-webhook . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "irc-webhook/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/irc-webhook $MIRROR_TARGET/$MIRROR_PATH/irc-webhook
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-webhook
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  legoergo:
-    name: Build legoergo
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - golang
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project legoergo . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "legoergo/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/legoergo $MIRROR_TARGET/$MIRROR_PATH/legoergo
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/legoergo
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  linx-server:
-    name: Build linx-server
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - golang
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project linx-server . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "linx-server/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/linx-server $MIRROR_TARGET/$MIRROR_PATH/linx-server
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/linx-server
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  miniflux:
-    name: Build miniflux
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - golang
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project miniflux . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "miniflux/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/miniflux $MIRROR_TARGET/$MIRROR_PATH/miniflux
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/miniflux
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  postgres-15:
-    name: Build postgres-15
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - alpine
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project postgres-15 . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "postgres-15/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/postgres-15 $MIRROR_TARGET/$MIRROR_PATH/postgres-15
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/postgres-15
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  puzzles:
-    name: Build puzzles
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - golang
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project puzzles . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "puzzles/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/puzzles $MIRROR_TARGET/$MIRROR_PATH/puzzles
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/puzzles
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  redis:
-    name: Build redis
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - alpine
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project redis . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "redis/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/redis $MIRROR_TARGET/$MIRROR_PATH/redis
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/redis
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  registryauth:
-    name: Build registryauth
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - golang
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project registryauth . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "registryauth/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/registryauth $MIRROR_TARGET/$MIRROR_PATH/registryauth
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/registryauth
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  soju:
-    name: Build soju
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - golang
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project soju . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "soju/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/soju $MIRROR_TARGET/$MIRROR_PATH/soju
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/soju
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  sws:
-    name: Build sws
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - rust
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project sws . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "sws/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/sws $MIRROR_TARGET/$MIRROR_PATH/sws
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/sws
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
-
-  tailscale:
-    name: Build tailscale
-    runs-on: ubuntu-latest
-    needs:
-        - setup-cache
-
-
-        - golang
-        - base
-
-
-    steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
-          REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project tailscale . .
-      - name: Check mirror
-        uses: andstor/file-existence-action@v3
-        id: check_mirror
-        with:
-          files: "tailscale/MIRROR"
-      - name: Check if image was built
-        if: steps.check_mirror.outputs.files_exists == 'true'
-        continue-on-error: true
-        id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
-      - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        run: |
-          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-      - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/tailscale $MIRROR_TARGET/$MIRROR_PATH/tailscale
-      - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
-
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/tailscale
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/webhooked
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
@@ -3141,14 +838,6 @@ jobs:
 
 
     steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
       - name: Get contempt version
         id: contempt
         uses: tdemin/find-latest-tag@v1
@@ -3226,8 +915,8 @@ jobs:
         with:
           tries: 5
 
-  webhooked:
-    name: Build webhooked
+  tailscale:
+    name: Build tailscale
     runs-on: ubuntu-latest
     needs:
         - setup-cache
@@ -3238,14 +927,6 @@ jobs:
 
 
     steps:
-      - name: Update buildah
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -p "*.deb" --repo greboid/buildah -O buildah.deb
-          sudo dpkg -i buildah.deb
-      - name: Check buildah
-        run: buildah version
       - name: Get contempt version
         id: contempt
         uses: tdemin/find-latest-tag@v1
@@ -3285,12 +966,12 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
 
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project webhooked . .
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project tailscale . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
         with:
-          files: "webhooked/MIRROR"
+          files: "tailscale/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
@@ -3308,7 +989,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah tag $REGISTRY/webhooked $MIRROR_TARGET/$MIRROR_PATH/webhooked
+        run: buildah tag $REGISTRY/tailscale $MIRROR_TARGET/$MIRROR_PATH/tailscale
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
 
@@ -3317,7 +998,2054 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
 
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/webhooked
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/tailscale
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  sws:
+    name: Build sws
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - rust
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project sws . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "sws/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/sws $MIRROR_TARGET/$MIRROR_PATH/sws
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/sws
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  soju:
+    name: Build soju
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - golang
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project soju . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "soju/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/soju $MIRROR_TARGET/$MIRROR_PATH/soju
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/soju
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  registryauth:
+    name: Build registryauth
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - golang
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project registryauth . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "registryauth/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/registryauth $MIRROR_TARGET/$MIRROR_PATH/registryauth
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/registryauth
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  redis:
+    name: Build redis
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - alpine
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project redis . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "redis/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/redis $MIRROR_TARGET/$MIRROR_PATH/redis
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/redis
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  puzzles:
+    name: Build puzzles
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - golang
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project puzzles . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "puzzles/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/puzzles $MIRROR_TARGET/$MIRROR_PATH/puzzles
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/puzzles
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  postgres-15:
+    name: Build postgres-15
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - alpine
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project postgres-15 . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "postgres-15/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/postgres-15 $MIRROR_TARGET/$MIRROR_PATH/postgres-15
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/postgres-15
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  miniflux:
+    name: Build miniflux
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - golang
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project miniflux . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "miniflux/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/miniflux $MIRROR_TARGET/$MIRROR_PATH/miniflux
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/miniflux
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  linx-server:
+    name: Build linx-server
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - golang
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project linx-server . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "linx-server/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/linx-server $MIRROR_TARGET/$MIRROR_PATH/linx-server
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/linx-server
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  legoergo:
+    name: Build legoergo
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - golang
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project legoergo . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "legoergo/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/legoergo $MIRROR_TARGET/$MIRROR_PATH/legoergo
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/legoergo
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  irc-webhook:
+    name: Build irc-webhook
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - golang
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-webhook . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "irc-webhook/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/irc-webhook $MIRROR_TARGET/$MIRROR_PATH/irc-webhook
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-webhook
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  irc-notifier:
+    name: Build irc-notifier
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - golang
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-notifier . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "irc-notifier/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/irc-notifier $MIRROR_TARGET/$MIRROR_PATH/irc-notifier
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-notifier
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  irc-goplum:
+    name: Build irc-goplum
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - golang
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-goplum . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "irc-goplum/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/irc-goplum $MIRROR_TARGET/$MIRROR_PATH/irc-goplum
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-goplum
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  irc-github:
+    name: Build irc-github
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - golang
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-github . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "irc-github/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/irc-github $MIRROR_TARGET/$MIRROR_PATH/irc-github
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-github
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  irc-distribution:
+    name: Build irc-distribution
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - golang
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-distribution . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "irc-distribution/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/irc-distribution $MIRROR_TARGET/$MIRROR_PATH/irc-distribution
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-distribution
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  irc-bot:
+    name: Build irc-bot
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - golang
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-bot . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "irc-bot/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/irc-bot $MIRROR_TARGET/$MIRROR_PATH/irc-bot
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-bot
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  identd:
+    name: Build identd
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - golang
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project identd . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "identd/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/identd $MIRROR_TARGET/$MIRROR_PATH/identd
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/identd
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  httpredirect:
+    name: Build httpredirect
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - golang
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project httpredirect . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "httpredirect/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/httpredirect $MIRROR_TARGET/$MIRROR_PATH/httpredirect
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/httpredirect
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  goplum:
+    name: Build goplum
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - golang
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project goplum . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "goplum/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/goplum $MIRROR_TARGET/$MIRROR_PATH/goplum
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/goplum
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  golink:
+    name: Build golink
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - golang
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project golink . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "golink/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/golink $MIRROR_TARGET/$MIRROR_PATH/golink
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/golink
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  githubmirror:
+    name: Build githubmirror
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - golang
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project githubmirror . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "githubmirror/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/githubmirror $MIRROR_TARGET/$MIRROR_PATH/githubmirror
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/githubmirror
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  dotege:
+    name: Build dotege
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - golang
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project dotege . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "dotege/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/dotege $MIRROR_TARGET/$MIRROR_PATH/dotege
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dotege
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  dockercleanup:
+    name: Build dockercleanup
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - golang
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project dockercleanup . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "dockercleanup/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/dockercleanup $MIRROR_TARGET/$MIRROR_PATH/dockercleanup
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dockercleanup
+      - name: Push changes
+        uses: cutlerydrawer/action-git-try-push@v2
+        with:
+          tries: 5
+
+  centauri:
+    name: Build centauri
+    runs-on: ubuntu-latest
+    needs:
+        - setup-cache
+
+
+        - golang
+        - base
+
+
+    steps:
+      - name: Get contempt version
+        id: contempt
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/csmith/contempt.git
+      - name: Get Paths
+        id: go-paths
+        run: |
+          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      - name: Go bin cache
+        id: bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.go-paths.outputs.go-path }}/bin
+          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Login to private registry
+        run: |
+          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
+      - name: Configure Git
+        uses: snow-actions/git-config-user@v1.0.0
+        with:
+          name: ${{ secrets.GIT_USERNAME }}
+          email: ${{ secrets.GIT_EMAIL }}
+      - name: Install contempt
+        if: steps.bin-cache.outputs.cache-hit != 'true'
+        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      - name: Update
+        env:
+          BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
+
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project centauri . .
+      - name: Check mirror
+        uses: andstor/file-existence-action@v3
+        id: check_mirror
+        with:
+          files: "centauri/MIRROR"
+      - name: Check if image was built
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        continue-on-error: true
+        id: check_mirror_exists
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+      - name: Login to mirror target registry
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        run: |
+          /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+      - name: Retag image to mirror
+        if: steps.check_mirror_exists.outputs.status == 'success'
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah tag $REGISTRY/centauri $MIRROR_TARGET/$MIRROR_PATH/centauri
+      - name: Mirror the image
+        if: steps.check_mirror_exists.outputs.status == 'success'
+
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          MIRROR_TARGET: ghcr.io
+          MIRROR_PATH: ${{ github.repository }}
+
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/centauri
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
