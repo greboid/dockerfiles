@@ -1,4 +1,3 @@
-
 on:
   workflow_dispatch:
   schedule:
@@ -33,14 +32,11 @@ jobs:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
 
-
   alpine:
     name: Build alpine
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -124,11 +120,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - alpine
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -212,12 +204,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - alpine
-        - alpine
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -301,11 +288,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - alpine
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -389,11 +372,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - alpine
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -477,11 +456,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - node
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -565,12 +540,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - baseroot
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -654,11 +625,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - baseroot
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -742,12 +709,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -831,12 +794,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -920,12 +879,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -1009,12 +964,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - rust
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -1098,12 +1049,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -1187,12 +1134,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -1276,12 +1219,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - alpine
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -1365,12 +1304,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -1454,12 +1389,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - alpine
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -1543,12 +1474,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -1632,12 +1559,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -1721,12 +1644,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -1810,12 +1729,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -1899,12 +1814,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -1988,12 +1899,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -2077,12 +1984,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -2166,12 +2069,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -2255,12 +2154,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -2344,12 +2239,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -2433,12 +2324,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -2522,12 +2409,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -2611,12 +2494,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -2700,12 +2579,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -2789,12 +2664,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -2878,12 +2749,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -2967,12 +2834,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-
-
         - golang
         - base
-
-
     steps:
       - name: Get contempt version
         id: contempt
@@ -3050,4 +2913,3 @@ jobs:
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
-
