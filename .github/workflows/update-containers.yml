@@ -207,7 +207,6 @@ jobs:
     needs:
         - setup-cache
         - alpine
-        - alpine
     steps:
       - name: Get contempt version
         id: contempt
