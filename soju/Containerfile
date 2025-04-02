@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/soju/Containerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.1.0-r2","apk:c-ares":"1.34.3-r0","apk:ca-certificates-bundle":"20241121-r1","apk:git":"2.47.2-r0","apk:libcrypto3":"3.3.3-r0","apk:libcurl":"8.12.1-r1","apk:libexpat":"2.7.0-r0","apk:libidn2":"2.3.7-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.3.3-r0","apk:libunistring":"1.2-r0","apk:musl":"1.2.5-r9","apk:nghttp2-libs":"1.64.0-r0","apk:patch":"2.7.6-r10","apk:pcre2":"10.43-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.6-r2","github:csmith/certwrapper":"v4.2.0","github:emersion/soju":"v0.9.0","image:base":"4df0ba1cc458e4537f8e4f1ffa8eff13a20d12355dfba47bcfc886bed2fb0607","image:golang":"ae31edbc7830bf7e4eec2769fa34f62985ef17c5ce9e5a9e4b15bc05c48f0598"}
+# BOM: {"apk:brotli-libs":"1.1.0-r2","apk:c-ares":"1.34.3-r0","apk:ca-certificates-bundle":"20241121-r1","apk:git":"2.47.2-r0","apk:libcrypto3":"3.3.3-r0","apk:libcurl":"8.12.1-r1","apk:libexpat":"2.7.0-r0","apk:libidn2":"2.3.7-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.3.3-r0","apk:libunistring":"1.2-r0","apk:musl":"1.2.5-r9","apk:nghttp2-libs":"1.64.0-r0","apk:patch":"2.7.6-r10","apk:pcre2":"10.43-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.6-r2","github:csmith/certwrapper":"v4.2.0","github:emersion/soju":"v0.9.0","image:base":"4df0ba1cc458e4537f8e4f1ffa8eff13a20d12355dfba47bcfc886bed2fb0607","image:golang":"7499781bf7037e70bd5fea1886372f878546aaba24ad05b8c98208573ee8063a"}
 
-FROM reg.g5d.dev/golang@sha256:ae31edbc7830bf7e4eec2769fa34f62985ef17c5ce9e5a9e4b15bc05c48f0598 AS build
+FROM reg.g5d.dev/golang@sha256:7499781bf7037e70bd5fea1886372f878546aaba24ad05b8c98208573ee8063a AS build
 
 ARG SOJUTAG="v0.9.0"
 ARG CERTTAG="v4.2.0"
