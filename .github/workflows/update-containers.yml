@@ -32,9 +32,7 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-
-
-  alpine:
+alpine:
     name: Build alpine
     runs-on: ubuntu-latest
     needs:
@@ -78,8 +76,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project alpine . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project alpine . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -92,7 +89,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -101,28 +97,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/alpine $MIRROR_TARGET/$MIRROR_PATH/alpine
+run: buildah tag $REGISTRY/alpine $MIRROR_TARGET/$MIRROR_PATH/alpine
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/alpine
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/alpine
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  rust:
+          tries: 5rust:
     name: Build rust
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - alpine
+        - setup-cache- alpine
     steps:
       - name: Get contempt version
         id: contempt
@@ -162,8 +152,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project rust . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project rust . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -176,7 +165,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -185,28 +173,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/rust $MIRROR_TARGET/$MIRROR_PATH/rust
+run: buildah tag $REGISTRY/rust $MIRROR_TARGET/$MIRROR_PATH/rust
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/rust
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/rust
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  node:
+          tries: 5node:
     name: Build node
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - alpine
+        - setup-cache- alpine
     steps:
       - name: Get contempt version
         id: contempt
@@ -246,8 +228,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project node . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project node . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -260,7 +241,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -269,28 +249,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/node $MIRROR_TARGET/$MIRROR_PATH/node
+run: buildah tag $REGISTRY/node $MIRROR_TARGET/$MIRROR_PATH/node
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/node
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/node
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  golang:
+          tries: 5golang:
     name: Build golang
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - alpine
+        - setup-cache- alpine
     steps:
       - name: Get contempt version
         id: contempt
@@ -330,8 +304,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project golang . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project golang . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -344,7 +317,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -353,28 +325,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/golang $MIRROR_TARGET/$MIRROR_PATH/golang
+run: buildah tag $REGISTRY/golang $MIRROR_TARGET/$MIRROR_PATH/golang
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/golang
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/golang
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  baseroot:
+          tries: 5baseroot:
     name: Build baseroot
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - alpine
+        - setup-cache- alpine
     steps:
       - name: Get contempt version
         id: contempt
@@ -414,8 +380,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project baseroot . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project baseroot . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -428,7 +393,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -437,28 +401,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/baseroot $MIRROR_TARGET/$MIRROR_PATH/baseroot
+run: buildah tag $REGISTRY/baseroot $MIRROR_TARGET/$MIRROR_PATH/baseroot
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/baseroot
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/baseroot
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  thelounge:
+          tries: 5thelounge:
     name: Build thelounge
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - node
+        - setup-cache- node
     steps:
       - name: Get contempt version
         id: contempt
@@ -498,8 +456,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project thelounge . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project thelounge . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -512,7 +469,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -521,29 +477,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/thelounge $MIRROR_TARGET/$MIRROR_PATH/thelounge
+run: buildah tag $REGISTRY/thelounge $MIRROR_TARGET/$MIRROR_PATH/thelounge
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/thelounge
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/thelounge
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  dsp:
+          tries: 5dsp:
     name: Build dsp
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - baseroot
+        - setup-cache- baseroot- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -583,8 +532,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project dsp . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project dsp . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -597,7 +545,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -606,28 +553,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/dsp $MIRROR_TARGET/$MIRROR_PATH/dsp
+run: buildah tag $REGISTRY/dsp $MIRROR_TARGET/$MIRROR_PATH/dsp
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dsp
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dsp
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  base:
+          tries: 5base:
     name: Build base
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - baseroot
+        - setup-cache- baseroot
     steps:
       - name: Get contempt version
         id: contempt
@@ -667,8 +608,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project base . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project base . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -681,7 +621,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -690,29 +629,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/base $MIRROR_TARGET/$MIRROR_PATH/base
+run: buildah tag $REGISTRY/base $MIRROR_TARGET/$MIRROR_PATH/base
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/base
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/base
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  webhooked:
+          tries: 5webhooked:
     name: Build webhooked
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -752,8 +684,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project webhooked . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project webhooked . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -766,7 +697,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -775,29 +705,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/webhooked $MIRROR_TARGET/$MIRROR_PATH/webhooked
+run: buildah tag $REGISTRY/webhooked $MIRROR_TARGET/$MIRROR_PATH/webhooked
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/webhooked
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/webhooked
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  watchtower:
+          tries: 5watchtower:
     name: Build watchtower
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -837,8 +760,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project watchtower . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project watchtower . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -851,7 +773,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -860,29 +781,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/watchtower $MIRROR_TARGET/$MIRROR_PATH/watchtower
+run: buildah tag $REGISTRY/watchtower $MIRROR_TARGET/$MIRROR_PATH/watchtower
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/watchtower
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/watchtower
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  tailscale:
+          tries: 5tailscale:
     name: Build tailscale
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -922,8 +836,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project tailscale . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project tailscale . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -936,7 +849,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -945,29 +857,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/tailscale $MIRROR_TARGET/$MIRROR_PATH/tailscale
+run: buildah tag $REGISTRY/tailscale $MIRROR_TARGET/$MIRROR_PATH/tailscale
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/tailscale
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/tailscale
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  sws:
+          tries: 5sws:
     name: Build sws
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - rust
-        - base
+        - setup-cache- base- rust
     steps:
       - name: Get contempt version
         id: contempt
@@ -1007,8 +912,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project sws . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project sws . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -1021,7 +925,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -1030,29 +933,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/sws $MIRROR_TARGET/$MIRROR_PATH/sws
+run: buildah tag $REGISTRY/sws $MIRROR_TARGET/$MIRROR_PATH/sws
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/sws
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/sws
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  soju:
+          tries: 5soju:
     name: Build soju
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -1092,8 +988,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project soju . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project soju . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -1106,7 +1001,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -1115,29 +1009,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/soju $MIRROR_TARGET/$MIRROR_PATH/soju
+run: buildah tag $REGISTRY/soju $MIRROR_TARGET/$MIRROR_PATH/soju
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/soju
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/soju
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  registryauth:
+          tries: 5registryauth:
     name: Build registryauth
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -1177,8 +1064,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project registryauth . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project registryauth . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -1191,7 +1077,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -1200,29 +1085,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/registryauth $MIRROR_TARGET/$MIRROR_PATH/registryauth
+run: buildah tag $REGISTRY/registryauth $MIRROR_TARGET/$MIRROR_PATH/registryauth
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/registryauth
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/registryauth
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  redis:
+          tries: 5redis:
     name: Build redis
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - alpine
-        - base
+        - setup-cache- alpine- base
     steps:
       - name: Get contempt version
         id: contempt
@@ -1262,8 +1140,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project redis . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project redis . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -1276,7 +1153,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -1285,29 +1161,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/redis $MIRROR_TARGET/$MIRROR_PATH/redis
+run: buildah tag $REGISTRY/redis $MIRROR_TARGET/$MIRROR_PATH/redis
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/redis
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/redis
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  puzzles:
+          tries: 5puzzles:
     name: Build puzzles
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -1347,8 +1216,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project puzzles . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project puzzles . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -1361,7 +1229,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -1370,29 +1237,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/puzzles $MIRROR_TARGET/$MIRROR_PATH/puzzles
+run: buildah tag $REGISTRY/puzzles $MIRROR_TARGET/$MIRROR_PATH/puzzles
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/puzzles
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/puzzles
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  postgres-15:
+          tries: 5postgres-15:
     name: Build postgres-15
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - alpine
-        - base
+        - setup-cache- alpine- base
     steps:
       - name: Get contempt version
         id: contempt
@@ -1432,8 +1292,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project postgres-15 . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project postgres-15 . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -1446,7 +1305,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -1455,29 +1313,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/postgres-15 $MIRROR_TARGET/$MIRROR_PATH/postgres-15
+run: buildah tag $REGISTRY/postgres-15 $MIRROR_TARGET/$MIRROR_PATH/postgres-15
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/postgres-15
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/postgres-15
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  miniflux:
+          tries: 5miniflux:
     name: Build miniflux
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -1517,8 +1368,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project miniflux . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project miniflux . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -1531,7 +1381,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -1540,29 +1389,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/miniflux $MIRROR_TARGET/$MIRROR_PATH/miniflux
+run: buildah tag $REGISTRY/miniflux $MIRROR_TARGET/$MIRROR_PATH/miniflux
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/miniflux
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/miniflux
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  linx-server:
+          tries: 5linx-server:
     name: Build linx-server
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -1602,8 +1444,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project linx-server . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project linx-server . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -1616,7 +1457,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -1625,29 +1465,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/linx-server $MIRROR_TARGET/$MIRROR_PATH/linx-server
+run: buildah tag $REGISTRY/linx-server $MIRROR_TARGET/$MIRROR_PATH/linx-server
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/linx-server
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/linx-server
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  legoergo:
+          tries: 5legoergo:
     name: Build legoergo
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -1687,8 +1520,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project legoergo . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project legoergo . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -1701,7 +1533,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -1710,29 +1541,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/legoergo $MIRROR_TARGET/$MIRROR_PATH/legoergo
+run: buildah tag $REGISTRY/legoergo $MIRROR_TARGET/$MIRROR_PATH/legoergo
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/legoergo
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/legoergo
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  irc-webhook:
+          tries: 5irc-webhook:
     name: Build irc-webhook
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -1772,8 +1596,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-webhook . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-webhook . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -1786,7 +1609,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -1795,29 +1617,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/irc-webhook $MIRROR_TARGET/$MIRROR_PATH/irc-webhook
+run: buildah tag $REGISTRY/irc-webhook $MIRROR_TARGET/$MIRROR_PATH/irc-webhook
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-webhook
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-webhook
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  irc-notifier:
+          tries: 5irc-notifier:
     name: Build irc-notifier
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -1857,8 +1672,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-notifier . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-notifier . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -1871,7 +1685,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -1880,29 +1693,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/irc-notifier $MIRROR_TARGET/$MIRROR_PATH/irc-notifier
+run: buildah tag $REGISTRY/irc-notifier $MIRROR_TARGET/$MIRROR_PATH/irc-notifier
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-notifier
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-notifier
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  irc-goplum:
+          tries: 5irc-goplum:
     name: Build irc-goplum
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -1942,8 +1748,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-goplum . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-goplum . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -1956,7 +1761,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -1965,29 +1769,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/irc-goplum $MIRROR_TARGET/$MIRROR_PATH/irc-goplum
+run: buildah tag $REGISTRY/irc-goplum $MIRROR_TARGET/$MIRROR_PATH/irc-goplum
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-goplum
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-goplum
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  irc-github:
+          tries: 5irc-github:
     name: Build irc-github
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -2027,8 +1824,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-github . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-github . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -2041,7 +1837,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -2050,29 +1845,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/irc-github $MIRROR_TARGET/$MIRROR_PATH/irc-github
+run: buildah tag $REGISTRY/irc-github $MIRROR_TARGET/$MIRROR_PATH/irc-github
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-github
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-github
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  irc-distribution:
+          tries: 5irc-distribution:
     name: Build irc-distribution
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -2112,8 +1900,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-distribution . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-distribution . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -2126,7 +1913,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -2135,29 +1921,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/irc-distribution $MIRROR_TARGET/$MIRROR_PATH/irc-distribution
+run: buildah tag $REGISTRY/irc-distribution $MIRROR_TARGET/$MIRROR_PATH/irc-distribution
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-distribution
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-distribution
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  irc-bot:
+          tries: 5irc-bot:
     name: Build irc-bot
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -2197,8 +1976,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-bot . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-bot . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -2211,7 +1989,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -2220,29 +1997,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/irc-bot $MIRROR_TARGET/$MIRROR_PATH/irc-bot
+run: buildah tag $REGISTRY/irc-bot $MIRROR_TARGET/$MIRROR_PATH/irc-bot
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-bot
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-bot
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  identd:
+          tries: 5identd:
     name: Build identd
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -2282,8 +2052,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project identd . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project identd . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -2296,7 +2065,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -2305,29 +2073,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/identd $MIRROR_TARGET/$MIRROR_PATH/identd
+run: buildah tag $REGISTRY/identd $MIRROR_TARGET/$MIRROR_PATH/identd
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/identd
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/identd
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  httpredirect:
+          tries: 5httpredirect:
     name: Build httpredirect
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -2367,8 +2128,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project httpredirect . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project httpredirect . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -2381,7 +2141,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -2390,29 +2149,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/httpredirect $MIRROR_TARGET/$MIRROR_PATH/httpredirect
+run: buildah tag $REGISTRY/httpredirect $MIRROR_TARGET/$MIRROR_PATH/httpredirect
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/httpredirect
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/httpredirect
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  goplum:
+          tries: 5goplum:
     name: Build goplum
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -2452,8 +2204,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project goplum . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project goplum . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -2466,7 +2217,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -2475,29 +2225,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/goplum $MIRROR_TARGET/$MIRROR_PATH/goplum
+run: buildah tag $REGISTRY/goplum $MIRROR_TARGET/$MIRROR_PATH/goplum
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/goplum
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/goplum
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  golink:
+          tries: 5golink:
     name: Build golink
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -2537,8 +2280,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project golink . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project golink . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -2551,7 +2293,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -2560,29 +2301,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/golink $MIRROR_TARGET/$MIRROR_PATH/golink
+run: buildah tag $REGISTRY/golink $MIRROR_TARGET/$MIRROR_PATH/golink
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/golink
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/golink
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  githubmirror:
+          tries: 5githubmirror:
     name: Build githubmirror
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -2622,8 +2356,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project githubmirror . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project githubmirror . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -2636,7 +2369,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -2645,29 +2377,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/githubmirror $MIRROR_TARGET/$MIRROR_PATH/githubmirror
+run: buildah tag $REGISTRY/githubmirror $MIRROR_TARGET/$MIRROR_PATH/githubmirror
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/githubmirror
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/githubmirror
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  dotege:
+          tries: 5dotege:
     name: Build dotege
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -2707,8 +2432,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project dotege . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project dotege . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -2721,7 +2445,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -2730,29 +2453,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/dotege $MIRROR_TARGET/$MIRROR_PATH/dotege
+run: buildah tag $REGISTRY/dotege $MIRROR_TARGET/$MIRROR_PATH/dotege
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dotege
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dotege
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  dockercleanup:
+          tries: 5dockercleanup:
     name: Build dockercleanup
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -2792,8 +2508,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project dockercleanup . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project dockercleanup . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -2806,7 +2521,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -2815,29 +2529,22 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/dockercleanup $MIRROR_TARGET/$MIRROR_PATH/dockercleanup
+run: buildah tag $REGISTRY/dockercleanup $MIRROR_TARGET/$MIRROR_PATH/dockercleanup
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dockercleanup
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dockercleanup
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5
-
-  centauri:
+          tries: 5centauri:
     name: Build centauri
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-        - golang
-        - base
+        - setup-cache- base- golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -2877,8 +2584,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project centauri . .
+run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project centauri . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
@@ -2891,7 +2597,6 @@ jobs:
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
@@ -2900,17 +2605,14 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah tag $REGISTRY/centauri $MIRROR_TARGET/$MIRROR_PATH/centauri
+run: buildah tag $REGISTRY/centauri $MIRROR_TARGET/$MIRROR_PATH/centauri
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
-
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-
-        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/centauri
+run: buildah push $MIRROR_TARGET/$MIRROR_PATH/centauri
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
