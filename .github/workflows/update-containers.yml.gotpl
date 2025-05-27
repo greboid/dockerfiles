@@ -84,7 +84,7 @@ jobs:
           BUILDAH_ISOLATION: chroot
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-{%- endraw -%}
+        {%- endraw -%}
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project {{ target.name }} . .
       - name: Check mirror
         uses: andstor/file-existence-action@v3
