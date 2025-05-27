@@ -32,7 +32,8 @@ jobs:
         with:
           path: ${{ steps.go-paths.outputs.go-path }}/bin
           key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-alpine:
+  
+  alpine:
     name: Build alpine
     runs-on: ubuntu-latest
     needs:
@@ -97,22 +98,25 @@ alpine:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/alpine $MIRROR_TARGET/$MIRROR_PATH/alpine
+        run: buildah tag $REGISTRY/alpine $MIRROR_TARGET/$MIRROR_PATH/alpine
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/alpine
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/alpine
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5rust:
+          tries: 5
+
+  rust:
     name: Build rust
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- alpine
+        - setup-cache
+        - alpine
     steps:
       - name: Get contempt version
         id: contempt
@@ -173,22 +177,25 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/alpine
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/rust $MIRROR_TARGET/$MIRROR_PATH/rust
+        run: buildah tag $REGISTRY/rust $MIRROR_TARGET/$MIRROR_PATH/rust
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/rust
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/rust
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5node:
+          tries: 5
+
+  node:
     name: Build node
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- alpine
+        - setup-cache
+        - alpine
     steps:
       - name: Get contempt version
         id: contempt
@@ -249,22 +256,25 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/rust
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/node $MIRROR_TARGET/$MIRROR_PATH/node
+        run: buildah tag $REGISTRY/node $MIRROR_TARGET/$MIRROR_PATH/node
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/node
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/node
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5golang:
+          tries: 5
+
+  golang:
     name: Build golang
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- alpine
+        - setup-cache
+        - alpine
     steps:
       - name: Get contempt version
         id: contempt
@@ -325,22 +335,25 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/node
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/golang $MIRROR_TARGET/$MIRROR_PATH/golang
+        run: buildah tag $REGISTRY/golang $MIRROR_TARGET/$MIRROR_PATH/golang
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/golang
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/golang
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5baseroot:
+          tries: 5
+
+  baseroot:
     name: Build baseroot
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- alpine
+        - setup-cache
+        - alpine
     steps:
       - name: Get contempt version
         id: contempt
@@ -401,22 +414,25 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/golang
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/baseroot $MIRROR_TARGET/$MIRROR_PATH/baseroot
+        run: buildah tag $REGISTRY/baseroot $MIRROR_TARGET/$MIRROR_PATH/baseroot
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/baseroot
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/baseroot
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5thelounge:
+          tries: 5
+
+  thelounge:
     name: Build thelounge
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- node
+        - setup-cache
+        - node
     steps:
       - name: Get contempt version
         id: contempt
@@ -477,22 +493,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/baseroot
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/thelounge $MIRROR_TARGET/$MIRROR_PATH/thelounge
+        run: buildah tag $REGISTRY/thelounge $MIRROR_TARGET/$MIRROR_PATH/thelounge
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/thelounge
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/thelounge
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5dsp:
+          tries: 5
+
+  dsp:
     name: Build dsp
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- baseroot- golang
+        - setup-cache
+        - baseroot
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -553,22 +573,25 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/thelounge
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/dsp $MIRROR_TARGET/$MIRROR_PATH/dsp
+        run: buildah tag $REGISTRY/dsp $MIRROR_TARGET/$MIRROR_PATH/dsp
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dsp
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dsp
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5base:
+          tries: 5
+
+  base:
     name: Build base
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- baseroot
+        - setup-cache
+        - baseroot
     steps:
       - name: Get contempt version
         id: contempt
@@ -629,22 +652,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dsp
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/base $MIRROR_TARGET/$MIRROR_PATH/base
+        run: buildah tag $REGISTRY/base $MIRROR_TARGET/$MIRROR_PATH/base
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/base
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/base
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5webhooked:
+          tries: 5
+
+  webhooked:
     name: Build webhooked
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -705,22 +732,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/base
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/webhooked $MIRROR_TARGET/$MIRROR_PATH/webhooked
+        run: buildah tag $REGISTRY/webhooked $MIRROR_TARGET/$MIRROR_PATH/webhooked
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/webhooked
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/webhooked
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5watchtower:
+          tries: 5
+
+  watchtower:
     name: Build watchtower
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -781,22 +812,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/webhooked
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/watchtower $MIRROR_TARGET/$MIRROR_PATH/watchtower
+        run: buildah tag $REGISTRY/watchtower $MIRROR_TARGET/$MIRROR_PATH/watchtower
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/watchtower
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/watchtower
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5tailscale:
+          tries: 5
+
+  tailscale:
     name: Build tailscale
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -857,22 +892,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/watchtower
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/tailscale $MIRROR_TARGET/$MIRROR_PATH/tailscale
+        run: buildah tag $REGISTRY/tailscale $MIRROR_TARGET/$MIRROR_PATH/tailscale
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/tailscale
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/tailscale
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5sws:
+          tries: 5
+
+  sws:
     name: Build sws
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- rust
+        - setup-cache
+        - base
+        - rust
     steps:
       - name: Get contempt version
         id: contempt
@@ -933,22 +972,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/tailscale
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/sws $MIRROR_TARGET/$MIRROR_PATH/sws
+        run: buildah tag $REGISTRY/sws $MIRROR_TARGET/$MIRROR_PATH/sws
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/sws
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/sws
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5soju:
+          tries: 5
+
+  soju:
     name: Build soju
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -1009,22 +1052,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/sws
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/soju $MIRROR_TARGET/$MIRROR_PATH/soju
+        run: buildah tag $REGISTRY/soju $MIRROR_TARGET/$MIRROR_PATH/soju
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/soju
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/soju
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5registryauth:
+          tries: 5
+
+  registryauth:
     name: Build registryauth
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -1085,22 +1132,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/soju
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/registryauth $MIRROR_TARGET/$MIRROR_PATH/registryauth
+        run: buildah tag $REGISTRY/registryauth $MIRROR_TARGET/$MIRROR_PATH/registryauth
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/registryauth
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/registryauth
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5redis:
+          tries: 5
+
+  redis:
     name: Build redis
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- alpine- base
+        - setup-cache
+        - alpine
+        - base
     steps:
       - name: Get contempt version
         id: contempt
@@ -1161,22 +1212,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/registryauth
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/redis $MIRROR_TARGET/$MIRROR_PATH/redis
+        run: buildah tag $REGISTRY/redis $MIRROR_TARGET/$MIRROR_PATH/redis
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/redis
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/redis
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5puzzles:
+          tries: 5
+
+  puzzles:
     name: Build puzzles
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -1237,22 +1292,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/redis
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/puzzles $MIRROR_TARGET/$MIRROR_PATH/puzzles
+        run: buildah tag $REGISTRY/puzzles $MIRROR_TARGET/$MIRROR_PATH/puzzles
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/puzzles
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/puzzles
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5postgres-15:
+          tries: 5
+
+  postgres-15:
     name: Build postgres-15
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- alpine- base
+        - setup-cache
+        - alpine
+        - base
     steps:
       - name: Get contempt version
         id: contempt
@@ -1313,22 +1372,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/puzzles
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/postgres-15 $MIRROR_TARGET/$MIRROR_PATH/postgres-15
+        run: buildah tag $REGISTRY/postgres-15 $MIRROR_TARGET/$MIRROR_PATH/postgres-15
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/postgres-15
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/postgres-15
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5miniflux:
+          tries: 5
+
+  miniflux:
     name: Build miniflux
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -1389,22 +1452,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/postgres-15
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/miniflux $MIRROR_TARGET/$MIRROR_PATH/miniflux
+        run: buildah tag $REGISTRY/miniflux $MIRROR_TARGET/$MIRROR_PATH/miniflux
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/miniflux
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/miniflux
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5linx-server:
+          tries: 5
+
+  linx-server:
     name: Build linx-server
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -1465,22 +1532,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/miniflux
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/linx-server $MIRROR_TARGET/$MIRROR_PATH/linx-server
+        run: buildah tag $REGISTRY/linx-server $MIRROR_TARGET/$MIRROR_PATH/linx-server
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/linx-server
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/linx-server
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5legoergo:
+          tries: 5
+
+  legoergo:
     name: Build legoergo
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -1541,22 +1612,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/linx-server
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/legoergo $MIRROR_TARGET/$MIRROR_PATH/legoergo
+        run: buildah tag $REGISTRY/legoergo $MIRROR_TARGET/$MIRROR_PATH/legoergo
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/legoergo
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/legoergo
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5irc-webhook:
+          tries: 5
+
+  irc-webhook:
     name: Build irc-webhook
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -1617,22 +1692,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/legoergo
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/irc-webhook $MIRROR_TARGET/$MIRROR_PATH/irc-webhook
+        run: buildah tag $REGISTRY/irc-webhook $MIRROR_TARGET/$MIRROR_PATH/irc-webhook
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-webhook
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-webhook
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5irc-notifier:
+          tries: 5
+
+  irc-notifier:
     name: Build irc-notifier
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -1693,22 +1772,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-webhook
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/irc-notifier $MIRROR_TARGET/$MIRROR_PATH/irc-notifier
+        run: buildah tag $REGISTRY/irc-notifier $MIRROR_TARGET/$MIRROR_PATH/irc-notifier
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-notifier
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-notifier
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5irc-goplum:
+          tries: 5
+
+  irc-goplum:
     name: Build irc-goplum
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -1769,22 +1852,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-notifier
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/irc-goplum $MIRROR_TARGET/$MIRROR_PATH/irc-goplum
+        run: buildah tag $REGISTRY/irc-goplum $MIRROR_TARGET/$MIRROR_PATH/irc-goplum
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-goplum
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-goplum
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5irc-github:
+          tries: 5
+
+  irc-github:
     name: Build irc-github
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -1845,22 +1932,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-goplum
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/irc-github $MIRROR_TARGET/$MIRROR_PATH/irc-github
+        run: buildah tag $REGISTRY/irc-github $MIRROR_TARGET/$MIRROR_PATH/irc-github
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-github
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-github
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5irc-distribution:
+          tries: 5
+
+  irc-distribution:
     name: Build irc-distribution
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -1921,22 +2012,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-github
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/irc-distribution $MIRROR_TARGET/$MIRROR_PATH/irc-distribution
+        run: buildah tag $REGISTRY/irc-distribution $MIRROR_TARGET/$MIRROR_PATH/irc-distribution
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-distribution
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-distribution
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5irc-bot:
+          tries: 5
+
+  irc-bot:
     name: Build irc-bot
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -1997,22 +2092,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-distribution
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/irc-bot $MIRROR_TARGET/$MIRROR_PATH/irc-bot
+        run: buildah tag $REGISTRY/irc-bot $MIRROR_TARGET/$MIRROR_PATH/irc-bot
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-bot
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-bot
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5identd:
+          tries: 5
+
+  identd:
     name: Build identd
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -2073,22 +2172,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-bot
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/identd $MIRROR_TARGET/$MIRROR_PATH/identd
+        run: buildah tag $REGISTRY/identd $MIRROR_TARGET/$MIRROR_PATH/identd
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/identd
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/identd
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5httpredirect:
+          tries: 5
+
+  httpredirect:
     name: Build httpredirect
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -2149,22 +2252,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/identd
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/httpredirect $MIRROR_TARGET/$MIRROR_PATH/httpredirect
+        run: buildah tag $REGISTRY/httpredirect $MIRROR_TARGET/$MIRROR_PATH/httpredirect
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/httpredirect
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/httpredirect
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5goplum:
+          tries: 5
+
+  goplum:
     name: Build goplum
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -2225,22 +2332,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/httpredirect
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/goplum $MIRROR_TARGET/$MIRROR_PATH/goplum
+        run: buildah tag $REGISTRY/goplum $MIRROR_TARGET/$MIRROR_PATH/goplum
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/goplum
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/goplum
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5golink:
+          tries: 5
+
+  golink:
     name: Build golink
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -2301,22 +2412,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/goplum
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/golink $MIRROR_TARGET/$MIRROR_PATH/golink
+        run: buildah tag $REGISTRY/golink $MIRROR_TARGET/$MIRROR_PATH/golink
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/golink
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/golink
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5githubmirror:
+          tries: 5
+
+  githubmirror:
     name: Build githubmirror
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -2377,22 +2492,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/golink
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/githubmirror $MIRROR_TARGET/$MIRROR_PATH/githubmirror
+        run: buildah tag $REGISTRY/githubmirror $MIRROR_TARGET/$MIRROR_PATH/githubmirror
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/githubmirror
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/githubmirror
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5dotege:
+          tries: 5
+
+  dotege:
     name: Build dotege
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -2453,22 +2572,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/githubmirror
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/dotege $MIRROR_TARGET/$MIRROR_PATH/dotege
+        run: buildah tag $REGISTRY/dotege $MIRROR_TARGET/$MIRROR_PATH/dotege
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dotege
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dotege
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5dockercleanup:
+          tries: 5
+
+  dockercleanup:
     name: Build dockercleanup
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -2529,22 +2652,26 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dotege
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/dockercleanup $MIRROR_TARGET/$MIRROR_PATH/dockercleanup
+        run: buildah tag $REGISTRY/dockercleanup $MIRROR_TARGET/$MIRROR_PATH/dockercleanup
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dockercleanup
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dockercleanup
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
-          tries: 5centauri:
+          tries: 5
+
+  centauri:
     name: Build centauri
     runs-on: ubuntu-latest
     needs:
-        - setup-cache- base- golang
+        - setup-cache
+        - base
+        - golang
     steps:
       - name: Get contempt version
         id: contempt
@@ -2605,15 +2732,16 @@ run: buildah push $MIRROR_TARGET/$MIRROR_PATH/dockercleanup
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah tag $REGISTRY/centauri $MIRROR_TARGET/$MIRROR_PATH/centauri
+        run: buildah tag $REGISTRY/centauri $MIRROR_TARGET/$MIRROR_PATH/centauri
       - name: Mirror the image
         if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
-run: buildah push $MIRROR_TARGET/$MIRROR_PATH/centauri
+        run: buildah push $MIRROR_TARGET/$MIRROR_PATH/centauri
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
+
