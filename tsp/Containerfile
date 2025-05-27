@@ -1,0 +1,41 @@
+# Generated from https://github.com/greboid/dockerfiles/blob/master/tsp/Containerfile.gotpl
+# BOM: {"apk:brotli-libs":"1.1.0-r2","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20241121-r1","apk:git":"2.47.2-r0","apk:libcrypto3":"3.3.3-r0","apk:libcurl":"8.12.1-r1","apk:libexpat":"2.7.0-r0","apk:libidn2":"2.3.7-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.3.3-r0","apk:libunistring":"1.2-r0","apk:musl":"1.2.5-r9","apk:nghttp2-libs":"1.64.0-r0","apk:pcre2":"10.43-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.6-r2","github:csmith/tsp":"v1.1.0","image:base":"4df0ba1cc458e4537f8e4f1ffa8eff13a20d12355dfba47bcfc886bed2fb0607","image:golang":"adfeb5d17cc83d91fd95d60fb42873735c07ace4cd4a2d0eccae49491e453bac"}
+
+FROM reg.g5d.dev/golang@sha256:adfeb5d17cc83d91fd95d60fb42873735c07ace4cd4a2d0eccae49491e453bac AS build
+
+ARG REPO="csmith/tsp"
+ARG TAG="v1.1.0"
+
+RUN set -eux; \
+    apk add --no-cache \
+        brotli-libs=1.1.0-r2\
+        c-ares=1.34.5-r0\
+        ca-certificates-bundle=20241121-r1\
+        git=2.47.2-r0\
+        libcrypto3=3.3.3-r0\
+        libcurl=8.12.1-r1\
+        libexpat=2.7.0-r0\
+        libidn2=2.3.7-r0\
+        libpsl=0.21.5-r3\
+        libssl3=3.3.3-r0\
+        libunistring=1.2-r0\
+        musl=1.2.5-r9\
+        nghttp2-libs=1.64.0-r0\
+        pcre2=10.43-r0\
+        zlib=1.3.1-r2\
+        zstd-libs=1.5.6-r2\
+        ; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/$REPO /src; \
+    cd /src; \
+    GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
+    chmod +x /src/main; \
+    mkdir -p /rootfs/home/nonroot/.config; \
+    mkdir -p /rootfs/config; \
+    mv /src/main /rootfs/tsp
+
+FROM reg.g5d.dev/base@sha256:4df0ba1cc458e4537f8e4f1ffa8eff13a20d12355dfba47bcfc886bed2fb0607
+
+COPY --from=build --chown=65532:65532 /rootfs/ /
+EXPOSE 8080
+EXPOSE 8443
+ENTRYPOINT ["/tsp"]
