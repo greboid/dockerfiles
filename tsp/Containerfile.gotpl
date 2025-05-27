@@ -1,0 +1,24 @@
+FROM {{image "golang"}} AS build
+
+ARG REPO="csmith/tsp"
+ARG TAG="{{github_tag "csmith/tsp"}}"
+
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "git" -}}
+        {{$key}}={{$value}}\
+        {{end}}; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/$REPO /src; \
+    cd /src; \
+    GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
+    chmod +x /src/main; \
+    mkdir -p /rootfs/home/nonroot/.config; \
+    mkdir -p /rootfs/config; \
+    mv /src/main /rootfs/tsp
+
+FROM {{image "base"}}
+
+COPY --from=build --chown=65532:65532 /rootfs/ /
+EXPOSE 8080
+EXPOSE 8443
+ENTRYPOINT ["/tsp"]
