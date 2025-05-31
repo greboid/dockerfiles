@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/postgres-15/Containerfile.gotpl
-# BOM: {"apk:acl-libs":"2.3.2-r1","apk:bash":"5.2.37-r0","apk:binutils":"2.43.1-r2","apk:brotli-libs":"1.1.0-r2","apk:busybox":"1.37.0-r12","apk:busybox-binsh":"1.37.0-r12","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20241121-r1","apk:curl":"8.12.1-r1","apk:g++":"14.2.0-r4","apk:gcc":"14.2.0-r4","apk:git":"2.47.2-r0","apk:gmp":"6.3.0-r2","apk:isl25":"0.25-r2","apk:jansson":"2.14-r4","apk:libatomic":"14.2.0-r4","apk:libcrypto3":"3.3.3-r0","apk:libcurl":"8.12.1-r1","apk:libexpat":"2.7.0-r0","apk:libformw":"6.5_p20241006-r3","apk:libgcc":"14.2.0-r4","apk:libgomp":"14.2.0-r4","apk:libhistory":"8.2.13-r0","apk:libidn2":"2.3.7-r0","apk:libintl":"0.22.5-r0","apk:libmenuw":"6.5_p20241006-r3","apk:libncurses++":"6.5_p20241006-r3","apk:libncursesw":"6.5_p20241006-r3","apk:libpanelw":"6.5_p20241006-r3","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.3.3-r0","apk:libstdc++":"14.2.0-r4","apk:libstdc++-dev":"14.2.0-r4","apk:libunistring":"1.2-r0","apk:libxxhash":"0.8.2-r2","apk:linux-headers":"6.6-r1","apk:lz4-libs":"1.10.0-r0","apk:make":"4.4.1-r2","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.1-r0","apk:musl":"1.2.5-r9","apk:musl-dev":"1.2.5-r9","apk:musl-locales":"0.1.0-r1","apk:ncurses-dev":"6.5_p20241006-r3","apk:ncurses-terminfo-base":"6.5_p20241006-r3","apk:nghttp2-libs":"1.64.0-r0","apk:openssl-dev":"3.3.3-r0","apk:pcre2":"10.43-r0","apk:pkgconf":"2.3.0-r0","apk:popt":"1.19-r4","apk:readline":"8.2.13-r0","apk:readline-dev":"8.2.13-r0","apk:rsync":"3.4.0-r0","apk:scanelf":"1.3.8-r1","apk:zlib":"1.3.1-r2","apk:zlib-dev":"1.3.1-r2","apk:zstd-libs":"1.5.6-r2","image:alpine":"b6d3477b3f2625ab5a810a4dbf940b903575534b5178d29f5abaa41094efb9b3","image:base":"4df0ba1cc458e4537f8e4f1ffa8eff13a20d12355dfba47bcfc886bed2fb0607","postgres15":"15.13"}
+# BOM: {"apk:acl-libs":"2.3.2-r1","apk:bash":"5.2.37-r0","apk:binutils":"2.44-r0","apk:brotli-libs":"1.1.0-r2","apk:busybox":"1.37.0-r18","apk:busybox-binsh":"1.37.0-r18","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20241121-r2","apk:curl":"8.14.0-r2","apk:g++":"14.2.0-r6","apk:gcc":"14.2.0-r6","apk:git":"2.49.0-r0","apk:gmp":"6.3.0-r3","apk:isl25":"0.25-r2","apk:jansson":"2.14.1-r0","apk:libatomic":"14.2.0-r6","apk:libcrypto3":"3.5.0-r0","apk:libcurl":"8.14.0-r2","apk:libexpat":"2.7.1-r0","apk:libformw":"6.5_p20250503-r0","apk:libgcc":"14.2.0-r6","apk:libgomp":"14.2.0-r6","apk:libhistory":"8.2.13-r1","apk:libidn2":"2.3.7-r0","apk:libintl":"0.24.1-r0","apk:libmenuw":"6.5_p20250503-r0","apk:libncurses++":"6.5_p20250503-r0","apk:libncursesw":"6.5_p20250503-r0","apk:libpanelw":"6.5_p20250503-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.0-r0","apk:libstdc++":"14.2.0-r6","apk:libstdc++-dev":"14.2.0-r6","apk:libunistring":"1.3-r0","apk:libxxhash":"0.8.3-r0","apk:linux-headers":"6.14.2-r0","apk:lz4-libs":"1.10.0-r0","apk:make":"4.4.1-r3","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.1_p1-r0","apk:musl":"1.2.5-r10","apk:musl-dev":"1.2.5-r10","apk:musl-locales":"0.1.0-r1","apk:ncurses-dev":"6.5_p20250503-r0","apk:ncurses-terminfo-base":"6.5_p20250503-r0","apk:nghttp2-libs":"1.65.0-r0","apk:openssl-dev":"3.5.0-r0","apk:pcre2":"10.43-r1","apk:pkgconf":"2.4.3-r0","apk:popt":"1.19-r4","apk:readline":"8.2.13-r1","apk:readline-dev":"8.2.13-r1","apk:rsync":"3.4.1-r0","apk:scanelf":"1.3.8-r1","apk:zlib":"1.3.1-r2","apk:zlib-dev":"1.3.1-r2","apk:zstd-libs":"1.5.7-r0","image:alpine":"9db63dc594bc4cffe08219df4b0488b7d894a792166ed9fbf93311ad4a15bd61","image:base":"2a85a07c36fe20de74b012c94789fa038e7c9d5098242aa875cc7a486f50f6f3","postgres15":"15.13"}
 
-FROM reg.g5d.dev/alpine@sha256:b6d3477b3f2625ab5a810a4dbf940b903575534b5178d29f5abaa41094efb9b3 as build
+FROM reg.g5d.dev/alpine@sha256:9db63dc594bc4cffe08219df4b0488b7d894a792166ed9fbf93311ad4a15bd61 as build
 
 ARG ARCHIVE_URL="https://ftp.postgresql.org/pub/source/v15.13/postgresql-15.13.tar.bz2"
 ARG ARCHIVE_SUM="4f62e133d22ea08a0401b0840920e26698644d01a80c34341fb732dd0a90ca5d"
@@ -11,61 +11,61 @@ RUN set -eux; \
     apk add --no-cache \
         acl-libs=2.3.2-r1 \
         bash=5.2.37-r0 \
-        binutils=2.43.1-r2 \
+        binutils=2.44-r0 \
         brotli-libs=1.1.0-r2 \
-        busybox=1.37.0-r12 \
-        busybox-binsh=1.37.0-r12 \
+        busybox=1.37.0-r18 \
+        busybox-binsh=1.37.0-r18 \
         c-ares=1.34.5-r0 \
-        ca-certificates-bundle=20241121-r1 \
-        curl=8.12.1-r1 \
-        g++=14.2.0-r4 \
-        gcc=14.2.0-r4 \
-        git=2.47.2-r0 \
-        gmp=6.3.0-r2 \
+        ca-certificates-bundle=20241121-r2 \
+        curl=8.14.0-r2 \
+        g++=14.2.0-r6 \
+        gcc=14.2.0-r6 \
+        git=2.49.0-r0 \
+        gmp=6.3.0-r3 \
         isl25=0.25-r2 \
-        jansson=2.14-r4 \
-        libatomic=14.2.0-r4 \
-        libcrypto3=3.3.3-r0 \
-        libcurl=8.12.1-r1 \
-        libexpat=2.7.0-r0 \
-        libformw=6.5_p20241006-r3 \
-        libgcc=14.2.0-r4 \
-        libgomp=14.2.0-r4 \
-        libhistory=8.2.13-r0 \
+        jansson=2.14.1-r0 \
+        libatomic=14.2.0-r6 \
+        libcrypto3=3.5.0-r0 \
+        libcurl=8.14.0-r2 \
+        libexpat=2.7.1-r0 \
+        libformw=6.5_p20250503-r0 \
+        libgcc=14.2.0-r6 \
+        libgomp=14.2.0-r6 \
+        libhistory=8.2.13-r1 \
         libidn2=2.3.7-r0 \
-        libintl=0.22.5-r0 \
-        libmenuw=6.5_p20241006-r3 \
-        libncurses++=6.5_p20241006-r3 \
-        libncursesw=6.5_p20241006-r3 \
-        libpanelw=6.5_p20241006-r3 \
+        libintl=0.24.1-r0 \
+        libmenuw=6.5_p20250503-r0 \
+        libncurses++=6.5_p20250503-r0 \
+        libncursesw=6.5_p20250503-r0 \
+        libpanelw=6.5_p20250503-r0 \
         libpsl=0.21.5-r3 \
-        libssl3=3.3.3-r0 \
-        libstdc++=14.2.0-r4 \
-        libstdc++-dev=14.2.0-r4 \
-        libunistring=1.2-r0 \
-        libxxhash=0.8.2-r2 \
-        linux-headers=6.6-r1 \
+        libssl3=3.5.0-r0 \
+        libstdc++=14.2.0-r6 \
+        libstdc++-dev=14.2.0-r6 \
+        libunistring=1.3-r0 \
+        libxxhash=0.8.3-r0 \
+        linux-headers=6.14.2-r0 \
         lz4-libs=1.10.0-r0 \
-        make=4.4.1-r2 \
+        make=4.4.1-r3 \
         mpc1=1.3.1-r1 \
-        mpfr4=4.2.1-r0 \
-        musl=1.2.5-r9 \
-        musl-dev=1.2.5-r9 \
+        mpfr4=4.2.1_p1-r0 \
+        musl=1.2.5-r10 \
+        musl-dev=1.2.5-r10 \
         musl-locales=0.1.0-r1 \
-        ncurses-dev=6.5_p20241006-r3 \
-        ncurses-terminfo-base=6.5_p20241006-r3 \
-        nghttp2-libs=1.64.0-r0 \
-        openssl-dev=3.3.3-r0 \
-        pcre2=10.43-r0 \
-        pkgconf=2.3.0-r0 \
+        ncurses-dev=6.5_p20250503-r0 \
+        ncurses-terminfo-base=6.5_p20250503-r0 \
+        nghttp2-libs=1.65.0-r0 \
+        openssl-dev=3.5.0-r0 \
+        pcre2=10.43-r1 \
+        pkgconf=2.4.3-r0 \
         popt=1.19-r4 \
-        readline=8.2.13-r0 \
-        readline-dev=8.2.13-r0 \
-        rsync=3.4.0-r0 \
+        readline=8.2.13-r1 \
+        readline-dev=8.2.13-r1 \
+        rsync=3.4.1-r0 \
         scanelf=1.3.8-r1 \
         zlib=1.3.1-r2 \
         zlib-dev=1.3.1-r2 \
-        zstd-libs=1.5.6-r2 \
+        zstd-libs=1.5.7-r0 \
         ;
 
 RUN set -eux; \
@@ -143,7 +143,7 @@ RUN set -eux; \
     chmod 644 /rootfs/docker-entrypoint-initdb.d/; \
     chown 65532:65532 /rootfs/docker-entrypoint-initdb.d/
 
-FROM reg.g5d.dev/base@sha256:4df0ba1cc458e4537f8e4f1ffa8eff13a20d12355dfba47bcfc886bed2fb0607
+FROM reg.g5d.dev/base@sha256:2a85a07c36fe20de74b012c94789fa038e7c9d5098242aa875cc7a486f50f6f3
 
 ENV PATH="/usr/local/pgsql/bin:$PATH" LANG=en_US.utf8 PGDATA=/var/lib/postgresql/data PGHOST=127.0.0.1 PGUSER=postgres
 
