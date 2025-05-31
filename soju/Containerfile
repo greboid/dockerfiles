@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/soju/Containerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.1.0-r2","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20241121-r1","apk:git":"2.47.2-r0","apk:libcrypto3":"3.3.3-r0","apk:libcurl":"8.12.1-r1","apk:libexpat":"2.7.0-r0","apk:libidn2":"2.3.7-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.3.3-r0","apk:libunistring":"1.2-r0","apk:musl":"1.2.5-r9","apk:nghttp2-libs":"1.64.0-r0","apk:patch":"2.7.6-r10","apk:pcre2":"10.43-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.6-r2","github:csmith/certwrapper":"v4.3.0","github:emersion/soju":"v0.9.0","image:base":"4df0ba1cc458e4537f8e4f1ffa8eff13a20d12355dfba47bcfc886bed2fb0607","image:golang":"adfeb5d17cc83d91fd95d60fb42873735c07ace4cd4a2d0eccae49491e453bac"}
+# BOM: {"apk:brotli-libs":"1.1.0-r2","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20241121-r2","apk:git":"2.49.0-r0","apk:libcrypto3":"3.5.0-r0","apk:libcurl":"8.14.0-r2","apk:libexpat":"2.7.1-r0","apk:libidn2":"2.3.7-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.0-r0","apk:libunistring":"1.3-r0","apk:musl":"1.2.5-r10","apk:nghttp2-libs":"1.65.0-r0","apk:patch":"2.8-r0","apk:pcre2":"10.43-r1","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r0","github:csmith/certwrapper":"v4.3.0","github:emersion/soju":"v0.9.0","image:base":"2a85a07c36fe20de74b012c94789fa038e7c9d5098242aa875cc7a486f50f6f3","image:golang":"331db42d93b8983dbc241312e1a66ea556d1d68534366ccc819fd008ec094313"}
 
-FROM reg.g5d.dev/golang@sha256:adfeb5d17cc83d91fd95d60fb42873735c07ace4cd4a2d0eccae49491e453bac AS build
+FROM reg.g5d.dev/golang@sha256:331db42d93b8983dbc241312e1a66ea556d1d68534366ccc819fd008ec094313 AS build
 
 ARG SOJUTAG="v0.9.0"
 ARG CERTTAG="v4.3.0"
@@ -10,21 +10,21 @@ RUN set -eux; \
     apk add --no-cache \
         brotli-libs=1.1.0-r2 \
         c-ares=1.34.5-r0 \
-        ca-certificates-bundle=20241121-r1 \
-        git=2.47.2-r0 \
-        libcrypto3=3.3.3-r0 \
-        libcurl=8.12.1-r1 \
-        libexpat=2.7.0-r0 \
+        ca-certificates-bundle=20241121-r2 \
+        git=2.49.0-r0 \
+        libcrypto3=3.5.0-r0 \
+        libcurl=8.14.0-r2 \
+        libexpat=2.7.1-r0 \
         libidn2=2.3.7-r0 \
         libpsl=0.21.5-r3 \
-        libssl3=3.3.3-r0 \
-        libunistring=1.2-r0 \
-        musl=1.2.5-r9 \
-        nghttp2-libs=1.64.0-r0 \
-        patch=2.7.6-r10 \
-        pcre2=10.43-r0 \
+        libssl3=3.5.0-r0 \
+        libunistring=1.3-r0 \
+        musl=1.2.5-r10 \
+        nghttp2-libs=1.65.0-r0 \
+        patch=2.8-r0 \
+        pcre2=10.43-r1 \
         zlib=1.3.1-r2 \
-        zstd-libs=1.5.6-r2 \
+        zstd-libs=1.5.7-r0 \
         ; \
     git clone --depth=1 -b $SOJUTAG --single-branch https://github.com/emersion/soju /go/src/github.com/emersion/soju; \
     cd /go/src/github.com/emersion/soju; \
@@ -37,7 +37,7 @@ RUN set -eux; \
     go-licenses save ./... --save_path=/notices; \
     mkdir /data
 
-FROM reg.g5d.dev/base@sha256:4df0ba1cc458e4537f8e4f1ffa8eff13a20d12355dfba47bcfc886bed2fb0607
+FROM reg.g5d.dev/base@sha256:2a85a07c36fe20de74b012c94789fa038e7c9d5098242aa875cc7a486f50f6f3
 
 COPY --from=build /go/src/github.com/emersion/soju/soju /soju
 COPY --from=build /go/src/github.com/emersion/soju/sojuctl /sojuctl
