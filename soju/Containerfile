@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/soju/Containerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.1.0-r2","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20241121-r2","apk:git":"2.49.1-r0","apk:libcrypto3":"3.5.1-r0","apk:libcurl":"8.14.1-r1","apk:libexpat":"2.7.1-r0","apk:libidn2":"2.3.7-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.1-r0","apk:libunistring":"1.3-r0","apk:musl":"1.2.5-r10","apk:nghttp2-libs":"1.65.0-r0","apk:patch":"2.8-r0","apk:pcre2":"10.43-r1","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r0","github:csmith/certwrapper":"v4.3.0","github:emersion/soju":"v0.9.0","image:base":"2a85a07c36fe20de74b012c94789fa038e7c9d5098242aa875cc7a486f50f6f3","image:golang":"d0dc084641570296c1a7ca8df913d7f3e9f26193b113b40634fc44768bf1e79d"}
+# BOM: {"apk:brotli-libs":"1.1.0-r2","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20250619-r0","apk:git":"2.49.1-r0","apk:libcrypto3":"3.5.1-r0","apk:libcurl":"8.14.1-r1","apk:libexpat":"2.7.1-r0","apk:libidn2":"2.3.7-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.1-r0","apk:libunistring":"1.3-r0","apk:musl":"1.2.5-r10","apk:nghttp2-libs":"1.65.0-r0","apk:patch":"2.8-r0","apk:pcre2":"10.43-r1","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r0","github:csmith/certwrapper":"v4.3.0","github:emersion/soju":"v0.9.0","image:base":"513a2bff006f9b981bd7ec6b08783249956587400e013ed2ba0cfcd987d1ed1a","image:golang":"251c1de4d7ab0427d75b30d05e62dd4a23add4bbc85258cc32ccf6ce3e4fbf6f"}
 
-FROM reg.g5d.dev/golang@sha256:d0dc084641570296c1a7ca8df913d7f3e9f26193b113b40634fc44768bf1e79d AS build
+FROM reg.g5d.dev/golang@sha256:251c1de4d7ab0427d75b30d05e62dd4a23add4bbc85258cc32ccf6ce3e4fbf6f AS build
 
 ARG SOJUTAG="v0.9.0"
 ARG CERTTAG="v4.3.0"
@@ -10,7 +10,7 @@ RUN set -eux; \
     apk add --no-cache \
         brotli-libs=1.1.0-r2 \
         c-ares=1.34.5-r0 \
-        ca-certificates-bundle=20241121-r2 \
+        ca-certificates-bundle=20250619-r0 \
         git=2.49.1-r0 \
         libcrypto3=3.5.1-r0 \
         libcurl=8.14.1-r1 \
@@ -37,7 +37,7 @@ RUN set -eux; \
     go-licenses save ./... --save_path=/notices; \
     mkdir /data
 
-FROM reg.g5d.dev/base@sha256:2a85a07c36fe20de74b012c94789fa038e7c9d5098242aa875cc7a486f50f6f3
+FROM reg.g5d.dev/base@sha256:513a2bff006f9b981bd7ec6b08783249956587400e013ed2ba0cfcd987d1ed1a
 
 COPY --from=build /go/src/github.com/emersion/soju/soju /soju
 COPY --from=build /go/src/github.com/emersion/soju/sojuctl /sojuctl
