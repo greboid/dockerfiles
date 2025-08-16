@@ -87,7 +87,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -154,7 +154,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -221,7 +221,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -288,7 +288,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -355,7 +355,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -422,7 +422,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -490,7 +490,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -557,7 +557,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -625,7 +625,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -693,7 +693,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -761,7 +761,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -829,7 +829,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -897,7 +897,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -965,7 +965,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -1033,7 +1033,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -1101,7 +1101,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -1169,7 +1169,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -1237,7 +1237,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -1305,7 +1305,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -1373,7 +1373,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -1441,7 +1441,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -1509,7 +1509,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -1577,7 +1577,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -1645,7 +1645,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -1713,7 +1713,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -1781,7 +1781,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -1849,7 +1849,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -1917,7 +1917,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -1985,7 +1985,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -2053,7 +2053,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -2121,7 +2121,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -2189,7 +2189,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -2257,7 +2257,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -2325,7 +2325,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
@@ -2393,7 +2393,7 @@ jobs:
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
-                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                if [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
