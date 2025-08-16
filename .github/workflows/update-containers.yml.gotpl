@@ -44,17 +44,9 @@ jobs:
         - {{ dep -}}
 {%- endfor -%}
 {%- endif -%}
-{%- raw -%}
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
-          PROJECT_NAME: {%- endraw %}{{ target.name }}{% raw %}
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-{%  endraw %}
+          PROJECT_NAME: {{ target.name }}
 {% endfor %}
