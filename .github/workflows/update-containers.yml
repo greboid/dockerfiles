@@ -89,18 +89,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/alpine $MIRROR_TARGET/$MIRROR_PATH/alpine
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -168,18 +168,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/rust $MIRROR_TARGET/$MIRROR_PATH/rust
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -247,18 +247,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/node $MIRROR_TARGET/$MIRROR_PATH/node
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -326,18 +326,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/golang $MIRROR_TARGET/$MIRROR_PATH/golang
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -405,18 +405,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/baseroot $MIRROR_TARGET/$MIRROR_PATH/baseroot
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -484,18 +484,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/thelounge $MIRROR_TARGET/$MIRROR_PATH/thelounge
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -564,18 +564,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/dsp $MIRROR_TARGET/$MIRROR_PATH/dsp
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -643,18 +643,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/base $MIRROR_TARGET/$MIRROR_PATH/base
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -723,18 +723,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/webhooked $MIRROR_TARGET/$MIRROR_PATH/webhooked
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -803,18 +803,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/watchtower $MIRROR_TARGET/$MIRROR_PATH/watchtower
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -883,18 +883,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/tsp $MIRROR_TARGET/$MIRROR_PATH/tsp
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -963,18 +963,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/tailscale $MIRROR_TARGET/$MIRROR_PATH/tailscale
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -1043,18 +1043,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/sws $MIRROR_TARGET/$MIRROR_PATH/sws
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -1123,18 +1123,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/soju $MIRROR_TARGET/$MIRROR_PATH/soju
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -1203,18 +1203,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/registryauth $MIRROR_TARGET/$MIRROR_PATH/registryauth
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -1283,18 +1283,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/redis $MIRROR_TARGET/$MIRROR_PATH/redis
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -1363,18 +1363,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/puzzles $MIRROR_TARGET/$MIRROR_PATH/puzzles
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -1443,18 +1443,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/postgres-15 $MIRROR_TARGET/$MIRROR_PATH/postgres-15
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -1523,18 +1523,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/miniflux $MIRROR_TARGET/$MIRROR_PATH/miniflux
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -1603,18 +1603,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/linx-server $MIRROR_TARGET/$MIRROR_PATH/linx-server
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -1683,18 +1683,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/legoergo $MIRROR_TARGET/$MIRROR_PATH/legoergo
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -1763,18 +1763,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/irc-webhook $MIRROR_TARGET/$MIRROR_PATH/irc-webhook
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -1843,18 +1843,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/irc-notifier $MIRROR_TARGET/$MIRROR_PATH/irc-notifier
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -1923,18 +1923,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/irc-goplum $MIRROR_TARGET/$MIRROR_PATH/irc-goplum
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -2003,18 +2003,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/irc-github $MIRROR_TARGET/$MIRROR_PATH/irc-github
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -2083,18 +2083,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/irc-distribution $MIRROR_TARGET/$MIRROR_PATH/irc-distribution
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -2163,18 +2163,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/irc-bot $MIRROR_TARGET/$MIRROR_PATH/irc-bot
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -2243,18 +2243,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/identd $MIRROR_TARGET/$MIRROR_PATH/identd
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -2323,18 +2323,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/httpredirect $MIRROR_TARGET/$MIRROR_PATH/httpredirect
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -2403,18 +2403,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/goplum $MIRROR_TARGET/$MIRROR_PATH/goplum
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -2483,18 +2483,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/golink $MIRROR_TARGET/$MIRROR_PATH/golink
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -2563,18 +2563,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/githubmirror $MIRROR_TARGET/$MIRROR_PATH/githubmirror
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -2643,18 +2643,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/dotege $MIRROR_TARGET/$MIRROR_PATH/dotege
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -2723,18 +2723,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/dockercleanup $MIRROR_TARGET/$MIRROR_PATH/dockercleanup
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -2803,18 +2803,18 @@ jobs:
         id: check_mirror_exists
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: ${{ github.repository }}
         run: buildah tag $REGISTRY/centauri $MIRROR_TARGET/$MIRROR_PATH/centauri
       - name: Mirror the image
-        if: steps.check_mirror_exists.outputs.status == 'success'
+        if: steps.check_mirror.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
