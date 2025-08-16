@@ -81,16 +81,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "alpine/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -164,16 +160,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "rust/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -247,16 +239,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "node/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -330,16 +318,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "golang/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -413,16 +397,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "baseroot/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -496,16 +476,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "thelounge/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -580,16 +556,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "dsp/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -663,16 +635,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "base/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -747,16 +715,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "webhooked/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -831,16 +795,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "watchtower/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -915,16 +875,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "tsp/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -999,16 +955,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "tailscale/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -1083,16 +1035,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "sws/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -1167,16 +1115,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "soju/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -1251,16 +1195,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "registryauth/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -1335,16 +1275,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "redis/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -1419,16 +1355,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "puzzles/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -1503,16 +1435,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "postgres-15/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -1587,16 +1515,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "miniflux/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -1671,16 +1595,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "linx-server/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -1755,16 +1675,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "legoergo/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -1839,16 +1755,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "irc-webhook/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -1923,16 +1835,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "irc-notifier/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -2007,16 +1915,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "irc-goplum/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -2091,16 +1995,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "irc-github/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -2175,16 +2075,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "irc-distribution/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -2259,16 +2155,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "irc-bot/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -2343,16 +2235,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "identd/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -2427,16 +2315,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "httpredirect/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -2511,16 +2395,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "goplum/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -2595,16 +2475,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "golink/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -2679,16 +2555,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "githubmirror/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -2763,16 +2635,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "dotege/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -2847,16 +2715,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "dockercleanup/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
@@ -2931,16 +2795,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "centauri/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
