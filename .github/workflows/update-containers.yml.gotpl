@@ -101,7 +101,6 @@ jobs:
                     buildah tag $REGISTRY/{%- raw -%}{{ target.name }}{%- endraw -%} $MIRROR_TARGET/$MIRROR_PATH/{%- raw -%}{{ target.name }}{%- endraw -%}
                 fi
             fi
-        {% endraw %}
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
