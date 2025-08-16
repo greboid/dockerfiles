@@ -85,7 +85,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -152,7 +152,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -219,7 +219,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -286,7 +286,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -353,7 +353,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -420,7 +420,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -488,7 +488,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -555,7 +555,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -623,7 +623,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -691,7 +691,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -759,7 +759,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -827,7 +827,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -895,7 +895,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -963,7 +963,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -1031,7 +1031,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -1099,7 +1099,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -1167,7 +1167,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -1235,7 +1235,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -1303,7 +1303,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -1371,7 +1371,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -1439,7 +1439,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -1507,7 +1507,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -1575,7 +1575,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -1643,7 +1643,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -1711,7 +1711,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -1779,7 +1779,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -1847,7 +1847,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -1915,7 +1915,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -1983,7 +1983,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -2051,7 +2051,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -2119,7 +2119,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -2187,7 +2187,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -2255,7 +2255,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -2323,7 +2323,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
@@ -2391,7 +2391,7 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
