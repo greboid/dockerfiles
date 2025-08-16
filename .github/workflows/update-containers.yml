@@ -81,9 +81,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "alpine/MIRROR" ]];
             then
@@ -147,9 +147,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "rust/MIRROR" ]];
             then
@@ -213,9 +213,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "node/MIRROR" ]];
             then
@@ -279,9 +279,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "golang/MIRROR" ]];
             then
@@ -345,9 +345,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "baseroot/MIRROR" ]];
             then
@@ -411,9 +411,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "thelounge/MIRROR" ]];
             then
@@ -478,9 +478,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "dsp/MIRROR" ]];
             then
@@ -544,9 +544,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "base/MIRROR" ]];
             then
@@ -611,9 +611,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "webhooked/MIRROR" ]];
             then
@@ -678,9 +678,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "watchtower/MIRROR" ]];
             then
@@ -745,9 +745,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "tsp/MIRROR" ]];
             then
@@ -812,9 +812,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "tailscale/MIRROR" ]];
             then
@@ -879,9 +879,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "sws/MIRROR" ]];
             then
@@ -946,9 +946,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "soju/MIRROR" ]];
             then
@@ -1013,9 +1013,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "registryauth/MIRROR" ]];
             then
@@ -1080,9 +1080,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "redis/MIRROR" ]];
             then
@@ -1147,9 +1147,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "puzzles/MIRROR" ]];
             then
@@ -1214,9 +1214,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "postgres-15/MIRROR" ]];
             then
@@ -1281,9 +1281,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "miniflux/MIRROR" ]];
             then
@@ -1348,9 +1348,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "linx-server/MIRROR" ]];
             then
@@ -1415,9 +1415,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "legoergo/MIRROR" ]];
             then
@@ -1482,9 +1482,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "irc-webhook/MIRROR" ]];
             then
@@ -1549,9 +1549,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "irc-notifier/MIRROR" ]];
             then
@@ -1616,9 +1616,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "irc-goplum/MIRROR" ]];
             then
@@ -1683,9 +1683,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "irc-github/MIRROR" ]];
             then
@@ -1750,9 +1750,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "irc-distribution/MIRROR" ]];
             then
@@ -1817,9 +1817,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "irc-bot/MIRROR" ]];
             then
@@ -1884,9 +1884,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "identd/MIRROR" ]];
             then
@@ -1951,9 +1951,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "httpredirect/MIRROR" ]];
             then
@@ -2018,9 +2018,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "goplum/MIRROR" ]];
             then
@@ -2085,9 +2085,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "golink/MIRROR" ]];
             then
@@ -2152,9 +2152,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "githubmirror/MIRROR" ]];
             then
@@ -2219,9 +2219,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "dotege/MIRROR" ]];
             then
@@ -2286,9 +2286,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "dockercleanup/MIRROR" ]];
             then
@@ -2353,9 +2353,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: $
+          REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: $
+          MIRROR_PATH: ${{ github.repository }}
         run: |
             if [[ -f "centauri/MIRROR" ]];
             then
