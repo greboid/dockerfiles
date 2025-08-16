@@ -37,114 +37,66 @@ jobs:
     name: Build alpine
     runs-on: ubuntu-latest
     needs:
-        - setup-cache
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - setup-cachesteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: alpine
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   rust:
     name: Build rust
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-        - alpine
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - alpinesteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: rust
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   node:
     name: Build node
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-        - alpine
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - alpinesteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: node
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   golang:
     name: Build golang
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-        - alpine
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - alpinesteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: golang
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   baseroot:
     name: Build baseroot
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-        - alpine
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - alpinesteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: baseroot
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   thelounge:
     name: Build thelounge
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-        - node
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - nodesteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: thelounge
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   dsp:
     name: Build dsp
@@ -152,38 +104,22 @@ jobs:
     needs:
         - setup-cache
         - baseroot
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: dsp
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   base:
     name: Build base
     runs-on: ubuntu-latest
     needs:
         - setup-cache
-        - baseroot
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - baserootsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: base
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   webhooked:
     name: Build webhooked
@@ -191,19 +127,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: webhooked
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   watchtower:
     name: Build watchtower
@@ -211,19 +139,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: watchtower
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   tsp:
     name: Build tsp
@@ -231,19 +151,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: tsp
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   tailscale:
     name: Build tailscale
@@ -251,19 +163,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: tailscale
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   sws:
     name: Build sws
@@ -271,19 +175,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - rust
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - ruststeps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: sws
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   soju:
     name: Build soju
@@ -291,19 +187,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: soju
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   registryauth:
     name: Build registryauth
@@ -311,19 +199,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: registryauth
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   redis:
     name: Build redis
@@ -331,19 +211,11 @@ jobs:
     needs:
         - setup-cache
         - alpine
-        - base
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - basesteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: redis
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   puzzles:
     name: Build puzzles
@@ -351,19 +223,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: puzzles
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   postgres-15:
     name: Build postgres-15
@@ -371,19 +235,11 @@ jobs:
     needs:
         - setup-cache
         - alpine
-        - base
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - basesteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: postgres-15
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   miniflux:
     name: Build miniflux
@@ -391,19 +247,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: miniflux
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   linx-server:
     name: Build linx-server
@@ -411,19 +259,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: linx-server
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   legoergo:
     name: Build legoergo
@@ -431,19 +271,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: legoergo
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   irc-webhook:
     name: Build irc-webhook
@@ -451,19 +283,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: irc-webhook
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   irc-notifier:
     name: Build irc-notifier
@@ -471,19 +295,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: irc-notifier
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   irc-goplum:
     name: Build irc-goplum
@@ -491,19 +307,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: irc-goplum
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   irc-github:
     name: Build irc-github
@@ -511,19 +319,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: irc-github
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   irc-distribution:
     name: Build irc-distribution
@@ -531,19 +331,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: irc-distribution
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   irc-bot:
     name: Build irc-bot
@@ -551,19 +343,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: irc-bot
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   identd:
     name: Build identd
@@ -571,19 +355,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: identd
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   httpredirect:
     name: Build httpredirect
@@ -591,19 +367,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: httpredirect
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   goplum:
     name: Build goplum
@@ -611,19 +379,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: goplum
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   golink:
     name: Build golink
@@ -631,19 +391,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: golink
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   githubmirror:
     name: Build githubmirror
@@ -651,19 +403,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: githubmirror
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   dotege:
     name: Build dotege
@@ -671,19 +415,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: dotege
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   dockercleanup:
     name: Build dockercleanup
@@ -691,19 +427,11 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: dockercleanup
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
   centauri:
     name: Build centauri
@@ -711,17 +439,9 @@ jobs:
     needs:
         - setup-cache
         - base
-        - golang
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/container-builder
+        - golangsteps:
+      - uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
         with:
           PROJECT_NAME: centauri
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
-          REGISTRY: ${{ secrets.REGISTRY }}
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
-
 
