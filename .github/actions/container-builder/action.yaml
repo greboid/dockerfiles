@@ -62,9 +62,9 @@ runs:
     - name: Check if image was built and mirror
       continue-on-error: true
       env:
-        REGISTRY: $
+        REGISTRY: ${{ inputs.REGISTRY }}
         MIRROR_TARGET: ghcr.io
-        MIRROR_PATH: $
+        MIRROR_PATH: ${{ github.repository }}
       run: |
           if [[ -f "${{ inputs.PROJECT_NAME }}/MIRROR" ]];
           then
