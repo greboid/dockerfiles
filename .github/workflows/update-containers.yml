@@ -79,18 +79,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project alpine . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -145,18 +146,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project rust . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -211,18 +213,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project node . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -277,18 +280,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project golang . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -343,18 +347,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project baseroot . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -409,18 +414,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project thelounge . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -476,18 +482,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project dsp . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -542,18 +549,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project base . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -609,18 +617,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project webhooked . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -676,18 +685,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project watchtower . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -743,18 +753,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project tsp . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -810,18 +821,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project tailscale . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -877,18 +889,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project sws . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -944,18 +957,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project soju . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -1011,18 +1025,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project registryauth . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -1078,18 +1093,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project redis . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -1145,18 +1161,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project puzzles . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -1212,18 +1229,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project postgres-15 . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -1279,18 +1297,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project miniflux . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -1346,18 +1365,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project linx-server . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -1413,18 +1433,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project legoergo . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -1480,18 +1501,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-webhook . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -1547,18 +1569,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-notifier . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -1614,18 +1637,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-goplum . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -1681,18 +1705,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-github . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -1748,18 +1773,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-distribution . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -1815,18 +1841,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project irc-bot . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -1882,18 +1909,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project identd . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -1949,18 +1977,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project httpredirect . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -2016,18 +2045,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project goplum . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -2083,18 +2113,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project golink . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -2150,18 +2181,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project githubmirror . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -2217,18 +2249,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project dotege . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -2284,18 +2317,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project dockercleanup . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
@@ -2351,18 +2385,19 @@ jobs:
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project centauri . .
       - name: Check if image was built and mirror
-        if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
-        id: check_mirror_exists
         env:
           REGISTRY: $
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            [ $(buildah images reg.g5d.dev/alpine > /dev/null 2>&1 && echo "yes") = "yes" ]
+            if [[ -f "{{ target.name }}/MIRROR" ]]
             then
-                /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
-                buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
+                then
+                    /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
+                    buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
+                fi
             fi
         
       - name: Push changes
