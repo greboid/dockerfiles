@@ -91,6 +91,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/alpine $MIRROR_TARGET/$MIRROR_PATH/alpine
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/alpine
                 fi
             fi
       - name: Push changes
@@ -157,6 +158,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/rust $MIRROR_TARGET/$MIRROR_PATH/rust
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/rust
                 fi
             fi
       - name: Push changes
@@ -223,6 +225,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/node $MIRROR_TARGET/$MIRROR_PATH/node
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/node
                 fi
             fi
       - name: Push changes
@@ -289,6 +292,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/golang $MIRROR_TARGET/$MIRROR_PATH/golang
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/golang
                 fi
             fi
       - name: Push changes
@@ -355,6 +359,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/baseroot $MIRROR_TARGET/$MIRROR_PATH/baseroot
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/baseroot
                 fi
             fi
       - name: Push changes
@@ -421,6 +426,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/thelounge $MIRROR_TARGET/$MIRROR_PATH/thelounge
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/thelounge
                 fi
             fi
       - name: Push changes
@@ -488,6 +494,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/dsp $MIRROR_TARGET/$MIRROR_PATH/dsp
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/dsp
                 fi
             fi
       - name: Push changes
@@ -554,6 +561,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/base $MIRROR_TARGET/$MIRROR_PATH/base
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/base
                 fi
             fi
       - name: Push changes
@@ -621,6 +629,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/webhooked $MIRROR_TARGET/$MIRROR_PATH/webhooked
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/webhooked
                 fi
             fi
       - name: Push changes
@@ -688,6 +697,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/watchtower $MIRROR_TARGET/$MIRROR_PATH/watchtower
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/watchtower
                 fi
             fi
       - name: Push changes
@@ -755,6 +765,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/tsp $MIRROR_TARGET/$MIRROR_PATH/tsp
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/tsp
                 fi
             fi
       - name: Push changes
@@ -822,6 +833,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/tailscale $MIRROR_TARGET/$MIRROR_PATH/tailscale
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/tailscale
                 fi
             fi
       - name: Push changes
@@ -889,6 +901,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/sws $MIRROR_TARGET/$MIRROR_PATH/sws
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/sws
                 fi
             fi
       - name: Push changes
@@ -956,6 +969,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/soju $MIRROR_TARGET/$MIRROR_PATH/soju
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/soju
                 fi
             fi
       - name: Push changes
@@ -1023,6 +1037,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/registryauth $MIRROR_TARGET/$MIRROR_PATH/registryauth
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/registryauth
                 fi
             fi
       - name: Push changes
@@ -1090,6 +1105,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/redis $MIRROR_TARGET/$MIRROR_PATH/redis
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/redis
                 fi
             fi
       - name: Push changes
@@ -1157,6 +1173,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/puzzles $MIRROR_TARGET/$MIRROR_PATH/puzzles
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/puzzles
                 fi
             fi
       - name: Push changes
@@ -1224,6 +1241,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/postgres-15 $MIRROR_TARGET/$MIRROR_PATH/postgres-15
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/postgres-15
                 fi
             fi
       - name: Push changes
@@ -1291,6 +1309,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/miniflux $MIRROR_TARGET/$MIRROR_PATH/miniflux
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/miniflux
                 fi
             fi
       - name: Push changes
@@ -1358,6 +1377,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/linx-server $MIRROR_TARGET/$MIRROR_PATH/linx-server
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/linx-server
                 fi
             fi
       - name: Push changes
@@ -1425,6 +1445,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/legoergo $MIRROR_TARGET/$MIRROR_PATH/legoergo
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/legoergo
                 fi
             fi
       - name: Push changes
@@ -1492,6 +1513,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/irc-webhook $MIRROR_TARGET/$MIRROR_PATH/irc-webhook
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-webhook
                 fi
             fi
       - name: Push changes
@@ -1559,6 +1581,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/irc-notifier $MIRROR_TARGET/$MIRROR_PATH/irc-notifier
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-notifier
                 fi
             fi
       - name: Push changes
@@ -1626,6 +1649,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/irc-goplum $MIRROR_TARGET/$MIRROR_PATH/irc-goplum
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-goplum
                 fi
             fi
       - name: Push changes
@@ -1693,6 +1717,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/irc-github $MIRROR_TARGET/$MIRROR_PATH/irc-github
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-github
                 fi
             fi
       - name: Push changes
@@ -1760,6 +1785,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/irc-distribution $MIRROR_TARGET/$MIRROR_PATH/irc-distribution
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-distribution
                 fi
             fi
       - name: Push changes
@@ -1827,6 +1853,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/irc-bot $MIRROR_TARGET/$MIRROR_PATH/irc-bot
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/irc-bot
                 fi
             fi
       - name: Push changes
@@ -1894,6 +1921,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/identd $MIRROR_TARGET/$MIRROR_PATH/identd
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/identd
                 fi
             fi
       - name: Push changes
@@ -1961,6 +1989,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/httpredirect $MIRROR_TARGET/$MIRROR_PATH/httpredirect
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/httpredirect
                 fi
             fi
       - name: Push changes
@@ -2028,6 +2057,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/goplum $MIRROR_TARGET/$MIRROR_PATH/goplum
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/goplum
                 fi
             fi
       - name: Push changes
@@ -2095,6 +2125,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/golink $MIRROR_TARGET/$MIRROR_PATH/golink
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/golink
                 fi
             fi
       - name: Push changes
@@ -2162,6 +2193,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/githubmirror $MIRROR_TARGET/$MIRROR_PATH/githubmirror
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/githubmirror
                 fi
             fi
       - name: Push changes
@@ -2229,6 +2261,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/dotege $MIRROR_TARGET/$MIRROR_PATH/dotege
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/dotege
                 fi
             fi
       - name: Push changes
@@ -2296,6 +2329,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/dockercleanup $MIRROR_TARGET/$MIRROR_PATH/dockercleanup
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/dockercleanup
                 fi
             fi
       - name: Push changes
@@ -2363,6 +2397,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                     buildah tag $REGISTRY/centauri $MIRROR_TARGET/$MIRROR_PATH/centauri
+                    buildah push $MIRROR_TARGET/$MIRROR_PATH/centauri
                 fi
             fi
       - name: Push changes
