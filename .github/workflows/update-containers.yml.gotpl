@@ -89,16 +89,12 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
-        outputs:
-          success: false
         with:
           files: "{{ target.name }}/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        outputs:
-          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
