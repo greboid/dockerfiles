@@ -89,20 +89,24 @@ jobs:
       - name: Check mirror
         uses: andstor/file-existence-action@v3
         id: check_mirror
+        outputs:
+          success: false
         with:
           files: "{{ target.name }}/MIRROR"
       - name: Check if image was built
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
+        outputs:
+          success: false
         run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
-        if: steps.check_mirror.outputs.status == 'success'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 {%- raw -%}
         run: |
           /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
       - name: Retag image to mirror
-        if: steps.check_mirror.outputs.status == 'success'
+        if: steps.check_mirror_exists.outputs.status == 'success'
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           MIRROR_TARGET: ghcr.io
@@ -110,7 +114,7 @@ jobs:
         {%- endraw -%}
         run: buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
       - name: Mirror the image
-        if: steps.check_mirror.outputs.status == 'success'
+        if: steps.check_mirror_exists.outputs.status == 'success'
 {%- raw -%}
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
