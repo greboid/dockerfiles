@@ -47,7 +47,7 @@ jobs:
 {%- raw -%}
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: {%- endraw %}{{ target.name }}{% raw %}
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
