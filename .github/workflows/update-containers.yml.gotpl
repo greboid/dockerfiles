@@ -56,4 +56,5 @@ jobs:
           GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
           GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
           CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+{%  endraw %}
 {% endfor %}
