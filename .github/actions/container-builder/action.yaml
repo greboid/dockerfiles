@@ -27,6 +27,7 @@ runs:
       id: go-paths
       run: |
         echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
+      shell: bash
     - name: Go bin cache
       id: bin-cache
       uses: actions/cache@v4
@@ -43,7 +44,7 @@ runs:
     - name: Login to private registry
       run: |
         /usr/bin/podman login -u "${{ inputs.REGISTRY_USER }}" -p "${{ inputs.REGISTRY_PASS }}" ${{ inputs.REGISTRY }} --verbose
-      shell: sh
+      shell: bash
     - name: Configure Git
       uses: snow-actions/git-config-user@v1.0.0
       with:
@@ -52,13 +53,14 @@ runs:
     - name: Install contempt
       if: steps.bin-cache.outputs.cache-hit != 'true'
       run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
+      shell: bash
     - name: Update
       env:
         BUILDAH_ISOLATION: chroot
         REGISTRY: ${{ inputs.REGISTRY }}
         SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
       run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project ${{ inputs.PROJECT_NAME }} . .
-      shell: sh
+      shell: bash
     - name: Check if image was built and mirror
       continue-on-error: true
       env:
@@ -74,7 +76,7 @@ runs:
                   buildah tag $REGISTRY/${{ inputs.PROJECT_NAME }} $MIRROR_TARGET/$MIRROR_PATH/${{ inputs.PROJECT_NAME }}
               fi
           fi
-      shell: sh
+      shell: bash
     - name: Push changes
       uses: cutlerydrawer/action-git-try-push@v2
       with:
