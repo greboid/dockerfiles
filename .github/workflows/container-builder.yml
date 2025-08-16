@@ -68,11 +68,7 @@
           run: buildah tag ${{ secrets.REGISTRY }}/${{ inputs.PROJECT_NAME }} ghcr.io/${{ github.repository }}/${{ inputs.PROJECT_NAME }}
         - name: Mirror the image
           if: steps.check_mirror_exists.outputs.status == 'success'
-          env:
-            REGISTRY: ${{ secrets.REGISTRY }}
-            MIRROR_TARGET: ghcr.io
-            MIRROR_PATH: ${{ github.repository }}
-          run: buildah push ${{ secrets.MIRROR_TARGET }}/${{ secrets.MIRROR_PATH }}/${{ inputs.PROJECT_NAME }}
+          run: buildah push ghcr.io/${{ github.repository }}/${{ inputs.PROJECT_NAME }}
         - name: Push changes
           uses: cutlerydrawer/action-git-try-push@v2
           with:
