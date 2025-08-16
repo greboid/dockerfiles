@@ -95,7 +95,7 @@ jobs:
         if: steps.check_mirror.outputs.files_exists == 'true'
         continue-on-error: true
         id: check_mirror_exists
-        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo ::set-output name=status::success; true
+        run: buildah images $REGISTRY/$IMAGE > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
       - name: Login to mirror target registry
         if: steps.check_mirror_exists.outputs.status == 'success'
 {%- raw -%}
