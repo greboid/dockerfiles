@@ -89,9 +89,9 @@ jobs:
       - name: Check if image was built and mirror
         continue-on-error: true
         env:
-          REGISTRY: ${{ secrets.REGISTRY }}
+          REGISTRY: {% raw %}${{ secrets.REGISTRY }}{% endraw %}
           MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: ${{ github.repository }}
+          MIRROR_PATH: {% raw %}${{ github.repository }}{% endraw %}
         run: |
             if [[ -f "{{ target.name }}/MIRROR" ]];
             then
