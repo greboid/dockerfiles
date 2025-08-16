@@ -40,7 +40,7 @@ jobs:
         - setup-cache
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: alpine
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -59,7 +59,7 @@ jobs:
         - alpine
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: rust
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -78,7 +78,7 @@ jobs:
         - alpine
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: node
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -97,7 +97,7 @@ jobs:
         - alpine
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: golang
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -116,7 +116,7 @@ jobs:
         - alpine
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: baseroot
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -135,7 +135,7 @@ jobs:
         - node
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: thelounge
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -155,7 +155,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: dsp
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -174,7 +174,7 @@ jobs:
         - baseroot
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: base
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -194,7 +194,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: webhooked
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -214,7 +214,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: watchtower
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -234,7 +234,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: tsp
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -254,7 +254,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: tailscale
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -274,7 +274,7 @@ jobs:
         - rust
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: sws
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -294,7 +294,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: soju
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -314,7 +314,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: registryauth
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -334,7 +334,7 @@ jobs:
         - base
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: redis
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -354,7 +354,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: puzzles
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -374,7 +374,7 @@ jobs:
         - base
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: postgres-15
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -394,7 +394,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: miniflux
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -414,7 +414,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: linx-server
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -434,7 +434,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: legoergo
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -454,7 +454,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: irc-webhook
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -474,7 +474,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: irc-notifier
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -494,7 +494,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: irc-goplum
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -514,7 +514,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: irc-github
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -534,7 +534,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: irc-distribution
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -554,7 +554,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: irc-bot
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -574,7 +574,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: identd
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -594,7 +594,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: httpredirect
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -614,7 +614,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: goplum
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -634,7 +634,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: golink
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -654,7 +654,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: githubmirror
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -674,7 +674,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: dotege
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -694,7 +694,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: dockercleanup
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
@@ -714,7 +714,7 @@ jobs:
         - golang
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/container-builder
+      - uses: ./.github/workflows/container-builder
         with:
           PROJECT_NAME: centauri
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
