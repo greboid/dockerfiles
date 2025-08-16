@@ -39,11 +39,10 @@ jobs:
     needs:
         - setup-cache
 
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: alpine
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: alpine
 
   rust:
     name: Build rust
@@ -51,11 +50,10 @@ jobs:
     needs:
         - setup-cache
         - alpine
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: rust
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: rust
 
   node:
     name: Build node
@@ -63,11 +61,10 @@ jobs:
     needs:
         - setup-cache
         - alpine
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: node
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: node
 
   golang:
     name: Build golang
@@ -75,11 +72,10 @@ jobs:
     needs:
         - setup-cache
         - alpine
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: golang
 
   baseroot:
     name: Build baseroot
@@ -87,11 +83,10 @@ jobs:
     needs:
         - setup-cache
         - alpine
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: baseroot
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: baseroot
 
   thelounge:
     name: Build thelounge
@@ -99,11 +94,10 @@ jobs:
     needs:
         - setup-cache
         - node
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: thelounge
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: thelounge
 
   dsp:
     name: Build dsp
@@ -112,11 +106,10 @@ jobs:
         - setup-cache
         - baseroot
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: dsp
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: dsp
 
   base:
     name: Build base
@@ -124,11 +117,10 @@ jobs:
     needs:
         - setup-cache
         - baseroot
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: base
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: base
 
   webhooked:
     name: Build webhooked
@@ -137,11 +129,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: webhooked
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: webhooked
 
   watchtower:
     name: Build watchtower
@@ -150,11 +141,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: watchtower
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: watchtower
 
   tsp:
     name: Build tsp
@@ -163,11 +153,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: tsp
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: tsp
 
   tailscale:
     name: Build tailscale
@@ -176,11 +165,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: tailscale
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: tailscale
 
   sws:
     name: Build sws
@@ -189,11 +177,10 @@ jobs:
         - setup-cache
         - base
         - rust
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: sws
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: sws
 
   soju:
     name: Build soju
@@ -202,11 +189,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: soju
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: soju
 
   registryauth:
     name: Build registryauth
@@ -215,11 +201,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: registryauth
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: registryauth
 
   redis:
     name: Build redis
@@ -228,11 +213,10 @@ jobs:
         - setup-cache
         - alpine
         - base
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: redis
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: redis
 
   puzzles:
     name: Build puzzles
@@ -241,11 +225,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: puzzles
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: puzzles
 
   postgres-15:
     name: Build postgres-15
@@ -254,11 +237,10 @@ jobs:
         - setup-cache
         - alpine
         - base
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: postgres-15
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: postgres-15
 
   miniflux:
     name: Build miniflux
@@ -267,11 +249,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: miniflux
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: miniflux
 
   linx-server:
     name: Build linx-server
@@ -280,11 +261,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: linx-server
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: linx-server
 
   legoergo:
     name: Build legoergo
@@ -293,11 +273,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: legoergo
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: legoergo
 
   irc-webhook:
     name: Build irc-webhook
@@ -306,11 +285,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: irc-webhook
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: irc-webhook
 
   irc-notifier:
     name: Build irc-notifier
@@ -319,11 +297,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: irc-notifier
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: irc-notifier
 
   irc-goplum:
     name: Build irc-goplum
@@ -332,11 +309,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: irc-goplum
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: irc-goplum
 
   irc-github:
     name: Build irc-github
@@ -345,11 +321,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: irc-github
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: irc-github
 
   irc-distribution:
     name: Build irc-distribution
@@ -358,11 +333,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: irc-distribution
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: irc-distribution
 
   irc-bot:
     name: Build irc-bot
@@ -371,11 +345,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: irc-bot
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: irc-bot
 
   identd:
     name: Build identd
@@ -384,11 +357,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: identd
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: identd
 
   httpredirect:
     name: Build httpredirect
@@ -397,11 +369,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: httpredirect
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: httpredirect
 
   goplum:
     name: Build goplum
@@ -410,11 +381,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: goplum
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: goplum
 
   golink:
     name: Build golink
@@ -423,11 +393,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: golink
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: golink
 
   githubmirror:
     name: Build githubmirror
@@ -436,11 +405,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: githubmirror
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: githubmirror
 
   dotege:
     name: Build dotege
@@ -449,11 +417,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: dotege
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: dotege
 
   dockercleanup:
     name: Build dockercleanup
@@ -462,11 +429,10 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: dockercleanup
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: dockercleanup
 
   centauri:
     name: Build centauri
@@ -475,9 +441,8 @@ jobs:
         - setup-cache
         - base
         - golang
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: centauri
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: centauri
 
