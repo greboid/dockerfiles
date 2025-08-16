@@ -37,7 +37,8 @@ jobs:
     name: Build alpine
     runs-on: ubuntu-latest
     needs:
-        - setup-cachesteps:
+      - setup-cache
+    steps:
       - uses: ./.github/workflows/container-builder.yml
         secrets: inherit
         with:
@@ -444,4 +445,3 @@ jobs:
         secrets: inherit
         with:
           PROJECT_NAME: centauri
-
