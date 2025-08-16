@@ -47,7 +47,7 @@
         - name: Update
           env:
             BUILDAH_ISOLATION: chroot
-            REGISTRY: $REGISTRY
+            REGISTRY: ${{ secrets.REGISTRY }}
             SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
           run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project ${{ inputs.PROJECT_NAME }} . .
           shell: bash
