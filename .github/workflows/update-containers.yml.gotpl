@@ -46,64 +46,14 @@ jobs:
 {%- endif -%}
 {%- raw -%}
     steps:
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/container-builder
         with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin cache
-        id: bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
-      - name: Checkout source
-        uses: actions/checkout@master
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
-      - name: Login to private registry
-        run: |
-          /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-      - name: Configure Git
-        uses: snow-actions/git-config-user@v1.0.0
-        with:
-          name: ${{ secrets.GIT_USERNAME }}
-          email: ${{ secrets.GIT_EMAIL }}
-      - name: Install contempt
-        if: steps.bin-cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
-      - name: Update
-        env:
-          BUILDAH_ISOLATION: chroot
+          PROJECT_NAME: {{ target.name }}
+          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
+          REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
-          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-        {%- endraw -%}
-        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project {{ target.name }} . .
-      - name: Check if image was built and mirror
-        continue-on-error: true
-        env:
-          REGISTRY: {% raw %}${{ secrets.REGISTRY }}{% endraw %}
-          MIRROR_TARGET: ghcr.io
-          MIRROR_PATH: {% raw %}${{ github.repository }}{% endraw %}
-        run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
-            then
-                if [[ $(buildah images {% raw %}$REGISTRY{% endraw %}/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]];
-                then
-                    /usr/bin/podman login -u "{% raw %}${{ github.repository_owner }}{% endraw %}" -p "{% raw %}${{ secrets.CONTEMPT_TOKEN }}{% endraw %}" ghcr.io --verbose
-                    buildah tag {% raw %}$REGISTRY{% endraw %}/{{ target.name }} {% raw %}$MIRROR_TARGET/$MIRROR_PATH{% endraw %}/{{ target.name }}
-                    buildah push {% raw %}$MIRROR_TARGET/$MIRROR_PATH{% endraw %}/{{ target.name }}
-                fi
-            fi
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
-        with:
-          tries: 5
+          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+          CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
 {% endfor %}
