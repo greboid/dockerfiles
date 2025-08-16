@@ -94,7 +94,7 @@ jobs:
           MIRROR_PATH: ${{ github.repository }}
         run: |
 {%- raw -%}
-            if [[ -f "{{ target.name }}/MIRROR" ]]
+            if [[ -f "{{ target.name }}/MIRROR" ]];
             then
                 [ $(buildah images $REGISTRY/{{ target.name }} > /dev/null 2>&1 && echo "yes") = "yes" ]
                 then
