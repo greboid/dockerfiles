@@ -38,8 +38,8 @@
         - name: Configure Git
           uses: snow-actions/git-config-user@v1.0.0
           with:
-            name: $GIT_USERNAME
-            email: $GIT_EMAIL
+            name: ${{ secrets.GIT_USERNAME }}
+            email: ${{ secrets.GIT_EMAIL }}
         - name: Install contempt
           if: steps.bin-cache.outputs.cache-hit != 'true'
           run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
