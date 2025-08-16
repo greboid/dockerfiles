@@ -44,9 +44,8 @@ jobs:
         - {{ dep -}}
 {%- endfor -%}
 {%- endif %}
-    steps:
-      - uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-          PROJECT_NAME: {{ target.name }}
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: {{ target.name }}
 {% endfor %}
