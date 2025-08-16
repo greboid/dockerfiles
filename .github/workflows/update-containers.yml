@@ -42,7 +42,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: alpine
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -61,7 +61,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: rust
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -80,7 +80,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: node
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -99,7 +99,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: golang
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -118,7 +118,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: baseroot
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -137,7 +137,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: thelounge
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -157,7 +157,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: dsp
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -176,7 +176,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: base
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -196,7 +196,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: webhooked
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -216,7 +216,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: watchtower
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -236,7 +236,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: tsp
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -256,7 +256,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: tailscale
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -276,7 +276,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: sws
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -296,7 +296,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: soju
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -316,7 +316,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: registryauth
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -336,7 +336,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: redis
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -356,7 +356,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: puzzles
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -376,7 +376,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: postgres-15
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -396,7 +396,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: miniflux
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -416,7 +416,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: linx-server
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -436,7 +436,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: legoergo
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -456,7 +456,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: irc-webhook
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -476,7 +476,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: irc-notifier
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -496,7 +496,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: irc-goplum
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -516,7 +516,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: irc-github
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -536,7 +536,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: irc-distribution
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -556,7 +556,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: irc-bot
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -576,7 +576,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: identd
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -596,7 +596,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: httpredirect
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -616,7 +616,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: goplum
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -636,7 +636,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: golink
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -656,7 +656,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: githubmirror
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -676,7 +676,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: dotege
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -696,7 +696,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: dockercleanup
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
@@ -716,7 +716,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/container-builder
         with:
-          PROJECT_NAME: {{ target.name }}
+          PROJECT_NAME: centauri
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           REGISTRY_PASS: ${{ secrets.REGISTRY_PASS }}
           REGISTRY: ${{ secrets.REGISTRY }}
