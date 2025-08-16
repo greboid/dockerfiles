@@ -92,7 +92,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -157,7 +158,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -222,7 +224,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -287,7 +290,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -352,7 +356,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -417,7 +422,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -483,7 +489,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -548,7 +555,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -614,7 +622,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -680,7 +689,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -746,7 +756,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -812,7 +823,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -878,7 +890,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -944,7 +957,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -1010,7 +1024,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -1076,7 +1091,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -1142,7 +1158,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -1208,7 +1225,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -1274,7 +1292,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -1340,7 +1359,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -1406,7 +1426,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -1472,7 +1493,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -1538,7 +1560,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -1604,7 +1627,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -1670,7 +1694,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -1736,7 +1761,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -1802,7 +1828,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -1868,7 +1895,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -1934,7 +1962,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -2000,7 +2029,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -2066,7 +2096,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -2132,7 +2163,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -2198,7 +2230,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -2264,7 +2297,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
@@ -2330,7 +2364,8 @@ jobs:
                 /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
                 buildah tag $REGISTRY/{{ target.name }} $MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}
             fi
-        - name: Push changes
+        
+      - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
         with:
           tries: 5
