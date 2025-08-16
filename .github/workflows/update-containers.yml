@@ -85,12 +85,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "alpine/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/alpine > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/alpine $MIRROR_TARGET/$MIRROR_PATH/alpine
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -150,12 +151,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "rust/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/rust > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/rust $MIRROR_TARGET/$MIRROR_PATH/rust
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -215,12 +217,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "node/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/node > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/node $MIRROR_TARGET/$MIRROR_PATH/node
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -280,12 +283,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "golang/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/golang > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/golang $MIRROR_TARGET/$MIRROR_PATH/golang
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -345,12 +349,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "baseroot/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/baseroot > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/baseroot $MIRROR_TARGET/$MIRROR_PATH/baseroot
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -410,12 +415,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "thelounge/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/thelounge > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/thelounge $MIRROR_TARGET/$MIRROR_PATH/thelounge
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -476,12 +482,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "dsp/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/dsp > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/dsp $MIRROR_TARGET/$MIRROR_PATH/dsp
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -541,12 +548,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "base/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/base > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/base $MIRROR_TARGET/$MIRROR_PATH/base
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -607,12 +615,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "webhooked/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/webhooked > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/webhooked $MIRROR_TARGET/$MIRROR_PATH/webhooked
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -673,12 +682,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "watchtower/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/watchtower > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/watchtower $MIRROR_TARGET/$MIRROR_PATH/watchtower
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -739,12 +749,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "tsp/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/tsp > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/tsp $MIRROR_TARGET/$MIRROR_PATH/tsp
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -805,12 +816,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "tailscale/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/tailscale > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/tailscale $MIRROR_TARGET/$MIRROR_PATH/tailscale
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -871,12 +883,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "sws/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/sws > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/sws $MIRROR_TARGET/$MIRROR_PATH/sws
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -937,12 +950,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "soju/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/soju > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/soju $MIRROR_TARGET/$MIRROR_PATH/soju
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -1003,12 +1017,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "registryauth/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/registryauth > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/registryauth $MIRROR_TARGET/$MIRROR_PATH/registryauth
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -1069,12 +1084,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "redis/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/redis > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/redis $MIRROR_TARGET/$MIRROR_PATH/redis
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -1135,12 +1151,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "puzzles/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/puzzles > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/puzzles $MIRROR_TARGET/$MIRROR_PATH/puzzles
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -1201,12 +1218,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "postgres-15/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/postgres-15 > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/postgres-15 $MIRROR_TARGET/$MIRROR_PATH/postgres-15
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -1267,12 +1285,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "miniflux/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/miniflux > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/miniflux $MIRROR_TARGET/$MIRROR_PATH/miniflux
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -1333,12 +1352,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "linx-server/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/linx-server > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/linx-server $MIRROR_TARGET/$MIRROR_PATH/linx-server
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -1399,12 +1419,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "legoergo/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/legoergo > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/legoergo $MIRROR_TARGET/$MIRROR_PATH/legoergo
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -1465,12 +1486,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "irc-webhook/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/irc-webhook > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/irc-webhook $MIRROR_TARGET/$MIRROR_PATH/irc-webhook
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -1531,12 +1553,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "irc-notifier/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/irc-notifier > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/irc-notifier $MIRROR_TARGET/$MIRROR_PATH/irc-notifier
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -1597,12 +1620,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "irc-goplum/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/irc-goplum > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/irc-goplum $MIRROR_TARGET/$MIRROR_PATH/irc-goplum
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -1663,12 +1687,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "irc-github/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/irc-github > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/irc-github $MIRROR_TARGET/$MIRROR_PATH/irc-github
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -1729,12 +1754,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "irc-distribution/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/irc-distribution > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/irc-distribution $MIRROR_TARGET/$MIRROR_PATH/irc-distribution
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -1795,12 +1821,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "irc-bot/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/irc-bot > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/irc-bot $MIRROR_TARGET/$MIRROR_PATH/irc-bot
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -1861,12 +1888,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "identd/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/identd > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/identd $MIRROR_TARGET/$MIRROR_PATH/identd
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -1927,12 +1955,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "httpredirect/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/httpredirect > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/httpredirect $MIRROR_TARGET/$MIRROR_PATH/httpredirect
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -1993,12 +2022,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "goplum/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/goplum > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/goplum $MIRROR_TARGET/$MIRROR_PATH/goplum
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -2059,12 +2089,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "golink/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/golink > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/golink $MIRROR_TARGET/$MIRROR_PATH/golink
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -2125,12 +2156,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "githubmirror/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/githubmirror > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/githubmirror $MIRROR_TARGET/$MIRROR_PATH/githubmirror
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -2191,12 +2223,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "dotege/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/dotege > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/dotege $MIRROR_TARGET/$MIRROR_PATH/dotege
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -2257,12 +2290,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "dockercleanup/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/dockercleanup > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/dockercleanup $MIRROR_TARGET/$MIRROR_PATH/dockercleanup
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
@@ -2323,12 +2357,13 @@ jobs:
           MIRROR_TARGET: ghcr.io
           MIRROR_PATH: $
         run: |
-            if [[ -f "{{ target.name }}/MIRROR" ]];
+            if [[ -f "centauri/MIRROR" ]];
             then
-                if [ $(buildah images $REGISTRY/{{ target.name }}> /dev/null 2>&1 && echo "yes") = "yes" ];
+                if [ $(buildah images $REGISTRY/centauri > /dev/null 2>&1 && echo "yes") = "yes" ];
                 then
                     /usr/bin/podman login -u "$" -p "$" ghcr.io --verbose
-                    buildah tag $REGISTRY/{{ target.name }}$MIRROR_TARGET/$MIRROR_PATH/{{ target.name }}fi
+                    buildah tag $REGISTRY/centauri $MIRROR_TARGET/$MIRROR_PATH/centauri
+                fi
             fi
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
