@@ -99,6 +99,7 @@ jobs:
                 then
                     /usr/bin/podman login -u "{% raw %}${{ github.repository_owner }}{% endraw %}" -p "{% raw %}${{ secrets.CONTEMPT_TOKEN }}{% endraw %}" ghcr.io --verbose
                     buildah tag {% raw %}$REGISTRY{% endraw %}/{{ target.name }} {% raw %}$MIRROR_TARGET/$MIRROR_PATH{% endraw %}/{{ target.name }}
+                    buildah push {% raw %}$MIRROR_TARGET/$MIRROR_PATH{% endraw %}/{{ target.name }}
                 fi
             fi
       - name: Push changes
