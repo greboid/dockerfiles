@@ -10,21 +10,6 @@
       name: Build
       runs-on: ubuntu-latest
       steps:
-        - name: Get contempt version
-          id: contempt
-          uses: tdemin/find-latest-tag@v1
-          with:
-            repo: https://github.com/csmith/contempt.git
-        - name: Get Paths
-          id: go-paths
-          run: echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-          shell: bash
-        - name: Go bin cache
-          id: bin-cache
-          uses: actions/cache@v4
-          with:
-            path: ${{ steps.go-paths.outputs.go-path }}/bin
-            key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
         - name: Checkout source
           uses: actions/checkout@master
         - name: Setup Go
@@ -32,17 +17,21 @@
           with:
             go-version: 'stable'
             cache: false
+        - name: Install latest tool
+          uses: mattdowdell/go-installer@v0.3.0
+          with:
+            package: github.com/csmith/contempt/cmd/contempt
         - name: Login to private registry
-          run: /usr/bin/podman login -u "${{ secrets.REGISTRY_USER }}" -p "${{ secrets.REGISTRY_PASS }}" ${{ secrets.REGISTRY }} --verbose
-          shell: bash
+          uses: redhat-actions/podman-login@v1
+          with:
+            username: ${{ secrets.REGISTRY_USER }}
+            password: ${{ secrets.REGISTRY_PASSWORD }}
+            registry: ${{ secrets.IMAGE_REGISTRY }}
         - name: Configure Git
           uses: snow-actions/git-config-user@v1.0.0
           with:
             name: ${{ secrets.GIT_USERNAME }}
             email: ${{ secrets.GIT_EMAIL }}
-        - name: Install contempt
-          if: steps.bin-cache.outputs.cache-hit != 'true'
-          run: go install github.com/csmith/contempt/cmd/contempt@${{ steps.contempt.outputs.tag }}
         - name: Update
           env:
             BUILDAH_ISOLATION: chroot
