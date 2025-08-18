@@ -26,7 +26,7 @@
           with:
             username: ${{ secrets.REGISTRY_USER }}
             password: ${{ secrets.REGISTRY_PASSWORD }}
-            registry: ${{ secrets.IMAGE_REGISTRY }}
+            registry: ${{ secrets.REGISTRY }}
         - name: Configure Git
           uses: snow-actions/git-config-user@v1.0.0
           with:
