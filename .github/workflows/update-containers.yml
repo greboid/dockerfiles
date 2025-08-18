@@ -18,20 +18,10 @@ jobs:
     name: Setup cache
     runs-on: ubuntu-latest
     steps:
-      - name: Get contempt version
-        id: contempt
-        uses: tdemin/find-latest-tag@v1
-        with:
-          repo: https://github.com/csmith/contempt.git
-      - name: Get Paths
-        id: go-paths
-        run: |
-          echo "go-path=$(go env GOPATH)" >> $GITHUB_OUTPUT
-      - name: Go bin Cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.go-paths.outputs.go-path }}/bin
-          key: ${{ runner.os }}-go-build-${{ steps.contempt.outputs.tag }}
+        - name: Install latest contempt
+          uses: mattdowdell/go-installer@v0.3.0
+          with:
+              package: github.com/csmith/contempt/cmd/contempt
   
   alpine:
     name: Build alpine
