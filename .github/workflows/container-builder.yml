@@ -17,7 +17,7 @@
           with:
             go-version: 'stable'
             cache: false
-        - name: Install latest tool
+        - name: Install latest contempt
           uses: mattdowdell/go-installer@v0.3.0
           with:
             package: github.com/csmith/contempt/cmd/contempt

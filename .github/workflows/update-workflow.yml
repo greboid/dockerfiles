@@ -18,8 +18,10 @@ jobs:
         with:
           go-version: 'stable'
           cache: false
-      - name: Install contempt orchestrator
-        run: go install github.com/csmith/contempt/cmd/orchestrator@latest
+      - name: Install latest orchestrator
+        uses: mattdowdell/go-installer@v0.3.0
+        with:
+          package: github.com/csmith/contempt/cmd/orchestrator
       - name: Run contempt orchestrator
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
