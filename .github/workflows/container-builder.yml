@@ -25,7 +25,7 @@
           uses: redhat-actions/podman-login@v1
           with:
             username: ${{ secrets.REGISTRY_USER }}
-            password: ${{ secrets.REGISTRY_PASSWORD }}
+            password: ${{ secrets.REGISTRY_PASS }}
             registry: ${{ secrets.REGISTRY }}
         - name: Configure Git
           uses: snow-actions/git-config-user@v1.0.0
