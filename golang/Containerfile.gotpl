@@ -1,6 +1,5 @@
 FROM {{image "alpine"}}
 
-ARG GOLICENSETAG="{{github_tag "google/go-licenses"}}"
 ARG ARCHIVE_URL="{{golang_url}}"
 ARG ARCHIVE_SUM="{{golang_checksum}}"
 
@@ -37,10 +36,5 @@ RUN set -eux; \
         {{end}}; \
     # Set up the go path
     mkdir -p $GOPATH/src $GOPATH/bin; \
-    chmod -R 777 $GOPATH
-RUN set -eux; \ 
-    git clone --depth=1 -b $GOLICENSETAG --single-branch https://github.com/google/go-licenses /go/golicenses; \
-    cd /go/golicenses; \
-    go get golang.org/x/tools@latest; \
-    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
-    cp main $GOPATH/bin/go-licenses
+    chmod -R 777 $GOPATH; \
+    go install github.com/google/go-licenses@v1.6.0
