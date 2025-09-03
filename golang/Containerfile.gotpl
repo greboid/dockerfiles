@@ -10,7 +10,7 @@ ENV PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
 RUN set -eux; \
     # Dependencies and source for bootstrapping go
     apk add --no-cache --virtual .build-deps \
-        {{range $key, $value := alpine_packages "curl" "bash" "go" -}}
+        {{range $key, $value := alpine_packages "curl" "bash" "go" "git" -}}
         {{$key}}={{$value}} \
         {{end}}; \
     curl -sfLo go.tar.gz $ARCHIVE_URL; \
@@ -37,5 +37,12 @@ RUN set -eux; \
         {{end}}; \
     # Set up the go path
     mkdir -p $GOPATH/src $GOPATH/bin; \
-    chmod -R 777 $GOPATH; \
-    go install github.com/google/go-licenses@$GOLICENSETAG
+    chmod -R 777 $GOPATH
+RUN set -eux; \ 
+    git clone --depth=1 -b $GOLICENSETAG --single-branch https://github.com/google/go-licenses /go/golicenses; \
+    cd /go/golicenses; \
+    go get golang.org/x/tools@v0.24.1; \
+    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
+    cp main $GOPATH/bin/go-licenses
+
+RUN go-licenses
