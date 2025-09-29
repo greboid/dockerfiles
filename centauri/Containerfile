@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/centauri/Containerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.1.0-r2","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20250619-r0","apk:git":"2.49.1-r0","apk:libcrypto3":"3.5.3-r1","apk:libcurl":"8.14.1-r1","apk:libexpat":"2.7.2-r0","apk:libidn2":"2.3.7-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.3-r1","apk:libunistring":"1.3-r0","apk:musl":"1.2.5-r10","apk:nghttp2-libs":"1.65.0-r0","apk:pcre2":"10.43-r1","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r0","github:csmith/centauri":"v2.2.0","image:base":"513a2bff006f9b981bd7ec6b08783249956587400e013ed2ba0cfcd987d1ed1a","image:golang":"3964266dd4db1a1a9dca58a88e88fc6c1499fd194e5299fb6ae3c0ac62fefd46"}
+# BOM: {"apk:brotli-libs":"1.1.0-r2","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20250619-r0","apk:git":"2.49.1-r0","apk:libcrypto3":"3.5.3-r1","apk:libcurl":"8.14.1-r1","apk:libexpat":"2.7.3-r0","apk:libidn2":"2.3.7-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.3-r1","apk:libunistring":"1.3-r0","apk:musl":"1.2.5-r10","apk:nghttp2-libs":"1.65.0-r0","apk:pcre2":"10.43-r1","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r0","github:csmith/centauri":"v2.2.0","image:base":"513a2bff006f9b981bd7ec6b08783249956587400e013ed2ba0cfcd987d1ed1a","image:golang":"af2c9007c392587670eac25eed380e9f9c6109b8683ea2fce82e58ccc85e3949"}
 
-FROM reg.g5d.dev/golang@sha256:3964266dd4db1a1a9dca58a88e88fc6c1499fd194e5299fb6ae3c0ac62fefd46 AS build
+FROM reg.g5d.dev/golang@sha256:af2c9007c392587670eac25eed380e9f9c6109b8683ea2fce82e58ccc85e3949 AS build
 
 ARG REPO="csmith/centauri"
 ARG TAG="v2.2.0"
@@ -14,7 +14,7 @@ RUN set -eux; \
         git=2.49.1-r0\
         libcrypto3=3.5.3-r1\
         libcurl=8.14.1-r1\
-        libexpat=2.7.2-r0\
+        libexpat=2.7.3-r0\
         libidn2=2.3.7-r0\
         libpsl=0.21.5-r3\
         libssl3=3.5.3-r1\
