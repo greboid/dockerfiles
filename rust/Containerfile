@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/rust/Containerfile.gotpl
-# BOM: {"github:rust-lang/rust":"1.90.0","github:rust-lang/rustup":"1.28.2","image:alpine":"91cb230eb02e43dbd8b7ed1fa2b9f64dab383cc6478cfd960138b8b916f48f1e"}
+# BOM: {"github:rust-lang/rust":"1.90.0","github:rust-lang/rustup":"1.28.2","image:alpine":"7211bbcb473c8864fd23e55127cd95b8eda844227c28184a326af48797dd6eee"}
 
-FROM reg.g5d.dev/alpine@sha256:91cb230eb02e43dbd8b7ed1fa2b9f64dab383cc6478cfd960138b8b916f48f1e AS rustbuild
+FROM reg.g5d.dev/alpine@sha256:7211bbcb473c8864fd23e55127cd95b8eda844227c28184a326af48797dd6eee AS rustbuild
 
 ARG RUSTTAG="1.90.0"
 ARG RUSTUPTAG="1.28.2"
