@@ -79,6 +79,7 @@ RUN grep ".*linux-x64-musl.tar.xz" checksums.txt | echo $(awk '{print $1}') \*no
     rm -rf /usr/local/CHANGELOG.md; \
     rm -rf /usr/local/LICENSE; \
     rm -rf /usr/local/README.md;
+RUN npm install --global corepack
 
 FROM reg.g5d.dev/alpine@sha256:7211bbcb473c8864fd23e55127cd95b8eda844227c28184a326af48797dd6eee
 
