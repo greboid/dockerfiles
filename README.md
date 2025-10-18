@@ -17,19 +17,6 @@ and can follow upstream updates as quickly or slowly as required.
 I'm using these production services, but won't vouch for their stability or usability for anyone else's 
 purposes. Feel free to use them, and report any issues you do find, but at your own risk!
 
-## Structure
-
-Each image has its own folder, containing:
-
-* `Dockerfile` - the actual dockerfile the latest version should be built from
-* `Dockerfile.gotpl` - a template file for generating the Dockerfile
-
-The template files using go's [text/template syntax](https://pkg.go.dev/text/template), with functions
-defined to retrieve the latest images, releases, packages, etc.
-
-Dockerfiles are updated using [contempt](https://github.com/csmith/contempt).  This can also be used
-to commit, build and push any changes.
-
 ## Images
 
 All images are available at `reg.g5d.dev/<name>`. Only the latest tag is built.
