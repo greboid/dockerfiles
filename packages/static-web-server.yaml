@@ -1,0 +1,40 @@
+package:
+  name: static-web-server
+  version: 2.38.1
+  epoch: 0
+  description: Static web server (Rust)
+  target-architecture:
+    - x86_64
+update:
+  enabled: true
+  git:
+    strip-prefix: v
+environment:
+  contents:
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.22/main
+    packages:
+      - rust
+      - busybox
+      - ca-certificates-bundle
+      - gcc
+      - musl-dev
+      - git
+  environment:
+    RUSTUP_HOME: "/usr/local/rustup"
+    CARGO_HOME: "/usr/local/cargo"
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/static-web-server/static-web-server
+      tag: v${{package.version}}
+  - uses: patch
+    with:
+      patches: static-web-server/keepqueriesonrewrites.diff
+  - uses: cargo/build
+    with:
+      output: ${{package.name}}
+  - uses: strip
+test:
+  pipeline:
+    - runs: sws --version

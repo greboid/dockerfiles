@@ -1,0 +1,34 @@
+package:
+  name: irc-webhook
+  version: 4.1
+  epoch: 0
+  target-architecture:
+    - x86_64
+update:
+  enabled: true
+  git:
+    strip-prefix: v
+environment:
+  contents:
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.22/main
+    packages:
+      - go
+      - busybox
+      - ca-certificates-bundle
+  environment:
+    GOPROXY: "https://proxy.golang.org"
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/greboid/irc-webhook
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd/webhook
+      output: irc-webhook
+      strip: -w -s
+      ldflags: -extldflags "-static" -buildid=
+test:
+  pipeline:
+    - runs: irc-webhook --help

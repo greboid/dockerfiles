@@ -1,0 +1,69 @@
+package:
+  name: go
+  version: 1.25.3
+  epoch: 0
+  description: Go programming language toolchain
+  target-architecture:
+    - x86_64
+update:
+  enabled: true
+  git:
+    strip-prefix: go
+environment:
+  contents:
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.22/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.22/community
+    packages:
+      - bash
+      - ca-certificates-bundle
+      - go
+      - gcc
+      - musl-dev
+      - git
+  environment:
+    GOPATH: "/go"
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://golang.org/dl/go${{package.version}}.src.tar.gz
+      expected-sha256: a81a4ba593d0015e10c51e267de3ff07c7ac914dfca037d9517d029517097795
+      strip-components: 0
+  - runs: |
+      cd go/src
+      GOROOT_BOOTSTRAP="$(go env GOROOT)" GOHOSTOS="linux" GOHOSTARCH="${{build.goarch}}" ./make.bash
+  - runs: |
+      cd go
+
+      mkdir -p "${{targets.destdir}}"/usr/local/go/bin
+      mkdir -p "${{targets.destdir}}"/usr/bin
+      mkdir -p "${{targets.destdir}}"/go/src
+      mkdir -p "${{targets.destdir}}"/go/bin
+
+      # Install go binaries
+      for bin in go gofmt; do
+        install -Dm755 bin/$bin "${{targets.destdir}}"/usr/local/go/bin/$bin
+        ln -s /usr/local/go/bin/$bin "${{targets.destdir}}"/usr/bin/
+      done
+
+      # Copy go distribution
+      cp -a pkg lib "${{targets.destdir}}"/usr/local/go/
+      cp -a src "${{targets.destdir}}"/usr/local/go/
+
+      # Clean up unnecessary files
+      rm -rf "${{targets.destdir}}"/usr/local/go/pkg/obj
+      rm -rf "${{targets.destdir}}"/usr/local/go/pkg/bootstrap
+      rm -rf "${{targets.destdir}}"/usr/local/go/pkg/tool/*/api
+      rm -rf "${{targets.destdir}}"/usr/local/go/pkg/*/cmd
+      rm -rf "${{targets.destdir}}"/usr/local/go/pkg/tool/*/go_bootstrap
+      rm -rf "${{targets.destdir}}"/usr/local/go/src/cmd/dist/dist
+
+      # Remove tests
+      find "${{targets.destdir}}"/usr/local/go/src \( -type f -a -name "*_test.go" \) -exec rm -rf \{\} \+
+      find "${{targets.destdir}}"/usr/local/go/src \( -type d -a -name "testdata" \) -exec rm -rf \{\} \+
+      find "${{targets.destdir}}"/usr/local/go/src \( -type f -a -name "*.rc" \) -exec rm -rf \{\} \+
+      find "${{targets.destdir}}"/usr/local/go/src \( -type f -a -name "*.bat" \) -exec rm -rf \{\} \+
+
+      # Set up GOPATH
+      chmod -R 777 "${{targets.destdir}}"/go
+  - uses: strip

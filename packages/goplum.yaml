@@ -1,0 +1,44 @@
+package:
+  name: goplum
+  version: 0.8.0
+  epoch: 0
+  description: IRC paste service with plugin support
+  target-architecture:
+    - x86_64
+update:
+  enabled: true
+  git:
+    strip-prefix: v
+environment:
+  contents:
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.22/main
+    packages:
+      - go
+      - gcc
+      - musl-dev
+      - busybox
+      - ca-certificates-bundle
+  environment:
+    GOPROXY: "https://proxy.golang.org"
+    CGO_ENABLED: 1
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/csmith/goplum
+      tag: v${{package.version}}
+  - runs: |
+      # Build all plugins
+      for plugin in $(ls plugins); do
+        go build -o $plugin.so -buildmode=plugin ./plugins/$plugin/cmd
+      done
+      # Install plugins to destdir
+      mkdir -p "${{targets.destdir}}"/plugins
+      mv *.so "${{targets.destdir}}"/plugins/
+  - uses: go/build
+    with:
+      packages: ./cmd/goplum
+      output: goplum
+test:
+  pipeline:
+    - runs: goplum --help

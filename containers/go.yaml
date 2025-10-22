@@ -1,0 +1,25 @@
+contents:
+  packages:
+    - go
+
+accounts:
+  groups:
+    - groupname: nobody
+      gid: 65534
+    - groupname: nonroot
+      gid: 65532
+  users:
+    - username: nobody
+      uid: 65534
+      gid: 65534
+    - username: nonroot
+      uid: 65532
+      gid: 65532
+  run-as: nonroot
+
+work-dir:
+  /home/nonroot
+
+environment:
+  SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+  LANG: en_US.UTF-8
