@@ -1,4 +1,0 @@
-include: base.yaml
-contents:
-  packages:
-    - certwrapper
