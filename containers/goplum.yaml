@@ -1,0 +1,6 @@
+include: base.yaml
+contents:
+  repositories:
+    - https://dl-cdn.alpinelinux.org/alpine/v3.22/main
+  packages:
+    - goplum
