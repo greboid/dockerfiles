@@ -270,6 +270,11 @@ func (cg *ContainerGraph) BuildContainers(force bool, forceAll bool, containerNa
 		buildOrder = cg.getDependencies(containerName)
 	}
 
+	// Create output directory if it doesn't exist
+	if err := os.MkdirAll("output", 0755); err != nil {
+		return fmt.Errorf("failed to create output directory: %w", err)
+	}
+
 	for _, name := range buildOrder {
 		yamlFile := filepath.Join(cg.dir, fmt.Sprintf("%s.yaml", name))
 
@@ -288,9 +293,10 @@ func (cg *ContainerGraph) BuildContainers(force bool, forceAll bool, containerNa
 			"--repository-append", "repo",
 			"--keyring-append", "melange.rsa.pub",
 			"--arch", "amd64",
+			"--sbom-path", "output",
 			yamlFile,
 			name,
-			fmt.Sprintf("%s.tar.gz", name),
+			filepath.Join("output", fmt.Sprintf("%s.tar.gz", name)),
 		)
 
 		cmd.Stdout = os.Stdout

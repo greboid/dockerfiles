@@ -1,3 +1,4 @@
-/repo/*
-/bin/*
-/node_modules/*
+/repo/
+/bin/
+/node_modules/
+/output/
