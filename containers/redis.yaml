@@ -2,5 +2,10 @@ include: base.yaml
 contents:
   packages:
     - redis
+paths:
+  - path: /home/nonroot/database
+    type: directory
+    uid: 65532
+    gid: 65532
 entrypoint:
-  command: /usr/bin/redis-server
+  command: /usr/bin/redis-server /etc/redis.conf

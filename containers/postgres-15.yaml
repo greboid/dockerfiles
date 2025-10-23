@@ -4,5 +4,21 @@ contents:
     - https://dl-cdn.alpinelinux.org/alpine/v3.22/main
   packages:
     - postgres-15
+paths:
+  - path: /home/nonroot/database
+    type: directory
+    uid: 65532
+    gid: 65532
+  - path: /docker-entrypoint-initdb.d
+    type: directory
+    uid: 65532
+    gid: 65532
+stop-signal: SIGINT
+environment:
+  PATH: /usr/local/pgsql/bin:$PATH
+  LANG: en_US.utf8
+  PGDATA: /var/lib/postgresql/data
+  PGHOST: 127.0.0.1
+  PGUSER: postgres
 entrypoint:
-  command: /bin/sh -l
+  command: /usr/local/bin/entry.sh; postgres -c listen_addresses=*

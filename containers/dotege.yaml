@@ -2,5 +2,18 @@ include: base.yaml
 contents:
   packages:
     - dotege
+paths:
+  - path: /data/config
+    type: directory
+    uid: 65532
+    gid: 65532
+  - path: /data/certs
+    type: directory
+    uid: 65532
+    gid: 65532
+  - path: /data/output
+    type: directory
+    uid: 65532
+    gid: 65532
 entrypoint:
   command: /usr/bin/dotege

@@ -2,5 +2,10 @@ include: base.yaml
 contents:
   packages:
     - ergo
+paths:
+  - path: /ircd
+    type: directory
+    uid: 65532
+    gid: 65532
 entrypoint:
-  command: /usr/bin/ergo
+  command: /certwrapper /usr/bin/ergo run --config /ircd/ircd.yaml

@@ -2,5 +2,18 @@ include: base.yaml
 contents:
   packages:
     - linx-server
+paths:
+  - path: /data
+    type: directory
+    uid: 65532
+    gid: 65532
+  - path: /data/files
+    type: directory
+    uid: 65532
+    gid: 65532
+  - path: /data/meta
+    type: directory
+    uid: 65532
+    gid: 65532
 entrypoint:
-  command: /usr/bin/linx-server
+  command: /usr/bin/linx-server -bind=0.0.0.0:8080 -filespath=/data/files/ -metapath=/data/meta/ -sitename=linx -allowhotlink

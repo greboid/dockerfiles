@@ -2,5 +2,14 @@ include: base.yaml
 contents:
   packages:
     - centauri
+paths:
+  - path: /data
+    type: directory
+    uid: 65532
+    gid: 65532
+  - path: /home/nonroot/.config
+    type: directory
+    uid: 65532
+    gid: 65532
 entrypoint:
   command: /usr/bin/centauri
