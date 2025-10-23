@@ -4,3 +4,5 @@ contents:
     - https://dl-cdn.alpinelinux.org/alpine/v3.22/main
   packages:
     - postgres-15
+entrypoint:
+  command: /bin/sh -l

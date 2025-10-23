@@ -2,3 +2,5 @@ include: base.yaml
 contents:
   packages:
     - soju
+entrypoint:
+  command: /usr/bin/soju

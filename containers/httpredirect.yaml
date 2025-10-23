@@ -2,3 +2,5 @@ include: base.yaml
 contents:
   packages:
     - httpredirect
+entrypoint:
+  command: /usr/bin/httpredirect

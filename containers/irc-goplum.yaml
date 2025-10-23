@@ -2,3 +2,5 @@ include: base.yaml
 contents:
   packages:
     - irc-goplum
+entrypoint:
+  command: /usr/bin/irc-goplum

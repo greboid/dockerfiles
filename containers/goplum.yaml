@@ -4,3 +4,5 @@ contents:
     - https://dl-cdn.alpinelinux.org/alpine/v3.22/main
   packages:
     - goplum
+entrypoint:
+  command: /usr/bin/goplum

@@ -2,3 +2,5 @@ include: base.yaml
 contents:
   packages:
     - tsp
+entrypoint:
+  command: /usr/bin/tsp

@@ -2,3 +2,5 @@ include: base.yaml
 contents:
   packages:
     - irc-github
+entrypoint:
+  command: /usr/bin/irc-github

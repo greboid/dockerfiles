@@ -4,3 +4,5 @@ contents:
     - https://dl-cdn.alpinelinux.org/alpine/v3.22/main
   packages:
     - static-web-server
+entrypoint:
+  command: /usr/bin/static-web-server

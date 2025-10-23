@@ -2,3 +2,5 @@ include: base.yaml
 contents:
   packages:
     - centauri
+entrypoint:
+  command: /usr/bin/centauri

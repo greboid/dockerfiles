@@ -2,3 +2,5 @@ include: base.yaml
 contents:
   packages:
     - githubmirror
+entrypoint:
+  command: /usr/bin/githubmirror

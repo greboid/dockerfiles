@@ -2,3 +2,5 @@ include: base.yaml
 contents:
   packages:
     - registryauth
+entrypoint:
+  command: /usr/bin/registryauth

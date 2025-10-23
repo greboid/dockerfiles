@@ -2,3 +2,5 @@ include: base.yaml
 contents:
   packages:
     - ergo
+entrypoint:
+  command: /usr/bin/ergo

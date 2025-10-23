@@ -2,3 +2,5 @@ include: base.yaml
 contents:
   packages:
     - irc-webhook
+entrypoint:
+  command: /usr/bin/irc-webhook

@@ -2,3 +2,5 @@ include: base.yaml
 contents:
   packages:
     - linx-server
+entrypoint:
+  command: /usr/bin/linx-server
