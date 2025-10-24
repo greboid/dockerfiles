@@ -1,6 +1,6 @@
 package:
   name: miniflux
-  version: 2.2.13
+  version: "2.2.14"
   epoch: 0
   target-architecture:
     - x86_64

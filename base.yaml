@@ -16,6 +16,12 @@ accounts:
 work-dir:
   /home/nonroot
 
+contents:
+  repositories:
+    - https://dl-cdn.alpinelinux.org/alpine/v3.22/main
+  packages:
+    - ca-certificates-bundle
+
 environment:
   SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
   LANG: en_US.UTF-8

@@ -35,6 +35,7 @@ pipeline:
   - uses: autoconf/make
   - uses: autoconf/make-install
   - runs: |
+      mkdir -p "${{targets.destdir}}"/etc
       cp redis/redis.conf "${{targets.destdir}}"/etc/redis.conf
   - uses: strip
 test:

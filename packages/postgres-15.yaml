@@ -1,6 +1,6 @@
 package:
   name: postgres-15
-  version: 15.14
+  version: "15.14"
   epoch: 0
   description: PostgreSQL 15 database server
   target-architecture:
