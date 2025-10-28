@@ -66,6 +66,7 @@ func Container(name, containersDir, repoDir, keyring, registry, outputDir string
 	var args []string
 	if push {
 		// Publish directly to registry (apko will use Docker credential helpers)
+		log.Printf("Push enabled: publishing to %s/%s:latest", registry, name)
 		args = []string{
 			"publish",
 			"--repository-append", repoDir,

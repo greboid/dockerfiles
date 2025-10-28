@@ -16,8 +16,6 @@ import (
 	"package-order/internal/registry"
 	"package-order/internal/spec"
 	"package-order/internal/update"
-
-	"github.com/csmith/envflag/v2"
 )
 
 func main() {
@@ -474,21 +472,24 @@ func updateListCommand() {
 
 // ciCommand handles CI build mode
 func ciCommand() {
-	registryFlag := flag.String("registry", "reg.g5d.dev", "Docker registry to check and push to")
-	push := flag.Bool("push", false, "Push images to registry after building")
-	checkOnly := flag.Bool("check-only", false, "Only check what needs to be built, don't build")
-	signingKey := flag.String("signing-key", "melange.rsa", "Path to melange signing key")
-	keyring := flag.String("keyring", "melange.rsa.pub", "Path to keyring")
-	packagesDir := flag.String("packages-dir", "packages", "Directory containing package YAML files")
-	containersDir := flag.String("containers-dir", "containers", "Directory containing container YAML files")
-	repoDir := flag.String("repo-dir", "repo", "Directory for APK repository")
-	outputDir := flag.String("output-dir", "output", "Directory for build output and SBOMs")
-	updatePackagesFlag := flag.Bool("update", false, "Check for and update packages to latest versions before building")
-	containerFlag := flag.String("container", "", "Build only the specified container and its dependencies")
-	forcePackages := flag.Bool("force-packages", false, "Force rebuild of package dependencies for the specified container")
-	forceAllPackages := flag.Bool("force-all-packages", false, "Force rebuild of all package dependencies (direct and transitive)")
+	fs := flag.NewFlagSet("ci", flag.ExitOnError)
+	registryFlag := fs.String("registry", "reg.g5d.dev", "Docker registry to check and push to")
+	push := fs.Bool("push", false, "Push images to registry after building")
+	checkOnly := fs.Bool("check-only", false, "Only check what needs to be built, don't build")
+	signingKey := fs.String("signing-key", "melange.rsa", "Path to melange signing key")
+	keyring := fs.String("keyring", "melange.rsa.pub", "Path to keyring")
+	packagesDir := fs.String("packages-dir", "packages", "Directory containing package YAML files")
+	containersDir := fs.String("containers-dir", "containers", "Directory containing container YAML files")
+	repoDir := fs.String("repo-dir", "repo", "Directory for APK repository")
+	outputDir := fs.String("output-dir", "output", "Directory for build output and SBOMs")
+	updatePackagesFlag := fs.Bool("update", false, "Check for and update packages to latest versions before building")
+	containerFlag := fs.String("container", "", "Build only the specified container and its dependencies")
+	forcePackages := fs.Bool("force-packages", false, "Force rebuild of package dependencies for the specified container")
+	forceAllPackages := fs.Bool("force-all-packages", false, "Force rebuild of all package dependencies (direct and transitive)")
 
-	envflag.Parse()
+	if err := fs.Parse(os.Args[2:]); err != nil {
+		log.Fatalf("Failed to parse flags: %v", err)
+	}
 
 	ctx := context.Background()
 
