@@ -39,6 +39,7 @@ pipeline:
       cp -a /tmp/node-v${{package.version}}-linux-x64-musl/* "${{targets.destdir}}"/usr/local/
 
       # Clean up documentation
+      rm -rf "${{targets.destdir}}"/usr/local/share/man
       rm -rf "${{targets.destdir}}"/usr/local/CHANGELOG.md
       rm -rf "${{targets.destdir}}"/usr/local/LICENSE
       rm -rf "${{targets.destdir}}"/usr/local/README.md
