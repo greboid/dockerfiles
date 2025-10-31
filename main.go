@@ -12,7 +12,6 @@ import (
 
 	"package-order/internal/build"
 	"package-order/internal/command"
-	"package-order/internal/container"
 	"package-order/internal/registry"
 	"package-order/internal/spec"
 	"package-order/internal/update"
@@ -247,7 +246,7 @@ func containersBuildCommand() {
 	}
 
 	checkNeedsBuild := func(name string) bool {
-		return container.NeedsBuild(name, "output")
+		return command.NeedsBuild(name, "output")
 	}
 
 	buildItem := func(name string) error {

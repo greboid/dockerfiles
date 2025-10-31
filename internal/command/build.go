@@ -3,6 +3,8 @@ package command
 import (
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 
 	"package-order/internal/graph"
 )
@@ -69,4 +71,11 @@ func ResolveBuildOrder(g *graph.Graph, itemName string) ([]string, error) {
 	}
 
 	return buildOrder, nil
+}
+
+// NeedsBuild determines if a container needs to be built
+func NeedsBuild(name string, outputDir string) bool {
+	tarFile := filepath.Join(outputDir, fmt.Sprintf("%s.tar.gz", name))
+	_, err := os.Stat(tarFile)
+	return os.IsNotExist(err)
 }
