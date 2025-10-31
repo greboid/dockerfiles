@@ -1,6 +1,6 @@
 package:
   name: node
-  version: 25.0.0
+  version: "25.1.0"
   epoch: 0
   description: Node.js JavaScript runtime
   target-architecture:

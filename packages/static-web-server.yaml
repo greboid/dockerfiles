@@ -1,6 +1,6 @@
 package:
   name: static-web-server
-  version: 2.38.1
+  version: "2.39.0"
   epoch: 0
   description: Static web server (Rust)
   target-architecture:
