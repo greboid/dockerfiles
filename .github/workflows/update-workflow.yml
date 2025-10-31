@@ -31,5 +31,3 @@ jobs:
         with:
             commit_message: "Update container workflow"
             file_pattern: '.github/workflows/update-containers.yml'
-      - name: Push changes
-        uses: cutlerydrawer/action-git-try-push@v2
