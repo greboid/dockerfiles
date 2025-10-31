@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/sws/Containerfile.gotpl
-# BOM: {"apk:binutils":"2.44-r3","apk:brotli-libs":"1.1.0-r2","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20250911-r0","apk:gcc":"14.2.0-r6","apk:git":"2.49.1-r0","apk:gmp":"6.3.0-r3","apk:isl25":"0.25-r2","apk:jansson":"2.14.1-r0","apk:libatomic":"14.2.0-r6","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.14.1-r2","apk:libexpat":"2.7.3-r0","apk:libgcc":"14.2.0-r6","apk:libgomp":"14.2.0-r6","apk:libidn2":"2.3.7-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"14.2.0-r6","apk:libunistring":"1.3-r0","apk:make":"4.4.1-r3","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.1_p1-r0","apk:musl":"1.2.5-r10","apk:musl-dev":"1.2.5-r10","apk:nghttp2-libs":"1.65.0-r0","apk:pcre2":"10.46-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r0","github:static-web-server/static-web-server":"v2.39.0","image:base":"2fe747140f45e8ae4257986653a43e1dc43b9d0dec0338d365cfdd9b03ad6588","image:rust":"3e14b725a38e553a752d2babbef593bc5cd5df1fd8f5dc0d0195919348c7f193"}
+# BOM: {"apk:binutils":"2.44-r3","apk:brotli-libs":"1.1.0-r2","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20250911-r0","apk:gcc":"14.2.0-r6","apk:git":"2.49.1-r0","apk:gmp":"6.3.0-r3","apk:isl25":"0.25-r2","apk:jansson":"2.14.1-r0","apk:libatomic":"14.2.0-r6","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.14.1-r2","apk:libexpat":"2.7.3-r0","apk:libgcc":"14.2.0-r6","apk:libgomp":"14.2.0-r6","apk:libidn2":"2.3.7-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"14.2.0-r6","apk:libunistring":"1.3-r0","apk:make":"4.4.1-r3","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.1_p1-r0","apk:musl":"1.2.5-r10","apk:musl-dev":"1.2.5-r10","apk:nghttp2-libs":"1.65.0-r0","apk:pcre2":"10.46-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r0","github:static-web-server/static-web-server":"v2.39.0","image:base":"30995361a09109d75245595ddd5d80fa2ece82defd0e37bedd42de2c2dc4cabd","image:rust":"32fd835c731097b23b2bc0f56bcd1453ba9770da13529a8666d1d10ac1eadc44"}
 
-FROM reg.g5d.dev/rust@sha256:3e14b725a38e553a752d2babbef593bc5cd5df1fd8f5dc0d0195919348c7f193 AS build
+FROM reg.g5d.dev/rust@sha256:32fd835c731097b23b2bc0f56bcd1453ba9770da13529a8666d1d10ac1eadc44 AS build
 
 ARG TAG=v2.39.0
 
@@ -50,7 +50,7 @@ WORKDIR /src
 RUN set -eux; \
     cargo build --release
 
-FROM reg.g5d.dev/base@sha256:2fe747140f45e8ae4257986653a43e1dc43b9d0dec0338d365cfdd9b03ad6588
+FROM reg.g5d.dev/base@sha256:30995361a09109d75245595ddd5d80fa2ece82defd0e37bedd42de2c2dc4cabd
 
 COPY --from=build /src/target/release/static-web-server /sws
 
