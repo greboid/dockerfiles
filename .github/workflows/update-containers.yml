@@ -1,0 +1,237 @@
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '42 12 * * *'
+  push:
+    paths-ignore:
+      - '**/Containerfile'
+      - '**/Dockerfile'
+      - '.github/**'
+      - 'README.md'
+name: Update Containers
+concurrency: dockerfiles
+permissions:
+  contents: write
+jobs:
+  setup-cache:
+    name: Setup cache
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout
+          uses: actions/checkout@master
+  centauri:
+    name: Build centauri
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: centauri
+  dockercleanup:
+    name: Build dockercleanup
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: dockercleanup
+  dotege:
+    name: Build dotege
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: dotege
+  dsp:
+    name: Build dsp
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: dsp
+  ergo:
+    name: Build ergo
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: ergo
+  githubmirror:
+    name: Build githubmirror
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: githubmirror
+  golink:
+    name: Build golink
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: golink
+  goplum:
+    name: Build goplum
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: goplum
+  httpredirect:
+    name: Build httpredirect
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: httpredirect
+  identd:
+    name: Build identd
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: identd
+  irc-bot:
+    name: Build irc-bot
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: irc-bot
+  irc-distribution:
+    name: Build irc-distribution
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: irc-distribution
+  irc-github:
+    name: Build irc-github
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: irc-github
+  irc-goplum:
+    name: Build irc-goplum
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: irc-goplum
+  irc-notifier:
+    name: Build irc-notifier
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: irc-notifier
+  irc-webhook:
+    name: Build irc-webhook
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: irc-webhook
+  linx-server:
+    name: Build linx-server
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: linx-server
+  miniflux:
+    name: Build miniflux
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: miniflux
+  postgres-15:
+    name: Build postgres-15
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: postgres-15
+  puzzles:
+    name: Build puzzles
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: puzzles
+  redis:
+    name: Build redis
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: redis
+  registryauth:
+    name: Build registryauth
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: registryauth
+  soju:
+    name: Build soju
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: soju
+  static-web-server:
+    name: Build static-web-server
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: static-web-server
+  thelounge:
+    name: Build thelounge
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: thelounge
+  tsp:
+    name: Build tsp
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: tsp
+  webhooked:
+    name: Build webhooked
+    needs:
+        - setup-cache
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: webhooked
