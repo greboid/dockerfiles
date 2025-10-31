@@ -1,4 +1,3 @@
-{%- raw -%}
 on:
   workflow_dispatch:
   schedule:
@@ -18,23 +17,18 @@ jobs:
     name: Setup cache
     runs-on: ubuntu-latest
     steps:
-        - name: Install latest contempt
-          uses: mattdowdell/go-installer@v0.3.0
-          with:
-              package: github.com/csmith/contempt/cmd/contempt
-  {%- endraw -%}
-  {%- for target in targets %}
-  {{ target.name }}:
-    name: Build {{ target.name }}
+        - name: Checkout
+          uses: actions/checkout@master
+{{- range .Containers }}
+  {{ .Name }}:
+    name: Build {{ .Name }}
     needs:
         - setup-cache
-{% if target.needed.size > 0 -%}
-{%- for dep in target.needed %}
-        - {{ dep -}}
-{%- endfor -%}
-{% endif %}
+{{- range .Dependencies }}
+        - {{ . }}
+{{- end }}
     uses: ./.github/workflows/container-builder.yml
     secrets: inherit
     with:
-        PROJECT_NAME: {{ target.name }}
-{% endfor %}
+        PROJECT_NAME: {{ .Name }}
+{{- end }}
