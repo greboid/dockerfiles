@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"text/template"
 
 	"package-order/internal/build"
 	"package-order/internal/command"
@@ -34,6 +35,8 @@ func main() {
 		updateCommand()
 	case "ci":
 		ciCommand()
+	case "generate-workflow":
+		generateWorkflowCommand()
 	case "help", "-h", "--help":
 		printHelp()
 		os.Exit(0)
@@ -55,6 +58,7 @@ func printHelp() {
 	fmt.Println("  containers <subcommand>  Manage containers")
 	fmt.Println("  update <subcommand>      Update package versions")
 	fmt.Println("  ci [options]             CI build mode")
+	fmt.Println("  generate-workflow        Generate GitHub Actions workflow")
 	fmt.Println("  help                     Show this help message")
 	fmt.Println()
 	fmt.Println("Use 'dockerfiles <command> help' for more information about a command")
@@ -756,4 +760,63 @@ func ciCommand() {
 	}
 
 	log.Println("\nAll builds completed successfully!")
+}
+
+type containerData struct {
+	Name         string
+	Dependencies []string
+}
+
+type workflowData struct {
+	Containers []containerData
+}
+
+// generateWorkflowCommand generates the GitHub Actions workflow from template
+func generateWorkflowCommand() {
+	templatePath := ".github/workflows/update-containers.yml.gotpl"
+	outputPath := ".github/workflows/update-containers.yml"
+
+	// Load container specs
+	containerGraph, _, err := spec.LoadContainerGraph("containers")
+	if err != nil {
+		log.Fatalf("Failed to load containers: %v", err)
+	}
+
+	// Get build order
+	buildOrder, err := containerGraph.TopologicalSort()
+	if err != nil {
+		log.Fatalf("Failed to sort containers: %v", err)
+	}
+
+	// Prepare template data
+	var containers []containerData
+	for _, name := range buildOrder {
+		deps := containerGraph.Nodes[name]
+		containers = append(containers, containerData{
+			Name:         name,
+			Dependencies: deps,
+		})
+	}
+
+	data := workflowData{
+		Containers: containers,
+	}
+
+	// Parse and execute template
+	tmpl, err := template.ParseFiles(templatePath)
+	if err != nil {
+		log.Fatalf("Failed to parse template: %v", err)
+	}
+
+	outputFile, err := os.Create(outputPath)
+	if err != nil {
+		log.Fatalf("Failed to create output file: %v", err)
+	}
+	defer outputFile.Close()
+
+	if err := tmpl.Execute(outputFile, data); err != nil {
+		log.Fatalf("Failed to execute template: %v", err)
+	}
+
+	log.Printf("Generated workflow with %d container jobs", len(buildOrder))
 }
