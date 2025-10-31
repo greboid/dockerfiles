@@ -2,10 +2,5 @@ include: base.yaml
 contents:
   packages:
     - puzzles
-paths:
-  - path: /home/nonroot/database
-    type: directory
-    uid: 65532
-    gid: 65532
 entrypoint:
   command: /usr/bin/puzzles
