@@ -12,6 +12,8 @@
       steps:
         - name: Checkout source
           uses: actions/checkout@master
+        - name: Install bubblewrap
+          run: sudo apt-get update && sudo apt-get install -y bubblewrap
         - name: Setup Go
           uses: actions/setup-go@v6
           with:
