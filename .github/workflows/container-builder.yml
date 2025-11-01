@@ -12,8 +12,11 @@
       steps:
         - name: Checkout source
           uses: actions/checkout@master
-        - name: Install bubblewrap
-          run: sudo apt-get update && sudo apt-get install -y bubblewrap
+        - name: Install bubblewrap and configure AppArmor
+          run: |
+            sudo apt-get update && sudo apt-get install -y bubblewrap
+            echo "kernel.apparmor_restrict_unprivileged_userns = 0" | sudo tee /etc/sysctl.d/60-apparmor-namespace.conf
+            sudo sysctl --system
         - name: Setup Go
           uses: actions/setup-go@v6
           with:
