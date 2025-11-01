@@ -2,5 +2,5 @@
 /bin/
 /node_modules/
 /output/
-melange.rsa
-melange.rsa.pub
+greboid-dockerfiles.rsa
+greboid-dockerfiles.rsa.pub

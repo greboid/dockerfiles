@@ -164,7 +164,7 @@ func packagesBuildCommand() {
 	}
 
 	buildItem := func(name string) error {
-		if err := build.Package(name, "packages", "./repo", "melange.rsa", "melange.rsa.pub"); err != nil {
+		if err := build.Package(name, "packages", "./repo", "greboid-dockerfiles.rsa", "greboid-dockerfiles.rsa.pub"); err != nil {
 			// Clean up bubblewrap dirs after a failed build
 			if cleanupErr := build.CleanupBubblewrapDirs(); cleanupErr != nil {
 				log.Printf("Warning: cleanup after failed build failed: %v", cleanupErr)
@@ -254,7 +254,7 @@ func containersBuildCommand() {
 	}
 
 	buildItem := func(name string) error {
-		return build.Container(name, "containers", "repo", "melange.rsa.pub", "", "output", false)
+		return build.Container(name, "containers", "repo", "greboid-dockerfiles.rsa.pub", "", "output", false)
 	}
 
 	cleanup := func(name string) error {
@@ -479,8 +479,8 @@ func ciCommand() {
 	registryFlag := fs.String("registry", "reg.g5d.dev", "Docker registry to check and push to")
 	push := fs.Bool("push", false, "Push images to registry after building")
 	checkOnly := fs.Bool("check-only", false, "Only check what needs to be built, don't build")
-	signingKey := fs.String("signing-key", "melange.rsa", "Path to melange signing key")
-	keyring := fs.String("keyring", "melange.rsa.pub", "Path to keyring")
+	signingKey := fs.String("signing-key", "greboid-dockerfiles.rsa", "Path to melange signing key")
+	keyring := fs.String("keyring", "greboid-dockerfiles.rsa.pub", "Path to keyring")
 	packagesDir := fs.String("packages-dir", "packages", "Directory containing package YAML files")
 	containersDir := fs.String("containers-dir", "containers", "Directory containing container YAML files")
 	repoDir := fs.String("repo-dir", "repo", "Directory for APK repository")
