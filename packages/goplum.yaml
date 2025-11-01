@@ -30,15 +30,13 @@ pipeline:
   - runs: |
       # Build all plugins
       for plugin in $(ls plugins); do
-        go build -o $plugin.so -buildmode=plugin ./plugins/$plugin/cmd
+        go build -tags "netgo,osusergo" -ldflags "-w" -trimpath -o $plugin.so -buildmode=plugin ./plugins/$plugin/cmd
       done
       # Install plugins to destdir
       mkdir -p "${{targets.destdir}}"/plugins
       mv *.so "${{targets.destdir}}"/plugins/
-  - uses: go/build
-    with:
-      packages: ./cmd/goplum
-      output: goplum
+  - runs: |
+      go build -tags "netgo,osusergo" -ldflags "-w" -trimpath -o "${{targets.destdir}}"/usr/bin/goplum ./cmd/goplum
 test:
   pipeline:
     - runs: goplum --help
