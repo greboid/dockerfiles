@@ -46,5 +46,11 @@ jobs:
           chmod 644 greboid-dockerfiles.rsa.pub
       - name: Create repo directory
         run: mkdir -p repo
+      - name: Login to registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+          registry: ${{ secrets.REGISTRY }}
       - name: Build and push all containers
         run: ./dockerfiles ci --registry ${{ secrets.REGISTRY }} --update --push
