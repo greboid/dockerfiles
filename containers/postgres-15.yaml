@@ -4,6 +4,7 @@ contents:
     - https://dl-cdn.alpinelinux.org/alpine/v3.22/main
   packages:
     - postgres-15
+    - busybox
 paths:
   - path: /home/nonroot/database
     type: directory
@@ -23,4 +24,4 @@ environment:
   PGHOST: 127.0.0.1
   PGUSER: postgres
 entrypoint:
-  command: /usr/local/bin/entry.sh; postgres -c listen_addresses=*
+  command: /usr/local/bin/entry.sh -c listen_addresses=*

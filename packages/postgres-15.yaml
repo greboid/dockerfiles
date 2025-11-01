@@ -52,6 +52,10 @@ pipeline:
   - uses: autoconf/make-install
     with:
       dir: postgresql-${{package.version}}
+  - runs: |
+      mkdir -p "${{targets.destdir}}"/usr/local/bin
+      cp postgres-15/entry.sh "${{targets.destdir}}"/usr/local/bin/entry.sh
+      chmod +x "${{targets.destdir}}"/usr/local/bin/entry.sh
 test:
   pipeline:
     - runs: /usr/local/pgsql/bin/postgres --version
