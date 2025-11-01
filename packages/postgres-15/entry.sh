@@ -29,4 +29,4 @@ else
     echo "Database already initialized, skipping initialization"
 fi
 
-exec postgres "$@"
+exec /usr/bin/postgres "$@"

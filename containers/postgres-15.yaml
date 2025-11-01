@@ -5,6 +5,7 @@ contents:
   packages:
     - postgres-15
     - busybox
+    - tzdata
 paths:
   - path: /home/nonroot/database
     type: directory
