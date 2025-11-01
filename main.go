@@ -659,6 +659,51 @@ func ciCommand() {
 		}
 	}
 
+	// After determining containers to build, ensure all their dependencies are available
+	if len(containersToBuild) > 0 {
+		log.Println("Checking package dependencies for containers to build...")
+		additionalPackages := make(map[string]bool)
+
+		for _, containerName := range containersToBuild {
+			containerSpec := containerSpecs[containerName]
+			// Collect all package dependencies (direct + transitive)
+			packageDeps := spec.CollectContainerPackageDeps(containerSpec, packageGraph, packageNames)
+
+			// Check which dependencies are missing from repo
+			for pkgName := range packageDeps {
+				if pkgSpec, ok := packageSpecs[pkgName]; ok {
+					// Check if package needs to be built
+					if build.CheckPackageNeedsBuild(pkgSpec, *repoDir) {
+						if !additionalPackages[pkgName] {
+							additionalPackages[pkgName] = true
+							log.Printf("  - %s (required by container %s)", pkgName, containerName)
+						}
+					}
+				}
+			}
+		}
+
+		// Add missing dependencies to build list in topological order
+		if len(additionalPackages) > 0 {
+			log.Printf("Found %d additional package dependencies to build", len(additionalPackages))
+			for _, pkgName := range packageBuildOrder {
+				if additionalPackages[pkgName] {
+					// Check if not already in the build list
+					found := false
+					for _, existing := range packagesToBuild {
+						if existing == pkgName {
+							found = true
+							break
+						}
+					}
+					if !found {
+						packagesToBuild = append(packagesToBuild, pkgName)
+					}
+				}
+			}
+		}
+	}
+
 	// If updates are available and containers would need rebuilding, apply the updates
 	if updatesAvailable && len(containersToBuild) > 0 {
 		log.Println("\nApplying package updates that would trigger container rebuilds...")
