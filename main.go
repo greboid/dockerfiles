@@ -37,6 +37,8 @@ func main() {
 		ciCommand()
 	case "generate-workflow":
 		generateWorkflowCommand()
+	case "list-required-packages":
+		listRequiredPackagesCommand()
 	case "help", "-h", "--help":
 		printHelp()
 		os.Exit(0)
@@ -54,12 +56,13 @@ func printHelp() {
 	fmt.Println("Usage: dockerfiles <command> [subcommand] [options]")
 	fmt.Println()
 	fmt.Println("Commands:")
-	fmt.Println("  packages <subcommand>    Manage packages")
-	fmt.Println("  containers <subcommand>  Manage containers")
-	fmt.Println("  update <subcommand>      Update package versions")
-	fmt.Println("  ci [options]             CI build mode")
-	fmt.Println("  generate-workflow        Generate GitHub Actions workflow")
-	fmt.Println("  help                     Show this help message")
+	fmt.Println("  packages <subcommand>       Manage packages")
+	fmt.Println("  containers <subcommand>     Manage containers")
+	fmt.Println("  update <subcommand>         Update package versions")
+	fmt.Println("  ci [options]                CI build mode")
+	fmt.Println("  generate-workflow           Generate GitHub Actions workflow")
+	fmt.Println("  list-required-packages      List packages required by containers that need rebuilding")
+	fmt.Println("  help                        Show this help message")
 	fmt.Println()
 	fmt.Println("Use 'dockerfiles <command> help' for more information about a command")
 	fmt.Println()
@@ -819,4 +822,97 @@ func generateWorkflowCommand() {
 	}
 
 	log.Printf("Generated workflow with %d container jobs", len(buildOrder))
+}
+
+// listRequiredPackagesCommand lists packages required by containers that need rebuilding
+func listRequiredPackagesCommand() {
+	fs := flag.NewFlagSet("list-required-packages", flag.ExitOnError)
+	registryFlag := fs.String("registry", "reg.g5d.dev", "Docker registry to check")
+	packagesDir := fs.String("packages-dir", "packages", "Directory containing package YAML files")
+	containersDir := fs.String("containers-dir", "containers", "Directory containing container YAML files")
+	if err := fs.Parse(os.Args[2:]); err != nil {
+		log.Fatalf("Failed to parse flags: %v", err)
+	}
+
+	ctx := context.Background()
+
+	// Load package graph and specs
+	packageGraph, packageSpecs, err := spec.LoadPackageGraph(*packagesDir)
+	if err != nil {
+		log.Fatalf("Failed to load packages: %v", err)
+	}
+
+	// Create package names map
+	packageNames := make(map[string]bool)
+	packageBuildOrder, err := packageGraph.TopologicalSort()
+	if err != nil {
+		log.Fatalf("Failed to sort packages: %v", err)
+	}
+	for _, name := range packageBuildOrder {
+		packageNames[name] = true
+	}
+
+	// Check for package updates and create hypothetical specs
+	hypotheticalPackageSpecs := make(map[string]*spec.PackageSpec)
+	for name, s := range packageSpecs {
+		latestVersion, hasUpdate, err := update.CheckPackageUpdates(ctx, s)
+		if err != nil {
+			// If check fails, use current spec
+			hypotheticalPackageSpecs[name] = s
+			continue
+		}
+
+		if hasUpdate {
+			// Create hypothetical spec with new version
+			hypotheticalSpec := *s
+			hypotheticalSpec.Package.Version = latestVersion
+			hypotheticalPackageSpecs[name] = &hypotheticalSpec
+		} else {
+			hypotheticalPackageSpecs[name] = s
+		}
+	}
+
+	// Load container specs
+	containerGraph, containerSpecs, err := spec.LoadContainerGraph(*containersDir)
+	if err != nil {
+		log.Fatalf("Failed to load containers: %v", err)
+	}
+
+	// Determine which containers need to be built
+	containerBuildOrder, err := containerGraph.TopologicalSort()
+	if err != nil {
+		log.Fatalf("Failed to sort containers: %v", err)
+	}
+
+	var containersToBuild []string
+	for _, name := range containerBuildOrder {
+		s := containerSpecs[name]
+		// Use hypothetical package specs to check if container would need rebuilding
+		needsBuild, err := registry.CheckContainerNeedsBuild(name, hypotheticalPackageSpecs, s, *registryFlag)
+		if err != nil {
+			// If check fails, assume it needs build
+			needsBuild = true
+		}
+
+		if needsBuild {
+			containersToBuild = append(containersToBuild, name)
+		}
+	}
+
+	// Collect packages required by containers that need building
+	allRequiredPackages := make(map[string]bool)
+	for _, containerName := range containersToBuild {
+		containerSpec := containerSpecs[containerName]
+		packageDeps := spec.CollectContainerPackageDeps(containerSpec, packageGraph, packageNames)
+		for pkg := range packageDeps {
+			allRequiredPackages[pkg] = true
+		}
+	}
+
+	// Output packages in build order
+	for _, pkg := range packageBuildOrder {
+		if allRequiredPackages[pkg] {
+			fmt.Println(pkg)
+		}
+	}
 }
