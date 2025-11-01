@@ -824,10 +824,9 @@ func generateWorkflowCommand() {
 	log.Printf("Generated workflow with %d container jobs", len(buildOrder))
 }
 
-// listRequiredPackagesCommand lists packages required by containers that need rebuilding
+// listRequiredPackagesCommand lists packages required by containers affected by package updates
 func listRequiredPackagesCommand() {
 	fs := flag.NewFlagSet("list-required-packages", flag.ExitOnError)
-	registryFlag := fs.String("registry", "reg.g5d.dev", "Docker registry to check")
 	packagesDir := fs.String("packages-dir", "packages", "Directory containing package YAML files")
 	containersDir := fs.String("containers-dir", "containers", "Directory containing container YAML files")
 	if err := fs.Parse(os.Args[2:]); err != nil {
@@ -852,60 +851,51 @@ func listRequiredPackagesCommand() {
 		packageNames[name] = true
 	}
 
-	// Check for package updates and create hypothetical specs
-	hypotheticalPackageSpecs := make(map[string]*spec.PackageSpec)
+	// Check for package updates - collect packages that have updates
+	packagesWithUpdates := make(map[string]bool)
 	for name, s := range packageSpecs {
-		latestVersion, hasUpdate, err := update.CheckPackageUpdates(ctx, s)
+		_, hasUpdate, err := update.CheckPackageUpdates(ctx, s)
 		if err != nil {
-			// If check fails, use current spec
-			hypotheticalPackageSpecs[name] = s
+			// If check fails, skip this package
 			continue
 		}
 
 		if hasUpdate {
-			// Create hypothetical spec with new version
-			hypotheticalSpec := *s
-			hypotheticalSpec.Package.Version = latestVersion
-			hypotheticalPackageSpecs[name] = &hypotheticalSpec
-		} else {
-			hypotheticalPackageSpecs[name] = s
+			packagesWithUpdates[name] = true
 		}
 	}
 
+	// If no packages have updates, return empty list
+	if len(packagesWithUpdates) == 0 {
+		return
+	}
+
 	// Load container specs
-	containerGraph, containerSpecs, err := spec.LoadContainerGraph(*containersDir)
+	_, containerSpecs, err := spec.LoadContainerGraph(*containersDir)
 	if err != nil {
 		log.Fatalf("Failed to load containers: %v", err)
 	}
 
-	// Determine which containers need to be built
-	containerBuildOrder, err := containerGraph.TopologicalSort()
-	if err != nil {
-		log.Fatalf("Failed to sort containers: %v", err)
-	}
-
-	var containersToBuild []string
-	for _, name := range containerBuildOrder {
-		s := containerSpecs[name]
-		// Use hypothetical package specs to check if container would need rebuilding
-		needsBuild, err := registry.CheckContainerNeedsBuild(name, hypotheticalPackageSpecs, s, *registryFlag)
-		if err != nil {
-			// If check fails, assume it needs build
-			needsBuild = true
-		}
-
-		if needsBuild {
-			containersToBuild = append(containersToBuild, name)
-		}
-	}
-
-	// Collect packages required by containers that need building
+	// Collect all packages required by containers that use any updated package
 	allRequiredPackages := make(map[string]bool)
-	for _, containerName := range containersToBuild {
-		containerSpec := containerSpecs[containerName]
+	for _, containerSpec := range containerSpecs {
+		// Get all package dependencies for this container
 		packageDeps := spec.CollectContainerPackageDeps(containerSpec, packageGraph, packageNames)
+
+		// Check if any of this container's dependencies have updates
+		containerAffected := false
 		for pkg := range packageDeps {
-			allRequiredPackages[pkg] = true
+			if packagesWithUpdates[pkg] {
+				containerAffected = true
+				break
+			}
+		}
+
+		// If container is affected, add all its package dependencies to the build list
+		if containerAffected {
+			for pkg := range packageDeps {
+				allRequiredPackages[pkg] = true
+			}
 		}
 	}
 
