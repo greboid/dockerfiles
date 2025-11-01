@@ -38,6 +38,12 @@
           with:
             name: ${{ secrets.GIT_USERNAME }}
             email: ${{ secrets.GIT_EMAIL }}
+        - name: Write signing keys to disk
+          run: |
+            echo "${{ secrets.MELANGE_SIGNING_KEY }}" > greboid-dockerfiles.rsa
+            chmod 600 greboid-dockerfiles.rsa
+            openssl rsa -in greboid-dockerfiles.rsa -pubout -out greboid-dockerfiles.rsa.pub
+            chmod 644 greboid-dockerfiles.rsa.pub
         - name: Build and push container
           run: |
             ./dockerfiles ci --registry ${{ secrets.REGISTRY }} --update --push --container ${{ inputs.PROJECT_NAME }}
