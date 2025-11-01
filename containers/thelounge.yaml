@@ -7,7 +7,7 @@ contents:
     - thelounge
     - bash
 paths:
-  - path: /home/nonroot/.thelounge
+  - path: /home/nonroot/
     type: directory
     uid: 65532
     gid: 65532
