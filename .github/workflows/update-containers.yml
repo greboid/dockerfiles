@@ -4,8 +4,6 @@ on:
     - cron: '42 12 * * *'
   push:
     paths-ignore:
-      - '**/Containerfile'
-      - '**/Dockerfile'
       - '.github/**'
       - 'README.md'
 name: Update Containers
