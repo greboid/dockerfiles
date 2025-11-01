@@ -4,6 +4,9 @@
         PROJECT_NAME:
           required: true
           type: string
+        CACHE_KEY:
+          required: true
+          type: string
   name: Build Containers
   jobs:
     build:
@@ -23,7 +26,6 @@
             go-version: 'stable'
             cache: true
         - name: Restore build cache
-          id: cache-build
           uses: actions/cache/restore@v4
           with:
             path: |
@@ -33,29 +35,9 @@
               greboid-dockerfiles.rsa
               greboid-dockerfiles.rsa.pub
               repo/
-            key: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
-        - name: Install melange
-          if: steps.cache-build.outputs.cache-hit != 'true'
-          uses: mattdowdell/go-installer@v0.3.0
-          with:
-            package: chainguard.dev/melange
-        - name: Install apko
-          if: steps.cache-build.outputs.cache-hit != 'true'
-          uses: mattdowdell/go-installer@v0.3.0
-          with:
-            package: chainguard.dev/apko
-        - name: Build tool
-          if: steps.cache-build.outputs.cache-hit != 'true'
-          run: go build -o dockerfiles .
-        - name: Write signing keys to disk
-          if: steps.cache-build.outputs.cache-hit != 'true'
-          run: |
-            echo "${{ secrets.MELANGE_SIGNING_KEY }}" > greboid-dockerfiles.rsa
-            chmod 600 greboid-dockerfiles.rsa
-            openssl rsa -in greboid-dockerfiles.rsa -pubout -out greboid-dockerfiles.rsa.pub
-            chmod 644 greboid-dockerfiles.rsa.pub
+            key: ${{ inputs.CACHE_KEY }}
+            fail-on-cache-miss: true
         - name: Ensure tools are executable
-          if: steps.cache-build.outputs.cache-hit == 'true'
           run: |
             chmod +x ~/go/bin/melange
             chmod +x ~/go/bin/apko

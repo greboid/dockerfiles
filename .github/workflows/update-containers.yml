@@ -18,6 +18,64 @@ jobs:
     steps:
         - name: Checkout
           uses: actions/checkout@master
+        - name: Install bubblewrap and configure AppArmor
+          run: |
+            sudo apt-get update && sudo apt-get install -y bubblewrap
+            echo "kernel.apparmor_restrict_unprivileged_userns = 0" | sudo tee /etc/sysctl.d/60-apparmor-namespace.conf
+            sudo sysctl --system
+        - name: Setup Go
+          uses: actions/setup-go@v6
+          with:
+            go-version: 'stable'
+            cache: true
+        - name: Install melange
+          uses: mattdowdell/go-installer@v0.3.0
+          with:
+            package: chainguard.dev/melange
+        - name: Install apko
+          uses: mattdowdell/go-installer@v0.3.0
+          with:
+            package: chainguard.dev/apko
+        - name: Build tool
+          run: go build -o dockerfiles .
+        - name: Generate signing keys
+          run: |
+            echo "${{ secrets.MELANGE_SIGNING_KEY }}" > greboid-dockerfiles.rsa
+            chmod 600 greboid-dockerfiles.rsa
+            openssl rsa -in greboid-dockerfiles.rsa -pubout -out greboid-dockerfiles.rsa.pub
+            chmod 644 greboid-dockerfiles.rsa.pub
+        - name: Build required packages
+          run: |
+            mkdir -p repo
+            # Get list of packages required by containers affected by package updates
+            REQUIRED_PACKAGES=$(./dockerfiles list-required-packages)
+            if [ -z "$REQUIRED_PACKAGES" ]; then
+              echo "No package updates found - no packages to build"
+            else
+              echo "Required packages for containers with package updates:"
+              echo "$REQUIRED_PACKAGES"
+              echo ""
+              # Build each required package
+              for package in $REQUIRED_PACKAGES; do
+                echo "Building $package..."
+                ~/go/bin/melange build "packages/${package}.yaml" \
+                  --arch x86_64 \
+                  --signing-key greboid-dockerfiles.rsa \
+                  --out-dir repo/ \
+                  --cache-dir /tmp/melange-cache || echo "Failed to build $package"
+              done
+            fi
+        - name: Cache build tools and packages
+          uses: actions/cache@v4
+          with:
+            path: |
+              ~/go/bin/melange
+              ~/go/bin/apko
+              dockerfiles
+              greboid-dockerfiles.rsa
+              greboid-dockerfiles.rsa.pub
+              repo/
+            key: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   centauri:
     name: Build centauri
     needs:
@@ -26,6 +84,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: centauri
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   dockercleanup:
     name: Build dockercleanup
     needs:
@@ -34,6 +93,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: dockercleanup
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   dotege:
     name: Build dotege
     needs:
@@ -42,6 +102,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: dotege
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   dsp:
     name: Build dsp
     needs:
@@ -50,6 +111,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: dsp
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   ergo:
     name: Build ergo
     needs:
@@ -58,6 +120,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: ergo
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   githubmirror:
     name: Build githubmirror
     needs:
@@ -66,6 +129,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: githubmirror
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   golink:
     name: Build golink
     needs:
@@ -74,6 +138,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: golink
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   goplum:
     name: Build goplum
     needs:
@@ -82,6 +147,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: goplum
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   httpredirect:
     name: Build httpredirect
     needs:
@@ -90,6 +156,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: httpredirect
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   identd:
     name: Build identd
     needs:
@@ -98,6 +165,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: identd
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   irc-bot:
     name: Build irc-bot
     needs:
@@ -106,6 +174,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: irc-bot
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   irc-distribution:
     name: Build irc-distribution
     needs:
@@ -114,6 +183,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: irc-distribution
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   irc-github:
     name: Build irc-github
     needs:
@@ -122,6 +192,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: irc-github
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   irc-goplum:
     name: Build irc-goplum
     needs:
@@ -130,6 +201,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: irc-goplum
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   irc-notifier:
     name: Build irc-notifier
     needs:
@@ -138,6 +210,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: irc-notifier
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   irc-webhook:
     name: Build irc-webhook
     needs:
@@ -146,6 +219,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: irc-webhook
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   linx-server:
     name: Build linx-server
     needs:
@@ -154,6 +228,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: linx-server
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   miniflux:
     name: Build miniflux
     needs:
@@ -162,6 +237,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: miniflux
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   postgres-15:
     name: Build postgres-15
     needs:
@@ -170,6 +246,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: postgres-15
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   puzzles:
     name: Build puzzles
     needs:
@@ -178,6 +255,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: puzzles
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   redis:
     name: Build redis
     needs:
@@ -186,6 +264,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: redis
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   registryauth:
     name: Build registryauth
     needs:
@@ -194,6 +273,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: registryauth
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   soju:
     name: Build soju
     needs:
@@ -202,6 +282,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: soju
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   static-web-server:
     name: Build static-web-server
     needs:
@@ -210,6 +291,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: static-web-server
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   thelounge:
     name: Build thelounge
     needs:
@@ -218,6 +300,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: thelounge
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   tsp:
     name: Build tsp
     needs:
@@ -226,6 +309,7 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: tsp
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
   webhooked:
     name: Build webhooked
     needs:
@@ -234,3 +318,4 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: webhooked
+        CACHE_KEY: build-cache-${{ github.run_id }}-${{ github.run_attempt }}

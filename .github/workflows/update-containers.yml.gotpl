@@ -18,6 +18,64 @@ jobs:
     steps:
         - name: Checkout
           uses: actions/checkout@master
+        - name: Install bubblewrap and configure AppArmor
+          run: |
+            sudo apt-get update && sudo apt-get install -y bubblewrap
+            echo "kernel.apparmor_restrict_unprivileged_userns = 0" | sudo tee /etc/sysctl.d/60-apparmor-namespace.conf
+            sudo sysctl --system
+        - name: Setup Go
+          uses: actions/setup-go@v6
+          with:
+            go-version: 'stable'
+            cache: true
+        - name: Install melange
+          uses: mattdowdell/go-installer@v0.3.0
+          with:
+            package: chainguard.dev/melange
+        - name: Install apko
+          uses: mattdowdell/go-installer@v0.3.0
+          with:
+            package: chainguard.dev/apko
+        - name: Build tool
+          run: go build -o dockerfiles .
+        - name: Generate signing keys
+          run: |
+            echo "${{"{{"}} secrets.MELANGE_SIGNING_KEY {{"}}"}}" > greboid-dockerfiles.rsa
+            chmod 600 greboid-dockerfiles.rsa
+            openssl rsa -in greboid-dockerfiles.rsa -pubout -out greboid-dockerfiles.rsa.pub
+            chmod 644 greboid-dockerfiles.rsa.pub
+        - name: Build required packages
+          run: |
+            mkdir -p repo
+            # Get list of packages required by containers affected by package updates
+            REQUIRED_PACKAGES=$(./dockerfiles list-required-packages)
+            if [ -z "$REQUIRED_PACKAGES" ]; then
+              echo "No package updates found - no packages to build"
+            else
+              echo "Required packages for containers with package updates:"
+              echo "$REQUIRED_PACKAGES"
+              echo ""
+              # Build each required package
+              for package in $REQUIRED_PACKAGES; do
+                echo "Building $package..."
+                ~/go/bin/melange build "packages/${package}.yaml" \
+                  --arch x86_64 \
+                  --signing-key greboid-dockerfiles.rsa \
+                  --out-dir repo/ \
+                  --cache-dir /tmp/melange-cache || echo "Failed to build $package"
+              done
+            fi
+        - name: Cache build tools and packages
+          uses: actions/cache@v4
+          with:
+            path: |
+              ~/go/bin/melange
+              ~/go/bin/apko
+              dockerfiles
+              greboid-dockerfiles.rsa
+              greboid-dockerfiles.rsa.pub
+              repo/
+            key: build-cache-${{"{{"}} github.run_id {{"}}"}}-${{"{{"}} github.run_attempt {{"}}"}}
 {{- range .Containers }}
   {{ .Name }}:
     name: Build {{ .Name }}
@@ -30,4 +88,5 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: {{ .Name }}
+        CACHE_KEY: build-cache-${{"{{"}} github.run_id {{"}}"}}-${{"{{"}} github.run_attempt {{"}}"}}
 {{- end }}
