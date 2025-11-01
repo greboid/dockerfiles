@@ -20,11 +20,11 @@
         - name: Install melange
           uses: mattdowdell/go-installer@v0.3.0
           with:
-            package: chainguard.dev/melange@latest
+            package: chainguard.dev/melange
         - name: Install apko
           uses: mattdowdell/go-installer@v0.3.0
           with:
-            package: chainguard.dev/apko@latest
+            package: chainguard.dev/apko
         - name: Build tool
           run: go build -o dockerfiles .
         - name: Login to private registry
