@@ -1,0 +1,48 @@
+package:
+  name: node
+  version: "25.1.0"
+  epoch: 0
+  description: Node.js JavaScript runtime
+  target-architecture:
+    - x86_64
+update:
+  enabled: true
+  git:
+    strip-prefix: v
+environment:
+  contents:
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.22/main
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - gcompat
+      - git
+      - curl
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/nodejs/node.git
+  - runs: |
+      # Fetch checksums and binary
+      curl -sfLo /tmp/checksums.txt https://unofficial-builds.nodejs.org/download/release/v${{package.version}}/SHASUMS256.txt
+      curl -sfLo /tmp/node.tar.xz https://unofficial-builds.nodejs.org/download/release/v${{package.version}}/node-v${{package.version}}-linux-x64-musl.tar.xz
+
+      # Verify checksum
+      cd /tmp
+      grep ".*linux-x64-musl.tar.xz" checksums.txt | awk '{print $1}' > expected_sum
+      echo "$(cat expected_sum) *node.tar.xz" | sha256sum -wc -
+
+      # Extract to destdir
+      mkdir -p "${{targets.destdir}}"/usr/local
+      tar -xf /tmp/node.tar.xz -C /tmp
+      cp -a /tmp/node-v${{package.version}}-linux-x64-musl/* "${{targets.destdir}}"/usr/local/
+
+      # Clean up documentation
+      rm -rf "${{targets.destdir}}"/usr/local/share/man
+      rm -rf "${{targets.destdir}}"/usr/local/CHANGELOG.md
+      rm -rf "${{targets.destdir}}"/usr/local/LICENSE
+      rm -rf "${{targets.destdir}}"/usr/local/README.md
+test:
+  pipeline:
+    - runs: node --version

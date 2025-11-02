@@ -1,0 +1,6 @@
+include: base.yaml
+contents:
+  packages:
+    - dsp
+entrypoint:
+  command: /usr/bin/dsp

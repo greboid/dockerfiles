@@ -1,0 +1,7 @@
+include: base.yaml
+contents:
+  packages:
+    - golink
+entrypoint:
+  command: /usr/bin/golink
+cmd: --sqlitedb /home/nonroot/golink.db

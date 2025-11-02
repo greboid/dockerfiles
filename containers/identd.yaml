@@ -1,0 +1,6 @@
+include: base.yaml
+contents:
+  packages:
+    - identd
+entrypoint:
+  command: /usr/bin/identd

@@ -1,0 +1,6 @@
+include: base.yaml
+contents:
+  packages:
+    - webhooked
+entrypoint:
+  command: /usr/bin/webhooked

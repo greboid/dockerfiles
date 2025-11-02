@@ -1,0 +1,33 @@
+package:
+  name: thelounge
+  version: "4.4.3"
+  epoch: 0
+  description: Modern web IRC client
+  target-architecture:
+    - x86_64
+update:
+  enabled: true
+  git:
+    strip-prefix: v
+environment:
+  contents:
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.22/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.22/community
+    packages:
+      - busybox
+      - python3
+      - node@local
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/thelounge/thelounge.git
+      tag: v${{package.version}}
+      destination: building
+  - uses: npm/install
+    with:
+      package: ${{package.name}}
+      version: ${{package.version}}
+test:
+  pipeline:
+    - runs: thelounge --version

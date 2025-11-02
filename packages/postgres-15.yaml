@@ -1,0 +1,61 @@
+package:
+  name: postgres-15
+  version: "15.14"
+  epoch: 0
+  description: PostgreSQL 15 database server
+  target-architecture:
+    - x86_64
+update:
+  enabled: true
+  git:
+    tag-filter-prefix: REL_15_
+environment:
+  contents:
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.22/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.22/community
+    packages:
+      - busybox
+      - bash
+      - ca-certificates-bundle
+      - gcc
+      - g++
+      - make
+      - musl-dev
+      - openssl-dev
+      - readline-dev
+      - zlib-dev
+      - ncurses-dev
+      - git
+      - rsync
+      - linux-headers
+  environment:
+    LANG: "en_US.utf8"
+    PGDATA: "/var/lib/postgresql/data"
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://ftp.postgresql.org/pub/source/v${{package.version}}/postgresql-${{package.version}}.tar.bz2
+      expected-sha256: 06dd75d305cd3870ee62b3932e661c624543eaf9ae2ba37cdec0a4f8edd051d2
+      strip-components: 0
+  - uses: autoconf/configure
+    with:
+      dir: postgresql-${{package.version}}
+      opts: |
+        --with-system-tzdata=/usr/share/zoneinfo \
+        --with-includes=/usr/local/include \
+        --with-libraries=/usr/local/lib \
+        --with-ssl=openssl
+  - uses: autoconf/make
+    with:
+      dir: postgresql-${{package.version}}
+  - uses: autoconf/make-install
+    with:
+      dir: postgresql-${{package.version}}
+  - runs: |
+      mkdir -p "${{targets.destdir}}"/usr/local/bin
+      cp postgres-15/entry.sh "${{targets.destdir}}"/usr/local/bin/entry.sh
+      chmod +x "${{targets.destdir}}"/usr/local/bin/entry.sh
+test:
+  pipeline:
+    - runs: /usr/local/pgsql/bin/postgres --version

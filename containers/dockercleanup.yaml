@@ -1,0 +1,6 @@
+include: base.yaml
+contents:
+  packages:
+    - dockercleanup
+entrypoint:
+  command: /usr/bin/dockercleanup
