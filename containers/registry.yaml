@@ -1,0 +1,7 @@
+include: base.yaml
+contents:
+  packages:
+    - registry
+entrypoint:
+  command: /usr/bin/registry
+cmd: serve /etc/distribution/config.yml

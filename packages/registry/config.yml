@@ -1,0 +1,24 @@
+version: 0.1
+log:
+  level: info
+  fields:
+    service: registry
+storage:
+  delete:
+    enabled: true
+  cache:
+    blobdescriptor: inmemory
+  filesystem:
+    rootdirectory: /var/lib/registry
+  maintenance:
+    uploadpurging:
+      enabled: true
+  tag:
+    concurrencylimit: 8
+http:
+  addr: :5000
+health:
+  storagedriver:
+    enabled: true
+    interval: 10s
+    threshold: 3

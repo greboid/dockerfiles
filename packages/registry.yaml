@@ -1,0 +1,41 @@
+package:
+  name: registry
+  version: "3.0.0"
+  epoch: 0
+  target-architecture:
+    - x86_64
+update:
+  enabled: true
+  git:
+    strip-prefix: v
+environment:
+  contents:
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.22/main
+    packages:
+      - go
+      - busybox
+      - ca-certificates-bundle
+  environment:
+    GOPROXY: "https://proxy.golang.org"
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/distribution/distribution
+      tag: v${{package.version}}
+  - uses: patch
+    with:
+      patches: registry/remove-otel.diff
+  - uses: go/build
+    with:
+      packages: ./cmd/registry
+      output: registry
+      strip: -w -s
+      ldflags: -extldflags "-static" -buildid=
+  - runs: |
+      mkdir -p "${{targets.destdir}}"/etc/distribution
+      cp registry/config.yml "${{targets.destdir}}"/etc/distribution/config.yml
+      cp registry/gc.yml "${{targets.destdir}}"/etc/distribution/gc.yml
+test:
+  pipeline:
+    - runs: registry --help
