@@ -39,7 +39,7 @@ jobs:
       - name: Install dfo
         uses: mattdowdell/go-installer@v0.3.0
         with:
-          package: github.com/greboid/dfo
+          package: greboid/dfo
       - name: Generate signing keys
         run: |
           echo "${{ secrets.MELANGE_SIGNING_KEY }}" > greboid-dockerfiles.rsa
