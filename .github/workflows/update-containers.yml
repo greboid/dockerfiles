@@ -36,8 +36,10 @@ jobs:
         uses: mattdowdell/go-installer@v0.3.0
         with:
           package: chainguard.dev/apko
-      - name: Build tool
-        run: go build -o dockerfiles .
+      - name: Install dfo
+        uses: mattdowdell/go-installer@v0.3.0
+        with:
+          package: github.com/greboid/dfo
       - name: Generate signing keys
         run: |
           echo "${{ secrets.MELANGE_SIGNING_KEY }}" > greboid-dockerfiles.rsa
@@ -53,4 +55,4 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
           registry: ${{ secrets.REGISTRY }}
       - name: Build and push all containers
-        run: ./dockerfiles ci --registry ${{ secrets.REGISTRY }} --update --push
+        run: ./dfo ci --registry ${{ secrets.REGISTRY }} --update --push
