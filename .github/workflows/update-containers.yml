@@ -159,17 +159,6 @@ jobs:
     with:
         PROJECT_NAME: sws
 
-  soju:
-    name: Build soju
-    needs:
-        - setup-cache
-        - base
-        - golang
-    uses: ./.github/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: soju
-
   registryauth:
     name: Build registryauth
     needs:
