@@ -1,6 +1,0 @@
-include: base.yaml
-contents:
-  packages:
-    - irc-bot
-entrypoint:
-  command: /usr/bin/irc-bot

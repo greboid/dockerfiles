@@ -1,6 +1,0 @@
-include: base.yaml
-contents:
-  packages:
-    - miniflux
-entrypoint:
-  command: /usr/bin/miniflux

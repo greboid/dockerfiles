@@ -1,0 +1,21 @@
+FROM {{image "golang"}} AS build
+
+ARG TAG="{{github_tag "greboid/puzzles"}}"
+
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "git" -}}
+        {{$key}}={{$value}}\
+        {{end}}; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/puzzles /go/src/github.com/greboid/puzzles; \
+    cd /go/src/github.com/greboid/puzzles; \
+    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
+    go-licenses save ./... --save_path=/notices;
+
+FROM {{image "base"}}
+
+COPY --from=build /go/src/github.com/greboid/puzzles/main /puzzles
+COPY --from=build /go/src/github.com/greboid/puzzles/wordlists/. /app/wordlists
+COPY --from=build /notices /notices
+EXPOSE 8080
+ENTRYPOINT ["/puzzles"]

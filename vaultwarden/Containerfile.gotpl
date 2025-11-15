@@ -1,0 +1,20 @@
+FROM {{image "rust" }} as server
+
+ARG VAULTTAG="{{github_tag "dani-garcia/vaultwarden"}}"
+
+RUN set -eux; \
+apk add git; \
+git clone --depth=1 -b $VAULTTAG --single-branch https://github.com/dani-garcia/vaultwarden /src; \
+cd /src
+
+WORKDIR /src
+
+RUN set -eux; \
+apk add gcc musl-dev openssl-dev; \
+cargo build --features sqlite,enable_mimalloc --release
+
+FROM {{image "base"}}
+
+COPY --from=server /src/target/release/vaultwarden /
+
+ENTRYPOINT ["/vaultwarden"]

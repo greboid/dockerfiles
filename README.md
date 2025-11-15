@@ -1,12 +1,13 @@
 # Dockerfiles from the ground up
 
-This started with a fork of [csmith/dockerfiles](https://github.com/csmith/dockerfiles), but eventually
-the templating code was moved out of the repo into [contempt](https://github.com/csmith/contempt). It continued using contempt for some time but now moved away from contempt and templated Containerfiles and is now using
-[melange](https://github.com/chainguard-dev/melange) to build APK packages, which are then assembled into images with [apko](https://github.com/chainguard-dev/apko).
+This started with a fork of [csmith/dockerfiles](https://github.com/csmith/dockerfiles), but eventually 
+the templating code was moved out of the repo into [contempt](https://github.com/csmith/contempt).
+
+This is now just a collection of dockerfiles I use in my infrastructure.
 
 ## What? Why?
 
-This is a collection of containers for various software projects I want to run, built from the ground up.
+This is a collection of Dockerfiles for various software projects I want to run, built from the ground up.
 
 Most projects have either official docker images or third-party contributions, but they're always a bit
 hit-or-miss on how they work, what base images are used, etc. Third-party images often lag behind releases
@@ -16,17 +17,33 @@ and can follow upstream updates as quickly or slowly as required.
 I'm using these production services, but won't vouch for their stability or usability for anyone else's 
 purposes. Feel free to use them, and report any issues you do find, but at your own risk!
 
+## Structure
+
+Each image has its own folder, containing:
+
+* `Dockerfile` - the actual dockerfile the latest version should be built from
+* `Dockerfile.gotpl` - a template file for generating the Dockerfile
+
+The template files using go's [text/template syntax](https://pkg.go.dev/text/template), with functions
+defined to retrieve the latest images, releases, packages, etc.
+
+Dockerfiles are updated using [contempt](https://github.com/csmith/contempt).  This can also be used
+to commit, build and push any changes.
+
 ## Images
 
 All images are available at `reg.g5d.dev/<name>`. Only the latest tag is built.
 
 Each images aims for the following:
 
-**Reproducible** - if the same image is rebuilt at any time on any machine it will produce the same
+**Reproducible** - if the same Dockerfile is rebuilt at any time on any machine it will produce the same
 image. This is nice to have, but it is quite challenging and makes little difference in day-to-day
-operations.
+operations. (It also requires the use of a tool like `buildah` that can set layer timestamps; `docker build`
+cannot make reproducible images.)
 
-**Non-root** - As far as possible these images do not run as root, this reduces the risks.
+**Non-root** - the entrypoint for the image is invoked as a non-root user. Base images are marked as N/A.
+Other images probably drop root later either via a script or as part of the process itself, but it's
+preferable for it to happen in the image.
 
 **Minimal** - the image contains only the bare essentials required. No leftovers, nothing irrelevant,
 no bloat. For base images this definition is a bit hazy as they'll contain things that might be used

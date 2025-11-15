@@ -1,6 +1,0 @@
-include: base.yaml
-contents:
-  packages:
-    - irc-notifier
-entrypoint:
-  command: /usr/bin/irc-notifier

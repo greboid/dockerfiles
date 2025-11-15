@@ -1,9 +1,0 @@
-version: 0.1
-storage:
-  delete:
-    enabled: true
-  filesystem:
-    rootdirectory: /var/lib/registry
-  maintenance:
-    uploadpurging:
-      enabled: true

@@ -1,0 +1,27 @@
+FROM {{image "node"}} as yarnbase
+
+WORKDIR /app
+
+RUN corepack enable
+
+FROM yarnbase as builder
+
+ARG TAG="{{github_tag "thelounge/thelounge"}}"
+
+WORKDIR  /app
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "git" -}}
+        {{$key}}={{$value}}\
+        {{end}}; \
+    yarn global add thelounge@$TAG; \
+    mkdir /home/nonroot; \
+    chown -R 65532:65532 /home/nonroot
+
+EXPOSE 9000
+ENV THELOUNGE_HOME /home/nonroot
+WORKDIR /home/nonroot
+
+USER 65532
+
+ENTRYPOINT ["/usr/local/bin/thelounge"]

@@ -1,10 +1,12 @@
+
 on:
   workflow_dispatch:
   schedule:
     - cron: '42 12 * * *'
   push:
     paths-ignore:
-      - '*.go'
+      - '**/Containerfile'
+      - '**/Dockerfile'
       - '.github/**'
       - 'README.md'
 name: Update Containers
@@ -12,47 +14,390 @@ concurrency: dockerfiles
 permissions:
   contents: write
 jobs:
-  build:
-    name: Build and push containers
+  setup-cache:
+    name: Setup cache
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@master
-      - name: Install bubblewrap and configure AppArmor
-        run: |
-          sudo apt-get update && sudo apt-get install -y bubblewrap
-          echo "kernel.apparmor_restrict_unprivileged_userns = 0" | sudo tee /etc/sysctl.d/60-apparmor-namespace.conf
-          sudo sysctl --system
-      - name: Setup Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: 'stable'
-          cache: true
-      - name: Install melange
-        uses: mattdowdell/go-installer@v0.3.0
-        with:
-          package: chainguard.dev/melange
-      - name: Install apko
-        uses: mattdowdell/go-installer@v0.3.0
-        with:
-          package: chainguard.dev/apko
-      - name: Install dfo
-        uses: mattdowdell/go-installer@v0.3.0
-        with:
-          package: greboid/dfo
-      - name: Generate signing keys
-        run: |
-          echo "${{ secrets.MELANGE_SIGNING_KEY }}" > greboid-dockerfiles.rsa
-          chmod 600 greboid-dockerfiles.rsa
-          openssl rsa -in greboid-dockerfiles.rsa -pubout -out greboid-dockerfiles.rsa.pub
-          chmod 644 greboid-dockerfiles.rsa.pub
-      - name: Create repo directory
-        run: mkdir -p repo
-      - name: Login to registry
-        uses: redhat-actions/podman-login@v1
-        with:
-          username: ${{ secrets.REGISTRY_USER }}
-          password: ${{ secrets.REGISTRY_PASS }}
-          registry: ${{ secrets.REGISTRY }}
-      - name: Build and push all containers
-        run: ./dfo ci --registry ${{ secrets.REGISTRY }} --update --push
+        - name: Install latest contempt
+          uses: mattdowdell/go-installer@v0.3.0
+          with:
+              package: github.com/csmith/contempt/cmd/contempt
+  
+  alpine:
+    name: Build alpine
+    needs:
+        - setup-cache
+
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: alpine
+
+  rust:
+    name: Build rust
+    needs:
+        - setup-cache
+        - alpine
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: rust
+
+  node:
+    name: Build node
+    needs:
+        - setup-cache
+        - alpine
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: node
+
+  golang:
+    name: Build golang
+    needs:
+        - setup-cache
+        - alpine
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: golang
+
+  baseroot:
+    name: Build baseroot
+    needs:
+        - setup-cache
+        - alpine
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: baseroot
+
+  thelounge:
+    name: Build thelounge
+    needs:
+        - setup-cache
+        - node
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: thelounge
+
+  dsp:
+    name: Build dsp
+    needs:
+        - setup-cache
+        - baseroot
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: dsp
+
+  base:
+    name: Build base
+    needs:
+        - setup-cache
+        - baseroot
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: base
+
+  webhooked:
+    name: Build webhooked
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: webhooked
+
+  watchtower:
+    name: Build watchtower
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: watchtower
+
+  tsp:
+    name: Build tsp
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: tsp
+
+  tailscale:
+    name: Build tailscale
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: tailscale
+
+  sws:
+    name: Build sws
+    needs:
+        - setup-cache
+        - base
+        - rust
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: sws
+
+  soju:
+    name: Build soju
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: soju
+
+  registryauth:
+    name: Build registryauth
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: registryauth
+
+  redis:
+    name: Build redis
+    needs:
+        - setup-cache
+        - alpine
+        - base
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: redis
+
+  puzzles:
+    name: Build puzzles
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: puzzles
+
+  postgres-15:
+    name: Build postgres-15
+    needs:
+        - setup-cache
+        - alpine
+        - base
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: postgres-15
+
+  miniflux:
+    name: Build miniflux
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: miniflux
+
+  linx-server:
+    name: Build linx-server
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: linx-server
+
+  legoergo:
+    name: Build legoergo
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: legoergo
+
+  irc-webhook:
+    name: Build irc-webhook
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: irc-webhook
+
+  irc-notifier:
+    name: Build irc-notifier
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: irc-notifier
+
+  irc-goplum:
+    name: Build irc-goplum
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: irc-goplum
+
+  irc-github:
+    name: Build irc-github
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: irc-github
+
+  irc-distribution:
+    name: Build irc-distribution
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: irc-distribution
+
+  irc-bot:
+    name: Build irc-bot
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: irc-bot
+
+  identd:
+    name: Build identd
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: identd
+
+  httpredirect:
+    name: Build httpredirect
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: httpredirect
+
+  goplum:
+    name: Build goplum
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: goplum
+
+  golink:
+    name: Build golink
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: golink
+
+  githubmirror:
+    name: Build githubmirror
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: githubmirror
+
+  dotege:
+    name: Build dotege
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: dotege
+
+  dockercleanup:
+    name: Build dockercleanup
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: dockercleanup
+
+  centauri:
+    name: Build centauri
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: centauri
+
