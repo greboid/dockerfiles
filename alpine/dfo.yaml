@@ -11,17 +11,15 @@ stages:
         ARCHIVE_SUM: "{{alpine_checksum}}"
     pipeline:
       - name: Download and verify Alpine minirootfs
-        uses: download-verify
+        uses: download-verify-extract
         with:
           url: $ARCHIVE_URL
           destination: fs.tar.gz
           checksum: $ARCHIVE_SUM
-
+          extract-dir: /fs
       - name: Extract and configure
         run: |
           set -eux
-          mkdir /fs
-          tar -C /fs -xzf fs.tar.gz
           echo "[advice]" > /fs/etc/gitconfig
           echo "    detachedHead = false" >> /fs/etc/gitconfig
   - name: Final

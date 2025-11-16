@@ -18,11 +18,12 @@ stages:
         - git
     pipeline:
       - name: Download and verify Go
-        uses: download-verify
+        uses: download-verify-extract
         with:
           url: $ARCHIVE_URL
           destination: go.tar.gz
           checksum: $ARCHIVE_SUM
+          extract-dir: /usr/local
 
       - name: Bootstrap and install Go
         build-deps:
@@ -31,9 +32,9 @@ stages:
           - git
         run: |
           set -eux;
-          tar -C /usr/local -xzf go.tar.gz;
-          cd /usr/local/go/src && GOROOT_BOOTSTRAP="$(go env GOROOT)" GOHOSTOS="linux" GOHOSTARCH="amd64" ./make.bash;
-          go install std;
+          cd /usr/local/go/src
+          GOROOT_BOOTSTRAP="$(go env GOROOT)" GOHOSTOS="linux" GOHOSTARCH="amd64" ./make.bash
+          go install std
           rm -rf \
             /go.tar.gz \
             /root/.cache \

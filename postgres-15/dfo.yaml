@@ -32,17 +32,17 @@ stages:
           git checkout $ENTRYPOINT
 
       - name: Download and verify PostgreSQL
-        uses: download-verify
+        uses: download-verify-extract
         with:
           url: $ARCHIVE_URL
           destination: postgresql.tar.bz2
           checksum: $ARCHIVE_SUM
+          extract-dir: /usr/local/postgres
+          strip-components: 1
 
       - name: Build PostgreSQL
         run: |
           set -eux
-          mkdir -p /usr/local/postgres
-          tar -C /usr/local/postgres --strip-components 1 -xf postgresql.tar.bz2
           cd /usr/local/postgres
           ./configure \
             --with-system-tzdata=/usr/share/zoneinfo \
