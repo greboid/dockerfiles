@@ -1,0 +1,47 @@
+package:
+  name: legoergo
+  description: legoergo service
+
+stages:
+  - name: build
+    environment:
+      base-image: golang
+      packages:
+        - git
+    pipeline:
+      - name: Clone and build legoergo
+        uses: clone-and-build-go
+        with:
+          repo: https://github.com/ergochat/ergo
+          output: /ergo
+      - name: Clone and build certwrapper
+        uses: clone-and-build-go
+        with:
+          repo: https://github.com/csmith/certwrapper
+          output: /certwrapper
+  - name: Final
+    environment:
+      base-image: base
+      expose:
+        - "8080"
+      cmd:
+        - /certwrapper
+        - /ergo
+        - run
+        - --conf
+        - /ircd/ircd.yaml
+    pipeline:
+      - name: Copy binary and notices
+        copy:
+          from-stage: build
+          from: /ergo
+          to: /ergo
+      - name: Copy languages
+        copy:
+          from-stage: build
+          from: /src/languages/
+          to: /ircd-bin/languages/
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /notices

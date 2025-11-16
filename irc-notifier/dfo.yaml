@@ -1,0 +1,33 @@
+package:
+  name: irc-notifier
+  description: irc-notifier service
+
+stages:
+  - name: build
+    environment:
+      base-image: golang
+      packages:
+        - git
+    pipeline:
+      - name: Clone and build irc-notifier
+        uses: clone-and-build-go
+        with:
+          repo: https://github.com/greboid/irc-notifier
+          package: ./cmd/notifier
+  - name: Final
+    environment:
+      base-image: base
+      expose:
+        - "8080"
+      entrypoint:
+        - /irc-notifier
+    pipeline:
+      - name: Copy binary and notices
+        copy:
+          from-stage: build
+          from: /main
+          to: /irc-notifier
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /notices

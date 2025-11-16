@@ -1,0 +1,140 @@
+package:
+  name: postgres-15
+  description: PostgreSQL 15 database server
+
+stages:
+  - name: build
+    environment:
+      base-image: alpine
+      args:
+        ARCHIVE_URL: "{{postgres_url 15}}"
+        ARCHIVE_SUM: "{{postgres_checksum 15}}"
+        ENTRYPOINT: "39c3dc7046f5f7909179a51e25f2a61158781d57"
+      packages:
+        - git
+        - gcc
+        - g++
+        - make
+        - readline-dev
+        - zlib-dev
+        - linux-headers
+        - musl-locales
+        - openssl-dev
+        - scanelf
+        - rsync
+        - bash
+    pipeline:
+      - name: Clone postgres docker entrypoint
+        run: |
+          set -eux;
+          git clone -b master --single-branch https://github.com/docker-library/postgres /src/docker-postgres;
+          cd /src/docker-postgres;
+          git checkout $ENTRYPOINT
+
+      - name: Download and verify PostgreSQL
+        uses: download-verify
+        with:
+          url: $ARCHIVE_URL
+          destination: postgresql.tar.bz2
+          checksum: $ARCHIVE_SUM
+
+      - name: Build PostgreSQL
+        run: |
+          set -eux
+          mkdir -p /usr/local/postgres
+          tar -C /usr/local/postgres --strip-components 1 -xf postgresql.tar.bz2
+          cd /usr/local/postgres
+          ./configure \
+            --with-system-tzdata=/usr/share/zoneinfo \
+            --with-includes=/usr/local/include \
+            --with-libraries=/usr/local/lib \
+            --with-ssl=openssl;
+          make -j$(nproc) world
+          make install-world
+          make -C contrib install
+
+      - name: Prepare rootfs dependencies
+        run: |
+          set -eux;
+          DEPS=$(scanelf --needed --nobanner --format '%n#p' --recursive -l /usr/local /usr/local/pgsql/bin /usr/bin/locale \
+          | tr ',' '\n' \
+          | sort -u \
+          | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }');
+          mkdir /rootfs;
+          for DEP in $DEPS; do \
+            apk add "${DEP}"; \
+            apk info -qL "${DEP}" | rsync -aq '--files-from=-' / /rootfs/; \
+          done
+
+      - name: Copy essential binaries
+        run: |
+          set -eux;
+          mkdir -p /rootfs/usr/bin;
+          mkdir -p /rootfs/bin;
+          mkdir -p /rootfs/usr/local/bin/;
+          cp /usr/bin/env /rootfs/usr/bin/env;
+          cp /bin/sh /rootfs/bin/sh;
+          cp /bin/ls /rootfs/bin/ls;
+          cp /bin/cat /rootfs/bin/cat;
+          cp /bin/bash /rootfs/bin/bash;
+          cp /usr/bin/locale /rootfs/usr/bin/locale;
+          cp /usr/bin/id /rootfs/usr/bin/id;
+          cp /bin/mkdir /rootfs/bin/mkdir;
+          cp /bin/chmod /rootfs/bin/chmod
+
+      - name: Set up entrypoint script
+        run: |
+          set -eux;
+          cp /src/docker-postgres/15/alpine/docker-entrypoint.sh /rootfs/usr/local/bin/entry.sh;
+          chmod 777 /rootfs/usr/local/bin/entry.sh;
+          chown 65532:65532 /rootfs/usr/local/bin/entry.sh
+
+      - name: Copy PostgreSQL installation
+        run: |
+          set -eux;
+          rsync -ap /usr/local/pgsql/ /rootfs/usr/local/pgsql/
+
+      - name: Create data directory
+        run: |
+          set -eux;
+          mkdir -p /rootfs/var/lib/postgresql/data;
+          chown -R 65532:65532 /rootfs/var/lib/postgresql;
+          chmod 750 /rootfs/var/lib/postgresql/data;
+          chmod 777 /rootfs/var/lib/postgresql
+
+      - name: Create runtime directories
+        run: |
+          set -eux;
+          mkdir -p /rootfs/var/run;
+          chown 65532:65532 /rootfs/var/run;
+          chmod -R 777 /rootfs/var/run;
+          mkdir -p /rootfs/tmp;
+          chown 65532:65532 /rootfs/tmp;
+          chmod -R 777 /rootfs/tmp;
+          mkdir -p /rootfs/docker-entrypoint-initdb.d;
+          chmod 644 /rootfs/docker-entrypoint-initdb.d/;
+          chown 65532:65532 /rootfs/docker-entrypoint-initdb.d/
+  - name: Final
+    environment:
+      base-image: base
+      environment:
+        PATH: "/usr/local/pgsql/bin:$PATH"
+        LANG: "en_US.utf8"
+        PGDATA: "/var/lib/postgresql/data"
+        PGHOST: "127.0.0.1"
+        PGUSER: "postgres"
+      expose:
+        - "5432"
+      stopsignal: SIGINT
+      entrypoint:
+        - /usr/local/bin/entry.sh
+      cmd:
+        - postgres
+        - -c
+        - listen_addresses=*
+    pipeline:
+      - name: Copy rootfs
+        copy:
+          from-stage: build
+          from: /rootfs/
+          to: /

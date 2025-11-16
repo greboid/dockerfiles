@@ -1,0 +1,57 @@
+package:
+  name: node
+  description: Node.js build environment on Alpine
+
+stages:
+  - name: build
+    environment:
+      base-image: alpine
+      args:
+        TAG: "{{github_tag \"nodejs/node\"}}"
+      packages:
+        - tar
+        - xz
+        - rsync
+        - gnupg
+        - bash
+        - libstdc++
+        - gcompat
+    pipeline:
+      - name: Download Node.js checksums
+        fetch:
+          url: https://unofficial-builds.nodejs.org/download/release/$TAG/SHASUMS256.txt
+          destination: /checksums.txt
+
+      - name: Download Node.js tarball
+        fetch:
+          url: https://unofficial-builds.nodejs.org/download/release/$TAG/node-$TAG-linux-x64-musl.tar.xz
+          destination: /node.tar.xz
+
+      - name: Extract Node.js
+        run: |
+          grep ".*linux-x64-musl.tar.xz" checksums.txt | echo $(awk '{print $1}') \*node.tar.xz | sha256sum -wc -;
+          mkdir -p /src;
+          mkdir -p /usr/local;
+          tar -xf /node.tar.xz -C /src;
+          rsync -ap /src/node*/ /usr/local/;
+          rm -rf /usr/local/CHANGELOG.md;
+          rm -rf /usr/local/LICENSE;
+          rm -rf /usr/local/README.md
+
+      - name: Install corepack
+        run: npm install --global corepack
+  - name: Final
+    environment:
+      base-image: alpine
+      packages:
+        - gcompat
+        - libstdc++
+        - git
+      cmd:
+        - /usr/local/bin/node
+    pipeline:
+      - name: Copy Node.js from build stage
+        copy:
+          from-stage: build
+          from: /usr/local
+          to: /usr/local

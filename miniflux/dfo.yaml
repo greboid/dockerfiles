@@ -1,0 +1,30 @@
+package:
+  name: miniflux
+  description: Minimalist and opinionated feed reader
+
+stages:
+  - name: build
+    environment:
+      base-image: golang
+      packages:
+        - git
+    pipeline:
+      - name: Clone and build registryauth
+        uses: clone-and-build-go
+        with:
+          repo: https://github.com/miniflux/v2
+  - name: Final
+    environment:
+      base-image: base
+      entrypoint:
+        - /miniflux
+    pipeline:
+      - name: Copy binary and notices
+        copy:
+          from-stage: build
+          from: /main
+          to: /miniflux
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /notices

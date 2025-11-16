@@ -1,11 +1,9 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/soju/Containerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.1.0-r2","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20250911-r0","apk:git":"2.49.1-r0","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.14.1-r2","apk:libexpat":"2.7.3-r0","apk:libidn2":"2.3.7-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libunistring":"1.3-r0","apk:musl":"1.2.5-r10","apk:nghttp2-libs":"1.65.0-r0","apk:patch":"2.8-r0","apk:pcre2":"10.46-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r0","github:csmith/certwrapper":"v4.3.0","github:emersion/soju":"v0.10.1","image:base":"30995361a09109d75245595ddd5d80fa2ece82defd0e37bedd42de2c2dc4cabd","image:golang":"c300625062bc0294f9364c231067167c2b35cd76b798aa22a65c27928643d53b"}
+# BOM: {"apk:brotli-libs":"1.1.0-r2","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20250911-r0","apk:git":"2.49.1-r0","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.14.1-r2","apk:libexpat":"2.7.3-r0","apk:libidn2":"2.3.7-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libunistring":"1.3-r0","apk:musl":"1.2.5-r10","apk:nghttp2-libs":"1.65.0-r0","apk:pcre2":"10.46-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r0","git:https://github.com/emersion/soju":"v0.10.1","image:base":"30995361a09109d75245595ddd5d80fa2ece82defd0e37bedd42de2c2dc4cabd","image:golang":"c300625062bc0294f9364c231067167c2b35cd76b798aa22a65c27928643d53b"}
 
 FROM reg.g5d.dev/golang@sha256:c300625062bc0294f9364c231067167c2b35cd76b798aa22a65c27928643d53b AS build
 
-ARG SOJUTAG="v0.10.1"
-ARG CERTTAG="v4.3.0"
-
+# Install packages with version pinning
 RUN set -eux; \
     apk add --no-cache \
         brotli-libs=1.1.0-r2 \
@@ -21,22 +19,51 @@ RUN set -eux; \
         libunistring=1.3-r0 \
         musl=1.2.5-r10 \
         nghttp2-libs=1.65.0-r0 \
-        patch=2.8-r0 \
         pcre2=10.46-r0 \
         zlib=1.3.1-r2 \
         zstd-libs=1.5.7-r0 \
-        ; \
-    git clone --depth=1 -b $SOJUTAG --single-branch https://github.com/emersion/soju /go/src/github.com/emersion/soju; \
-    cd /go/src/github.com/emersion/soju; \
-    go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid=" -tags=moderncsqlite -o soju ./cmd/soju; \
-    go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid=" -tags=moderncsqlite -o sojuctl ./cmd/sojuctl; \
-    go-licenses save ./... --ignore codeberg.org/emersion/soju --save_path=/notices; \
-    mkdir /data
+    ;
+
+# Clone and build
+# Clone repository
+RUN git clone --depth=1 -b v0.10.1 --single-branch https://github.com/emersion/soju /src; \
+# Build Go application
+RUN cd /src; \
+    CGO_ENABLED=0 go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o /soju ./cmd/soju; \
+    go-licenses save ./... --save_path=/notices
+
+# Clone and build
+# Clone repository
+RUN git clone --depth=1 -b v0.10.1 --single-branch https://github.com/emersion/soju /src; \
+# Build Go application
+RUN cd /src; \
+    CGO_ENABLED=0 go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o /sojuctl ./cmd/sojuctl; \
+    go-licenses save ./... --save_path=/notices
+
+# Clone and build
+# Clone repository
+RUN git clone --depth=1 -b v0.10.1 --single-branch https://github.com/emersion/soju /src; \
+# Build Go application
+RUN cd /src; \
+    CGO_ENABLED=0 go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o /sojudb ./cmd/sojudb; \
+    go-licenses save ./... --save_path=/notices
+
+# Create volume
+RUN mkdir /data
+
 
 FROM reg.g5d.dev/base@sha256:30995361a09109d75245595ddd5d80fa2ece82defd0e37bedd42de2c2dc4cabd
 
-COPY --from=build /go/src/github.com/emersion/soju/soju /soju
-COPY --from=build /go/src/github.com/emersion/soju/sojuctl /sojuctl
+# Copy soju binaries
+COPY --from=build /soju /soju
+
+COPY --from=build /sojuctl /sojuctl
+
+COPY --from=build /sojudb /sojudb
+
+COPY --from=build /data /data
+
 COPY --from=build /notices /notices
-COPY --from=build --chown=65535:65535 /data /data
+
 ENTRYPOINT ["/soju"]
+

@@ -1,0 +1,58 @@
+package:
+  name: soju
+  description: IRC bouncer
+
+stages:
+  - name: build
+    environment:
+      base-image: golang
+      packages:
+        - git
+    pipeline:
+      - name: Clone and build
+        uses: clone-and-build-go
+        with:
+          repo: https://github.com/emersion/soju
+          package: ./cmd/soju
+          output: /soju
+      - name: Clone and build
+        uses: clone-and-build-go
+        with:
+          repo: https://github.com/emersion/soju
+          package: ./cmd/sojuctl
+          output: /sojuctl
+      - name: Clone and build
+        uses: clone-and-build-go
+        with:
+          repo: https://github.com/emersion/soju
+          package: ./cmd/sojudb
+          output: /sojudb
+      - name: Create volume
+        run: mkdir /data
+  - name: Final
+    environment:
+      base-image: base
+      entrypoint:
+        - /soju
+    pipeline:
+      - name: Copy soju binaries
+        copy:
+          from-stage: build
+          from: /soju
+          to: /soju
+      - copy:
+          from-stage: build
+          from: /sojuctl
+          to: /sojuctl
+      - copy:
+          from-stage: build
+          from: /sojudb
+          to: /sojudb
+      - copy:
+          from-stage: build
+          from: /data
+          to: /data
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /notices

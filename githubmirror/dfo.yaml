@@ -1,0 +1,32 @@
+package:
+  name: githubmirror
+  description: githubmirror service
+
+stages:
+  - name: build
+    environment:
+      base-image: golang
+      packages:
+        - git
+    pipeline:
+      - name: Clone and build githubmirror
+        uses: clone-and-build-go
+        with:
+          repo: https://github.com/greboid/githubmirror
+  - name: Final
+    environment:
+      base-image: base
+      expose:
+        - "8080"
+      entrypoint:
+        - /githubmirror
+    pipeline:
+      - name: Copy binary and notices
+        copy:
+          from-stage: build
+          from: /main
+          to: /githubmirror
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /notices

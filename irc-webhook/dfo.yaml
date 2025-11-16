@@ -1,0 +1,33 @@
+package:
+  name: irc-webhook
+  description: irc-webhook service
+
+stages:
+  - name: build
+    environment:
+      base-image: golang
+      packages:
+        - git
+    pipeline:
+      - name: Clone and build irc-webhook
+        uses: clone-and-build-go
+        with:
+          repo: https://github.com/greboid/irc-webhook
+          package: ./cmd/webhook
+  - name: Final
+    environment:
+      base-image: base
+      expose:
+        - "8080"
+      entrypoint:
+        - /irc-webhook
+    pipeline:
+      - name: Copy binary and notices
+        copy:
+          from-stage: build
+          from: /main
+          to: /irc-webhook
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /notices

@@ -1,0 +1,67 @@
+package:
+  name: redis
+  description: Redis server
+
+stages:
+  - name: build
+    environment:
+      base-image: alpine
+      args:
+        TAG: "{{github_tag \"redis/redis\"}}"
+      environment:
+        LDFLAGS: "-static"
+      packages:
+        - git
+        - build-base
+        - tzdata
+        - ca-certificates
+        - linux-headers
+        - pcre-dev
+        - musl-dev
+        - openssl-dev
+        - openssl-libs-static
+        - zlib-dev
+        - zlib-static
+    pipeline:
+      - name: Copy redis config
+        copy:
+          from: redis.conf
+          to: /redis.conf
+
+      - name: Build Redis
+        run: |
+          set -eux;
+          git clone --depth=1 -b $TAG --single-branch https://github.com/redis/redis /src/redis;
+          cd /src/redis;
+          make distclean;
+          make;
+          mkdir /data;
+          strip /src/redis/src/redis-server
+  - name: Final
+    environment:
+      base-image: base
+      expose:
+        - "6379"
+      volume:
+        - /home/nonroot/database
+      entrypoint:
+        - /home/nonroot/redis
+      cmd:
+        - /home/nonroot/redis.conf
+    pipeline:
+      - name: Copy redis files
+        copy:
+          from-stage: build
+          from: /redis.conf
+          to: /home/nonroot/redis.conf
+          chown: "65532:65532"
+      - copy:
+          from-stage: build
+          from: /data
+          to: /home/nonroot/database
+          chown: "65532:65532"
+      - copy:
+          from-stage: build
+          from: /src/redis/src/redis-server
+          to: /home/nonroot/redis
+          chown: "65532:65532"

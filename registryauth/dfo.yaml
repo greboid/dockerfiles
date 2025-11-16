@@ -1,0 +1,34 @@
+package:
+  name: registryauth
+  description: registryauth service
+
+stages:
+  - name: build
+    environment:
+      base-image: golang
+      packages:
+        - git
+    pipeline:
+      - name: Clone and build registryauth
+        uses: clone-and-build-go
+        with:
+          repo: https://github.com/greboid/registryauth
+  - name: Final
+    environment:
+      base-image: base
+      expose:
+        - "8080"
+      entrypoint:
+        - /registryauth
+
+    pipeline:
+      - name: Copy binary and notices
+        copy:
+          from-stage: build
+          from: /main
+          to: /registryauth
+
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /notices

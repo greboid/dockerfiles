@@ -1,0 +1,44 @@
+package:
+  name: baseroot
+  description: Minimal rootfs with user accounts and essential packages
+
+stages:
+  - name: build
+    environment:
+      base-image: alpine
+      packages:
+        - rsync
+      rootfs-packages:
+        - ca-certificates-bundle
+        - musl
+        - tzdata
+    pipeline:
+      - name: Create mount points and directories
+        run: |
+          set -eux;
+          mkdir -p /rootfs/tmp /rootfs/proc /rootfs/dev /rootfs/sys;
+          mkdir -p /rootfs/etc /rootfs/home/nonroot /rootfs/root
+
+      - name: Set up user accounts
+        run: |
+          echo "root:x:0:0:root:/root:/sbin/nologin" >> /rootfs/etc/passwd;
+          echo "nobody:x:65534:65534:nobody:/nonexistent:/sbin/nologin" >> /rootfs/etc/passwd;
+          echo "nonroot:x:65532:65532:nonroot:/home/nonroot:/sbin/nologin" >> /rootfs/etc/passwd;
+          chown 65532:65532 /rootfs/home/nonroot;
+          chmod 01777 /rootfs/tmp
+
+      - name: Add git config
+        run: |
+          echo "[advice]" > /rootfs/etc/gitconfig;
+          echo "    detachedHead = false" >> /rootfs/etc/gitconfig
+  - name: final
+    environment:
+      external-image: scratch
+      environment:
+        SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+    pipeline:
+      - name: Copy rootfs
+        copy:
+          from-stage: build
+          from: /rootfs/
+          to: /

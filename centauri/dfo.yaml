@@ -1,0 +1,34 @@
+package:
+  name: centauri
+  description: centauri service
+
+stages:
+  - name: build
+    environment:
+      base-image: golang
+      packages:
+        - git
+    pipeline:
+      - name: Clone and Build Centauri
+        uses: clone-and-build-go
+        with:
+          repo: https://github.com/csmith/centauri
+          package: ./cmd/centauri
+  - name: final
+    environment:
+      base-image: base
+      expose:
+        - "8080"
+      entrypoint:
+        - /centauri
+    pipeline:
+      - name: Copy binary and notices
+        copy:
+          from-stage: build
+          from: /main
+          to: /centauri
+      - name: Copy license notices
+        copy:
+          from-stage: build
+          from: /notices
+          to: /notices

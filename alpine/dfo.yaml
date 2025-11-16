@@ -1,0 +1,39 @@
+package:
+  name: alpine
+  description: Alpine Linux base image from minirootfs
+
+stages:
+  - name: verify
+    environment:
+      external-image: alpine
+      args:
+        ARCHIVE_URL: "{{alpine_url}}"
+        ARCHIVE_SUM: "{{alpine_checksum}}"
+    pipeline:
+      - name: Download and verify Alpine minirootfs
+        uses: download-verify
+        with:
+          url: $ARCHIVE_URL
+          destination: fs.tar.gz
+          checksum: $ARCHIVE_SUM
+
+      - name: Extract and configure
+        run: |
+          set -eux
+          mkdir /fs
+          tar -C /fs -xzf fs.tar.gz
+          echo "[advice]" > /fs/etc/gitconfig
+          echo "    detachedHead = false" >> /fs/etc/gitconfig
+  - name: Final
+    environment:
+      external-image: scratch
+      environment:
+        LANG: en_US.UTF-8
+      cmd:
+        - /bin/sh
+    pipeline:
+      - name: Copy filesystem
+        copy:
+          from-stage: verify
+          from: /fs/
+          to: /

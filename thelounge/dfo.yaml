@@ -1,0 +1,40 @@
+package:
+  name: thelounge
+  description: Modern, responsive, and self-hosted web IRC client
+
+stages:
+  - name: yarnbase
+    environment:
+      base-image: node
+      workdir: /app
+    pipeline:
+      - name: Enable corepack
+        run: corepack enable
+
+  - name: builder
+    environment:
+      base-image: node
+      args:
+        TAG: "{{github_tag \"thelounge/thelounge\"}}"
+      workdir: /app
+      packages:
+        - git
+    pipeline:
+      - name: Install thelounge
+        run: |
+          set -eux;
+          yarn global add thelounge@$TAG;
+          mkdir /home/nonroot;
+          chown -R 65532:65532 /home/nonroot
+  - name: Final
+    environment:
+      base-image: node
+      entrypoint:
+        - thelounge
+
+    pipeline:
+      - name: Copy thelounge
+        copy:
+          from-stage: builder
+          from: /usr/local/share/.config
+          to: /usr/local/share/.config

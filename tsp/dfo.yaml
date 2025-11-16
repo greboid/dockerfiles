@@ -1,0 +1,35 @@
+package:
+  name: tsp
+  description: tsp service
+
+stages:
+  - name: build
+    environment:
+      base-image: golang
+      packages:
+        - git
+    pipeline:
+      - name: Clone and build
+        uses: clone-and-build-go
+        with:
+          repo: https://github.com/csmith/tsp
+
+  - name: Final
+    environment:
+      base-image: base
+      expose:
+        - "8080"
+      entrypoint:
+        - /tsp
+
+    pipeline:
+      - name: Copy binary and notices
+        copy:
+          from-stage: build
+          from: /main
+          to: /tsp
+
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /notices

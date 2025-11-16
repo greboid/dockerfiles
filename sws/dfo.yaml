@@ -1,0 +1,33 @@
+package:
+  name: sws
+  description: Static web server
+
+stages:
+  - name: build
+    environment:
+      base-image: rust
+      packages:
+        - git
+        - gcc
+        - musl-dev
+        - make
+      workdir: /src
+    pipeline:
+      - name: Clone and build static-web-server
+        uses: clone-and-build-rust
+        with:
+          repo: https://github.com/static-web-server/static-web-server
+          patches:
+            - keepqueriesonrewrites.diff
+  - name: Final
+    environment:
+      base-image: base
+      entrypoint:
+        - /sws
+
+    pipeline:
+      - name: Copy binary
+        copy:
+          from-stage: build
+          from: /src/target/x86_64-unknown-linux-musl/release/static-web-server
+          to: /sws

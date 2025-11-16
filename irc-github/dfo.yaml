@@ -1,0 +1,33 @@
+package:
+  name: irc-github
+  description: irc-github service
+
+stages:
+  - name: build
+    environment:
+      base-image: golang
+      packages:
+        - git
+    pipeline:
+      - name: Clone and build irc-github
+        uses: clone-and-build-go
+        with:
+          repo: https://github.com/greboid/irc-github
+          package: ./cmd/irc-github
+  - name: Final
+    environment:
+      base-image: base
+      expose:
+        - "8080"
+      entrypoint:
+        - /irc-github
+    pipeline:
+      - name: Copy binary and notices
+        copy:
+          from-stage: build
+          from: /main
+          to: /irc-github
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /notices

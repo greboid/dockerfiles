@@ -1,0 +1,33 @@
+package:
+  name: irc-goplum
+  description: irc-goplum service
+
+stages:
+  - name: build
+    environment:
+      base-image: golang
+      packages:
+        - git
+    pipeline:
+      - name: Clone and build irc-goplum
+        uses: clone-and-build-go
+        with:
+          repo: https://github.com/greboid/irc-goplum
+          package: ./cmd/irc-goplum
+  - name: Final
+    environment:
+      base-image: base
+      expose:
+        - "8080"
+      entrypoint:
+        - /irc-goplum
+    pipeline:
+      - name: Copy binary and notices
+        copy:
+          from-stage: build
+          from: /main
+          to: /irc-goplum
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /notices

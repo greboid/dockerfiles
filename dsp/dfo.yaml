@@ -1,0 +1,33 @@
+package:
+  name: dsp
+  description: dsp service
+
+stages:
+  - name: build
+    environment:
+      base-image: golang
+      packages:
+        - git
+    pipeline:
+      - name: Clone and build dsp
+        uses: clone-and-build-go
+        with:
+          repo: https://github.com/greboid/dsp
+          package: ./cmd/dsp
+  - name: Final
+    environment:
+      base-image: base
+      expose:
+        - "8080"
+      entrypoint:
+        - /dsp
+    pipeline:
+      - name: Copy binary and notices
+        copy:
+          from-stage: build
+          from: /main
+          to: /dsp
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /notices

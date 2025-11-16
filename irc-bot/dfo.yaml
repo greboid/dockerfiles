@@ -1,0 +1,33 @@
+package:
+  name: irc-bot
+  description: IRC bot service
+
+stages:
+  - name: build
+    environment:
+      base-image: golang
+      packages:
+        - git
+    pipeline:
+      - name: Clone and build irc-bot
+        uses: clone-and-build-go
+        with:
+          repo: https://github.com/greboid/irc-bot
+          package: ./cmd/bot
+  - name: Final
+    environment:
+      base-image: base
+      expose:
+        - "8080"
+      entrypoint:
+        - /irc-bot
+    pipeline:
+      - name: Copy binary and notices
+        copy:
+          from-stage: build
+          from: /main
+          to: /irc-bot
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /notices

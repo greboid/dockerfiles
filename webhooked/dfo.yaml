@@ -1,0 +1,35 @@
+package:
+  name: webhooked
+  description: webhooked service
+
+stages:
+  - name: build
+    environment:
+      base-image: golang
+      packages:
+        - git
+    pipeline:
+      - name: Clone and build webhooked
+        uses: clone-and-build-go
+        with:
+          repo: https://github.com/csmith/webhooked
+          package: ./cmd/webhooked
+  - name: Final
+    environment:
+      base-image: base
+      expose:
+        - "8080"
+      entrypoint:
+        - /webhooked
+
+    pipeline:
+      - name: Copy binary and notices
+        copy:
+          from-stage: build
+          from: /main
+          to: /webhooked
+
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /notices

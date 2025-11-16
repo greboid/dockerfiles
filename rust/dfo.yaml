@@ -1,0 +1,44 @@
+package:
+  name: rust
+  description: Rust build environment on Alpine
+
+stages: 
+  - name: Final
+    environment:
+      base-image: alpine
+      args:
+        RUSTTAG: "{{github_tag \"rust-lang/rust\"}}"
+        RUSTUPTAG: "{{github_tag \"rust-lang/rustup\"}}"
+      environment:
+        RUSTUP_HOME: "/usr/local/rustup"
+        CARGO_HOME: "/usr/local/cargo"
+        PATH: "/usr/local/cargo/bin:$PATH"
+        RUST_VERSION: "${RUSTTAG}"
+
+    pipeline:
+      - name: Download rustup
+        fetch:
+          url: https://static.rust-lang.org/rustup/archive/${RUSTUPTAG}/x86_64-unknown-linux-musl/rustup-init
+          destination: rustup-init
+
+      - name: Download rustup checksum
+        fetch:
+          url: https://static.rust-lang.org/rustup/archive/${RUSTUPTAG}/x86_64-unknown-linux-musl/rustup-init.sha256
+          destination: rustup-init.sha256
+
+      - name: Install Rust
+        build-deps:
+          - curl
+          - gpg
+          - gpg-agent
+          - musl-utils
+          - bash
+          - libgcc
+        run: |
+          set -eux;
+          echo $(cat rustup-init.sha256 | awk '{print $1}') *rustup-init | sha256sum -wc -;
+          chmod +x rustup-init;
+          ./rustup-init -y --no-modify-path --profile minimal --default-toolchain ${RUSTTAG} --default-host x86_64-unknown-linux-musl;
+          rm rustup-init*;
+          chmod -R a+w $RUSTUP_HOME $CARGO_HOME;
+          ln -s $CARGO_HOME/bin/cargo /usr/local/bin/cargo

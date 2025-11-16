@@ -1,0 +1,33 @@
+package:
+  name: irc-distribution
+  description: irc-distribution service
+
+stages:
+  - name: build
+    environment:
+      base-image: golang
+      packages:
+        - git
+    pipeline:
+      - name: Clone and build
+        uses: clone-and-build-go
+        with:
+          repo: https://github.com/greboid/irc-distribution
+          package: ./cmd/irc-distribution
+  - name: Final
+    environment:
+      base-image: base
+      expose:
+        - "8080"
+      entrypoint:
+        - /irc-distribution
+    pipeline:
+      - name: Copy binary and notices
+        copy:
+          from-stage: build
+          from: /main
+          to: /irc-distribution
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /notices

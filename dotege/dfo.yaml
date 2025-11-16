@@ -1,0 +1,33 @@
+package:
+  name: dotege
+  description: dotege service
+
+stages:
+  - name: build
+    environment:
+      base-image: golang
+      packages:
+        - git
+    pipeline:
+      - name: Clone and build
+        uses: clone-and-build-go
+        with:
+          repo: https://github.com/csmith/dotege
+          package: ./cmd/dotege
+  - name: Final
+    environment:
+      base-image: base
+      expose:
+        - "8080"
+      entrypoint:
+        - /dotege
+    pipeline:
+      - name: Copy binary and notices
+        copy:
+          from-stage: build
+          from: /main
+          to: /dotege
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /notices

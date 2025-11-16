@@ -1,0 +1,32 @@
+package:
+  name: httpredirect
+  description: httpredirect service
+
+stages:
+  - name: build
+    environment:
+      base-image: golang
+      packages:
+        - git
+    pipeline:
+      - name: Clone and build httpredirect
+        uses: clone-and-build-go
+        with:
+          repo: https://github.com/greboid/httpredirect
+  - name: Final
+    environment:
+      base-image: base
+      expose:
+        - "8080"
+      entrypoint:
+        - /httpredirect
+    pipeline:
+      - name: Copy binary and notices
+        copy:
+          from-stage: build
+          from: /main
+          to: /httpredirect
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /notices
