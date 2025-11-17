@@ -44,6 +44,13 @@ stages:
             /usr/local/go/pkg/tool/*/api \
             /usr/local/go/pkg/tool/*/go_bootstrap \
             /usr/local/go/src/cmd/dist/dist;
-          mkdir -p $GOPATH/src $GOPATH/bin;
-          chmod -R 777 $GOPATH;
           go install github.com/google/go-licenses@v1.6.0
+
+      - name: Create GOPATH directories
+        uses: create-directories
+        with:
+          directories:
+            - path: $GOPATH/src
+              permissions: "777"
+            - path: $GOPATH/bin
+              permissions: "777"

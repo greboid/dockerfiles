@@ -7,8 +7,6 @@ stages:
     environment:
       base-image: alpine
       args:
-        ARCHIVE_URL: "{{postgres_url 15}}"
-        ARCHIVE_SUM: "{{postgres_checksum 15}}"
         ENTRYPOINT: "39c3dc7046f5f7909179a51e25f2a61158781d57"
       packages:
         - git
@@ -25,33 +23,27 @@ stages:
         - bash
     pipeline:
       - name: Clone postgres docker entrypoint
-        run: |
-          set -eux;
-          git clone -b master --single-branch https://github.com/docker-library/postgres /src/docker-postgres;
-          cd /src/docker-postgres;
-          git checkout $ENTRYPOINT
-
-      - name: Download and verify PostgreSQL
-        uses: download-verify-extract
+        uses: clone
         with:
-          url: $ARCHIVE_URL
-          destination: postgresql.tar.bz2
-          checksum: $ARCHIVE_SUM
-          extract-dir: /usr/local/postgres
-          strip-components: 1
+          repo: https://github.com/docker-library/postgres
+          workdir: /src/docker-postgres
+          commit: "39c3dc7046f5f7909179a51e25f2a61158781d57"
 
       - name: Build PostgreSQL
-        run: |
-          set -eux
-          cd /usr/local/postgres
-          ./configure \
-            --with-system-tzdata=/usr/share/zoneinfo \
-            --with-includes=/usr/local/include \
-            --with-libraries=/usr/local/lib \
-            --with-ssl=openssl;
-          make -j$(nproc) world
-          make install-world
-          make -C contrib install
+        uses: clone-and-build-autoconf
+        with:
+          repo: https://github.com/postgres/postgres
+          workdir: /usr/local/postgres
+          tag: REL_15_STABLE
+          configure-options:
+            - --with-system-tzdata=/usr/share/zoneinfo
+            - --with-includes=/usr/local/include
+            - --with-libraries=/usr/local/lib
+            - --with-ssl=openssl
+          make-steps:
+            - make -j$(nproc) world
+            - make install-world
+            - make -C contrib install
 
       - name: Prepare rootfs dependencies
         run: |
@@ -66,12 +58,17 @@ stages:
             apk info -qL "${DEP}" | rsync -aq '--files-from=-' / /rootfs/; \
           done
 
+      - name: Create essential directories
+        uses: create-directories
+        with:
+          directories:
+            - path: /rootfs/usr/bin
+            - path: /rootfs/bin
+            - path: /rootfs/usr/local/bin
+
       - name: Copy essential binaries
         run: |
           set -eux;
-          mkdir -p /rootfs/usr/bin;
-          mkdir -p /rootfs/bin;
-          mkdir -p /rootfs/usr/local/bin/;
           cp /usr/bin/env /rootfs/usr/bin/env;
           cp /bin/sh /rootfs/bin/sh;
           cp /bin/ls /rootfs/bin/ls;
@@ -95,25 +92,29 @@ stages:
           rsync -ap /usr/local/pgsql/ /rootfs/usr/local/pgsql/
 
       - name: Create data directory
-        run: |
-          set -eux;
-          mkdir -p /rootfs/var/lib/postgresql/data;
-          chown -R 65532:65532 /rootfs/var/lib/postgresql;
-          chmod 750 /rootfs/var/lib/postgresql/data;
-          chmod 777 /rootfs/var/lib/postgresql
+        uses: create-directories
+        with:
+          directories:
+            - path: /rootfs/var/lib/postgresql
+              owner: "65532:65532"
+              permissions: "777"
+            - path: /rootfs/var/lib/postgresql/data
+              owner: "65532:65532"
+              permissions: "750"
 
       - name: Create runtime directories
-        run: |
-          set -eux;
-          mkdir -p /rootfs/var/run;
-          chown 65532:65532 /rootfs/var/run;
-          chmod -R 777 /rootfs/var/run;
-          mkdir -p /rootfs/tmp;
-          chown 65532:65532 /rootfs/tmp;
-          chmod -R 777 /rootfs/tmp;
-          mkdir -p /rootfs/docker-entrypoint-initdb.d;
-          chmod 644 /rootfs/docker-entrypoint-initdb.d/;
-          chown 65532:65532 /rootfs/docker-entrypoint-initdb.d/
+        uses: create-directories
+        with:
+          directories:
+            - path: /rootfs/var/run
+              owner: "65532:65532"
+              permissions: "777"
+            - path: /rootfs/tmp
+              owner: "65532:65532"
+              permissions: "777"
+            - path: /rootfs/docker-entrypoint-initdb.d
+              owner: "65532:65532"
+              permissions: "644"
   - name: Final
     environment:
       base-image: base

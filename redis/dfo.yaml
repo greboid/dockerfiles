@@ -6,8 +6,6 @@ stages:
   - name: build
     environment:
       base-image: alpine
-      args:
-        TAG: "{{github_tag \"redis/redis\"}}"
       environment:
         LDFLAGS: "-static"
       packages:
@@ -29,14 +27,19 @@ stages:
           to: /redis.conf
 
       - name: Build Redis
-        run: |
-          set -eux;
-          git clone --depth=1 -b $TAG --single-branch https://github.com/redis/redis /src/redis;
-          cd /src/redis;
-          make distclean;
-          make;
-          mkdir /data;
-          strip /src/redis/src/redis-server
+        uses: clone-and-build-make
+        with:
+          repo: https://github.com/redis/redis
+          workdir: /src/redis
+          make-steps:
+            - make distclean
+            - make
+
+      - name: Create data directory
+        uses: create-directories
+        with:
+          directories:
+            - path: /data
   - name: Final
     environment:
       base-image: base

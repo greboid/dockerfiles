@@ -28,7 +28,10 @@ stages:
           package: ./cmd/sojudb
           output: /sojudb
       - name: Create volume
-        run: mkdir /data
+        uses: create-directories
+        with:
+          directories:
+            - path: /data
   - name: Final
     environment:
       base-image: base

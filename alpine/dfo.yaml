@@ -17,11 +17,12 @@ stages:
           destination: fs.tar.gz
           checksum: $ARCHIVE_SUM
           extract-dir: /fs
-      - name: Extract and configure
-        run: |
-          set -eux
-          echo "[advice]" > /fs/etc/gitconfig
-          echo "    detachedHead = false" >> /fs/etc/gitconfig
+      - name: Add git config
+        uses: copy-files
+        with:
+          files:
+            - from: gitconfig
+              to: /fs/etc/gitconfig
   - name: Final
     environment:
       external-image: scratch

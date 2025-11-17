@@ -14,9 +14,13 @@ stages:
         with:
           repo: https://github.com/csmith/linx-server
       - name: Make volumes
-        run: |
-          mkdir -p /data/files /data/meta;
-          chown -R 65532:65532 /data
+        uses: create-directories
+        with:
+          directories:
+            - path: /data/files
+              owner: "65532:65532"
+            - path: /data/meta
+              owner: "65532:65532"
   - name: Final
     environment:
       base-image: base
