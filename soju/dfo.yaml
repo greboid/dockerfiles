@@ -32,30 +32,39 @@ stages:
         with:
           directories:
             - path: /data
+  - name: rootfs
+    environment:
+      base-image: base
+    pipeline:
+      - name: Copy soju binaries to rootfs
+        copy:
+          from-stage: build
+          from: /soju
+          to: /rootfs/soju
+      - copy:
+          from-stage: build
+          from: /sojuctl
+          to: /rootfs/sojuctl
+      - copy:
+          from-stage: build
+          from: /sojudb
+          to: /rootfs/sojudb
+      - copy:
+          from-stage: build
+          from: /data
+          to: /rootfs/data
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /rootfs/notices
   - name: Final
     environment:
       base-image: base
       entrypoint:
         - /soju
     pipeline:
-      - name: Copy soju binaries
+      - name: Copy rootfs to root
         copy:
-          from-stage: build
-          from: /soju
-          to: /soju
-      - copy:
-          from-stage: build
-          from: /sojuctl
-          to: /sojuctl
-      - copy:
-          from-stage: build
-          from: /sojudb
-          to: /sojudb
-      - copy:
-          from-stage: build
-          from: /data
-          to: /data
-      - copy:
-          from-stage: build
-          from: /notices
-          to: /notices
+          from-stage: rootfs
+          from: /rootfs/
+          to: /

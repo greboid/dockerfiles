@@ -19,6 +19,28 @@ stages:
         with:
           repo: https://github.com/csmith/certwrapper
           output: /certwrapper
+  - name: rootfs
+    environment:
+      base-image: base
+    pipeline:
+      - name: Copy binaries to rootfs
+        copy:
+          from-stage: build
+          from: /ergo
+          to: /rootfs/ergo
+      - copy:
+          from-stage: build
+          from: /certwrapper
+          to: /rootfs/certwrapper
+      - name: Copy languages to rootfs
+        copy:
+          from-stage: build
+          from: /src/languages/
+          to: /rootfs/ircd-bin/languages/
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /rootfs/notices
   - name: Final
     environment:
       base-image: base
@@ -31,17 +53,8 @@ stages:
         - --conf
         - /ircd/ircd.yaml
     pipeline:
-      - name: Copy binary and notices
+      - name: Copy rootfs to root
         copy:
-          from-stage: build
-          from: /ergo
-          to: /ergo
-      - name: Copy languages
-        copy:
-          from-stage: build
-          from: /src/languages/
-          to: /ircd-bin/languages/
-      - copy:
-          from-stage: build
-          from: /notices
-          to: /notices
+          from-stage: rootfs
+          from: /rootfs/
+          to: /

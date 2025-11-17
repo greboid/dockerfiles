@@ -3,7 +3,7 @@ package:
   description: Go build environment on Alpine
 
 stages:
-  - name: Final
+  - name: build
     environment:
       base-image: alpine
       args:
@@ -54,3 +54,37 @@ stages:
               permissions: "777"
             - path: $GOPATH/bin
               permissions: "777"
+  - name: rootfs
+    environment:
+      base-image: alpine
+      packages:
+        - gcc
+        - musl-dev
+        - git
+    pipeline:
+      - name: Copy Go to rootfs
+        copy:
+          from-stage: build
+          from: /usr/local/go
+          to: /rootfs/usr/local/go
+      - name: Copy GOPATH to rootfs
+        copy:
+          from-stage: build
+          from: /go
+          to: /rootfs/go
+  - name: Final
+    environment:
+      base-image: alpine
+      environment:
+        GOPATH: "/go"
+        PATH: "$GOPATH/bin:/usr/local/go/bin:$PATH"
+      packages:
+        - gcc
+        - musl-dev
+        - git
+    pipeline:
+      - name: Copy rootfs to root
+        copy:
+          from-stage: rootfs
+          from: /rootfs/
+          to: /

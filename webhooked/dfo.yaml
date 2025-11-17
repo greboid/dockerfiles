@@ -14,6 +14,20 @@ stages:
         with:
           repo: https://github.com/csmith/webhooked
           package: ./cmd/webhooked
+  - name: rootfs
+    environment:
+      base-image: base
+    pipeline:
+      - name: Copy binary and notices to rootfs
+        copy:
+          from-stage: build
+          from: /main
+          to: /rootfs/webhooked
+
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /rootfs/notices
   - name: Final
     environment:
       base-image: base
@@ -23,13 +37,8 @@ stages:
         - /webhooked
 
     pipeline:
-      - name: Copy binary and notices
+      - name: Copy rootfs to root
         copy:
-          from-stage: build
-          from: /main
-          to: /webhooked
-
-      - copy:
-          from-stage: build
-          from: /notices
-          to: /notices
+          from-stage: rootfs
+          from: /rootfs/
+          to: /

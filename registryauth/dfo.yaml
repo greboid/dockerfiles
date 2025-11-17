@@ -13,6 +13,20 @@ stages:
         uses: clone-and-build-go
         with:
           repo: https://github.com/greboid/registryauth
+  - name: rootfs
+    environment:
+      base-image: base
+    pipeline:
+      - name: Copy binary and notices to rootfs
+        copy:
+          from-stage: build
+          from: /main
+          to: /rootfs/registryauth
+
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /rootfs/notices
   - name: Final
     environment:
       base-image: base
@@ -22,13 +36,8 @@ stages:
         - /registryauth
 
     pipeline:
-      - name: Copy binary and notices
+      - name: Copy rootfs to root
         copy:
-          from-stage: build
-          from: /main
-          to: /registryauth
-
-      - copy:
-          from-stage: build
-          from: /notices
-          to: /notices
+          from-stage: rootfs
+          from: /rootfs/
+          to: /

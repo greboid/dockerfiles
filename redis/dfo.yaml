@@ -40,6 +40,26 @@ stages:
         with:
           directories:
             - path: /data
+  - name: rootfs
+    environment:
+      base-image: base
+    pipeline:
+      - name: Copy redis files to rootfs
+        copy:
+          from-stage: build
+          from: /redis.conf
+          to: /rootfs/home/nonroot/redis.conf
+          chown: "65532:65532"
+      - copy:
+          from-stage: build
+          from: /data
+          to: /rootfs/home/nonroot/database
+          chown: "65532:65532"
+      - copy:
+          from-stage: build
+          from: /src/redis/src/redis-server
+          to: /rootfs/home/nonroot/redis
+          chown: "65532:65532"
   - name: Final
     environment:
       base-image: base
@@ -52,19 +72,8 @@ stages:
       cmd:
         - /home/nonroot/redis.conf
     pipeline:
-      - name: Copy redis files
+      - name: Copy rootfs to root
         copy:
-          from-stage: build
-          from: /redis.conf
-          to: /home/nonroot/redis.conf
-          chown: "65532:65532"
-      - copy:
-          from-stage: build
-          from: /data
-          to: /home/nonroot/database
-          chown: "65532:65532"
-      - copy:
-          from-stage: build
-          from: /src/redis/src/redis-server
-          to: /home/nonroot/redis
-          chown: "65532:65532"
+          from-stage: rootfs
+          from: /rootfs/
+          to: /

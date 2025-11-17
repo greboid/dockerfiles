@@ -13,6 +13,19 @@ stages:
         uses: clone-and-build-go
         with:
           repo: https://github.com/greboid/githubmirror
+  - name: rootfs
+    environment:
+      base-image: base
+    pipeline:
+      - name: Copy binary and notices to rootfs
+        copy:
+          from-stage: build
+          from: /main
+          to: /rootfs/githubmirror
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /rootfs/notices
   - name: Final
     environment:
       base-image: base
@@ -21,12 +34,8 @@ stages:
       entrypoint:
         - /githubmirror
     pipeline:
-      - name: Copy binary and notices
+      - name: Copy rootfs to root
         copy:
-          from-stage: build
-          from: /main
-          to: /githubmirror
-      - copy:
-          from-stage: build
-          from: /notices
-          to: /notices
+          from-stage: rootfs
+          from: /rootfs/
+          to: /

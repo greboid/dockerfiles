@@ -16,13 +16,13 @@ stages:
           url: $ARCHIVE_URL
           destination: fs.tar.gz
           checksum: $ARCHIVE_SUM
-          extract-dir: /fs
+          extract-dir: /rootfs
       - name: Add git config
         uses: copy-files
         with:
           files:
             - from: gitconfig
-              to: /fs/etc/gitconfig
+              to: /rootfs/etc/gitconfig
   - name: Final
     environment:
       external-image: scratch
@@ -34,5 +34,5 @@ stages:
       - name: Copy filesystem
         copy:
           from-stage: verify
-          from: /fs/
+          from: /rootfs/
           to: /

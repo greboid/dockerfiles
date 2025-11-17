@@ -15,6 +15,23 @@ stages:
         uses: clone-and-build-go
         with:
           repo: https://github.com/greboid/puzzles
+  - name: rootfs
+    environment:
+      base-image: base
+    pipeline:
+      - name: Copy binary and wordlists to rootfs
+        copy:
+          from-stage: build
+          from: /main
+          to: /rootfs/puzzles
+      - copy:
+          from-stage: build
+          from: /src/wordlists/.
+          to: /rootfs/app/wordlists
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /rootfs/notices
   - name: Final
     environment:
       base-image: base
@@ -23,16 +40,8 @@ stages:
       entrypoint:
         - /puzzles
     pipeline:
-      - name: Copy binary and wordlists
+      - name: Copy rootfs to root
         copy:
-          from-stage: build
-          from: /main
-          to: /puzzles
-      - copy:
-          from-stage: build
-          from: /src/wordlists/.
-          to: /app/wordlists
-      - copy:
-          from-stage: build
-          from: /notices
-          to: /notices
+          from-stage: rootfs
+          from: /rootfs/
+          to: /

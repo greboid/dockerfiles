@@ -21,6 +21,23 @@ stages:
               owner: "65532:65532"
             - path: /data/meta
               owner: "65532:65532"
+  - name: rootfs
+    environment:
+      base-image: base
+    pipeline:
+      - name: Copy binary and data to rootfs
+        copy:
+          from-stage: build
+          from: /main
+          to: /rootfs/linx-server
+      - copy:
+          from-stage: build
+          from: /data
+          to: /rootfs/data
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /rootfs/notices
   - name: Final
     environment:
       base-image: base
@@ -38,16 +55,8 @@ stages:
         - -sitename=linx
         - -allowhotlink
     pipeline:
-      - name: Copy binary and data
+      - name: Copy rootfs to root
         copy:
-          from-stage: build
-          from: /main
-          to: /linx-server
-      - copy:
-          from-stage: build
-          from: /data
-          to: /data
-      - copy:
-          from-stage: build
-          from: /notices
-          to: /notices
+          from-stage: rootfs
+          from: /rootfs/
+          to: /

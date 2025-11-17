@@ -42,6 +42,19 @@ stages:
 
       - name: Install corepack
         run: npm install --global corepack
+  - name: rootfs
+    environment:
+      base-image: alpine
+      packages:
+        - gcompat
+        - libstdc++
+        - git
+    pipeline:
+      - name: Copy Node.js to rootfs
+        copy:
+          from-stage: build
+          from: /usr/local
+          to: /rootfs/usr/local
   - name: Final
     environment:
       base-image: alpine
@@ -52,8 +65,8 @@ stages:
       cmd:
         - /usr/local/bin/node
     pipeline:
-      - name: Copy Node.js from build stage
+      - name: Copy rootfs to root
         copy:
-          from-stage: build
-          from: /usr/local
-          to: /usr/local
+          from-stage: rootfs
+          from: /rootfs/
+          to: /

@@ -19,6 +19,15 @@ stages:
           repo: https://github.com/static-web-server/static-web-server
           patches:
             - keepqueriesonrewrites.diff
+  - name: rootfs
+    environment:
+      base-image: base
+    pipeline:
+      - name: Copy binary to rootfs
+        copy:
+          from-stage: build
+          from: /src/target/x86_64-unknown-linux-musl/release/static-web-server
+          to: /rootfs/sws
   - name: Final
     environment:
       base-image: base
@@ -26,8 +35,8 @@ stages:
         - /sws
 
     pipeline:
-      - name: Copy binary
+      - name: Copy rootfs to root
         copy:
-          from-stage: build
-          from: /src/target/x86_64-unknown-linux-musl/release/static-web-server
-          to: /sws
+          from-stage: rootfs
+          from: /rootfs/
+          to: /

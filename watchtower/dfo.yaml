@@ -15,6 +15,20 @@ stages:
           repo: https://github.com/containrrr/watchtower
           patches:
             - disable-slack.patch
+  - name: rootfs
+    environment:
+      base-image: base
+    pipeline:
+      - name: Copy binary and notices to rootfs
+        copy:
+          from-stage: build
+          from: /main
+          to: /rootfs/watchtower
+
+      - copy:
+          from-stage: build
+          from: /notices
+          to: /rootfs/notices
   - name: Final
     environment:
       base-image: base
@@ -22,13 +36,8 @@ stages:
         - /watchtower
 
     pipeline:
-      - name: Copy binary and notices
+      - name: Copy rootfs to root
         copy:
-          from-stage: build
-          from: /main
-          to: /watchtower
-
-      - copy:
-          from-stage: build
-          from: /notices
-          to: /notices
+          from-stage: rootfs
+          from: /rootfs/
+          to: /
