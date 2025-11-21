@@ -1,98 +1,103 @@
-FROM {{image "alpine"}} as build
+FROM {{image "alpine"}} AS build
 
-ARG ARCHIVE_URL="{{postgres_url 15}}"
-ARG ARCHIVE_SUM="{{postgres_checksum 15}}"
-ARG ENTRYPOINT=39c3dc7046f5f7909179a51e25f2a61158781d57
+ARG ENTRYPOINT="39c3dc7046f5f7909179a51e25f2a61158781d57"
 
+# Install packages
 RUN set -eux; \
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" "curl" "gcc" "g++" "make" "readline-dev" "zlib-dev" "linux-headers" "musl-locales" "openssl-dev" "scanelf" "rsync" "bash" -}}
+    {{- range $key, $value := alpine_packages "git" "gcc" "g++" "make" "readline-dev" "zlib-dev" "linux-headers" "musl-locales" "openssl-dev" "scanelf" "rsync" "bash"}}
         {{$key}}={{$value}} \
-        {{end}};
+    {{- end}}
+    ;
 
-RUN set -eux; \
-    git clone -b master --single-branch https://github.com/docker-library/postgres /src/docker-postgres; \
-    cd /src/docker-postgres; \
-    git checkout $ENTRYPOINT
+# Clone postgres docker entrypoint
+# Clone repository
+RUN git clone "https://github.com/docker-library/postgres" /src/docker-postgres && \
+    cd /src/docker-postgres && \
+    git checkout 39c3dc7046f5f7909179a51e25f2a61158781d57
 
-RUN set -eux; \
-    curl -sfLo postgresql.tar.bz2 $ARCHIVE_URL; \
-    echo "$ARCHIVE_SUM *postgresql.tar.bz2" | sha256sum -wc -; \
-    mkdir -p /usr/local/postgres; \
-    tar -C /usr/local/postgres --strip-components 1 -xf postgresql.tar.bz2; \
-    cd /usr/local/postgres; \
-    ./configure \
-        --with-system-tzdata=/usr/share/zoneinfo \
-        --with-includes=/usr/local/include \
-        --with-libraries=/usr/local/lib \
-        --with-ssl=openssl; \
-    make -j$(nproc) world; \
+# Build PostgreSQL
+# Clone repository
+RUN git clone --depth=1 --branch REL_15_STABLE "https://github.com/postgres/postgres" /usr/local/postgres
+# Configure
+WORKDIR /usr/local/postgres
+RUN ./configure --with-system-tzdata=/usr/share/zoneinfo --with-includes=/usr/local/include --with-libraries=/usr/local/lib --with-ssl=openssl
+# Build with make
+RUN make -j$(nproc) world; \
     make install-world; \
-    make -C contrib install;
+    make -C contrib install
+# Strip binaries
+RUN find /usr/local/postgres -type f -executable -exec strip {} + 2>/dev/null || true
 
+# Prepare rootfs dependencies
 RUN set -eux; \
     DEPS=$(scanelf --needed --nobanner --format '%n#p' --recursive -l /usr/local /usr/local/pgsql/bin /usr/bin/locale \
     | tr ',' '\n' \
     | sort -u \
-    | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }');\
+    | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }'); \
     mkdir /rootfs; \
     for DEP in $DEPS; do \
-      apk add "${DEP}"; \
-      apk info -qL "${DEP}" | rsync -aq '--files-from=-' / /rootfs/; \
-    done;
+    apk add "${DEP}" \
+    apk info -qL "${DEP}" | rsync -aq '--files-from=-' / /rootfs/ \
+    done
 
+# Create essential directories
+# Create directories
+RUN mkdir -p /rootfs/usr/bin /rootfs/bin /rootfs/usr/local/bin
+
+# Copy essential binaries
 RUN set -eux; \
-    mkdir -p /rootfs/usr/bin; \
-    mkdir -p /rootfs/bin; \
-    mkdir -p /rootfs/usr/local/bin/; \
     cp /usr/bin/env /rootfs/usr/bin/env; \
     cp /bin/sh /rootfs/bin/sh; \
     cp /bin/ls /rootfs/bin/ls; \
     cp /bin/cat /rootfs/bin/cat; \
     cp /bin/bash /rootfs/bin/bash; \
     cp /usr/bin/locale /rootfs/usr/bin/locale; \
-    cp /bin/ls /rootfs/bin/ls; \
     cp /usr/bin/id /rootfs/usr/bin/id; \
     cp /bin/mkdir /rootfs/bin/mkdir; \
     cp /bin/chmod /rootfs/bin/chmod
 
+# Set up entrypoint script
 RUN set -eux; \
     cp /src/docker-postgres/15/alpine/docker-entrypoint.sh /rootfs/usr/local/bin/entry.sh; \
     chmod 777 /rootfs/usr/local/bin/entry.sh; \
     chown 65532:65532 /rootfs/usr/local/bin/entry.sh
 
+# Copy PostgreSQL installation
 RUN set -eux; \
     rsync -ap /usr/local/pgsql/ /rootfs/usr/local/pgsql/
 
-RUN set -eux; \
-    mkdir -p /rootfs/var/lib/postgresql/data; \
-    chown -R 65532:65532 /rootfs/var/lib/postgresql; \
-    chmod 750 /rootfs/var/lib/postgresql/data; \
-    chmod 777 /rootfs/var/lib/postgresql
+# Create data directory
+# Create directories
+RUN mkdir -p /rootfs/var/lib/postgresql /rootfs/var/lib/postgresql/data; \
+    chmod 777 /rootfs/var/lib/postgresql; \
+    chmod 750 /rootfs/var/lib/postgresql/data
 
-RUN set -eux; \
-    mkdir -p /rootfs/var/run; \
-    chown 65532:65532 /rootfs/var/run; \
-    chmod -R 777 /rootfs/var/run
+# Create runtime directories
+# Create directories
+RUN mkdir -p /rootfs/var/run /rootfs/tmp /rootfs/docker-entrypoint-initdb.d; \
+    chmod 777 /rootfs/var/run; \
+    chmod 777 /rootfs/tmp; \
+    chmod 644 /rootfs/docker-entrypoint-initdb.d
 
-RUN set -eux; \
-    mkdir -p /rootfs/tmp; \
-    chown 65532:65532 /rootfs/tmp; \
-    chmod -R 777 /rootfs/tmp
-
-RUN set -eux; \
-    mkdir -p /rootfs/docker-entrypoint-initdb.d; \
-    chmod 644 /rootfs/docker-entrypoint-initdb.d/; \
-    chown 65532:65532 /rootfs/docker-entrypoint-initdb.d/
 
 FROM {{image "base"}}
 
-ENV PATH="/usr/local/pgsql/bin:$PATH" LANG=en_US.utf8 PGDATA=/var/lib/postgresql/data PGHOST=127.0.0.1 PGUSER=postgres
+ENV LANG="en_US.utf8"
+ENV PATH="/usr/local/pgsql/bin:$PATH"
+ENV PGDATA="/var/lib/postgresql/data"
+ENV PGHOST="127.0.0.1"
+ENV PGUSER="postgres"
 
+# Copy rootfs
 COPY --from=build /rootfs/ /
+
+EXPOSE 5432
 
 STOPSIGNAL SIGINT
 
-EXPOSE 5432
 ENTRYPOINT ["/usr/local/bin/entry.sh"]
+
 CMD ["postgres", "-c", "listen_addresses=*"]
+
+

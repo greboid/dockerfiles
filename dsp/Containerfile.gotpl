@@ -1,20 +1,40 @@
 FROM {{image "golang"}} AS build
 
-ARG TAG="{{github_tag "greboid/dsp"}}"
-
+# Install packages
 RUN set -eux; \
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
-        {{$key}}={{$value}}\
-        {{end}}; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/dsp /src; \
-    cd /src; \
-    CGO_ENABLED=0 go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main ./cmd; \
-    go-licenses save ./... --save_path=/notices;
+    {{- range $key, $value := alpine_packages "git"}}
+        {{$key}}={{$value}} \
+    {{- end}}
+    ;
 
-FROM {{image "baseroot"}}
+# Clone and build dsp
+# Clone repository
+RUN git clone --depth=1 --branch {{github_tag "greboid/dsp"}} "https://github.com/greboid/dsp" /src
+# Download dependencies
+WORKDIR /src
+RUN go mod download
+# Build binary
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /main ./cmd/dsp
+# Generate license notices
+RUN go run github.com/google/go-licenses@latest save ./cmd/dsp --save_path=/notices
 
-COPY --from=build /src/main /dsp
-COPY --from=build /notices /notices
+
+FROM {{image "base"}} AS rootfs
+
+# Copy binary and notices to rootfs
+COPY --from=build /main /rootfs/dsp
+
+COPY --from=build /notices /rootfs/notices
+
+
+FROM {{image "base"}}
+
+# Copy rootfs to root
+COPY --from=rootfs /rootfs/ /
+
 EXPOSE 8080
+
 ENTRYPOINT ["/dsp"]
+
+

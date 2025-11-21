@@ -1,25 +1,41 @@
 FROM {{image "golang"}} AS build
 
-ARG REPO="csmith/centauri"
-ARG TAG="{{github_tag "csmith/centauri"}}"
-
+# Install packages
 RUN set -eux; \
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
-        {{$key}}={{$value}}\
-        {{end}}; \
-    git clone -b master --single-branch https://github.com/$REPO /go/src; \
-    cd /go/src; \
-    git checkout $TAG; \
-    GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -tags lego_httpreq -o main ./cmd/centauri; \
-    chmod +x /go/src/main; \
-    mkdir -p /rootfs/home/nonroot/.config; \
-    mkdir -p /rootfs/data; \
-    mv /go/src/main /rootfs/centauri
+    {{- range $key, $value := alpine_packages "git"}}
+        {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
+# Clone and Build Centauri
+# Clone repository
+RUN git clone --depth=1 --branch {{github_tag "csmith/centauri"}} "https://github.com/csmith/centauri" /src
+# Download dependencies
+WORKDIR /src
+RUN go mod download
+# Build binary
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /main ./cmd/centauri
+# Generate license notices
+RUN go run github.com/google/go-licenses@latest save ./cmd/centauri --save_path=/notices
+
+
+FROM {{image "base"}} AS rootfs
+
+# Copy binary and notices to rootfs
+COPY --from=build /main /rootfs/centauri
+
+# Copy license notices to rootfs
+COPY --from=build /notices /rootfs/notices
+
 
 FROM {{image "base"}}
 
-COPY --from=build --chown=65532:65532 /rootfs/ /
+# Copy rootfs to root
+COPY --from=rootfs /rootfs/ /
+
 EXPOSE 8080
-EXPOSE 8443
+
 ENTRYPOINT ["/centauri"]
+
+

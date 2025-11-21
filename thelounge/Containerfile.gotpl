@@ -1,27 +1,56 @@
-FROM {{image "node"}} as yarnbase
+FROM {{image "node"}} AS yarnbase
 
 WORKDIR /app
 
+# Enable corepack
 RUN corepack enable
 
-FROM yarnbase as builder
+
+FROM {{image "node"}} AS builder
 
 ARG TAG="{{github_tag "thelounge/thelounge"}}"
 
-WORKDIR  /app
+ENV NODE_ENV="production"
+ENV THELOUNGE_HOME="/var/opt/thelounge"
+
+# Install packages
 RUN set -eux; \
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
-        {{$key}}={{$value}}\
-        {{end}}; \
-    yarn global add thelounge@$TAG; \
-    mkdir /home/nonroot; \
-    chown -R 65532:65532 /home/nonroot
+    {{- range $key, $value := alpine_packages "git"}}
+        {{$key}}={{$value}} \
+    {{- end}}
+    ;
 
-EXPOSE 9000
-ENV THELOUNGE_HOME /home/nonroot
-WORKDIR /home/nonroot
+WORKDIR /app
 
-USER 65532
+# Install thelounge
+RUN set -eux; \
+    git clone --branch v4.4.3 --single-branch https://github.com/thelounge/thelounge.git; \
+    cd thelounge; \
+    yarn install; \
+    yarn build
 
-ENTRYPOINT ["/usr/local/bin/thelounge"]
+# Create nonroot home directory
+# Create directories
+RUN mkdir -p /home/nonroot
+
+
+FROM {{image "node"}} AS rootfs
+
+# Copy thelounge to rootfs
+COPY --from=builder /usr/local/share/.config /rootfs/usr/local/share/.config
+
+# Copy nonroot home to rootfs
+COPY --from=builder /home/nonroot /rootfs/home/nonroot
+
+
+FROM {{image "node"}}
+
+ENV THELOUNGE_HOME="/var/opt/thelounge"
+
+# Copy rootfs to root
+COPY --from=rootfs /rootfs/ /
+
+ENTRYPOINT ["thelounge"]
+
+

@@ -1,27 +1,38 @@
 FROM {{image "rust"}} AS build
 
-ARG TAG={{github_tag "static-web-server/static-web-server"}}
-
-COPY keepqueriesonrewrites.diff /keepqueriesonrewrites.diff
-
+# Install packages
 RUN set -eux; \
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" "gcc" "musl-dev" "make" -}}
+    {{- range $key, $value := alpine_packages "git" "gcc" "musl-dev" "make"}}
         {{$key}}={{$value}} \
-        {{end}};
-
-RUN set -eux; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/static-web-server/static-web-server /src; \
-    cd /src; \
-    git apply /keepqueriesonrewrites.diff
+    {{- end}}
+    ;
 
 WORKDIR /src
 
-RUN set -eux; \
-    cargo build --release
+# Clone and build static-web-server
+# Clone repository
+RUN git clone --depth=1 --branch {{github_tag "static-web-server/static-web-server"}} "https://github.com/static-web-server/static-web-server" /src
+# Apply patch keepqueriesonrewrites.diff
+COPY keepqueriesonrewrites.diff /src/
+RUN cd /src && patch -p1 < keepqueriesonrewrites.diff
+# Build binary
+RUN cd /src && cargo build --release --target x86_64-unknown-linux-musl
+# Copy binary to final location
+RUN find /src/target/x86_64-unknown-linux-musl/release -maxdepth 1 -type f -executable -exec cp {} /main \;
+
+
+FROM {{image "base"}} AS rootfs
+
+# Copy binary to rootfs
+COPY --from=build /src/target/x86_64-unknown-linux-musl/release/static-web-server /rootfs/sws
+
 
 FROM {{image "base"}}
 
-COPY --from=build /src/target/release/static-web-server /sws
+# Copy rootfs to root
+COPY --from=rootfs /rootfs/ /
 
 ENTRYPOINT ["/sws"]
+
+

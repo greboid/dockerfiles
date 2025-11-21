@@ -1,24 +1,70 @@
 FROM {{image "golang"}} AS build
 
-ARG SOJUTAG="{{github_tag "emersion/soju"}}"
-ARG CERTTAG="{{github_tag "csmith/certwrapper"}}"
-
+# Install packages
 RUN set -eux; \
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" "patch" -}}
+    {{- range $key, $value := alpine_packages "git"}}
         {{$key}}={{$value}} \
-        {{end}}; \
-    git clone --depth=1 -b $SOJUTAG --single-branch https://github.com/emersion/soju /go/src/github.com/emersion/soju; \
-    cd /go/src/github.com/emersion/soju; \
-    go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid=" -tags=moderncsqlite -o soju ./cmd/soju; \
-    go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid=" -tags=moderncsqlite -o sojuctl ./cmd/sojuctl; \
-    go-licenses save ./... --ignore codeberg.org/emersion/soju --save_path=/notices; \
-    mkdir /data
+    {{- end}}
+    ;
+
+# Clone and build
+# Clone repository
+RUN git clone --depth=1 --branch {{github_tag "emersion/soju"}} "https://github.com/emersion/soju" /src
+# Download dependencies
+WORKDIR /src
+RUN go mod download
+# Build binary
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /soju ./cmd/soju
+# Generate license notices
+RUN go run github.com/google/go-licenses@latest save ./cmd/soju --save_path=/notices
+
+# Clone and build
+# Clone repository
+RUN git clone --depth=1 --branch {{github_tag "emersion/soju"}} "https://github.com/emersion/soju" /src
+# Download dependencies
+WORKDIR /src
+RUN go mod download
+# Build binary
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /sojuctl ./cmd/sojuctl
+# Generate license notices
+RUN go run github.com/google/go-licenses@latest save ./cmd/sojuctl --save_path=/notices
+
+# Clone and build
+# Clone repository
+RUN git clone --depth=1 --branch {{github_tag "emersion/soju"}} "https://github.com/emersion/soju" /src
+# Download dependencies
+WORKDIR /src
+RUN go mod download
+# Build binary
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /sojudb ./cmd/sojudb
+# Generate license notices
+RUN go run github.com/google/go-licenses@latest save ./cmd/sojudb --save_path=/notices
+
+# Create volume
+# Create directories
+RUN mkdir -p /data
+
+
+FROM {{image "base"}} AS rootfs
+
+# Copy soju binaries to rootfs
+COPY --from=build /soju /rootfs/soju
+
+COPY --from=build /sojuctl /rootfs/sojuctl
+
+COPY --from=build /sojudb /rootfs/sojudb
+
+COPY --from=build /data /rootfs/data
+
+COPY --from=build /notices /rootfs/notices
+
 
 FROM {{image "base"}}
 
-COPY --from=build /go/src/github.com/emersion/soju/soju /soju
-COPY --from=build /go/src/github.com/emersion/soju/sojuctl /sojuctl
-COPY --from=build /notices /notices
-COPY --from=build --chown=65535:65535 /data /data
+# Copy rootfs to root
+COPY --from=rootfs /rootfs/ /
+
 ENTRYPOINT ["/soju"]
+
+

@@ -1,20 +1,40 @@
 FROM {{image "golang"}} AS build
 
-ARG TAG="{{github_tag "greboid/identd"}}"
-
+# Install packages
 RUN set -eux; \
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
-        {{$key}}={{$value}}\
-        {{end}}; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/identd /go/src/github.com/greboid/identd; \
-    cd /go/src/github.com/greboid/identd; \
-    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
-    go-licenses save ./... --save_path=/notices;
+    {{- range $key, $value := alpine_packages "git"}}
+        {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
+# Clone and build identd
+# Clone repository
+RUN git clone --depth=1 --branch {{github_tag "greboid/identd"}} "https://github.com/greboid/identd" /src
+# Download dependencies
+WORKDIR /src
+RUN go mod download
+# Build binary
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /main .
+# Generate license notices
+RUN go run github.com/google/go-licenses@latest save . --save_path=/notices
+
+
+FROM {{image "base"}} AS rootfs
+
+# Copy binary and notices to rootfs
+COPY --from=build /main /rootfs/identd
+
+COPY --from=build /notices /rootfs/notices
+
 
 FROM {{image "base"}}
 
-COPY --from=build /go/src/github.com/greboid/identd/main /identd
-COPY --from=build /notices /notices
-EXPOSE 8000
+# Copy rootfs to root
+COPY --from=rootfs /rootfs/ /
+
+EXPOSE 8080
+
 ENTRYPOINT ["/identd"]
+
+
