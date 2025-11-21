@@ -18,10 +18,16 @@ jobs:
         with:
           go-version: 'stable'
           cache: false
+      - name: Install latest dfo
+        uses: mattdowdell/go-installer@v0.3.0
+        with:
+          package: github.com/greboid/dfo
       - name: Install latest orchestrator
         uses: mattdowdell/go-installer@v0.3.0
         with:
           package: github.com/csmith/contempt/cmd/orchestrator
+      - name: Generate contempt files
+        run: dfo all
       - name: Run contempt orchestrator
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
