@@ -13,9 +13,9 @@ stages:
       - name: Download and verify Alpine minirootfs
         uses: download-verify-extract
         with:
-          url: $ARCHIVE_URL
+          url: ${ARCHIVE_URL}
           destination: fs.tar.gz
-          checksum: $ARCHIVE_SUM
+          checksum: ${ARCHIVE_SUM}
           extract-dir: /rootfs
       - name: Add git config
         uses: copy-files

@@ -16,6 +16,9 @@ stages:
       base-image: node
       args:
         TAG: "{{github_tag \"thelounge/thelounge\"}}"
+      environment:
+        NODE_ENV: production
+        THELOUNGE_HOME: /var/opt/thelounge
       workdir: /app
       packages:
         - git
@@ -23,18 +26,42 @@ stages:
       - name: Install thelounge
         run: |
           set -eux;
-          yarn global add thelounge@$TAG;
-          mkdir /home/nonroot;
-          chown -R 65532:65532 /home/nonroot
+          git clone --branch v4.4.3 --single-branch https://github.com/thelounge/thelounge.git
+          cd thelounge
+          yarn install
+          yarn build
+
+      - name: Create nonroot home directory
+        uses: create-directories
+        with:
+          directories:
+            - path: /home/nonroot
+              owner: "65532:65532"
+  - name: rootfs
+    environment:
+      base-image: node
+    pipeline:
+      - name: Copy thelounge to rootfs
+        copy:
+          from-stage: builder
+          from: /usr/local/share/.config
+          to: /rootfs/usr/local/share/.config
+      - name: Copy nonroot home to rootfs
+        copy:
+          from-stage: builder
+          from: /home/nonroot
+          to: /rootfs/home/nonroot
   - name: Final
     environment:
       base-image: node
+      environment:
+        THELOUNGE_HOME: /var/opt/thelounge
       entrypoint:
         - thelounge
 
     pipeline:
-      - name: Copy thelounge
+      - name: Copy rootfs to root
         copy:
-          from-stage: builder
-          from: /usr/local/share/.config
-          to: /usr/local/share/.config
+          from-stage: rootfs
+          from: /rootfs/
+          to: /

@@ -27,9 +27,9 @@ stages:
       - name: Download and verify Node.js
         uses: download-verify-extract
         with:
-          url: https://unofficial-builds.nodejs.org/download/release/$TAG/node-$TAG-linux-x64-musl.tar.xz
+          url: https://unofficial-builds.nodejs.org/download/release/${TAG}/node-${TAG}-linux-x64-musl.tar.xz
           destination: /node.tar.xz
-          checksum-url: https://unofficial-builds.nodejs.org/download/release/$TAG/SHASUMS256.txt
+          checksum-url: https://unofficial-builds.nodejs.org/download/release/${TAG}/SHASUMS256.txt
           checksum-pattern: ".*linux-x64-musl.tar.xz"
           extract-dir: /src
 
