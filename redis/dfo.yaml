@@ -33,7 +33,7 @@ stages:
           workdir: /src/redis
           make-steps:
             - make distclean
-            - make
+            - make MALLOC=libc redis-server redis-cli
 
       - name: Create data directory
         uses: create-directories

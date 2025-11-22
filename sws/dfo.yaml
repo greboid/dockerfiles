@@ -11,6 +11,7 @@ stages:
         - gcc
         - musl-dev
         - make
+        - patch
       workdir: /src
     pipeline:
       - name: Clone and build static-web-server
@@ -26,7 +27,7 @@ stages:
       - name: Copy binary to rootfs
         copy:
           from-stage: build
-          from: /src/target/x86_64-unknown-linux-musl/release/static-web-server
+          from: /main
           to: /rootfs/sws
   - name: Final
     environment:

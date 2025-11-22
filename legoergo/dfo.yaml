@@ -35,7 +35,7 @@ stages:
       - name: Copy languages to rootfs
         copy:
           from-stage: build
-          from: /src/languages/
+          from: /src/ergochat/ergo/languages/
           to: /rootfs/ircd-bin/languages/
       - copy:
           from-stage: build

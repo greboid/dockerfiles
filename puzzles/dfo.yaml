@@ -26,7 +26,7 @@ stages:
           to: /rootfs/puzzles
       - copy:
           from-stage: build
-          from: /src/wordlists/.
+          from: /src/greboid/puzzles/wordlists/.
           to: /rootfs/app/wordlists
       - copy:
           from-stage: build

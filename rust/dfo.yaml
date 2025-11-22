@@ -6,6 +6,8 @@ stages:
   - name: build
     environment:
       base-image: alpine
+      packages:
+        - curl
       args:
         RUSTTAG: "{{github_tag \"rust-lang/rust\"}}"
         RUSTUPTAG: "{{github_tag \"rust-lang/rustup\"}}"

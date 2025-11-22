@@ -16,6 +16,7 @@ stages:
         - gcc
         - musl-dev
         - git
+        - curl
     pipeline:
       - name: Download and verify Go
         uses: download-verify-extract

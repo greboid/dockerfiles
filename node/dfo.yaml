@@ -16,6 +16,7 @@ stages:
         - bash
         - libstdc++
         - gcompat
+        - curl
     pipeline:
       - name: Create directories
         uses: create-directories

@@ -13,6 +13,7 @@ stages:
         uses: clone-and-build-go
         with:
           repo: https://github.com/greboid/registryauth
+          package: ./cmd/auth
   - name: rootfs
     environment:
       base-image: base

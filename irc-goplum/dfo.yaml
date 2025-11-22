@@ -13,7 +13,7 @@ stages:
         uses: clone-and-build-go
         with:
           repo: https://github.com/greboid/irc-goplum
-          package: ./cmd/irc-goplum
+          package: ./cmd/goplum
   - name: rootfs
     environment:
       base-image: base

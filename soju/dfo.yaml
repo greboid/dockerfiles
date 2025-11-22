@@ -3,7 +3,7 @@ package:
   description: IRC bouncer
 
 stages:
-  - name: build
+  - name: sojo
     environment:
       base-image: golang
       packages:
@@ -15,19 +15,40 @@ stages:
           repo: https://github.com/emersion/soju
           package: ./cmd/soju
           output: /soju
+          ignore: "codeberg.org/emersion/soju"
+          go-tags: moderncsqlite
+  - name: sojuctl
+    environment:
+      base-image: golang
+      packages:
+        - git
+    pipeline:
       - name: Clone and build
         uses: clone-and-build-go
         with:
           repo: https://github.com/emersion/soju
           package: ./cmd/sojuctl
           output: /sojuctl
+          ignore: "codeberg.org/emersion/soju"
+  - name: sojudb
+    environment:
+      base-image: golang
+      packages:
+        - git
+    pipeline:
       - name: Clone and build
         uses: clone-and-build-go
         with:
           repo: https://github.com/emersion/soju
           package: ./cmd/sojudb
           output: /sojudb
-      - name: Create volume
+          ignore: "codeberg.org/emersion/soju"
+          go-tags: moderncsqlite
+  - name: volumes
+    environment:
+      base-image: alpine
+    pipeline:
+      - name: Create volumes
         uses: create-directories
         with:
           directories:
@@ -38,24 +59,24 @@ stages:
     pipeline:
       - name: Copy soju binaries to rootfs
         copy:
-          from-stage: build
+          from-stage: sojo
           from: /soju
           to: /rootfs/soju
       - copy:
-          from-stage: build
+          from-stage: sojuctl
           from: /sojuctl
           to: /rootfs/sojuctl
       - copy:
-          from-stage: build
+          from-stage: sojudb
           from: /sojudb
           to: /rootfs/sojudb
       - copy:
-          from-stage: build
+          from-stage: volumes
           from: /data
           to: /rootfs/data
       - copy:
-          from-stage: build
-          from: /notices
+          from-stage: sojo
+          from: /notices/soju
           to: /rootfs/notices
   - name: Final
     environment:

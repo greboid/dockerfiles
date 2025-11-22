@@ -17,11 +17,11 @@ stages:
       args:
         TAG: "{{github_tag \"thelounge/thelounge\"}}"
       environment:
-        NODE_ENV: production
         THELOUNGE_HOME: /var/opt/thelounge
       workdir: /app
       packages:
         - git
+        - python3
     pipeline:
       - name: Install thelounge
         run: |
@@ -29,7 +29,7 @@ stages:
           git clone --branch v4.4.3 --single-branch https://github.com/thelounge/thelounge.git
           cd thelounge
           yarn install
-          yarn build
+          NODE_ENV=production yarn build
 
       - name: Create nonroot home directory
         uses: create-directories
@@ -37,6 +37,12 @@ stages:
           directories:
             - path: /home/nonroot
               owner: "65532:65532"
+
+      - name: Create symlink for thelounge command
+        run: |
+          mkdir -p /usr/local/bin
+          ln -s /app/thelounge/index.js /usr/local/bin/thelounge
+
   - name: rootfs
     environment:
       base-image: node
@@ -44,8 +50,13 @@ stages:
       - name: Copy thelounge to rootfs
         copy:
           from-stage: builder
-          from: /usr/local/share/.config
-          to: /rootfs/usr/local/share/.config
+          from: /app/thelounge
+          to: /rootfs/app/thelounge
+      - name: Copy symlink to rootfs
+        copy:
+          from-stage: builder
+          from: /usr/local/bin/thelounge
+          to: /rootfs/usr/local/bin/thelounge
       - name: Copy nonroot home to rootfs
         copy:
           from-stage: builder
