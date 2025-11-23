@@ -1,25 +1,56 @@
 FROM {{image "golang"}} AS build
 
-ARG CERTTAG="{{github_tag "csmith/certwrapper"}}"
-ARG ERGOTAG="{{github_tag "ergochat/ergo"}}"
-
+# Install packages
 RUN set -eux; \
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
+    {{- range $key, $value := alpine_packages "git"}}
         {{$key}}={{$value}} \
-        {{end}}; \
-    git clone --depth=1 -b $CERTTAG --single-branch https://github.com/csmith/certwrapper /go/src/github.com/csmith/certwrapper; \
-    cd /go/src/github.com/csmith/certwrapper; \
-    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -tags lego_httpreq -o main .; \
-    git clone --depth=1 -b $ERGOTAG --single-branch https://github.com/ergochat/ergo /go/src/github.com/ergochat/ergo; \
-    cd /go/src/github.com/ergochat/ergo; \
-    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
-    go-licenses save ./... --save_path=/notices;
+    {{- end}}
+    ;
+
+# Clone and build legoergo
+# Clone repository
+RUN git clone --depth=1 --branch {{github_tag "ergochat/ergo"}} "https://github.com/ergochat/ergo" /src
+# Download dependencies
+WORKDIR /src
+RUN go mod download
+# Build binary
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /ergo .
+# Generate license notices
+RUN go run github.com/google/go-licenses@latest save . --save_path=/notices
+
+# Clone and build certwrapper
+# Clone repository
+RUN git clone --depth=1 --branch {{github_tag "csmith/certwrapper"}} "https://github.com/csmith/certwrapper" /src
+# Download dependencies
+WORKDIR /src
+RUN go mod download
+# Build binary
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /certwrapper .
+# Generate license notices
+RUN go run github.com/google/go-licenses@latest save . --save_path=/notices
+
+
+FROM {{image "base"}} AS rootfs
+
+# Copy binaries to rootfs
+COPY --from=build /ergo /rootfs/ergo
+
+COPY --from=build /certwrapper /rootfs/certwrapper
+
+# Copy languages to rootfs
+COPY --from=build /src/languages/ /rootfs/ircd-bin/languages/
+
+COPY --from=build /notices /rootfs/notices
+
 
 FROM {{image "base"}}
 
-COPY --from=build /go/src/github.com/csmith/certwrapper/main /certwrapper
-COPY --from=build /go/src/github.com/ergochat/ergo/main /ergo
-COPY --from=build /go/src/github.com/ergochat/ergo/languages /ircd-bin/languages
-COPY --from=build /notices /notices
+# Copy rootfs to root
+COPY --from=rootfs /rootfs/ /
+
+EXPOSE 8080
+
 CMD ["/certwrapper", "/ergo", "run", "--conf", "/ircd/ircd.yaml"]
+
+

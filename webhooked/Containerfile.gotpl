@@ -1,20 +1,40 @@
 FROM {{image "golang"}} AS build
 
-ARG TAG="{{github_tag "csmith/webhooked"}}"
-
+# Install packages
 RUN set -eux; \
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
-        {{$key}}={{$value}}\
-        {{end}}; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/webhooked /go/src/github.com/csmith/webhooked; \
-    cd /go/src/github.com/csmith/webhooked; \
-    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
-    go-licenses save ./... --save_path=/notices;
+    {{- range $key, $value := alpine_packages "git"}}
+        {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
+# Clone and build webhooked
+# Clone repository
+RUN git clone --depth=1 --branch {{github_tag "csmith/webhooked"}} "https://github.com/csmith/webhooked" /src
+# Download dependencies
+WORKDIR /src
+RUN go mod download
+# Build binary
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /main ./cmd/webhooked
+# Generate license notices
+RUN go run github.com/google/go-licenses@latest save ./cmd/webhooked --save_path=/notices
+
+
+FROM {{image "base"}} AS rootfs
+
+# Copy binary and notices to rootfs
+COPY --from=build /main /rootfs/webhooked
+
+COPY --from=build /notices /rootfs/notices
+
 
 FROM {{image "base"}}
 
-COPY --from=build /go/src/github.com/csmith/webhooked/main /webhooked
-COPY --from=build /notices /notices
+# Copy rootfs to root
+COPY --from=rootfs /rootfs/ /
+
+EXPOSE 8080
 
 ENTRYPOINT ["/webhooked"]
+
+

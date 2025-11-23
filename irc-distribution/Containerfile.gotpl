@@ -1,19 +1,40 @@
 FROM {{image "golang"}} AS build
 
-ARG TAG="{{github_tag "csmith/irc-distribution"}}"
-
+# Install packages
 RUN set -eux; \
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
-        {{$key}}={{$value}}\
-        {{end}}; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/irc-distribution /go/src/github.com/csmith/irc-distribution; \
-    cd /go/src/github.com/csmith/irc-distribution; \
-    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main ./cmd/distribution; \
-    go-licenses save ./... --save_path=/notices;
+    {{- range $key, $value := alpine_packages "git"}}
+        {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
+# Clone and build
+# Clone repository
+RUN git clone --depth=1 --branch {{github_tag "greboid/irc-distribution"}} "https://github.com/greboid/irc-distribution" /src
+# Download dependencies
+WORKDIR /src
+RUN go mod download
+# Build binary
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /main ./cmd/irc-distribution
+# Generate license notices
+RUN go run github.com/google/go-licenses@latest save ./cmd/irc-distribution --save_path=/notices
+
+
+FROM {{image "base"}} AS rootfs
+
+# Copy binary and notices to rootfs
+COPY --from=build /main /rootfs/irc-distribution
+
+COPY --from=build /notices /rootfs/notices
+
 
 FROM {{image "base"}}
 
-COPY --from=build /go/src/github.com/csmith/irc-distribution/main /irc-distribution
-COPY --from=build /notices /notices
+# Copy rootfs to root
+COPY --from=rootfs /rootfs/ /
+
+EXPOSE 8080
+
 ENTRYPOINT ["/irc-distribution"]
+
+

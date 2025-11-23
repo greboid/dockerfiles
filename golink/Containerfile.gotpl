@@ -1,27 +1,42 @@
 FROM {{image "golang"}} AS build
 
-ARG TAG=5eb91a2ccfa4d2a3ebbcd8b3048ac54f10fc0731
-ARG TS={{github_tag "tailscale/tailscale"}}
+# Install packages
 RUN set -eux; \
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
-        {{$key}}={{$value}}\
-        {{end}}; \
-    git clone -b main --single-branch https://github.com/tailscale/golink /src; \
-    cd /src; \
-    git checkout $TAG; \
-#   git clone --depth=1 -b $TAG --single-branch https://github.com/tailscale/golink /src; \
-    cd /src; \
-    #This is a bit horrible, but I cant think of a nicer way to update the dependency and its tree
-    go get -u tailscale.com@$TS; \
-    go mod tidy; \
-    CGO_ENABLED=0 GOOS=linux go build -a -trimpath -ldflags="-extldflags \"-static\" -buildid= -s -w" -o main ./cmd/golink; \
-    go-licenses save ./... --save_path=/notices --ignore modernc.org/mathutil;
+    {{- range $key, $value := alpine_packages "git"}}
+        {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
+# Clone and build golink
+# Clone repository
+RUN git clone --depth=1 --branch {{github_tag "tailscale/golink"}} "https://github.com/tailscale/golink" /src
+# Download dependencies
+WORKDIR /src
+RUN go mod download
+# Build binary
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w -extldflags "-static"' -o /main ./cmd/golink
+# Generate license notices
+RUN go run github.com/google/go-licenses@latest save ./cmd/golink --save_path=/notices --ignore modernc.org/mathutil
+
+
+FROM {{image "base"}} AS rootfs
+
+# Copy binary and notices to rootfs
+COPY --from=build /main /rootfs/golink
+
+COPY --from=build /notices /rootfs/notices
+
 
 FROM {{image "base"}}
 
-COPY --from=build /src/main /golink
-COPY --from=build /notices /notices
+# Copy rootfs to root
+COPY --from=rootfs /rootfs/ /
+
 EXPOSE 8080
+
 ENTRYPOINT ["/golink"]
+
 CMD ["--sqlitedb", "/home/nonroot/golink.db"]
+
+

@@ -1,25 +1,40 @@
 FROM {{image "golang"}} AS build
 
-ARG TAG="{{github_tag "csmith/dotege"}}"
-
+# Install packages
 RUN set -eux; \
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
-        {{$key}}={{$value}}\
-        {{end}}; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/dotege /go/src/github.com/csmith/dotege; \
-    cd /go/src/github.com/csmith/dotege; \
-    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -tags lego_httpreq -ldflags=-buildid= -o main ./cmd/dotege; \
-    go-licenses save ./... --save_path=/notices;
+    {{- range $key, $value := alpine_packages "git"}}
+        {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
+# Clone and build
+# Clone repository
+RUN git clone --depth=1 --branch {{github_tag "csmith/dotege"}} "https://github.com/csmith/dotege" /src
+# Download dependencies
+WORKDIR /src
+RUN go mod download
+# Build binary
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /main ./cmd/dotege
+# Generate license notices
+RUN go run github.com/google/go-licenses@latest save ./cmd/dotege --save_path=/notices
+
+
+FROM {{image "base"}} AS rootfs
+
+# Copy binary and notices to rootfs
+COPY --from=build /main /rootfs/dotege
+
+COPY --from=build /notices /rootfs/notices
+
 
 FROM {{image "base"}}
 
-COPY --from=build /go/src/github.com/csmith/dotege/main /dotege
-COPY --from=build /notices /notices
-COPY --from=build /go/src/github.com/csmith/dotege/templates /templates
+# Copy rootfs to root
+COPY --from=rootfs /rootfs/ /
 
-VOLUME /data/config
-VOLUME /data/certs
-VOLUME /data/output
+EXPOSE 8080
 
 ENTRYPOINT ["/dotege"]
+
+

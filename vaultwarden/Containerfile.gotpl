@@ -1,20 +1,27 @@
-FROM {{image "rust" }} as server
+FROM {{image "rust"}} AS server
 
-ARG VAULTTAG="{{github_tag "dani-garcia/vaultwarden"}}"
-
+# Install packages
 RUN set -eux; \
-apk add git; \
-git clone --depth=1 -b $VAULTTAG --single-branch https://github.com/dani-garcia/vaultwarden /src; \
-cd /src
+    apk add --no-cache \
+    {{- range $key, $value := alpine_packages "git" "gcc" "musl-dev" "openssl-dev"}}
+        {{$key}}={{$value}} \
+    {{- end}}
+    ;
 
-WORKDIR /src
+# Clone and build vaultwarden
+# Clone repository
+RUN git clone --depth=1 --branch {{github_tag "dani-garcia/vaultwarden"}} "https://github.com/dani-garcia/vaultwarden" /src
+# Build binary
+RUN cd /src && cargo build --release --target x86_64-unknown-linux-musl --features sqlite,enable_mimalloc
+# Copy binary to final location
+RUN find /src/target/x86_64-unknown-linux-musl/release -maxdepth 1 -type f -executable -exec cp {} /main \;
 
-RUN set -eux; \
-apk add gcc musl-dev openssl-dev; \
-cargo build --features sqlite,enable_mimalloc --release
 
 FROM {{image "base"}}
 
-COPY --from=server /src/target/release/vaultwarden /
+# Copy binary
+COPY --from=server /main /vaultwarden
 
 ENTRYPOINT ["/vaultwarden"]
+
+

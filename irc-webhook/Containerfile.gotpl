@@ -1,19 +1,40 @@
 FROM {{image "golang"}} AS build
 
-ARG TAG="{{github_tag "greboid/irc-webhook"}}"
-
+# Install packages
 RUN set -eux; \
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
-        {{$key}}={{$value}}\
-        {{end}}; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/irc-webhook /go/src/github.com/greboid/irc-webhook; \
-    cd /go/src/github.com/greboid/irc-webhook; \
-    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main ./cmd/webhook; \
-    go-licenses save ./... --save_path=/notices;
+    {{- range $key, $value := alpine_packages "git"}}
+        {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
+# Clone and build irc-webhook
+# Clone repository
+RUN git clone --depth=1 --branch {{github_tag "greboid/irc-webhook"}} "https://github.com/greboid/irc-webhook" /src
+# Download dependencies
+WORKDIR /src
+RUN go mod download
+# Build binary
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /main ./cmd/webhook
+# Generate license notices
+RUN go run github.com/google/go-licenses@latest save ./cmd/webhook --save_path=/notices
+
+
+FROM {{image "base"}} AS rootfs
+
+# Copy binary and notices to rootfs
+COPY --from=build /main /rootfs/irc-webhook
+
+COPY --from=build /notices /rootfs/notices
+
 
 FROM {{image "base"}}
 
-COPY --from=build /go/src/github.com/greboid/irc-webhook/main /irc-webhook
-COPY --from=build /notices /notices
+# Copy rootfs to root
+COPY --from=rootfs /rootfs/ /
+
+EXPOSE 8080
+
 ENTRYPOINT ["/irc-webhook"]
+
+

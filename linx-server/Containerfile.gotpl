@@ -1,26 +1,50 @@
 FROM {{image "golang"}} AS build
 
-ARG TAG="{{github_tag "csmith/linx-server"}}"
-
+# Install packages
 RUN set -eux; \
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
-        {{$key}}={{$value}}\
-        {{end}}; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/linx-server /go/src/github.com/csmith/linx-server; \
-    cd /go/src/github.com/csmith/linx-server; \
-    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
-    go-licenses save ./... --save_path=/notices; \
-    mkdir -p /data/files /data/meta; \
-    chown -R 65532:65532 /data;
+    {{- range $key, $value := alpine_packages "git"}}
+        {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
+# Clone and build
+# Clone repository
+RUN git clone --depth=1 --branch {{github_tag "csmith/linx-server"}} "https://github.com/csmith/linx-server" /src
+# Download dependencies
+WORKDIR /src
+RUN go mod download
+# Build binary
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /main .
+# Generate license notices
+RUN go run github.com/google/go-licenses@latest save . --save_path=/notices
+
+# Make volumes
+# Create directories
+RUN mkdir -p /data/files /data/meta
+
+
+FROM {{image "base"}} AS rootfs
+
+# Copy binary and data to rootfs
+COPY --from=build /main /rootfs/linx-server
+
+COPY --from=build /data /rootfs/data
+
+COPY --from=build /notices /rootfs/notices
+
 
 FROM {{image "base"}}
 
-COPY --from=build /go/src/github.com/csmith/linx-server/main /linx-server
-COPY --from=build /data /data
-COPY --from=build /notices /notices
+# Copy rootfs to root
+COPY --from=rootfs /rootfs/ /
+
+EXPOSE 8080
 
 VOLUME ["/data/files", "/data/meta"]
-EXPOSE 8080
+
 ENTRYPOINT ["/linx-server", "-bind=0.0.0.0:8080", "-filespath=/data/files/", "-metapath=/data/meta/"]
+
 CMD ["-sitename=linx", "-allowhotlink"]
+
+

@@ -1,3 +1,5 @@
-FROM {{image "baseroot"}} AS build
+FROM {{image "baseroot"}}
 
 USER nonroot
+
+

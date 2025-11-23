@@ -1,32 +1,63 @@
-FROM {{ image "alpine" }} as build
+FROM {{image "alpine"}} AS build
 
 ARG TAG="{{github_tag "nodejs/node"}}"
 
+# Install packages
 RUN set -eux; \
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "curl" "tar" "xz" "rsync" "gnupg" "bash" "libstdc++" "gcompat" -}}
-        {{$key}}={{$value}}\
-        {{end}};
-RUN curl -sfLo /checksums.txt https://unofficial-builds.nodejs.org/download/release/$TAG/SHASUMS256.txt
-RUN curl -sfLo /node.tar.xz https://unofficial-builds.nodejs.org/download/release//$TAG/node-$TAG-linux-x64-musl.tar.xz
-RUN grep ".*linux-x64-musl.tar.xz" checksums.txt | echo $(awk '{print $1}') \*node.tar.xz | sha256sum -wc -; \
-    mkdir -p /src; \
-    mkdir -p /usr/local; \
-    tar -xf /node.tar.xz -C /src; \
-    rsync -ap /src/node*/ /usr/local/; \
+    {{- range $key, $value := alpine_packages "tar" "xz" "rsync" "gnupg" "bash" "libstdc++" "gcompat"}}
+        {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
+# Create directories
+# Create directories
+RUN mkdir -p /src /usr/local
+
+# Download and verify Node.js
+# Download, verify and extract
+RUN curl -fsSL -o /node.tar.xz.checksum "https://unofficial-builds.nodejs.org/download/release/${TAG}/SHASUMS256.txt" && \
+    curl -fsSL -o /node.tar.xz "https://unofficial-builds.nodejs.org/download/release/${TAG}/node-${TAG}-linux-x64-musl.tar.xz" && \
+    echo "$(grep ".*linux-x64-musl.tar.xz" /node.tar.xz.checksum | awk '{print $1}') */node.tar.xz" | sha256sum -wc - && \
+    tar -xf "/node.tar.xz" -C "/src" --strip-components=0
+
+# Install Node.js
+RUN rsync -ap /src/node*/ /usr/local/; \
     rm -rf /usr/local/CHANGELOG.md; \
     rm -rf /usr/local/LICENSE; \
-    rm -rf /usr/local/README.md;
+    rm -rf /usr/local/README.md
+
+# Install corepack
 RUN npm install --global corepack
 
-FROM {{ image "alpine" }}
 
+FROM {{image "alpine"}} AS rootfs
+
+# Install packages
 RUN set -eux; \
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "gcompat" "libstdc++" "git" -}}
-        {{$key}}={{$value}}\
-        {{end}};
+    {{- range $key, $value := alpine_packages "gcompat" "libstdc++" "git"}}
+        {{$key}}={{$value}} \
+    {{- end}}
+    ;
 
-COPY --from=build /usr/local /usr/local
+# Copy Node.js to rootfs
+COPY --from=build /usr/local /rootfs/usr/local
+
+
+FROM {{image "alpine"}}
+
+# Install packages
+RUN set -eux; \
+    apk add --no-cache \
+    {{- range $key, $value := alpine_packages "gcompat" "libstdc++" "git"}}
+        {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
+# Copy rootfs to root
+COPY --from=rootfs /rootfs/ /
 
 CMD ["/usr/local/bin/node"]
+
+
