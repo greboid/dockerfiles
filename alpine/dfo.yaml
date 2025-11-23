@@ -6,8 +6,6 @@ stages:
   - name: verify
     environment:
       external-image: alpine
-      packages:
-        - curl
       args:
         ARCHIVE_URL: "{{alpine_url}}"
         ARCHIVE_SUM: "{{alpine_checksum}}"

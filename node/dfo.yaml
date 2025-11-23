@@ -16,7 +16,6 @@ stages:
         - bash
         - libstdc++
         - gcompat
-        - curl
     pipeline:
       - name: Create directories
         uses: create-directories
@@ -59,10 +58,6 @@ stages:
   - name: Final
     environment:
       base-image: alpine
-      packages:
-        - gcompat
-        - libstdc++
-        - git
       cmd:
         - /usr/local/bin/node
     pipeline:

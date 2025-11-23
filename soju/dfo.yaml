@@ -6,8 +6,6 @@ stages:
   - name: sojo
     environment:
       base-image: golang
-      packages:
-        - git
     pipeline:
       - name: Clone and build
         uses: clone-and-build-go

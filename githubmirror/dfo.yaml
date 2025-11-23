@@ -6,8 +6,6 @@ stages:
   - name: build
     environment:
       base-image: golang
-      packages:
-        - git
     pipeline:
       - name: Clone and build githubmirror
         uses: clone-and-build-go

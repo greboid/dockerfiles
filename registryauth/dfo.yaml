@@ -6,8 +6,6 @@ stages:
   - name: build
     environment:
       base-image: golang
-      packages:
-        - git
     pipeline:
       - name: Clone and build registryauth
         uses: clone-and-build-go
@@ -23,7 +21,6 @@ stages:
           from-stage: build
           from: /main
           to: /rootfs/registryauth
-
       - copy:
           from-stage: build
           from: /notices
@@ -35,7 +32,6 @@ stages:
         - "8080"
       entrypoint:
         - /registryauth
-
     pipeline:
       - name: Copy rootfs to root
         copy:

@@ -6,7 +6,6 @@ stages:
   - name: yarnbase
     environment:
       base-image: node
-      workdir: /app
     pipeline:
       - name: Enable corepack
         run: corepack enable
@@ -19,9 +18,10 @@ stages:
       environment:
         THELOUNGE_HOME: /var/opt/thelounge
       workdir: /app
-      packages:
+      build-deps:
         - git
         - python3
+        - busybox
     pipeline:
       - name: Install thelounge
         run: |
@@ -38,25 +38,22 @@ stages:
             - path: /home/nonroot
               owner: "65532:65532"
 
-      - name: Create symlink for thelounge command
-        run: |
-          mkdir -p /usr/local/bin
-          ln -s /app/thelounge/index.js /usr/local/bin/thelounge
-
   - name: rootfs
     environment:
-      base-image: node
+      base-image: base
     pipeline:
       - name: Copy thelounge to rootfs
         copy:
           from-stage: builder
           from: /app/thelounge
           to: /rootfs/app/thelounge
-      - name: Copy symlink to rootfs
-        copy:
-          from-stage: builder
-          from: /usr/local/bin/thelounge
-          to: /rootfs/usr/local/bin/thelounge
+      - name: Copy wrapper script to rootfs
+        uses: copy-files
+        with:
+          files:
+            - from: thelounge
+              to: /rootfs/usr/local/bin/thelounge
+              chmod: "755"
       - name: Copy nonroot home to rootfs
         copy:
           from-stage: builder
@@ -69,10 +66,12 @@ stages:
         THELOUNGE_HOME: /var/opt/thelounge
       entrypoint:
         - thelounge
-
+      packages:
+        - bash
     pipeline:
       - name: Copy rootfs to root
         copy:
           from-stage: rootfs
           from: /rootfs/
           to: /
+          merge: true

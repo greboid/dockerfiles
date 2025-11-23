@@ -6,8 +6,6 @@ stages:
   - name: build
     environment:
       base-image: golang
-      packages:
-        - git
     pipeline:
       - name: Clone and build identd
         uses: clone-and-build-go

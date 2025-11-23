@@ -8,8 +8,6 @@ stages:
       base-image: golang
       args:
         TAG: "{{github_tag \"greboid/puzzles\"}}"
-      packages:
-        - git
     pipeline:
       - name: Clone and build registryauth
         uses: clone-and-build-go

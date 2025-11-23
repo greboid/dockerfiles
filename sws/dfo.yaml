@@ -6,12 +6,6 @@ stages:
   - name: build
     environment:
       base-image: rust
-      packages:
-        - git
-        - gcc
-        - musl-dev
-        - make
-        - patch
       workdir: /src
     pipeline:
       - name: Clone and build static-web-server
@@ -34,7 +28,6 @@ stages:
       base-image: base
       entrypoint:
         - /sws
-
     pipeline:
       - name: Copy rootfs to root
         copy:

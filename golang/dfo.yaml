@@ -12,11 +12,6 @@ stages:
       environment:
         GOPATH: "/go"
         PATH: "$GOPATH/bin:/usr/local/go/bin:$PATH"
-      packages:
-        - gcc
-        - musl-dev
-        - git
-        - curl
     pipeline:
       - name: Download and verify Go
         uses: download-verify-extract
@@ -58,10 +53,6 @@ stages:
   - name: rootfs
     environment:
       base-image: alpine
-      packages:
-        - gcc
-        - musl-dev
-        - git
     pipeline:
       - name: Copy Go to rootfs
         copy:
