@@ -10,25 +10,25 @@ RUN set -eux; \
 
 # Clone and build legoergo
 # Clone repository
-RUN git clone --depth=1 --branch {{github_tag "ergochat/ergo"}} "https://github.com/ergochat/ergo" /src
+RUN git clone --depth=1 --branch {{github_tag "ergochat/ergo"}} "https://github.com/ergochat/ergo" /src/ergochat/ergo
 # Download dependencies
-WORKDIR /src
+WORKDIR /src/ergochat/ergo
 RUN go mod download
 # Build binary
-RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /ergo .
+RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /ergo .
 # Generate license notices
-RUN go run github.com/google/go-licenses@latest save . --save_path=/notices
+RUN go run github.com/google/go-licenses@latest save . --save_path=/notices/ergo
 
 # Clone and build certwrapper
 # Clone repository
-RUN git clone --depth=1 --branch {{github_tag "csmith/certwrapper"}} "https://github.com/csmith/certwrapper" /src
+RUN git clone --depth=1 --branch {{github_tag "csmith/certwrapper"}} "https://github.com/csmith/certwrapper" /src/csmith/certwrapper
 # Download dependencies
-WORKDIR /src
+WORKDIR /src/csmith/certwrapper
 RUN go mod download
 # Build binary
-RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /certwrapper .
+RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /certwrapper .
 # Generate license notices
-RUN go run github.com/google/go-licenses@latest save . --save_path=/notices
+RUN go run github.com/google/go-licenses@latest save . --save_path=/notices/certwrapper
 
 
 FROM {{image "base"}} AS rootfs

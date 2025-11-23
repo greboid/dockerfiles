@@ -12,14 +12,14 @@ WORKDIR /src
 
 # Clone and build static-web-server
 # Clone repository
-RUN git clone --depth=1 --branch {{github_tag "static-web-server/static-web-server"}} "https://github.com/static-web-server/static-web-server" /src
+RUN git clone --depth=1 --branch {{github_tag "static-web-server/static-web-server"}} "https://github.com/static-web-server/static-web-server" /src/static-web-server/static-web-server
 # Apply patch keepqueriesonrewrites.diff
-COPY keepqueriesonrewrites.diff /src/
-RUN cd /src && patch -p1 < keepqueriesonrewrites.diff
+COPY keepqueriesonrewrites.diff /src/static-web-server/static-web-server/
+RUN cd /src/static-web-server/static-web-server && patch -p1 < keepqueriesonrewrites.diff
 # Build binary
-RUN cd /src && cargo build --release --target x86_64-unknown-linux-musl
+RUN cd /src/static-web-server/static-web-server && cargo build --release --target x86_64-unknown-linux-musl
 # Copy binary to final location
-RUN find /src/target/x86_64-unknown-linux-musl/release -maxdepth 1 -type f -executable -exec cp {} /main \;
+RUN find /src/static-web-server/static-web-server/target/x86_64-unknown-linux-musl/release -maxdepth 1 -type f -executable -exec cp {} /main \;
 
 
 FROM {{image "base"}} AS rootfs

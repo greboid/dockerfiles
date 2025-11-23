@@ -12,14 +12,14 @@ RUN set -eux; \
 
 # Clone and build registryauth
 # Clone repository
-RUN git clone --depth=1 --branch {{github_tag "greboid/puzzles"}} "https://github.com/greboid/puzzles" /src
+RUN git clone --depth=1 --branch {{github_tag "greboid/puzzles"}} "https://github.com/greboid/puzzles" /src/greboid/puzzles
 # Download dependencies
-WORKDIR /src
+WORKDIR /src/greboid/puzzles
 RUN go mod download
 # Build binary
-RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /main .
+RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /main .
 # Generate license notices
-RUN go run github.com/google/go-licenses@latest save . --save_path=/notices
+RUN go run github.com/google/go-licenses@latest save . --save_path=/notices/main
 
 
 FROM {{image "base"}} AS rootfs

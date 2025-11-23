@@ -26,12 +26,13 @@ RUN curl -fsSL -o rustup-init.checksum "https://static.rust-lang.org/rustup/arch
 RUN apk add --no-cache --virtual .build-deps \
   {{- range $key, $value := alpine_packages "curl" "gpg" "gpg-agent" "musl-utils" "bash" "libgcc"}}
   {{$key}}={{$value}} \
-  {{- end}}; \
-  set -eux;
-  chmod +x rustup-init;
-  ./rustup-init -y --no-modify-path --profile minimal --default-toolchain ${RUSTTAG} --default-host x86_64-unknown-linux-musl;
-  rm rustup-init*;
-  chmod -R a+w $RUSTUP_HOME $CARGO_HOME;
+  {{- end}}
+  ; \
+  set -eux; \
+  chmod +x rustup-init; \
+  ./rustup-init -y --no-modify-path --profile minimal --default-toolchain ${RUSTTAG} --default-host x86_64-unknown-linux-musl; \
+  rm rustup-init*; \
+  chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
   ln -s $CARGO_HOME/bin/cargo /usr/local/bin/cargo; \
   apk del --no-network .build-deps
 

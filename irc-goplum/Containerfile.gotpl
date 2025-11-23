@@ -10,14 +10,14 @@ RUN set -eux; \
 
 # Clone and build irc-goplum
 # Clone repository
-RUN git clone --depth=1 --branch {{github_tag "greboid/irc-goplum"}} "https://github.com/greboid/irc-goplum" /src
+RUN git clone --depth=1 --branch {{github_tag "greboid/irc-goplum"}} "https://github.com/greboid/irc-goplum" /src/greboid/irc-goplum
 # Download dependencies
-WORKDIR /src
+WORKDIR /src/greboid/irc-goplum
 RUN go mod download
 # Build binary
-RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /main ./cmd/goplum
+RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /main ./cmd/goplum
 # Generate license notices
-RUN go run github.com/google/go-licenses@latest save ./cmd/goplum --save_path=/notices
+RUN go run github.com/google/go-licenses@latest save ./cmd/goplum --save_path=/notices/main
 
 
 FROM {{image "base"}} AS rootfs

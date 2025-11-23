@@ -23,7 +23,8 @@ RUN mkdir -p /rootfs/tmp /rootfs/proc /rootfs/dev /rootfs/sys /rootfs/etc; \
 
 # Set up user accounts
 # Set up users and groups
-RUN echo "root:x:0:" >> /rootfs/etc/group; \
+RUN mkdir -p /rootfs/etc; \
+    echo "root:x:0:" >> /rootfs/etc/group; \
     echo "nobody:x:65534:" >> /rootfs/etc/group; \
     echo "nonroot:x:65532:" >> /rootfs/etc/group; \
     echo "root:x:0:0:root:/root:/sbin/nologin" >> /rootfs/etc/passwd; \

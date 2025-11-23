@@ -37,8 +37,8 @@ RUN set -eux; \
     | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }'); \
     mkdir /rootfs; \
     for DEP in $DEPS; do \
-    apk add "${DEP}" \
-    apk info -qL "${DEP}" | rsync -aq '--files-from=-' / /rootfs/ \
+    apk add "${DEP}"; \
+    apk info -qL "${DEP}" | rsync -aq '--files-from=-' / /rootfs/; \
     done
 
 # Create essential directories

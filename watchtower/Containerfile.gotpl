@@ -10,14 +10,14 @@ RUN set -eux; \
 
 # Clone and build watchtower
 # Clone repository
-RUN git clone --depth=1 --branch {{github_tag "containrrr/watchtower"}} "https://github.com/containrrr/watchtower" /src
+RUN git clone --depth=1 --branch {{github_tag "containrrr/watchtower"}} "https://github.com/containrrr/watchtower" /src/containrrr/watchtower
 # Download dependencies
-WORKDIR /src
+WORKDIR /src/containrrr/watchtower
 RUN go mod download
 # Build binary
-RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /main .
+RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /main .
 # Generate license notices
-RUN go run github.com/google/go-licenses@latest save . --save_path=/notices
+RUN go run github.com/google/go-licenses@latest save . --save_path=/notices/main
 
 
 FROM {{image "base"}} AS rootfs

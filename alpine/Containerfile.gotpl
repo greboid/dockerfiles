@@ -15,7 +15,7 @@ RUN set -eux; \
 # Download, verify and extract
 RUN curl -fsSL -o fs.tar.gz "${ARCHIVE_URL}" && \
     echo "${ARCHIVE_SUM}  fs.tar.gz" | sha256sum -c && \
-    tar -xf "fs.tar.gz" -C "/rootfs" --strip-components=0
+    mkdir -p "/rootfs" && tar -xf "fs.tar.gz" -C "/rootfs" --strip-components=0
 
 # Add git config
 # Copy gitconfig to /rootfs/etc/gitconfig

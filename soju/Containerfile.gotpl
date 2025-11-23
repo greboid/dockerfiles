@@ -10,14 +10,14 @@ RUN set -eux; \
 
 # Clone and build
 # Clone repository
-RUN git clone --depth=1 --branch {{github_tag "emersion/soju"}} "https://github.com/emersion/soju" /src
+RUN git clone --depth=1 --branch {{github_tag "emersion/soju"}} "https://github.com/emersion/soju" /src/emersion/soju
 # Download dependencies
-WORKDIR /src
+WORKDIR /src/emersion/soju
 RUN go mod download
 # Build binary
-RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /soju ./cmd/soju
+RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo,moderncsqlite' -ldflags='-s -w -extldflags "-static"' -o /soju ./cmd/soju
 # Generate license notices
-RUN go run github.com/google/go-licenses@latest save ./cmd/soju --save_path=/notices
+RUN go run github.com/google/go-licenses@latest save ./cmd/soju --save_path=/notices/soju --ignore codeberg.org/emersion/soju
 
 
 FROM {{image "golang"}} AS sojuctl
@@ -32,14 +32,14 @@ RUN set -eux; \
 
 # Clone and build
 # Clone repository
-RUN git clone --depth=1 --branch {{github_tag "emersion/soju"}} "https://github.com/emersion/soju" /src
+RUN git clone --depth=1 --branch {{github_tag "emersion/soju"}} "https://github.com/emersion/soju" /src/emersion/soju
 # Download dependencies
-WORKDIR /src
+WORKDIR /src/emersion/soju
 RUN go mod download
 # Build binary
-RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /sojuctl ./cmd/sojuctl
+RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /sojuctl ./cmd/sojuctl
 # Generate license notices
-RUN go run github.com/google/go-licenses@latest save ./cmd/sojuctl --save_path=/notices
+RUN go run github.com/google/go-licenses@latest save ./cmd/sojuctl --save_path=/notices/sojuctl --ignore codeberg.org/emersion/soju
 
 
 FROM {{image "golang"}} AS sojudb
@@ -54,14 +54,14 @@ RUN set -eux; \
 
 # Clone and build
 # Clone repository
-RUN git clone --depth=1 --branch {{github_tag "emersion/soju"}} "https://github.com/emersion/soju" /src
+RUN git clone --depth=1 --branch {{github_tag "emersion/soju"}} "https://github.com/emersion/soju" /src/emersion/soju
 # Download dependencies
-WORKDIR /src
+WORKDIR /src/emersion/soju
 RUN go mod download
 # Build binary
-RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /sojudb ./cmd/sojudb
+RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo,moderncsqlite' -ldflags='-s -w -extldflags "-static"' -o /sojudb ./cmd/sojudb
 # Generate license notices
-RUN go run github.com/google/go-licenses@latest save ./cmd/sojudb --save_path=/notices
+RUN go run github.com/google/go-licenses@latest save ./cmd/sojudb --save_path=/notices/sojudb --ignore codeberg.org/emersion/soju
 
 
 FROM {{image "alpine"}} AS volumes
