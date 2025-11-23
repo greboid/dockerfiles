@@ -83,17 +83,6 @@ jobs:
     with:
         PROJECT_NAME: thelounge
 
-  dsp:
-    name: Build dsp
-    needs:
-        - setup-cache
-        - baseroot
-        - golang
-    uses: ./.github/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: dsp
-
   base:
     name: Build base
     needs:
@@ -152,6 +141,7 @@ jobs:
     name: Build soju
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -356,6 +346,17 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: githubmirror
+
+  dsp:
+    name: Build dsp
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: dsp
 
   dotege:
     name: Build dotege

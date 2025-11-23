@@ -1,13 +1,5 @@
 FROM {{image "golang"}} AS build
 
-# Install packages
-RUN set -eux; \
-    apk add --no-cache \
-    {{- range $key, $value := alpine_packages "git"}}
-        {{$key}}={{$value}} \
-    {{- end}}
-    ;
-
 # Clone and Build
 # Clone repository
 RUN git clone --depth=1 --branch {{github_tag "csmith/goplum"}} "https://github.com/csmith/goplum" /src/csmith/goplum

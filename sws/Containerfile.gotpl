@@ -1,13 +1,5 @@
 FROM {{image "rust"}} AS build
 
-# Install packages
-RUN set -eux; \
-    apk add --no-cache \
-    {{- range $key, $value := alpine_packages "git" "gcc" "musl-dev" "make" "patch"}}
-        {{$key}}={{$value}} \
-    {{- end}}
-    ;
-
 WORKDIR /src
 
 # Clone and build static-web-server

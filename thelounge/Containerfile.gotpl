@@ -1,7 +1,5 @@
 FROM {{image "node"}} AS yarnbase
 
-WORKDIR /app
-
 # Enable corepack
 RUN corepack enable
 
@@ -11,14 +9,6 @@ FROM {{image "node"}} AS builder
 ARG TAG="{{github_tag "thelounge/thelounge"}}"
 
 ENV THELOUNGE_HOME="/var/opt/thelounge"
-
-# Install packages
-RUN set -eux; \
-    apk add --no-cache \
-    {{- range $key, $value := alpine_packages "git" "python3"}}
-        {{$key}}={{$value}} \
-    {{- end}}
-    ;
 
 WORKDIR /app
 
@@ -33,18 +23,15 @@ RUN set -eux; \
 # Create directories
 RUN mkdir -p /home/nonroot
 
-# Create symlink for thelounge command
-RUN mkdir -p /usr/local/bin; \
-    ln -s /app/thelounge/index.js /usr/local/bin/thelounge
 
-
-FROM {{image "node"}} AS rootfs
+FROM {{image "base"}} AS rootfs
 
 # Copy thelounge to rootfs
 COPY --from=builder /app/thelounge /rootfs/app/thelounge
 
-# Copy symlink to rootfs
-COPY --from=builder /usr/local/bin/thelounge /rootfs/usr/local/bin/thelounge
+# Copy wrapper script to rootfs
+# Copy thelounge to /rootfs/usr/local/bin/thelounge
+COPY --chmod=755 thelounge /rootfs/usr/local/bin/thelounge
 
 # Copy nonroot home to rootfs
 COPY --from=builder /home/nonroot /rootfs/home/nonroot
@@ -53,6 +40,14 @@ COPY --from=builder /home/nonroot /rootfs/home/nonroot
 FROM {{image "node"}}
 
 ENV THELOUNGE_HOME="/var/opt/thelounge"
+
+# Install packages
+RUN set -eux; \
+    apk add --no-cache \
+    {{- range $key, $value := alpine_packages "bash"}}
+        {{$key}}={{$value}} \
+    {{- end}}
+    ;
 
 # Copy rootfs to root
 COPY --from=rootfs /rootfs/ /

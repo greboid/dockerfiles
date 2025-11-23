@@ -6,14 +6,6 @@ ARG ARCHIVE_URL="{{golang_url}}"
 ENV GOPATH="/go"
 ENV PATH="$GOPATH/bin:/usr/local/go/bin:$PATH"
 
-# Install packages
-RUN set -eux; \
-    apk add --no-cache \
-    {{- range $key, $value := alpine_packages "gcc" "musl-dev" "git" "curl"}}
-        {{$key}}={{$value}} \
-    {{- end}}
-    ;
-
 # Download and verify Go
 # Download, verify and extract
 RUN curl -fsSL -o go.tar.gz "${ARCHIVE_URL}" && \
@@ -50,14 +42,6 @@ RUN mkdir -p $GOPATH/src $GOPATH/bin; \
 
 
 FROM {{image "alpine"}} AS rootfs
-
-# Install packages
-RUN set -eux; \
-    apk add --no-cache \
-    {{- range $key, $value := alpine_packages "gcc" "musl-dev" "git"}}
-        {{$key}}={{$value}} \
-    {{- end}}
-    ;
 
 # Copy Go to rootfs
 COPY --from=build /usr/local/go /rootfs/usr/local/go

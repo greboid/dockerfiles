@@ -1,13 +1,5 @@
 FROM {{image "golang"}} AS build
 
-# Install packages
-RUN set -eux; \
-    apk add --no-cache \
-    {{- range $key, $value := alpine_packages "git"}}
-        {{$key}}={{$value}} \
-    {{- end}}
-    ;
-
 # Clone and build irc-webhook
 # Clone repository
 RUN git clone --depth=1 --branch {{github_tag "greboid/irc-webhook"}} "https://github.com/greboid/irc-webhook" /src/greboid/irc-webhook

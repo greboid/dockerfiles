@@ -1,13 +1,5 @@
 FROM {{image "golang"}} AS build
 
-# Install packages
-RUN set -eux; \
-    apk add --no-cache \
-    {{- range $key, $value := alpine_packages "git"}}
-        {{$key}}={{$value}} \
-    {{- end}}
-    ;
-
 # Clone and build
 # Clone repository
 RUN git clone --depth=1 --branch {{github_tag "csmith/linx-server"}} "https://github.com/csmith/linx-server" /src/csmith/linx-server

@@ -2,14 +2,6 @@ FROM {{image "golang"}} AS build
 
 ARG TAG="{{github_tag "greboid/puzzles"}}"
 
-# Install packages
-RUN set -eux; \
-    apk add --no-cache \
-    {{- range $key, $value := alpine_packages "git"}}
-        {{$key}}={{$value}} \
-    {{- end}}
-    ;
-
 # Clone and build registryauth
 # Clone repository
 RUN git clone --depth=1 --branch {{github_tag "greboid/puzzles"}} "https://github.com/greboid/puzzles" /src/greboid/puzzles

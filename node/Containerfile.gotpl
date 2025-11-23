@@ -5,7 +5,7 @@ ARG TAG="{{github_tag "nodejs/node"}}"
 # Install packages
 RUN set -eux; \
     apk add --no-cache \
-    {{- range $key, $value := alpine_packages "tar" "xz" "rsync" "gnupg" "bash" "libstdc++" "gcompat" "curl"}}
+    {{- range $key, $value := alpine_packages "tar" "xz" "rsync" "gnupg" "bash" "libstdc++" "gcompat"}}
         {{$key}}={{$value}} \
     {{- end}}
     ;
@@ -46,14 +46,6 @@ COPY --from=build /usr/local /rootfs/usr/local
 
 
 FROM {{image "alpine"}}
-
-# Install packages
-RUN set -eux; \
-    apk add --no-cache \
-    {{- range $key, $value := alpine_packages "gcompat" "libstdc++" "git"}}
-        {{$key}}={{$value}} \
-    {{- end}}
-    ;
 
 # Copy rootfs to root
 COPY --from=rootfs /rootfs/ /
