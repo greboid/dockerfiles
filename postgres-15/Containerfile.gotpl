@@ -5,7 +5,7 @@ ARG ENTRYPOINT="39c3dc7046f5f7909179a51e25f2a61158781d57"
 # Install packages
 RUN set -eux; \
     apk add --no-cache \
-    {{- range $key, $value := alpine_packages "git" "gcc" "g++" "make" "readline-dev" "zlib-dev" "linux-headers" "musl-locales" "openssl-dev" "scanelf" "rsync" "bash"}}
+    {{- range $key, $value := alpine_packages "git" "gcc" "g++" "make" "readline-dev" "zlib-dev" "linux-headers" "musl-locales" "openssl-dev" "scanelf" "rsync" "bash" "perl" "bison" "flex"}}
         {{$key}}={{$value}} \
     {{- end}}
     ;

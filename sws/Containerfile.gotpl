@@ -3,7 +3,7 @@ FROM {{image "rust"}} AS build
 # Install packages
 RUN set -eux; \
     apk add --no-cache \
-    {{- range $key, $value := alpine_packages "git" "gcc" "musl-dev" "make"}}
+    {{- range $key, $value := alpine_packages "git" "gcc" "musl-dev" "make" "patch"}}
         {{$key}}={{$value}} \
     {{- end}}
     ;
@@ -25,7 +25,7 @@ RUN find /src/target/x86_64-unknown-linux-musl/release -maxdepth 1 -type f -exec
 FROM {{image "base"}} AS rootfs
 
 # Copy binary to rootfs
-COPY --from=build /src/target/x86_64-unknown-linux-musl/release/static-web-server /rootfs/sws
+COPY --from=build /main /rootfs/sws
 
 
 FROM {{image "base"}}

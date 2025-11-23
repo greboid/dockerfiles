@@ -5,7 +5,7 @@ ARG TAG="{{github_tag "nodejs/node"}}"
 # Install packages
 RUN set -eux; \
     apk add --no-cache \
-    {{- range $key, $value := alpine_packages "tar" "xz" "rsync" "gnupg" "bash" "libstdc++" "gcompat"}}
+    {{- range $key, $value := alpine_packages "tar" "xz" "rsync" "gnupg" "bash" "libstdc++" "gcompat" "curl"}}
         {{$key}}={{$value}} \
     {{- end}}
     ;

@@ -10,13 +10,12 @@ FROM {{image "node"}} AS builder
 
 ARG TAG="{{github_tag "thelounge/thelounge"}}"
 
-ENV NODE_ENV="production"
 ENV THELOUNGE_HOME="/var/opt/thelounge"
 
 # Install packages
 RUN set -eux; \
     apk add --no-cache \
-    {{- range $key, $value := alpine_packages "git"}}
+    {{- range $key, $value := alpine_packages "git" "python3"}}
         {{$key}}={{$value}} \
     {{- end}}
     ;
@@ -28,17 +27,24 @@ RUN set -eux; \
     git clone --branch v4.4.3 --single-branch https://github.com/thelounge/thelounge.git; \
     cd thelounge; \
     yarn install; \
-    yarn build
+    NODE_ENV=production yarn build
 
 # Create nonroot home directory
 # Create directories
 RUN mkdir -p /home/nonroot
 
+# Create symlink for thelounge command
+RUN mkdir -p /usr/local/bin; \
+    ln -s /app/thelounge/index.js /usr/local/bin/thelounge
+
 
 FROM {{image "node"}} AS rootfs
 
 # Copy thelounge to rootfs
-COPY --from=builder /usr/local/share/.config /rootfs/usr/local/share/.config
+COPY --from=builder /app/thelounge /rootfs/app/thelounge
+
+# Copy symlink to rootfs
+COPY --from=builder /usr/local/bin/thelounge /rootfs/usr/local/bin/thelounge
 
 # Copy nonroot home to rootfs
 COPY --from=builder /home/nonroot /rootfs/home/nonroot

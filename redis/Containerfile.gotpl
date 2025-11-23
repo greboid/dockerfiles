@@ -19,7 +19,7 @@ RUN git clone --depth=1 --branch {{github_tag "redis/redis"}} "https://github.co
 # Build with make
 WORKDIR /src/redis
 RUN make distclean; \
-    make
+    make MALLOC=libc redis-server redis-cli
 # Strip binaries
 RUN find /src/redis -type f -executable -exec strip {} + 2>/dev/null || true
 

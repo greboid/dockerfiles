@@ -27,7 +27,7 @@ FROM {{image "base"}} AS rootfs
 # Copy binary and wordlists to rootfs
 COPY --from=build /main /rootfs/puzzles
 
-COPY --from=build /src/wordlists/. /rootfs/app/wordlists
+COPY --from=build /src/greboid/puzzles/wordlists/. /rootfs/app/wordlists
 
 COPY --from=build /notices /rootfs/notices
 

@@ -3,6 +3,14 @@ FROM alpine AS verify
 ARG ARCHIVE_SUM="{{alpine_checksum}}"
 ARG ARCHIVE_URL="{{alpine_url}}"
 
+# Install packages
+RUN set -eux; \
+    apk add --no-cache \
+    {{- range $key, $value := alpine_packages "curl"}}
+        {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
 # Download and verify Alpine minirootfs
 # Download, verify and extract
 RUN curl -fsSL -o fs.tar.gz "${ARCHIVE_URL}" && \

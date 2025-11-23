@@ -15,9 +15,9 @@ RUN git clone --depth=1 --branch {{github_tag "greboid/dsp"}} "https://github.co
 WORKDIR /src
 RUN go mod download
 # Build binary
-RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /main ./cmd/dsp
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /main ./cmd
 # Generate license notices
-RUN go run github.com/google/go-licenses@latest save ./cmd/dsp --save_path=/notices
+RUN go run github.com/google/go-licenses@latest save ./cmd --save_path=/notices
 
 
 FROM {{image "base"}} AS rootfs

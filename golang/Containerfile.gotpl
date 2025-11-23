@@ -9,7 +9,7 @@ ENV PATH="$GOPATH/bin:/usr/local/go/bin:$PATH"
 # Install packages
 RUN set -eux; \
     apk add --no-cache \
-    {{- range $key, $value := alpine_packages "gcc" "musl-dev" "git"}}
+    {{- range $key, $value := alpine_packages "gcc" "musl-dev" "git" "curl"}}
         {{$key}}={{$value}} \
     {{- end}}
     ;

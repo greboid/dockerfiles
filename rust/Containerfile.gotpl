@@ -8,6 +8,14 @@ ENV PATH="/usr/local/cargo/bin:$PATH"
 ENV RUSTUP_HOME="/usr/local/rustup"
 ENV RUST_VERSION="${RUSTTAG}"
 
+# Install packages
+RUN set -eux; \
+    apk add --no-cache \
+    {{- range $key, $value := alpine_packages "curl"}}
+        {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
 # Download and verify rustup
 # Download, verify and extract
 RUN curl -fsSL -o rustup-init.checksum "https://static.rust-lang.org/rustup/archive/${RUSTUPTAG}/x86_64-unknown-linux-musl/rustup-init.sha256" && \

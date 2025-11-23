@@ -15,9 +15,9 @@ RUN git clone --depth=1 --branch {{github_tag "greboid/registryauth"}} "https://
 WORKDIR /src
 RUN go mod download
 # Build binary
-RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /main .
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /main ./cmd/auth
 # Generate license notices
-RUN go run github.com/google/go-licenses@latest save . --save_path=/notices
+RUN go run github.com/google/go-licenses@latest save ./cmd/auth --save_path=/notices
 
 
 FROM {{image "base"}} AS rootfs

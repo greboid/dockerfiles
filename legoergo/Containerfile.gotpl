@@ -39,7 +39,7 @@ COPY --from=build /ergo /rootfs/ergo
 COPY --from=build /certwrapper /rootfs/certwrapper
 
 # Copy languages to rootfs
-COPY --from=build /src/languages/ /rootfs/ircd-bin/languages/
+COPY --from=build /src/ergochat/ergo/languages/ /rootfs/ircd-bin/languages/
 
 COPY --from=build /notices /rootfs/notices
 
