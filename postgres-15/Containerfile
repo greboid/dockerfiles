@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/postgres-15/Containerfile.gotpl
-# BOM: {"apk:acl-libs":"2.3.2-r1","apk:bash":"5.2.37-r0","apk:binutils":"2.44-r3","apk:bison":"3.8.2-r2","apk:brotli-libs":"1.1.0-r2","apk:busybox":"1.37.0-r20","apk:busybox-binsh":"1.37.0-r20","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20250911-r0","apk:flex":"2.6.4-r7","apk:g++":"14.2.0-r6","apk:gcc":"14.2.0-r6","apk:git":"2.49.1-r0","apk:gmp":"6.3.0-r3","apk:isl25":"0.25-r2","apk:jansson":"2.14.1-r0","apk:libatomic":"14.2.0-r6","apk:libbz2":"1.0.8-r6","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.14.1-r2","apk:libexpat":"2.7.3-r0","apk:libformw":"6.5_p20250503-r0","apk:libgcc":"14.2.0-r6","apk:libgomp":"14.2.0-r6","apk:libhistory":"8.2.13-r1","apk:libidn2":"2.3.7-r0","apk:libintl":"0.24.1-r0","apk:libmenuw":"6.5_p20250503-r0","apk:libncurses++":"6.5_p20250503-r0","apk:libncursesw":"6.5_p20250503-r0","apk:libpanelw":"6.5_p20250503-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"14.2.0-r6","apk:libstdc++-dev":"14.2.0-r6","apk:libunistring":"1.3-r0","apk:libxxhash":"0.8.3-r0","apk:linux-headers":"6.14.2-r0","apk:lz4-libs":"1.10.0-r0","apk:m4":"1.4.19-r4","apk:make":"4.4.1-r3","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.1_p1-r0","apk:musl":"1.2.5-r10","apk:musl-dev":"1.2.5-r10","apk:musl-locales":"0.1.0-r1","apk:ncurses-dev":"6.5_p20250503-r0","apk:ncurses-terminfo-base":"6.5_p20250503-r0","apk:nghttp2-libs":"1.65.0-r0","apk:openssl-dev":"3.5.4-r0","apk:pcre2":"10.46-r0","apk:perl":"5.40.3-r0","apk:pkgconf":"2.4.3-r0","apk:popt":"1.19-r4","apk:readline":"8.2.13-r1","apk:readline-dev":"8.2.13-r1","apk:rsync":"3.4.1-r1","apk:scanelf":"1.3.8-r1","apk:zlib":"1.3.1-r2","apk:zlib-dev":"1.3.1-r2","apk:zstd-libs":"1.5.7-r0","image:alpine":"eb9b3154e4465f37f1bb0399eecd1174df661731937c7c32cd41a5746da7b97d","image:base":"f841f6a760f49b626fa4cbf560b7f7c5f6ad25c135ab24f8062f6350a6e93db0"}
+# BOM: {"apk:acl-libs":"2.3.2-r1","apk:autoconf":"2.72-r1","apk:automake":"1.17-r1","apk:bash":"5.2.37-r0","apk:binutils":"2.44-r3","apk:bison":"3.8.2-r2","apk:brotli-libs":"1.1.0-r2","apk:busybox":"1.37.0-r20","apk:busybox-binsh":"1.37.0-r20","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20250911-r0","apk:flex":"2.6.4-r7","apk:g++":"14.2.0-r6","apk:gcc":"14.2.0-r6","apk:git":"2.49.1-r0","apk:gmp":"6.3.0-r3","apk:isl25":"0.25-r2","apk:jansson":"2.14.1-r0","apk:libatomic":"14.2.0-r6","apk:libbz2":"1.0.8-r6","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.14.1-r2","apk:libexpat":"2.7.3-r0","apk:libformw":"6.5_p20250503-r0","apk:libgcc":"14.2.0-r6","apk:libgomp":"14.2.0-r6","apk:libhistory":"8.2.13-r1","apk:libidn2":"2.3.7-r0","apk:libintl":"0.24.1-r0","apk:libmenuw":"6.5_p20250503-r0","apk:libncurses++":"6.5_p20250503-r0","apk:libncursesw":"6.5_p20250503-r0","apk:libpanelw":"6.5_p20250503-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"14.2.0-r6","apk:libstdc++-dev":"14.2.0-r6","apk:libunistring":"1.3-r0","apk:libxxhash":"0.8.3-r0","apk:linux-headers":"6.14.2-r0","apk:lz4-libs":"1.10.0-r0","apk:m4":"1.4.19-r4","apk:make":"4.4.1-r3","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.1_p1-r0","apk:musl":"1.2.5-r10","apk:musl-dev":"1.2.5-r10","apk:musl-locales":"0.1.0-r1","apk:ncurses-dev":"6.5_p20250503-r0","apk:ncurses-terminfo-base":"6.5_p20250503-r0","apk:nghttp2-libs":"1.65.0-r0","apk:openssl-dev":"3.5.4-r0","apk:pcre2":"10.46-r0","apk:perl":"5.40.3-r0","apk:pkgconf":"2.4.3-r0","apk:popt":"1.19-r4","apk:readline":"8.2.13-r1","apk:readline-dev":"8.2.13-r1","apk:rsync":"3.4.1-r1","apk:scanelf":"1.3.8-r1","apk:zlib":"1.3.1-r2","apk:zlib-dev":"1.3.1-r2","apk:zstd-libs":"1.5.7-r0","image:alpine":"eb9b3154e4465f37f1bb0399eecd1174df661731937c7c32cd41a5746da7b97d","image:base":"f841f6a760f49b626fa4cbf560b7f7c5f6ad25c135ab24f8062f6350a6e93db0"}
 
 FROM reg.g5d.dev/alpine@sha256:eb9b3154e4465f37f1bb0399eecd1174df661731937c7c32cd41a5746da7b97d AS build
 
@@ -72,12 +72,62 @@ RUN set -eux; \
     ;
 
 # Clone postgres docker entrypoint
+RUN apk add --no-cache --virtual .clone-deps \
+    brotli-libs=1.1.0-r2 \
+    c-ares=1.34.5-r0 \
+    ca-certificates-bundle=20250911-r0 \
+    git=2.49.1-r0 \
+    libcrypto3=3.5.4-r0 \
+    libcurl=8.14.1-r2 \
+    libexpat=2.7.3-r0 \
+    libidn2=2.3.7-r0 \
+    libpsl=0.21.5-r3 \
+    libssl3=3.5.4-r0 \
+    libunistring=1.3-r0 \
+    musl=1.2.5-r10 \
+    nghttp2-libs=1.65.0-r0 \
+    pcre2=10.46-r0 \
+    zlib=1.3.1-r2 \
+    zstd-libs=1.5.7-r0 \
+    ;
+
 # Clone repository
 RUN git clone "https://github.com/docker-library/postgres" /src/docker-postgres && \
     cd /src/docker-postgres && \
     git checkout 39c3dc7046f5f7909179a51e25f2a61158781d57
+RUN apk del --no-network .clone-deps
 
 # Build PostgreSQL
+RUN apk add --no-cache --virtual .clone-and-build-autoconf-deps \
+    autoconf=2.72-r1 \
+    automake=1.17-r1 \
+    binutils=2.44-r3 \
+    brotli-libs=1.1.0-r2 \
+    busybox=1.37.0-r20 \
+    c-ares=1.34.5-r0 \
+    ca-certificates-bundle=20250911-r0 \
+    git=2.49.1-r0 \
+    jansson=2.14.1-r0 \
+    libbz2=1.0.8-r6 \
+    libcrypto3=3.5.4-r0 \
+    libcurl=8.14.1-r2 \
+    libexpat=2.7.3-r0 \
+    libgcc=14.2.0-r6 \
+    libidn2=2.3.7-r0 \
+    libpsl=0.21.5-r3 \
+    libssl3=3.5.4-r0 \
+    libstdc++=14.2.0-r6 \
+    libunistring=1.3-r0 \
+    m4=1.4.19-r4 \
+    make=4.4.1-r3 \
+    musl=1.2.5-r10 \
+    nghttp2-libs=1.65.0-r0 \
+    pcre2=10.46-r0 \
+    perl=5.40.3-r0 \
+    zlib=1.3.1-r2 \
+    zstd-libs=1.5.7-r0 \
+    ;
+
 # Clone repository
 RUN git clone --depth=1 --branch REL_15_STABLE "https://github.com/postgres/postgres" /usr/local/postgres
 # Configure
@@ -89,6 +139,7 @@ RUN make -j$(nproc) world; \
     make -C contrib install
 # Strip binaries
 RUN find /usr/local/postgres -type f -executable -exec strip {} + 2>/dev/null || true
+RUN apk del --no-network .clone-and-build-autoconf-deps
 
 # Prepare rootfs dependencies
 RUN set -eux; \
@@ -103,8 +154,14 @@ RUN set -eux; \
     done
 
 # Create essential directories
+RUN apk add --no-cache --virtual .create-directories-deps \
+    busybox=1.37.0-r20 \
+    musl=1.2.5-r10 \
+    ;
+
 # Create directories
 RUN mkdir -p /rootfs/usr/bin /rootfs/bin /rootfs/usr/local/bin
+RUN apk del --no-network .create-directories-deps
 
 # Copy essential binaries
 RUN set -eux; \
@@ -129,17 +186,29 @@ RUN set -eux; \
     rsync -ap /usr/local/pgsql/ /rootfs/usr/local/pgsql/
 
 # Create data directory
+RUN apk add --no-cache --virtual .create-directories-deps \
+    busybox=1.37.0-r20 \
+    musl=1.2.5-r10 \
+    ;
+
 # Create directories
 RUN mkdir -p /rootfs/var/lib/postgresql /rootfs/var/lib/postgresql/data; \
     chmod 777 /rootfs/var/lib/postgresql; \
     chmod 750 /rootfs/var/lib/postgresql/data
+RUN apk del --no-network .create-directories-deps
 
 # Create runtime directories
+RUN apk add --no-cache --virtual .create-directories-deps \
+    busybox=1.37.0-r20 \
+    musl=1.2.5-r10 \
+    ;
+
 # Create directories
 RUN mkdir -p /rootfs/var/run /rootfs/tmp /rootfs/docker-entrypoint-initdb.d; \
     chmod 777 /rootfs/var/run; \
     chmod 777 /rootfs/tmp; \
     chmod 644 /rootfs/docker-entrypoint-initdb.d
+RUN apk del --no-network .create-directories-deps
 
 
 FROM reg.g5d.dev/base@sha256:f841f6a760f49b626fa4cbf560b7f7c5f6ad25c135ab24f8062f6350a6e93db0
