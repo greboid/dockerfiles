@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/baseroot/Containerfile.gotpl
-# BOM: {"apk:acl-libs":"2.3.2-r1","apk:ca-certificates-bundle":"20250911-r0","apk:libxxhash":"0.8.3-r0","apk:lz4-libs":"1.10.0-r0","apk:musl":"1.2.5-r10","apk:popt":"1.19-r4","apk:rsync":"3.4.1-r1","apk:tzdata":"2025b-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r0","image:alpine":"eb9b3154e4465f37f1bb0399eecd1174df661731937c7c32cd41a5746da7b97d"}
+# BOM: {"apk:acl-libs":"2.3.2-r1","apk:busybox":"1.37.0-r20","apk:ca-certificates-bundle":"20250911-r0","apk:libxxhash":"0.8.3-r0","apk:lz4-libs":"1.10.0-r0","apk:musl":"1.2.5-r10","apk:popt":"1.19-r4","apk:rsync":"3.4.1-r1","apk:tzdata":"2025b-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r0","image:alpine":"eb9b3154e4465f37f1bb0399eecd1174df661731937c7c32cd41a5746da7b97d"}
 
 FROM reg.g5d.dev/alpine@sha256:eb9b3154e4465f37f1bb0399eecd1174df661731937c7c32cd41a5746da7b97d AS build
 
@@ -27,11 +27,22 @@ RUN \
     true
 
 # Create mount points and directories
+RUN apk add --no-cache --virtual .create-directories-deps \
+    busybox=1.37.0-r20 \
+    musl=1.2.5-r10 \
+    ;
+
 # Create directories
 RUN mkdir -p /rootfs/tmp /rootfs/proc /rootfs/dev /rootfs/sys /rootfs/etc; \
     chmod 01777 /rootfs/tmp
+RUN apk del --no-network .create-directories-deps
 
 # Set up user accounts
+RUN apk add --no-cache --virtual .setup-users-groups-deps \
+    busybox=1.37.0-r20 \
+    musl=1.2.5-r10 \
+    ;
+
 # Set up users and groups
 RUN mkdir -p /rootfs/etc; \
     echo "root:x:0:" >> /rootfs/etc/group; \
@@ -44,6 +55,7 @@ RUN mkdir -p /rootfs/etc; \
     echo "nonroot:x:65532:65532:nonroot:/home/nonroot:/sbin/nologin" >> /rootfs/etc/passwd; \
     mkdir -p /rootfs/home/nonroot; \
     chown 65532:65532 /rootfs/home/nonroot
+RUN apk del --no-network .setup-users-groups-deps
 
 # Add git config
 # Copy gitconfig to /rootfs/etc/gitconfig
