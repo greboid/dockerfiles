@@ -9,6 +9,12 @@ RUN set -eux; \
     ;
 
 # Clone and build
+RUN apk add --no-cache --virtual .clone-and-build-go-deps \
+    {{- range $key, $value := alpine_packages "git" "go"}}
+    {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
 # Clone repository
 RUN git clone --depth=1 --branch {{github_tag "csmith/tsp"}} "https://github.com/csmith/tsp" /src/csmith/tsp
 # Download dependencies
@@ -18,6 +24,7 @@ RUN go mod download
 RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /main .
 # Generate license notices
 RUN go run github.com/google/go-licenses@latest save . --save_path=/notices/main
+RUN apk del --no-network .clone-and-build-go-deps
 
 
 FROM {{image "base"}} AS rootfs

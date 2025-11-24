@@ -20,8 +20,15 @@ RUN set -eux; \
     NODE_ENV=production yarn build
 
 # Create nonroot home directory
+RUN apk add --no-cache --virtual .create-directories-deps \
+    {{- range $key, $value := alpine_packages "busybox"}}
+    {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
 # Create directories
 RUN mkdir -p /home/nonroot
+RUN apk del --no-network .create-directories-deps
 
 
 FROM {{image "base"}} AS rootfs

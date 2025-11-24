@@ -7,10 +7,17 @@ ENV GOPATH="/go"
 ENV PATH="$GOPATH/bin:/usr/local/go/bin:$PATH"
 
 # Download and verify Go
+RUN apk add --no-cache --virtual .download-verify-extract-deps \
+    {{- range $key, $value := alpine_packages "busybox" "curl"}}
+    {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
 # Download, verify and extract
 RUN curl -fsSL -o go.tar.gz "${ARCHIVE_URL}" && \
     echo "${ARCHIVE_SUM}  go.tar.gz" | sha256sum -c && \
     mkdir -p "/usr/local" && tar -xf "go.tar.gz" -C "/usr/local" --strip-components=0
+RUN apk del --no-network .download-verify-extract-deps
 
 # Bootstrap and install Go
 RUN apk add --no-cache --virtual .build-deps \
@@ -35,10 +42,17 @@ RUN apk add --no-cache --virtual .build-deps \
   apk del --no-network .build-deps
 
 # Create GOPATH directories
+RUN apk add --no-cache --virtual .create-directories-deps \
+    {{- range $key, $value := alpine_packages "busybox"}}
+    {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
 # Create directories
 RUN mkdir -p $GOPATH/src $GOPATH/bin; \
     chmod 777 $GOPATH/src; \
     chmod 777 $GOPATH/bin
+RUN apk del --no-network .create-directories-deps
 
 
 FROM {{image "alpine"}} AS rootfs

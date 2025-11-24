@@ -1,6 +1,12 @@
 FROM {{image "golang"}} AS build
 
 # Clone and build golink
+RUN apk add --no-cache --virtual .build-go-static-deps \
+    {{- range $key, $value := alpine_packages "git" "go"}}
+    {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
 # Clone repository
 RUN git clone --depth=1 --branch {{github_tag "tailscale/golink"}} "https://github.com/tailscale/golink" /src
 # Download dependencies
@@ -10,6 +16,7 @@ RUN go mod download
 RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /main ./cmd/golink
 # Generate license notices
 RUN go run github.com/google/go-licenses@latest save ./cmd/golink --save_path=/notices/main --ignore modernc.org/mathutil
+RUN apk del --no-network .build-go-static-deps
 
 
 FROM {{image "base"}} AS rootfs

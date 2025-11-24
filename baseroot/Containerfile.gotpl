@@ -17,11 +17,24 @@ RUN \
     true
 
 # Create mount points and directories
+RUN apk add --no-cache --virtual .create-directories-deps \
+    {{- range $key, $value := alpine_packages "busybox"}}
+    {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
 # Create directories
 RUN mkdir -p /rootfs/tmp /rootfs/proc /rootfs/dev /rootfs/sys /rootfs/etc; \
     chmod 01777 /rootfs/tmp
+RUN apk del --no-network .create-directories-deps
 
 # Set up user accounts
+RUN apk add --no-cache --virtual .setup-users-groups-deps \
+    {{- range $key, $value := alpine_packages "busybox"}}
+    {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
 # Set up users and groups
 RUN mkdir -p /rootfs/etc; \
     echo "root:x:0:" >> /rootfs/etc/group; \
@@ -34,6 +47,7 @@ RUN mkdir -p /rootfs/etc; \
     echo "nonroot:x:65532:65532:nonroot:/home/nonroot:/sbin/nologin" >> /rootfs/etc/passwd; \
     mkdir -p /rootfs/home/nonroot; \
     chown 65532:65532 /rootfs/home/nonroot
+RUN apk del --no-network .setup-users-groups-deps
 
 # Add git config
 # Copy gitconfig to /rootfs/etc/gitconfig

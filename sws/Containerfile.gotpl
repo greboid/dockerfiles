@@ -3,6 +3,12 @@ FROM {{image "rust"}} AS build
 WORKDIR /src
 
 # Clone and build static-web-server
+RUN apk add --no-cache --virtual .clone-and-build-rust-deps \
+    {{- range $key, $value := alpine_packages "busybox" "git" "cargo" "rust" "make" "patch"}}
+    {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
 # Clone repository
 RUN git clone --depth=1 --branch {{github_tag "static-web-server/static-web-server"}} "https://github.com/static-web-server/static-web-server" /src/static-web-server/static-web-server
 # Apply patch keepqueriesonrewrites.diff
@@ -12,6 +18,7 @@ RUN cd /src/static-web-server/static-web-server && patch -p1 < keepqueriesonrewr
 RUN cd /src/static-web-server/static-web-server && cargo build --release --target x86_64-unknown-linux-musl
 # Copy binary to final location
 RUN find /src/static-web-server/static-web-server/target/x86_64-unknown-linux-musl/release -maxdepth 1 -type f -executable -exec cp {} /main \;
+RUN apk del --no-network .clone-and-build-rust-deps
 
 
 FROM {{image "base"}} AS rootfs

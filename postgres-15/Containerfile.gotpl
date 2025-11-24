@@ -11,12 +11,25 @@ RUN set -eux; \
     ;
 
 # Clone postgres docker entrypoint
+RUN apk add --no-cache --virtual .clone-deps \
+    {{- range $key, $value := alpine_packages "git"}}
+    {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
 # Clone repository
 RUN git clone "https://github.com/docker-library/postgres" /src/docker-postgres && \
     cd /src/docker-postgres && \
     git checkout 39c3dc7046f5f7909179a51e25f2a61158781d57
+RUN apk del --no-network .clone-deps
 
 # Build PostgreSQL
+RUN apk add --no-cache --virtual .clone-and-build-autoconf-deps \
+    {{- range $key, $value := alpine_packages "busybox" "git" "autoconf" "automake" "make" "binutils"}}
+    {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
 # Clone repository
 RUN git clone --depth=1 --branch REL_15_STABLE "https://github.com/postgres/postgres" /usr/local/postgres
 # Configure
@@ -28,6 +41,7 @@ RUN make -j$(nproc) world; \
     make -C contrib install
 # Strip binaries
 RUN find /usr/local/postgres -type f -executable -exec strip {} + 2>/dev/null || true
+RUN apk del --no-network .clone-and-build-autoconf-deps
 
 # Prepare rootfs dependencies
 RUN set -eux; \
@@ -42,8 +56,15 @@ RUN set -eux; \
     done
 
 # Create essential directories
+RUN apk add --no-cache --virtual .create-directories-deps \
+    {{- range $key, $value := alpine_packages "busybox"}}
+    {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
 # Create directories
 RUN mkdir -p /rootfs/usr/bin /rootfs/bin /rootfs/usr/local/bin
+RUN apk del --no-network .create-directories-deps
 
 # Copy essential binaries
 RUN set -eux; \
@@ -68,17 +89,31 @@ RUN set -eux; \
     rsync -ap /usr/local/pgsql/ /rootfs/usr/local/pgsql/
 
 # Create data directory
+RUN apk add --no-cache --virtual .create-directories-deps \
+    {{- range $key, $value := alpine_packages "busybox"}}
+    {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
 # Create directories
 RUN mkdir -p /rootfs/var/lib/postgresql /rootfs/var/lib/postgresql/data; \
     chmod 777 /rootfs/var/lib/postgresql; \
     chmod 750 /rootfs/var/lib/postgresql/data
+RUN apk del --no-network .create-directories-deps
 
 # Create runtime directories
+RUN apk add --no-cache --virtual .create-directories-deps \
+    {{- range $key, $value := alpine_packages "busybox"}}
+    {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
 # Create directories
 RUN mkdir -p /rootfs/var/run /rootfs/tmp /rootfs/docker-entrypoint-initdb.d; \
     chmod 777 /rootfs/var/run; \
     chmod 777 /rootfs/tmp; \
     chmod 644 /rootfs/docker-entrypoint-initdb.d
+RUN apk del --no-network .create-directories-deps
 
 
 FROM {{image "base"}}

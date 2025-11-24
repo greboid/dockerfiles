@@ -14,6 +14,12 @@ RUN set -eux; \
 COPY redis.conf /redis.conf
 
 # Build Redis
+RUN apk add --no-cache --virtual .clone-and-build-make-deps \
+    {{- range $key, $value := alpine_packages "busybox" "git" "make" "binutils"}}
+    {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
 # Clone repository
 RUN git clone --depth=1 --branch {{github_tag "redis/redis"}} "https://github.com/redis/redis" /src/redis
 # Build with make
@@ -22,10 +28,18 @@ RUN make distclean; \
     make MALLOC=libc redis-server redis-cli
 # Strip binaries
 RUN find /src/redis -type f -executable -exec strip {} + 2>/dev/null || true
+RUN apk del --no-network .clone-and-build-make-deps
 
 # Create data directory
+RUN apk add --no-cache --virtual .create-directories-deps \
+    {{- range $key, $value := alpine_packages "busybox"}}
+    {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
 # Create directories
 RUN mkdir -p /data
+RUN apk del --no-network .create-directories-deps
 
 
 FROM {{image "base"}} AS rootfs

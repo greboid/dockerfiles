@@ -11,15 +11,29 @@ RUN set -eux; \
     ;
 
 # Create directories
+RUN apk add --no-cache --virtual .create-directories-deps \
+    {{- range $key, $value := alpine_packages "busybox"}}
+    {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
 # Create directories
 RUN mkdir -p /src /usr/local
+RUN apk del --no-network .create-directories-deps
 
 # Download and verify Node.js
+RUN apk add --no-cache --virtual .download-verify-extract-deps \
+    {{- range $key, $value := alpine_packages "busybox" "curl"}}
+    {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
 # Download, verify and extract
 RUN curl -fsSL -o /node.tar.xz.checksum "https://unofficial-builds.nodejs.org/download/release/${TAG}/SHASUMS256.txt" && \
     curl -fsSL -o /node.tar.xz "https://unofficial-builds.nodejs.org/download/release/${TAG}/node-${TAG}-linux-x64-musl.tar.xz" && \
     echo "$(grep ".*linux-x64-musl.tar.xz" /node.tar.xz.checksum | awk '{print $1}') */node.tar.xz" | sha256sum -wc - && \
     mkdir -p "/src" && tar -xf "/node.tar.xz" -C "/src" --strip-components=0
+RUN apk del --no-network .download-verify-extract-deps
 
 # Install Node.js
 RUN rsync -ap /src/node*/ /usr/local/; \
