@@ -18,12 +18,12 @@ stages:
       environment:
         THELOUNGE_HOME: /var/opt/thelounge
       workdir: /app
-      build-deps:
-        - git
-        - python3
-        - busybox
     pipeline:
       - name: Install thelounge
+        build-deps:
+          - git
+          - python3
+          - busybox
         run: |
           set -eux;
           git clone --branch v4.4.3 --single-branch https://github.com/thelounge/thelounge.git
@@ -74,4 +74,3 @@ stages:
           from-stage: rootfs
           from: /rootfs/
           to: /
-          merge: true
