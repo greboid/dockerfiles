@@ -36,7 +36,7 @@ stages:
         uses: clone-and-build-autoconf
         with:
           repo: https://github.com/postgres/postgres
-          workdir: /usr/local/postgres
+          workdir: /src/postgres
           tag: REL_15_STABLE
           configure-options:
             - --with-system-tzdata=/usr/share/zoneinfo
@@ -45,8 +45,8 @@ stages:
             - --with-ssl=openssl
           make-steps:
             - make -j$(nproc) world
-            - make install-world
-            - make -C contrib install
+            - make -j$(nproc) install
+            - make -j$(nproc) -C contrib install
 
       - name: Prepare rootfs dependencies
         run: |
@@ -68,6 +68,7 @@ stages:
             - path: /rootfs/usr/bin
             - path: /rootfs/bin
             - path: /rootfs/usr/local/bin
+            - path: /rootfs/var/lib/postgresql/data
 
       - name: Copy essential binaries
         run: |
@@ -77,6 +78,7 @@ stages:
           cp /bin/ls /rootfs/bin/ls;
           cp /bin/cat /rootfs/bin/cat;
           cp /bin/bash /rootfs/bin/bash;
+          cp /usr/bin/find /rootfs/usr/bin/find;
           cp /usr/bin/locale /rootfs/usr/bin/locale;
           cp /usr/bin/id /rootfs/usr/bin/id;
           cp /bin/mkdir /rootfs/bin/mkdir;
@@ -103,12 +105,7 @@ stages:
               permissions: "777"
             - path: /rootfs/var/lib/postgresql/data
               owner: "65532:65532"
-              permissions: "750"
-
-      - name: Create runtime directories
-        uses: create-directories
-        with:
-          directories:
+              permissions: "777"
             - path: /rootfs/var/run
               owner: "65532:65532"
               permissions: "777"
