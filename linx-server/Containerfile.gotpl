@@ -17,13 +17,6 @@ RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -ext
 RUN go run github.com/google/go-licenses@latest save . --save_path=/notices/main
 RUN apk del --no-network .build-go-static-deps
 
-
-FROM {{image "base"}} AS rootfs
-
-COPY --from=build /main /rootfs/linx-server
-
-COPY --from=build /notices /rootfs/notices
-
 RUN apk add --no-cache --virtual .create-directories-deps \
     {{- range $key, $value := alpine_packages "busybox"}}
     {{$key}}={{$value}} \
@@ -37,6 +30,17 @@ RUN mkdir -p /data/files /data/meta; \
     chmod 777 /data/meta; \
     chown 65532:65532 /data/meta
 RUN apk del --no-network .create-directories-deps
+
+
+FROM {{image "base"}} AS rootfs
+
+COPY --from=build /main /rootfs/linx-server
+
+COPY --from=build /notices /rootfs/notices
+
+COPY --from=build /data/files /rootfs/data/files
+
+COPY --from=build /data/meta /rootfs/data/meta
 
 
 FROM {{image "base"}}
