@@ -392,3 +392,16 @@ jobs:
     with:
         PROJECT_NAME: centauri
 
+  gamja:
+    name: Build gamja
+    needs:
+        - setup-cache
+        - alpine
+        - base
+        - node
+        - sws
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: gamja
+
