@@ -12,10 +12,25 @@ stages:
         with:
           repo: https://github.com/greboid/registryauth
           package: ./cmd/auth
+      - name: Create volumes
+        uses: create-directories
+        with:
+          directories:
+            - path: /data/certs
+              owner: "65532:65532"
+              permissions: "777"
+            - path: /data/certs
+              owner: "65532:65532"
+              permissions: "777"
   - name: rootfs
     environment:
       base-image: base
     pipeline:
+      - name: Copy volumes
+        copy:
+          from-stage: build
+          from: /data
+          to: /rootfs/data
       - name: Copy binary and notices to rootfs
         copy:
           from-stage: build
