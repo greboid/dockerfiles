@@ -96,7 +96,7 @@ stages:
           set -eux;
           rsync -ap /usr/local/pgsql/ /rootfs/usr/local/pgsql/
 
-      - name: Create data directory
+      - name: Create volumes
         uses: create-directories
         with:
           directories:

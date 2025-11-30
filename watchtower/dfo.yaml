@@ -3,41 +3,9 @@ package:
   description: Automatically update running Docker containers
 
 stages:
-  - name: build
-    environment:
-      base-image: golang
-      packages:
-        - git
-    pipeline:
-      - name: Clone and build watchtower
-        uses: clone-and-build-go
-        with:
-          repo: https://github.com/containrrr/watchtower
-          patches:
-            - disable-slack.patch
-  - name: rootfs
-    environment:
-      base-image: base
-    pipeline:
-      - name: Copy binary and notices to rootfs
-        copy:
-          from-stage: build
-          from: /main
-          to: /rootfs/watchtower
-
-      - copy:
-          from-stage: build
-          from: /notices
-          to: /rootfs/notices
-  - name: Final
-    environment:
-      base-image: base
-      entrypoint:
-        - /watchtower
-
-    pipeline:
-      - name: Copy rootfs to root
-        copy:
-          from-stage: rootfs
-          from: /rootfs/
-          to: /
+  - template: go-app
+    with:
+      repo: https://github.com/containrrr/watchtower
+      binary: watchtower
+      patches:
+        - disable-slack.patch

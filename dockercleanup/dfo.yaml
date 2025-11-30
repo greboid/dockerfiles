@@ -3,37 +3,9 @@ package:
   description: dockercleanup service
 
 stages:
-  - name: build
-    environment:
-      base-image: golang
-    pipeline:
-      - name: Clone and build dockercleanup
-        uses: clone-and-build-go
-        with:
-          repo: https://github.com/greboid/dockercleanup
-  - name: rootfs
-    environment:
-      base-image: base
-    pipeline:
-      - name: Copy binary and notices to rootfs
-        copy:
-          from-stage: build
-          from: /main
-          to: /rootfs/dockercleanup
-      - copy:
-          from-stage: build
-          from: /notices
-          to: /rootfs/notices
-  - name: Final
-    environment:
-      base-image: base
+  - template: go-app
+    with:
+      repo: https://github.com/greboid/dockercleanup
+      binary: dockercleanup
       expose:
         - "8080"
-      entrypoint:
-        - /dockercleanup
-    pipeline:
-      - name: Copy rootfs to root
-        copy:
-          from-stage: rootfs
-          from: /rootfs/
-          to: /

@@ -3,40 +3,10 @@ package:
   description: irc-distribution service
 
 stages:
-  - name: build
-    environment:
-      base-image: golang
-      packages:
-        - git
-    pipeline:
-      - name: Clone and build
-        uses: clone-and-build-go
-        with:
-          repo: https://github.com/csmith/irc-distribution
-          package: ./cmd/distribution
-  - name: rootfs
-    environment:
-      base-image: base
-    pipeline:
-      - name: Copy binary and notices to rootfs
-        copy:
-          from-stage: build
-          from: /main
-          to: /rootfs/irc-distribution
-      - copy:
-          from-stage: build
-          from: /notices
-          to: /rootfs/notices
-  - name: Final
-    environment:
-      base-image: base
+  - template: go-app
+    with:
+      repo: https://github.com/csmith/irc-distribution
+      binary: irc-distribution
+      package: ./cmd/distribution
       expose:
         - "8080"
-      entrypoint:
-        - /irc-distribution
-    pipeline:
-      - name: Copy rootfs to root
-        copy:
-          from-stage: rootfs
-          from: /rootfs/
-          to: /

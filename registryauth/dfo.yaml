@@ -3,53 +3,12 @@ package:
   description: registryauth service
 
 stages:
-  - name: build
-    environment:
-      base-image: golang
-    pipeline:
-      - name: Clone and build registryauth
-        uses: clone-and-build-go
-        with:
-          repo: https://github.com/greboid/registryauth
-          package: ./cmd/auth
-      - name: Create volumes
-        uses: create-directories
-        with:
-          directories:
-            - path: /data/certs
-              owner: "65532:65532"
-              permissions: "777"
-            - path: /data/certs
-              owner: "65532:65532"
-              permissions: "777"
-  - name: rootfs
-    environment:
-      base-image: base
-    pipeline:
-      - name: Copy volumes
-        copy:
-          from-stage: build
-          from: /data
-          to: /rootfs/data
-      - name: Copy binary and notices to rootfs
-        copy:
-          from-stage: build
-          from: /main
-          to: /rootfs/registryauth
-      - copy:
-          from-stage: build
-          from: /notices
-          to: /rootfs/notices
-  - name: Final
-    environment:
-      base-image: base
+  - template: go-app
+    with:
+      repo: https://github.com/greboid/registryauth
+      binary: registryauth
+      package: ./cmd/auth
       expose:
         - "8080"
-      entrypoint:
-        - /registryauth
-    pipeline:
-      - name: Copy rootfs to root
-        copy:
-          from-stage: rootfs
-          from: /rootfs/
-          to: /
+      volumes:
+        - path: /data/certs

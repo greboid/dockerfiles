@@ -3,47 +3,15 @@ package:
   description: Self-hosted file/code/media sharing website
 
 stages:
-  - name: build
-    environment:
-      base-image: golang
-    pipeline:
-      - name: Clone and build
-        uses: clone-and-build-go
-        with:
-          repo: https://github.com/csmith/linx-server
-      - name: Make volumes
-        uses: create-directories
-        with:
-          directories:
-            - path: /data/files
-              owner: "65532:65532"
-            - path: /data/meta
-              owner: "65532:65532"
-  - name: rootfs
-    environment:
-      base-image: base
-    pipeline:
-      - name: Copy binary and data to rootfs
-        copy:
-          from-stage: build
-          from: /main
-          to: /rootfs/linx-server
-      - copy:
-          from-stage: build
-          from: /data
-          to: /rootfs/data
-      - copy:
-          from-stage: build
-          from: /notices
-          to: /rootfs/notices
-  - name: Final
-    environment:
-      base-image: base
+  - template: go-app
+    with:
+      repo: https://github.com/csmith/linx-server
+      binary: linx-server
       expose:
         - "8080"
-      volume:
-        - /data/files
-        - /data/meta
+      volumes:
+        - path: /data/files
+        - path: /data/meta
       entrypoint:
         - /linx-server
         - -bind=0.0.0.0:8080
@@ -52,9 +20,3 @@ stages:
       cmd:
         - -sitename=linx
         - -allowhotlink
-    pipeline:
-      - name: Copy rootfs to root
-        copy:
-          from-stage: rootfs
-          from: /rootfs/
-          to: /

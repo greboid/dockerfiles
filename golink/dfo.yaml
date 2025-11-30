@@ -3,43 +3,14 @@ package:
   description: Tailscale golink service
 
 stages:
-  - name: build
-    environment:
-      base-image: golang
-    pipeline:
-      - name: Clone and build golink
-        uses: build-go-static
-        with:
-          workdir: /src
-          repo: https://github.com/tailscale/golink
-          package: ./cmd/golink
-          ignore: modernc.org/mathutil
-  - name: rootfs
-    environment:
-      base-image: base
-    pipeline:
-      - name: Copy binary and notices to rootfs
-        copy:
-          from-stage: build
-          from: /main
-          to: /rootfs/golink
-      - copy:
-          from-stage: build
-          from: /notices
-          to: /rootfs/notices
-  - name: Final
-    environment:
-      base-image: base
+  - template: go-app
+    with:
+      repo: https://github.com/tailscale/golink
+      binary: golink
+      package: ./cmd/golink
+      ignore: modernc.org/mathutil
       expose:
         - "8080"
-      entrypoint:
-        - /golink
       cmd:
         - --sqlitedb
         - /home/nonroot/golink.db
-    pipeline:
-      - name: Copy rootfs to root
-        copy:
-          from-stage: rootfs
-          from: /rootfs/
-          to: /
