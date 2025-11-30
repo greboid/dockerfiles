@@ -12,9 +12,9 @@ RUN git clone --depth=1 --branch {{github_tag "greboid/githubmirror"}} "https://
 WORKDIR /src
 RUN go mod download
 # Build binary
-RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /main ./cmd/githubmirror
+RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /main .
 # Generate license notices
-RUN go run github.com/google/go-licenses@latest save ./cmd/githubmirror --save_path=/notices/main
+RUN go run github.com/google/go-licenses@latest save . --save_path=/notices/main
 RUN apk del --no-network .build-go-static-deps
 
 
