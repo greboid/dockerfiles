@@ -3,7 +3,6 @@
 
 FROM reg.g5d.dev/golang@sha256:1d0b5d5665a2ed7647b8152d431ceac3cb4c4b0eae1b628628b0752be2ae1c2c AS build
 
-# Clone and build golink
 RUN apk add --no-cache --virtual .build-go-static-deps \
     binutils=2.44-r3 \
     brotli-libs=1.1.0-r2 \
@@ -50,7 +49,6 @@ RUN apk del --no-network .build-go-static-deps
 
 FROM reg.g5d.dev/base@sha256:f841f6a760f49b626fa4cbf560b7f7c5f6ad25c135ab24f8062f6350a6e93db0 AS rootfs
 
-# Copy binary and notices to rootfs
 COPY --from=build /main /rootfs/golink
 
 COPY --from=build /notices /rootfs/notices
@@ -58,7 +56,6 @@ COPY --from=build /notices /rootfs/notices
 
 FROM reg.g5d.dev/base@sha256:f841f6a760f49b626fa4cbf560b7f7c5f6ad25c135ab24f8062f6350a6e93db0
 
-# Copy rootfs to root
 COPY --from=rootfs /rootfs/ /
 
 EXPOSE 8080
