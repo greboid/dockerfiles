@@ -18,6 +18,7 @@ stages:
       - name: Clone and build gamja
         build-deps:
           - git
+          - libstdc++
         run: |
           set -eux;
           git clone https://codeberg.org/emersion/gamja.git
