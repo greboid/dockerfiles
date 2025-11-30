@@ -129,16 +129,16 @@ RUN apk add --no-cache --virtual .clone-and-build-autoconf-deps \
     ;
 
 # Clone repository
-RUN git clone --depth=1 --branch REL_15_STABLE "https://github.com/postgres/postgres" /usr/local/postgres
+RUN git clone --depth=1 --branch REL_15_STABLE "https://github.com/postgres/postgres" /src/postgres
 # Configure
-WORKDIR /usr/local/postgres
+WORKDIR /src/postgres
 RUN ./configure --with-system-tzdata=/usr/share/zoneinfo --with-includes=/usr/local/include --with-libraries=/usr/local/lib --with-ssl=openssl
 # Build with make
 RUN make -j$(nproc) world; \
-    make install-world; \
-    make -C contrib install
+    make -j$(nproc) install; \
+    make -j$(nproc) -C contrib install
 # Strip binaries
-RUN find /usr/local/postgres -type f -executable -exec strip {} + 2>/dev/null || true
+RUN find /src/postgres -type f -executable -exec strip {} + 2>/dev/null || true
 RUN apk del --no-network .clone-and-build-autoconf-deps
 
 # Prepare rootfs dependencies
@@ -160,7 +160,7 @@ RUN apk add --no-cache --virtual .create-directories-deps \
     ;
 
 # Create directories
-RUN mkdir -p /rootfs/usr/bin /rootfs/bin /rootfs/usr/local/bin
+RUN mkdir -p /rootfs/usr/bin /rootfs/bin /rootfs/usr/local/bin /rootfs/var/lib/postgresql/data
 RUN apk del --no-network .create-directories-deps
 
 # Copy essential binaries
@@ -170,6 +170,7 @@ RUN set -eux; \
     cp /bin/ls /rootfs/bin/ls; \
     cp /bin/cat /rootfs/bin/cat; \
     cp /bin/bash /rootfs/bin/bash; \
+    cp /usr/bin/find /rootfs/usr/bin/find; \
     cp /usr/bin/locale /rootfs/usr/bin/locale; \
     cp /usr/bin/id /rootfs/usr/bin/id; \
     cp /bin/mkdir /rootfs/bin/mkdir; \
@@ -185,29 +186,24 @@ RUN set -eux; \
 RUN set -eux; \
     rsync -ap /usr/local/pgsql/ /rootfs/usr/local/pgsql/
 
-# Create data directory
+# Create volumes
 RUN apk add --no-cache --virtual .create-directories-deps \
     busybox=1.37.0-r20 \
     musl=1.2.5-r10 \
     ;
 
 # Create directories
-RUN mkdir -p /rootfs/var/lib/postgresql /rootfs/var/lib/postgresql/data; \
+RUN mkdir -p /rootfs/var/lib/postgresql /rootfs/var/lib/postgresql/data /rootfs/var/run /rootfs/tmp /rootfs/docker-entrypoint-initdb.d; \
     chmod 777 /rootfs/var/lib/postgresql; \
-    chmod 750 /rootfs/var/lib/postgresql/data
-RUN apk del --no-network .create-directories-deps
-
-# Create runtime directories
-RUN apk add --no-cache --virtual .create-directories-deps \
-    busybox=1.37.0-r20 \
-    musl=1.2.5-r10 \
-    ;
-
-# Create directories
-RUN mkdir -p /rootfs/var/run /rootfs/tmp /rootfs/docker-entrypoint-initdb.d; \
+    chown 65532:65532 /rootfs/var/lib/postgresql; \
+    chmod 777 /rootfs/var/lib/postgresql/data; \
+    chown 65532:65532 /rootfs/var/lib/postgresql/data; \
     chmod 777 /rootfs/var/run; \
+    chown 65532:65532 /rootfs/var/run; \
     chmod 777 /rootfs/tmp; \
-    chmod 644 /rootfs/docker-entrypoint-initdb.d
+    chown 65532:65532 /rootfs/tmp; \
+    chmod 644 /rootfs/docker-entrypoint-initdb.d; \
+    chown 65532:65532 /rootfs/docker-entrypoint-initdb.d
 RUN apk del --no-network .create-directories-deps
 
 
