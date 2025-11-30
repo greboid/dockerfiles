@@ -1,35 +1,25 @@
 FROM {{image "golang"}} AS build
 
-# Install packages
-RUN set -eux; \
-    apk add --no-cache \
-    {{- range $key, $value := alpine_packages "git"}}
-        {{$key}}={{$value}} \
-    {{- end}}
-    ;
-
-# Clone and build webhooked
-RUN apk add --no-cache --virtual .clone-and-build-go-deps \
+RUN apk add --no-cache --virtual .build-go-static-deps \
     {{- range $key, $value := alpine_packages "git" "go"}}
     {{$key}}={{$value}} \
     {{- end}}
     ;
 
 # Clone repository
-RUN git clone --depth=1 --branch {{github_tag "csmith/webhooked"}} "https://github.com/csmith/webhooked" /src/csmith/webhooked
+RUN git clone --depth=1 --branch {{github_tag "csmith/webhooked"}} "https://github.com/csmith/webhooked" /src
 # Download dependencies
-WORKDIR /src/csmith/webhooked
+WORKDIR /src
 RUN go mod download
 # Build binary
-RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /main .
+RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /main ./cmd/webhooked
 # Generate license notices
-RUN go run github.com/google/go-licenses@latest save . --save_path=/notices/main
-RUN apk del --no-network .clone-and-build-go-deps
+RUN go run github.com/google/go-licenses@latest save ./cmd/webhooked --save_path=/notices/main
+RUN apk del --no-network .build-go-static-deps
 
 
 FROM {{image "base"}} AS rootfs
 
-# Copy binary and notices to rootfs
 COPY --from=build /main /rootfs/webhooked
 
 COPY --from=build /notices /rootfs/notices
@@ -37,7 +27,6 @@ COPY --from=build /notices /rootfs/notices
 
 FROM {{image "base"}}
 
-# Copy rootfs to root
 COPY --from=rootfs /rootfs/ /
 
 EXPOSE 8080

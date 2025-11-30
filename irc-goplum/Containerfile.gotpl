@@ -1,35 +1,25 @@
 FROM {{image "golang"}} AS build
 
-# Install packages
-RUN set -eux; \
-    apk add --no-cache \
-    {{- range $key, $value := alpine_packages "git"}}
-        {{$key}}={{$value}} \
-    {{- end}}
-    ;
-
-# Clone and build irc-goplum
-RUN apk add --no-cache --virtual .clone-and-build-go-deps \
+RUN apk add --no-cache --virtual .build-go-static-deps \
     {{- range $key, $value := alpine_packages "git" "go"}}
     {{$key}}={{$value}} \
     {{- end}}
     ;
 
 # Clone repository
-RUN git clone --depth=1 --branch {{github_tag "greboid/irc-goplum"}} "https://github.com/greboid/irc-goplum" /src/greboid/irc-goplum
+RUN git clone --depth=1 --branch {{github_tag "greboid/irc-goplum"}} "https://github.com/greboid/irc-goplum" /src
 # Download dependencies
-WORKDIR /src/greboid/irc-goplum
+WORKDIR /src
 RUN go mod download
 # Build binary
 RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /main ./cmd/goplum
 # Generate license notices
 RUN go run github.com/google/go-licenses@latest save ./cmd/goplum --save_path=/notices/main
-RUN apk del --no-network .clone-and-build-go-deps
+RUN apk del --no-network .build-go-static-deps
 
 
 FROM {{image "base"}} AS rootfs
 
-# Copy binary and notices to rootfs
 COPY --from=build /main /rootfs/irc-goplum
 
 COPY --from=build /notices /rootfs/notices
@@ -37,7 +27,6 @@ COPY --from=build /notices /rootfs/notices
 
 FROM {{image "base"}}
 
-# Copy rootfs to root
 COPY --from=rootfs /rootfs/ /
 
 EXPOSE 8080

@@ -1,38 +1,28 @@
 FROM {{image "golang"}} AS build
 
-# Install packages
-RUN set -eux; \
-    apk add --no-cache \
-    {{- range $key, $value := alpine_packages "git"}}
-        {{$key}}={{$value}} \
-    {{- end}}
-    ;
-
-# Clone and build watchtower
-RUN apk add --no-cache --virtual .clone-and-build-go-deps \
+RUN apk add --no-cache --virtual .build-go-static-deps \
     {{- range $key, $value := alpine_packages "git" "go" "patch"}}
     {{$key}}={{$value}} \
     {{- end}}
     ;
 
 # Clone repository
-RUN git clone --depth=1 --branch {{github_tag "containrrr/watchtower"}} "https://github.com/containrrr/watchtower" /src/containrrr/watchtower
+RUN git clone --depth=1 --branch {{github_tag "containrrr/watchtower"}} "https://github.com/containrrr/watchtower" /src
 # Apply patch disable-slack.patch
-COPY disable-slack.patch /src/containrrr/watchtower/
-RUN cd /src/containrrr/watchtower && patch -p1 < disable-slack.patch
+COPY disable-slack.patch /src/
+RUN cd /src && patch -p1 < disable-slack.patch
 # Download dependencies
-WORKDIR /src/containrrr/watchtower
+WORKDIR /src
 RUN go mod download
 # Build binary
-RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /main .
+RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /main ./cmd/watchtower
 # Generate license notices
-RUN go run github.com/google/go-licenses@latest save . --save_path=/notices/main
-RUN apk del --no-network .clone-and-build-go-deps
+RUN go run github.com/google/go-licenses@latest save ./cmd/watchtower --save_path=/notices/main
+RUN apk del --no-network .build-go-static-deps
 
 
 FROM {{image "base"}} AS rootfs
 
-# Copy binary and notices to rootfs
 COPY --from=build /main /rootfs/watchtower
 
 COPY --from=build /notices /rootfs/notices
@@ -40,7 +30,6 @@ COPY --from=build /notices /rootfs/notices
 
 FROM {{image "base"}}
 
-# Copy rootfs to root
 COPY --from=rootfs /rootfs/ /
 
 ENTRYPOINT ["/watchtower"]

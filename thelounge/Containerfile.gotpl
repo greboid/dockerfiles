@@ -13,11 +13,17 @@ ENV THELOUNGE_HOME="/var/opt/thelounge"
 WORKDIR /app
 
 # Install thelounge
-RUN set -eux; \
-    git clone --branch v4.4.3 --single-branch https://github.com/thelounge/thelounge.git; \
-    cd thelounge; \
-    yarn install; \
-    NODE_ENV=production yarn build
+RUN apk add --no-cache --virtual .build-deps \
+  {{- range $key, $value := alpine_packages "git" "python3" "busybox"}}
+  {{$key}}={{$value}} \
+  {{- end}}
+  ; \
+  set -eux; \
+  git clone --branch v4.4.3 --single-branch https://github.com/thelounge/thelounge.git; \
+  cd thelounge; \
+  yarn install; \
+  NODE_ENV=production yarn build; \
+  apk del --no-network .build-deps
 
 # Create nonroot home directory
 RUN apk add --no-cache --virtual .create-directories-deps \
@@ -27,7 +33,8 @@ RUN apk add --no-cache --virtual .create-directories-deps \
     ;
 
 # Create directories
-RUN mkdir -p /home/nonroot
+RUN mkdir -p /home/nonroot; \
+    chown 65532:65532 /home/nonroot
 RUN apk del --no-network .create-directories-deps
 
 

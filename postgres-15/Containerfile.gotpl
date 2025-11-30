@@ -89,7 +89,7 @@ RUN set -eux; \
 RUN set -eux; \
     rsync -ap /usr/local/pgsql/ /rootfs/usr/local/pgsql/
 
-# Create data directory
+# Create volumes
 RUN apk add --no-cache --virtual .create-directories-deps \
     {{- range $key, $value := alpine_packages "busybox"}}
     {{$key}}={{$value}} \
@@ -99,10 +99,15 @@ RUN apk add --no-cache --virtual .create-directories-deps \
 # Create directories
 RUN mkdir -p /rootfs/var/lib/postgresql /rootfs/var/lib/postgresql/data /rootfs/var/run /rootfs/tmp /rootfs/docker-entrypoint-initdb.d; \
     chmod 777 /rootfs/var/lib/postgresql; \
+    chown 65532:65532 /rootfs/var/lib/postgresql; \
     chmod 777 /rootfs/var/lib/postgresql/data; \
+    chown 65532:65532 /rootfs/var/lib/postgresql/data; \
     chmod 777 /rootfs/var/run; \
+    chown 65532:65532 /rootfs/var/run; \
     chmod 777 /rootfs/tmp; \
-    chmod 644 /rootfs/docker-entrypoint-initdb.d
+    chown 65532:65532 /rootfs/tmp; \
+    chmod 644 /rootfs/docker-entrypoint-initdb.d; \
+    chown 65532:65532 /rootfs/docker-entrypoint-initdb.d
 RUN apk del --no-network .create-directories-deps
 
 

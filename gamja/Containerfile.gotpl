@@ -1,0 +1,50 @@
+FROM {{image "alpine"}} AS busybox
+
+# Install packages
+RUN set -eux; \
+    apk add --no-cache \
+    {{- range $key, $value := alpine_packages "busybox-static"}}
+        {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
+
+FROM {{image "node"}} AS builder
+
+WORKDIR /app
+
+# Clone and build gamja
+RUN apk add --no-cache --virtual .build-deps \
+  {{- range $key, $value := alpine_packages "git" "libstdc++"}}
+  {{$key}}={{$value}} \
+  {{- end}}
+  ; \
+  set -eux; \
+  git clone https://codeberg.org/emersion/gamja.git; \
+  cd gamja; \
+  npm install --include=dev; \
+  npm run build; \
+  apk del --no-network .build-deps
+
+
+FROM {{image "base"}} AS rootfs
+
+# Copy gamja dist to rootfs
+COPY --from=builder --chown=65532:65532 /app/gamja/dist /rootfs/public
+
+# Copy busybox to rootfs
+COPY --from=busybox /bin/busybox.static /rootfs/bin/sh
+
+# Copy wrapper script to rootfs
+# Copy gamja to /rootfs/usr/local/bin/gamja
+COPY --chmod=755 gamja /rootfs/usr/local/bin/gamja
+
+
+FROM {{image "sws"}}
+
+# Copy rootfs to root
+COPY --from=rootfs --chown=65532:65532 /rootfs/ /
+
+ENTRYPOINT ["gamja"]
+
+

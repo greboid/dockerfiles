@@ -1,24 +1,29 @@
 FROM {{image "golang"}} AS build
 
-# Clone and build
-RUN apk add --no-cache --virtual .clone-and-build-go-deps \
+RUN apk add --no-cache --virtual .build-go-static-deps \
     {{- range $key, $value := alpine_packages "git" "go"}}
     {{$key}}={{$value}} \
     {{- end}}
     ;
 
 # Clone repository
-RUN git clone --depth=1 --branch {{github_tag "csmith/linx-server"}} "https://github.com/csmith/linx-server" /src/csmith/linx-server
+RUN git clone --depth=1 --branch {{github_tag "csmith/linx-server"}} "https://github.com/csmith/linx-server" /src
 # Download dependencies
-WORKDIR /src/csmith/linx-server
+WORKDIR /src
 RUN go mod download
 # Build binary
-RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /main .
+RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /main ./cmd/linx-server
 # Generate license notices
-RUN go run github.com/google/go-licenses@latest save . --save_path=/notices/main
-RUN apk del --no-network .clone-and-build-go-deps
+RUN go run github.com/google/go-licenses@latest save ./cmd/linx-server --save_path=/notices/main
+RUN apk del --no-network .build-go-static-deps
 
-# Make volumes
+
+FROM {{image "base"}} AS rootfs
+
+COPY --from=build /main /rootfs/linx-server
+
+COPY --from=build /notices /rootfs/notices
+
 RUN apk add --no-cache --virtual .create-directories-deps \
     {{- range $key, $value := alpine_packages "busybox"}}
     {{$key}}={{$value}} \
@@ -26,28 +31,19 @@ RUN apk add --no-cache --virtual .create-directories-deps \
     ;
 
 # Create directories
-RUN mkdir -p /data/files /data/meta
+RUN mkdir -p /data/files /data/meta; \
+    chmod 777 /data/files; \
+    chown 65532:65532 /data/files; \
+    chmod 777 /data/meta; \
+    chown 65532:65532 /data/meta
 RUN apk del --no-network .create-directories-deps
-
-
-FROM {{image "base"}} AS rootfs
-
-# Copy binary and data to rootfs
-COPY --from=build /main /rootfs/linx-server
-
-COPY --from=build /data /rootfs/data
-
-COPY --from=build /notices /rootfs/notices
 
 
 FROM {{image "base"}}
 
-# Copy rootfs to root
 COPY --from=rootfs /rootfs/ /
 
 EXPOSE 8080
-
-VOLUME ["/data/files", "/data/meta"]
 
 ENTRYPOINT ["/linx-server", "-bind=0.0.0.0:8080", "-filespath=/data/files/", "-metapath=/data/meta/"]
 
