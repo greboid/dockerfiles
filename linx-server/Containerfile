@@ -3,8 +3,7 @@
 
 FROM reg.g5d.dev/golang@sha256:1d0b5d5665a2ed7647b8152d431ceac3cb4c4b0eae1b628628b0752be2ae1c2c AS build
 
-# Clone and build
-RUN apk add --no-cache --virtual .clone-and-build-go-deps \
+RUN apk add --no-cache --virtual .build-go-static-deps \
     binutils=2.44-r3 \
     brotli-libs=1.1.0-r2 \
     c-ares=1.34.5-r0 \
@@ -37,45 +36,46 @@ RUN apk add --no-cache --virtual .clone-and-build-go-deps \
     ;
 
 # Clone repository
-RUN git clone --depth=1 --branch v3.1.0 "https://github.com/csmith/linx-server" /src/csmith/linx-server
+RUN git clone --depth=1 --branch v3.1.0 "https://github.com/csmith/linx-server" /src
 # Download dependencies
-WORKDIR /src/csmith/linx-server
+WORKDIR /src
 RUN go mod download
 # Build binary
 RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /main .
 # Generate license notices
 RUN go run github.com/google/go-licenses@latest save . --save_path=/notices/main
-RUN apk del --no-network .clone-and-build-go-deps
+RUN apk del --no-network .build-go-static-deps
 
-# Make volumes
 RUN apk add --no-cache --virtual .create-directories-deps \
     busybox=1.37.0-r20 \
     musl=1.2.5-r10 \
     ;
 
 # Create directories
-RUN mkdir -p /data/files /data/meta
+RUN mkdir -p /data/files /data/meta; \
+    chmod 777 /data/files; \
+    chown 65532:65532 /data/files; \
+    chmod 777 /data/meta; \
+    chown 65532:65532 /data/meta
 RUN apk del --no-network .create-directories-deps
 
 
 FROM reg.g5d.dev/base@sha256:f841f6a760f49b626fa4cbf560b7f7c5f6ad25c135ab24f8062f6350a6e93db0 AS rootfs
 
-# Copy binary and data to rootfs
 COPY --from=build /main /rootfs/linx-server
 
-COPY --from=build /data /rootfs/data
-
 COPY --from=build /notices /rootfs/notices
+
+COPY --from=build /data/files /rootfs/data/files
+
+COPY --from=build /data/meta /rootfs/data/meta
 
 
 FROM reg.g5d.dev/base@sha256:f841f6a760f49b626fa4cbf560b7f7c5f6ad25c135ab24f8062f6350a6e93db0
 
-# Copy rootfs to root
 COPY --from=rootfs /rootfs/ /
 
 EXPOSE 8080
-
-VOLUME ["/data/files", "/data/meta"]
 
 ENTRYPOINT ["/linx-server", "-bind=0.0.0.0:8080", "-filespath=/data/files/", "-metapath=/data/meta/"]
 
