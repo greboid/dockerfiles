@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/gamja/Containerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.1.0-r2","apk:busybox-static":"1.37.0-r20","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20250911-r0","apk:git":"2.49.1-r0","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.14.1-r2","apk:libexpat":"2.7.3-r0","apk:libgcc":"14.2.0-r6","apk:libidn2":"2.3.7-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"14.2.0-r6","apk:libunistring":"1.3-r0","apk:musl":"1.2.5-r10","apk:nghttp2-libs":"1.65.0-r0","apk:pcre2":"10.46-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r0","image:alpine":"eb9b3154e4465f37f1bb0399eecd1174df661731937c7c32cd41a5746da7b97d","image:base":"f841f6a760f49b626fa4cbf560b7f7c5f6ad25c135ab24f8062f6350a6e93db0","image:node":"684a0d6050ec6c94a9471e17bdbfb8c79f7e41bac3976a45d18e0e9288773a29","image:sws":"1212388aa89ec029dd0e36e1b6a864d8669aed4c26c3a5137e5893ed9dfbb77a"}
+# BOM: {"apk:brotli-libs":"1.1.0-r2","apk:busybox-static":"1.37.0-r20","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20250911-r0","apk:git":"2.49.1-r0","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.14.1-r2","apk:libexpat":"2.7.3-r0","apk:libgcc":"14.2.0-r6","apk:libidn2":"2.3.7-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"14.2.0-r6","apk:libunistring":"1.3-r0","apk:musl":"1.2.5-r10","apk:nghttp2-libs":"1.65.0-r0","apk:pcre2":"10.46-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r0","image:alpine":"eb9b3154e4465f37f1bb0399eecd1174df661731937c7c32cd41a5746da7b97d","image:base":"f841f6a760f49b626fa4cbf560b7f7c5f6ad25c135ab24f8062f6350a6e93db0","image:node":"684a0d6050ec6c94a9471e17bdbfb8c79f7e41bac3976a45d18e0e9288773a29","image:sws":"0302fceb3e344b0f7d2eb116b307bc342ed5ecf1cad930793874c3643606f0c0"}
 
 FROM reg.g5d.dev/alpine@sha256:eb9b3154e4465f37f1bb0399eecd1174df661731937c7c32cd41a5746da7b97d AS busybox
 
@@ -56,7 +56,7 @@ COPY --from=busybox /bin/busybox.static /rootfs/bin/sh
 COPY --chmod=755 gamja /rootfs/usr/local/bin/gamja
 
 
-FROM reg.g5d.dev/sws@sha256:1212388aa89ec029dd0e36e1b6a864d8669aed4c26c3a5137e5893ed9dfbb77a
+FROM reg.g5d.dev/sws@sha256:0302fceb3e344b0f7d2eb116b307bc342ed5ecf1cad930793874c3643606f0c0
 
 # Copy rootfs to root
 COPY --from=rootfs --chown=65532:65532 /rootfs/ /
