@@ -3,30 +3,12 @@ package:
   description: Unofficial Bitwarden server implementation
 
 stages:
-  - name: server
-    environment:
-      base-image: rust
+  - template: rust-app
+    with:
+      repo: "https://github.com/dani-garcia/vaultwarden"
+      binary: vaultwarden
+      features: "sqlite,enable_mimalloc"
       packages:
-        - git
         - gcc
         - musl-dev
         - openssl-dev
-    pipeline:
-      - name: Clone and build vaultwarden
-        uses: clone-and-build-rust
-        with:
-          repo: "https://github.com/dani-garcia/vaultwarden"
-          features: "sqlite,enable_mimalloc"
-
-  - name: Final
-    environment:
-      base-image: base
-      entrypoint:
-        - /vaultwarden
-
-    pipeline:
-      - name: Copy binary
-        copy:
-          from-stage: server
-          from: /main
-          to: /vaultwarden
