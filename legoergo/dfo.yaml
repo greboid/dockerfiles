@@ -3,45 +3,16 @@ package:
   description: legoergo service
 
 stages:
-  - name: build
-    environment:
-      base-image: golang
-    pipeline:
-      - name: Clone and build legoergo
-        uses: clone-and-build-go
-        with:
-          repo: https://github.com/ergochat/ergo
-          output: /ergo
-      - name: Clone and build certwrapper
-        uses: clone-and-build-go
-        with:
-          repo: https://github.com/csmith/certwrapper
-          output: /certwrapper
-  - name: rootfs
-    environment:
-      base-image: base
-    pipeline:
-      - name: Copy binaries to rootfs
-        copy:
-          from-stage: build
-          from: /ergo
-          to: /rootfs/ergo
-      - copy:
-          from-stage: build
-          from: /certwrapper
-          to: /rootfs/certwrapper
-      - name: Copy languages to rootfs
-        copy:
-          from-stage: build
-          from: /src/ergochat/ergo/languages/
-          to: /rootfs/ircd-bin/languages/
-      - copy:
-          from-stage: build
-          from: /notices
-          to: /rootfs/notices
-  - name: Final
-    environment:
-      base-image: base
+  - uses: multi-go-app
+    with:
+      binaries:
+        - repo: https://github.com/ergochat/ergo
+          binary: ergo
+        - repo: https://github.com/csmith/certwrapper
+          binary: certwrapper
+      extra-copies:
+        - from: /src/ergochat/ergo/languages/
+          to: /ircd-bin/languages/
       expose:
         - "8080"
       cmd:
@@ -50,9 +21,3 @@ stages:
         - run
         - --conf
         - /ircd/ircd.yaml
-    pipeline:
-      - name: Copy rootfs to root
-        copy:
-          from-stage: rootfs
-          from: /rootfs/
-          to: /

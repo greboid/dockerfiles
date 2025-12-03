@@ -3,43 +3,12 @@ package:
   description: Puzzle games service
 
 stages:
-  - name: build
-    environment:
-      base-image: golang
-      args:
-        TAG: "{{github_tag \"greboid/puzzles\"}}"
-    pipeline:
-      - name: Clone and build registryauth
-        uses: clone-and-build-go
-        with:
-          repo: https://github.com/greboid/puzzles
-  - name: rootfs
-    environment:
-      base-image: base
-    pipeline:
-      - name: Copy binary and wordlists to rootfs
-        copy:
-          from-stage: build
-          from: /main
-          to: /rootfs/puzzles
-      - copy:
-          from-stage: build
-          from: /src/greboid/puzzles/wordlists/.
-          to: /rootfs/app/wordlists
-      - copy:
-          from-stage: build
-          from: /notices
-          to: /rootfs/notices
-  - name: Final
-    environment:
-      base-image: base
+  - uses: go-app
+    with:
+      repo: https://github.com/greboid/puzzles
+      binary: puzzles
+      extra-copies:
+        - from: /src/greboid/puzzles/wordlists/.
+          to: /app/wordlists
       expose:
         - "8080"
-      entrypoint:
-        - /puzzles
-    pipeline:
-      - name: Copy rootfs to root
-        copy:
-          from-stage: rootfs
-          from: /rootfs/
-          to: /

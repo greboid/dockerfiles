@@ -3,87 +3,23 @@ package:
   description: IRC bouncer
 
 stages:
-  - name: sojo
-    environment:
-      base-image: golang
-    pipeline:
-      - name: Clone and build
-        uses: clone-and-build-go
-        with:
-          repo: https://github.com/emersion/soju
+  - uses: multi-go-app
+    with:
+      binaries:
+        - repo: https://github.com/emersion/soju
           package: ./cmd/soju
-          output: /soju
-          ignore: "codeberg.org/emersion/soju"
+          binary: soju
           go-tags: moderncsqlite
-  - name: sojuctl
-    environment:
-      base-image: golang
-      packages:
-        - git
-    pipeline:
-      - name: Clone and build
-        uses: clone-and-build-go
-        with:
-          repo: https://github.com/emersion/soju
+          ignore: "codeberg.org/emersion/soju"
+          entrypoint: true
+        - repo: https://github.com/emersion/soju
           package: ./cmd/sojuctl
-          output: /sojuctl
+          binary: sojuctl
           ignore: "codeberg.org/emersion/soju"
-  - name: sojudb
-    environment:
-      base-image: golang
-      packages:
-        - git
-    pipeline:
-      - name: Clone and build
-        uses: clone-and-build-go
-        with:
-          repo: https://github.com/emersion/soju
+        - repo: https://github.com/emersion/soju
           package: ./cmd/sojudb
-          output: /sojudb
-          ignore: "codeberg.org/emersion/soju"
+          binary: sojudb
           go-tags: moderncsqlite
-  - name: volumes
-    environment:
-      base-image: alpine
-    pipeline:
-      - name: Create volumes
-        uses: create-directories
-        with:
-          directories:
-            - path: /data
-  - name: rootfs
-    environment:
-      base-image: base
-    pipeline:
-      - name: Copy soju binaries to rootfs
-        copy:
-          from-stage: sojo
-          from: /soju
-          to: /rootfs/soju
-      - copy:
-          from-stage: sojuctl
-          from: /sojuctl
-          to: /rootfs/sojuctl
-      - copy:
-          from-stage: sojudb
-          from: /sojudb
-          to: /rootfs/sojudb
-      - copy:
-          from-stage: volumes
-          from: /data
-          to: /rootfs/data
-      - copy:
-          from-stage: sojo
-          from: /notices/soju
-          to: /rootfs/notices
-  - name: Final
-    environment:
-      base-image: base
-      entrypoint:
-        - /soju
-    pipeline:
-      - name: Copy rootfs to root
-        copy:
-          from-stage: rootfs
-          from: /rootfs/
-          to: /
+          ignore: "codeberg.org/emersion/soju"
+      volumes:
+        - path: /data
