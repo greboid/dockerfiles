@@ -1,39 +1,40 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/soju/Containerfile.gotpl
-# BOM: {"apk:binutils":"2.44-r3","apk:brotli-libs":"1.1.0-r2","apk:busybox":"1.37.0-r20","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20250911-r0","apk:gcc":"14.2.0-r6","apk:git":"2.49.1-r0","apk:gmp":"6.3.0-r3","apk:go":"1.24.11-r0","apk:isl25":"0.25-r2","apk:jansson":"2.14.1-r0","apk:libatomic":"14.2.0-r6","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.14.1-r2","apk:libexpat":"2.7.3-r0","apk:libgcc":"14.2.0-r6","apk:libgomp":"14.2.0-r6","apk:libidn2":"2.3.7-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"14.2.0-r6","apk:libunistring":"1.3-r0","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.1_p1-r0","apk:musl":"1.2.5-r10","apk:musl-dev":"1.2.5-r10","apk:nghttp2-libs":"1.65.0-r0","apk:pcre2":"10.46-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r0","github:emersion/soju":"v0.10.1","image:alpine":"eb9b3154e4465f37f1bb0399eecd1174df661731937c7c32cd41a5746da7b97d","image:base":"f841f6a760f49b626fa4cbf560b7f7c5f6ad25c135ab24f8062f6350a6e93db0","image:golang":"82af0584af7a05e522df362a88bb64f276baebc0e53bdb1cd5c208114df99f93"}
+# BOM: {"apk:binutils":"2.45.1-r0","apk:brotli-libs":"1.2.0-r0","apk:busybox":"1.37.0-r29","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20251003-r0","apk:gcc":"15.2.0-r2","apk:git":"2.52.0-r0","apk:gmp":"6.3.0-r4","apk:go":"1.25.4-r0","apk:isl25":"0.25-r2","apk:jansson":"2.14.1-r0","apk:libatomic":"15.2.0-r2","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.3-r0","apk:libgcc":"15.2.0-r2","apk:libgomp":"15.2.0-r2","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.2-r0","apk:musl":"1.2.5-r21","apk:musl-dev":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:pcre2":"10.47-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","github:emersion/soju":"v0.10.1","image:alpine":"f0e4cd609a803b3f2e9dce4f5b927fa95a7b9ed786bb11392b32e3566e0e6959","image:base":"34b4850808fb1e6f5ae4308bac6e4df4c155b83b3ddcf1e0fab93fff0265901c","image:golang":"466d3c052361afdddf4d413255faf7c70e3784a12d8175490e7d1781c3dec91a"}
 
-FROM reg.g5d.dev/golang@sha256:82af0584af7a05e522df362a88bb64f276baebc0e53bdb1cd5c208114df99f93 AS sojo
+FROM reg.g5d.dev/golang@sha256:466d3c052361afdddf4d413255faf7c70e3784a12d8175490e7d1781c3dec91a AS sojo
 
 # Clone and build
 RUN apk add --no-cache --virtual .clone-and-build-go-deps \
-    binutils=2.44-r3 \
-    brotli-libs=1.1.0-r2 \
+    binutils=2.45.1-r0 \
+    brotli-libs=1.2.0-r0 \
     c-ares=1.34.5-r0 \
-    ca-certificates-bundle=20250911-r0 \
-    gcc=14.2.0-r6 \
-    git=2.49.1-r0 \
-    gmp=6.3.0-r3 \
-    go=1.24.11-r0 \
+    ca-certificates-bundle=20251003-r0 \
+    gcc=15.2.0-r2 \
+    git=2.52.0-r0 \
+    gmp=6.3.0-r4 \
+    go=1.25.4-r0 \
     isl25=0.25-r2 \
     jansson=2.14.1-r0 \
-    libatomic=14.2.0-r6 \
+    libatomic=15.2.0-r2 \
     libcrypto3=3.5.4-r0 \
-    libcurl=8.14.1-r2 \
+    libcurl=8.17.0-r1 \
     libexpat=2.7.3-r0 \
-    libgcc=14.2.0-r6 \
-    libgomp=14.2.0-r6 \
-    libidn2=2.3.7-r0 \
+    libgcc=15.2.0-r2 \
+    libgomp=15.2.0-r2 \
+    libidn2=2.3.8-r0 \
     libpsl=0.21.5-r3 \
     libssl3=3.5.4-r0 \
-    libstdc++=14.2.0-r6 \
-    libunistring=1.3-r0 \
+    libstdc++=15.2.0-r2 \
+    libunistring=1.4.1-r0 \
     mpc1=1.3.1-r1 \
-    mpfr4=4.2.1_p1-r0 \
-    musl=1.2.5-r10 \
-    musl-dev=1.2.5-r10 \
-    nghttp2-libs=1.65.0-r0 \
-    pcre2=10.46-r0 \
+    mpfr4=4.2.2-r0 \
+    musl=1.2.5-r21 \
+    musl-dev=1.2.5-r21 \
+    nghttp2-libs=1.68.0-r0 \
+    nghttp3=1.13.1-r0 \
+    pcre2=10.47-r0 \
     zlib=1.3.1-r2 \
-    zstd-libs=1.5.7-r0 \
+    zstd-libs=1.5.7-r2 \
     ;
 
 # Clone repository
@@ -48,60 +49,62 @@ RUN go run github.com/google/go-licenses@latest save ./cmd/soju --save_path=/not
 RUN apk del --no-network .clone-and-build-go-deps
 
 
-FROM reg.g5d.dev/golang@sha256:82af0584af7a05e522df362a88bb64f276baebc0e53bdb1cd5c208114df99f93 AS sojuctl
+FROM reg.g5d.dev/golang@sha256:466d3c052361afdddf4d413255faf7c70e3784a12d8175490e7d1781c3dec91a AS sojuctl
 
 # Install packages
 RUN set -eux; \
     apk add --no-cache \
-        brotli-libs=1.1.0-r2 \
+        brotli-libs=1.2.0-r0 \
         c-ares=1.34.5-r0 \
-        ca-certificates-bundle=20250911-r0 \
-        git=2.49.1-r0 \
+        ca-certificates-bundle=20251003-r0 \
+        git=2.52.0-r0 \
         libcrypto3=3.5.4-r0 \
-        libcurl=8.14.1-r2 \
+        libcurl=8.17.0-r1 \
         libexpat=2.7.3-r0 \
-        libidn2=2.3.7-r0 \
+        libidn2=2.3.8-r0 \
         libpsl=0.21.5-r3 \
         libssl3=3.5.4-r0 \
-        libunistring=1.3-r0 \
-        musl=1.2.5-r10 \
-        nghttp2-libs=1.65.0-r0 \
-        pcre2=10.46-r0 \
+        libunistring=1.4.1-r0 \
+        musl=1.2.5-r21 \
+        nghttp2-libs=1.68.0-r0 \
+        nghttp3=1.13.1-r0 \
+        pcre2=10.47-r0 \
         zlib=1.3.1-r2 \
-        zstd-libs=1.5.7-r0 \
+        zstd-libs=1.5.7-r2 \
     ;
 
 # Clone and build
 RUN apk add --no-cache --virtual .clone-and-build-go-deps \
-    binutils=2.44-r3 \
-    brotli-libs=1.1.0-r2 \
+    binutils=2.45.1-r0 \
+    brotli-libs=1.2.0-r0 \
     c-ares=1.34.5-r0 \
-    ca-certificates-bundle=20250911-r0 \
-    gcc=14.2.0-r6 \
-    git=2.49.1-r0 \
-    gmp=6.3.0-r3 \
-    go=1.24.11-r0 \
+    ca-certificates-bundle=20251003-r0 \
+    gcc=15.2.0-r2 \
+    git=2.52.0-r0 \
+    gmp=6.3.0-r4 \
+    go=1.25.4-r0 \
     isl25=0.25-r2 \
     jansson=2.14.1-r0 \
-    libatomic=14.2.0-r6 \
+    libatomic=15.2.0-r2 \
     libcrypto3=3.5.4-r0 \
-    libcurl=8.14.1-r2 \
+    libcurl=8.17.0-r1 \
     libexpat=2.7.3-r0 \
-    libgcc=14.2.0-r6 \
-    libgomp=14.2.0-r6 \
-    libidn2=2.3.7-r0 \
+    libgcc=15.2.0-r2 \
+    libgomp=15.2.0-r2 \
+    libidn2=2.3.8-r0 \
     libpsl=0.21.5-r3 \
     libssl3=3.5.4-r0 \
-    libstdc++=14.2.0-r6 \
-    libunistring=1.3-r0 \
+    libstdc++=15.2.0-r2 \
+    libunistring=1.4.1-r0 \
     mpc1=1.3.1-r1 \
-    mpfr4=4.2.1_p1-r0 \
-    musl=1.2.5-r10 \
-    musl-dev=1.2.5-r10 \
-    nghttp2-libs=1.65.0-r0 \
-    pcre2=10.46-r0 \
+    mpfr4=4.2.2-r0 \
+    musl=1.2.5-r21 \
+    musl-dev=1.2.5-r21 \
+    nghttp2-libs=1.68.0-r0 \
+    nghttp3=1.13.1-r0 \
+    pcre2=10.47-r0 \
     zlib=1.3.1-r2 \
-    zstd-libs=1.5.7-r0 \
+    zstd-libs=1.5.7-r2 \
     ;
 
 # Clone repository
@@ -116,60 +119,62 @@ RUN go run github.com/google/go-licenses@latest save ./cmd/sojuctl --save_path=/
 RUN apk del --no-network .clone-and-build-go-deps
 
 
-FROM reg.g5d.dev/golang@sha256:82af0584af7a05e522df362a88bb64f276baebc0e53bdb1cd5c208114df99f93 AS sojudb
+FROM reg.g5d.dev/golang@sha256:466d3c052361afdddf4d413255faf7c70e3784a12d8175490e7d1781c3dec91a AS sojudb
 
 # Install packages
 RUN set -eux; \
     apk add --no-cache \
-        brotli-libs=1.1.0-r2 \
+        brotli-libs=1.2.0-r0 \
         c-ares=1.34.5-r0 \
-        ca-certificates-bundle=20250911-r0 \
-        git=2.49.1-r0 \
+        ca-certificates-bundle=20251003-r0 \
+        git=2.52.0-r0 \
         libcrypto3=3.5.4-r0 \
-        libcurl=8.14.1-r2 \
+        libcurl=8.17.0-r1 \
         libexpat=2.7.3-r0 \
-        libidn2=2.3.7-r0 \
+        libidn2=2.3.8-r0 \
         libpsl=0.21.5-r3 \
         libssl3=3.5.4-r0 \
-        libunistring=1.3-r0 \
-        musl=1.2.5-r10 \
-        nghttp2-libs=1.65.0-r0 \
-        pcre2=10.46-r0 \
+        libunistring=1.4.1-r0 \
+        musl=1.2.5-r21 \
+        nghttp2-libs=1.68.0-r0 \
+        nghttp3=1.13.1-r0 \
+        pcre2=10.47-r0 \
         zlib=1.3.1-r2 \
-        zstd-libs=1.5.7-r0 \
+        zstd-libs=1.5.7-r2 \
     ;
 
 # Clone and build
 RUN apk add --no-cache --virtual .clone-and-build-go-deps \
-    binutils=2.44-r3 \
-    brotli-libs=1.1.0-r2 \
+    binutils=2.45.1-r0 \
+    brotli-libs=1.2.0-r0 \
     c-ares=1.34.5-r0 \
-    ca-certificates-bundle=20250911-r0 \
-    gcc=14.2.0-r6 \
-    git=2.49.1-r0 \
-    gmp=6.3.0-r3 \
-    go=1.24.11-r0 \
+    ca-certificates-bundle=20251003-r0 \
+    gcc=15.2.0-r2 \
+    git=2.52.0-r0 \
+    gmp=6.3.0-r4 \
+    go=1.25.4-r0 \
     isl25=0.25-r2 \
     jansson=2.14.1-r0 \
-    libatomic=14.2.0-r6 \
+    libatomic=15.2.0-r2 \
     libcrypto3=3.5.4-r0 \
-    libcurl=8.14.1-r2 \
+    libcurl=8.17.0-r1 \
     libexpat=2.7.3-r0 \
-    libgcc=14.2.0-r6 \
-    libgomp=14.2.0-r6 \
-    libidn2=2.3.7-r0 \
+    libgcc=15.2.0-r2 \
+    libgomp=15.2.0-r2 \
+    libidn2=2.3.8-r0 \
     libpsl=0.21.5-r3 \
     libssl3=3.5.4-r0 \
-    libstdc++=14.2.0-r6 \
-    libunistring=1.3-r0 \
+    libstdc++=15.2.0-r2 \
+    libunistring=1.4.1-r0 \
     mpc1=1.3.1-r1 \
-    mpfr4=4.2.1_p1-r0 \
-    musl=1.2.5-r10 \
-    musl-dev=1.2.5-r10 \
-    nghttp2-libs=1.65.0-r0 \
-    pcre2=10.46-r0 \
+    mpfr4=4.2.2-r0 \
+    musl=1.2.5-r21 \
+    musl-dev=1.2.5-r21 \
+    nghttp2-libs=1.68.0-r0 \
+    nghttp3=1.13.1-r0 \
+    pcre2=10.47-r0 \
     zlib=1.3.1-r2 \
-    zstd-libs=1.5.7-r0 \
+    zstd-libs=1.5.7-r2 \
     ;
 
 # Clone repository
@@ -184,12 +189,12 @@ RUN go run github.com/google/go-licenses@latest save ./cmd/sojudb --save_path=/n
 RUN apk del --no-network .clone-and-build-go-deps
 
 
-FROM reg.g5d.dev/alpine@sha256:eb9b3154e4465f37f1bb0399eecd1174df661731937c7c32cd41a5746da7b97d AS volumes
+FROM reg.g5d.dev/alpine@sha256:f0e4cd609a803b3f2e9dce4f5b927fa95a7b9ed786bb11392b32e3566e0e6959 AS volumes
 
 # Create volumes
 RUN apk add --no-cache --virtual .create-directories-deps \
-    busybox=1.37.0-r20 \
-    musl=1.2.5-r10 \
+    busybox=1.37.0-r29 \
+    musl=1.2.5-r21 \
     ;
 
 # Create directories
@@ -197,7 +202,7 @@ RUN mkdir -p /data
 RUN apk del --no-network .create-directories-deps
 
 
-FROM reg.g5d.dev/base@sha256:f841f6a760f49b626fa4cbf560b7f7c5f6ad25c135ab24f8062f6350a6e93db0 AS rootfs
+FROM reg.g5d.dev/base@sha256:34b4850808fb1e6f5ae4308bac6e4df4c155b83b3ddcf1e0fab93fff0265901c AS rootfs
 
 # Copy soju binaries to rootfs
 COPY --from=sojo /soju /rootfs/soju
@@ -211,7 +216,7 @@ COPY --from=volumes /data /rootfs/data
 COPY --from=sojo /notices/soju /rootfs/notices
 
 
-FROM reg.g5d.dev/base@sha256:f841f6a760f49b626fa4cbf560b7f7c5f6ad25c135ab24f8062f6350a6e93db0
+FROM reg.g5d.dev/base@sha256:34b4850808fb1e6f5ae4308bac6e4df4c155b83b3ddcf1e0fab93fff0265901c
 
 # Copy rootfs to root
 COPY --from=rootfs /rootfs/ /
