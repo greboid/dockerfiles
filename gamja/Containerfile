@@ -1,39 +1,40 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/gamja/Containerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.1.0-r2","apk:busybox-static":"1.37.0-r20","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20250911-r0","apk:git":"2.49.1-r0","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.14.1-r2","apk:libexpat":"2.7.3-r0","apk:libgcc":"14.2.0-r6","apk:libidn2":"2.3.7-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"14.2.0-r6","apk:libunistring":"1.3-r0","apk:musl":"1.2.5-r10","apk:nghttp2-libs":"1.65.0-r0","apk:pcre2":"10.46-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r0","image:alpine":"eb9b3154e4465f37f1bb0399eecd1174df661731937c7c32cd41a5746da7b97d","image:base":"f841f6a760f49b626fa4cbf560b7f7c5f6ad25c135ab24f8062f6350a6e93db0","image:node":"684a0d6050ec6c94a9471e17bdbfb8c79f7e41bac3976a45d18e0e9288773a29","image:sws":"0302fceb3e344b0f7d2eb116b307bc342ed5ecf1cad930793874c3643606f0c0"}
+# BOM: {"apk:brotli-libs":"1.2.0-r0","apk:busybox-static":"1.37.0-r29","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20251003-r0","apk:git":"2.52.0-r0","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.3-r0","apk:libgcc":"15.2.0-r2","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:musl":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:pcre2":"10.47-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","image:alpine":"f0e4cd609a803b3f2e9dce4f5b927fa95a7b9ed786bb11392b32e3566e0e6959","image:base":"34b4850808fb1e6f5ae4308bac6e4df4c155b83b3ddcf1e0fab93fff0265901c","image:node":"00563d6bd4db57393516741c7987fb6aca8d821b70874d22ccfc177b26b5acac","image:sws":"8291246657fe003f6b0eea6cdf8646268ae3e687c9d623065f9f73660eb44ed3"}
 
-FROM reg.g5d.dev/alpine@sha256:eb9b3154e4465f37f1bb0399eecd1174df661731937c7c32cd41a5746da7b97d AS busybox
+FROM reg.g5d.dev/alpine@sha256:f0e4cd609a803b3f2e9dce4f5b927fa95a7b9ed786bb11392b32e3566e0e6959 AS busybox
 
 # Install packages
 RUN set -eux; \
     apk add --no-cache \
-        busybox-static=1.37.0-r20 \
+        busybox-static=1.37.0-r29 \
     ;
 
 
-FROM reg.g5d.dev/node@sha256:684a0d6050ec6c94a9471e17bdbfb8c79f7e41bac3976a45d18e0e9288773a29 AS builder
+FROM reg.g5d.dev/node@sha256:00563d6bd4db57393516741c7987fb6aca8d821b70874d22ccfc177b26b5acac AS builder
 
 WORKDIR /app
 
 # Clone and build gamja
 RUN apk add --no-cache --virtual .build-deps \
-  brotli-libs=1.1.0-r2 \
+  brotli-libs=1.2.0-r0 \
   c-ares=1.34.5-r0 \
-  ca-certificates-bundle=20250911-r0 \
-  git=2.49.1-r0 \
+  ca-certificates-bundle=20251003-r0 \
+  git=2.52.0-r0 \
   libcrypto3=3.5.4-r0 \
-  libcurl=8.14.1-r2 \
+  libcurl=8.17.0-r1 \
   libexpat=2.7.3-r0 \
-  libgcc=14.2.0-r6 \
-  libidn2=2.3.7-r0 \
+  libgcc=15.2.0-r2 \
+  libidn2=2.3.8-r0 \
   libpsl=0.21.5-r3 \
   libssl3=3.5.4-r0 \
-  libstdc++=14.2.0-r6 \
-  libunistring=1.3-r0 \
-  musl=1.2.5-r10 \
-  nghttp2-libs=1.65.0-r0 \
-  pcre2=10.46-r0 \
+  libstdc++=15.2.0-r2 \
+  libunistring=1.4.1-r0 \
+  musl=1.2.5-r21 \
+  nghttp2-libs=1.68.0-r0 \
+  nghttp3=1.13.1-r0 \
+  pcre2=10.47-r0 \
   zlib=1.3.1-r2 \
-  zstd-libs=1.5.7-r0 \
+  zstd-libs=1.5.7-r2 \
   ; \
   set -eux; \
   git clone https://codeberg.org/emersion/gamja.git; \
@@ -43,7 +44,7 @@ RUN apk add --no-cache --virtual .build-deps \
   apk del --no-network .build-deps
 
 
-FROM reg.g5d.dev/base@sha256:f841f6a760f49b626fa4cbf560b7f7c5f6ad25c135ab24f8062f6350a6e93db0 AS rootfs
+FROM reg.g5d.dev/base@sha256:34b4850808fb1e6f5ae4308bac6e4df4c155b83b3ddcf1e0fab93fff0265901c AS rootfs
 
 # Copy gamja dist to rootfs
 COPY --from=builder --chown=65532:65532 /app/gamja/dist /rootfs/public
@@ -56,7 +57,7 @@ COPY --from=busybox /bin/busybox.static /rootfs/bin/sh
 COPY --chmod=755 gamja /rootfs/usr/local/bin/gamja
 
 
-FROM reg.g5d.dev/sws@sha256:0302fceb3e344b0f7d2eb116b307bc342ed5ecf1cad930793874c3643606f0c0
+FROM reg.g5d.dev/sws@sha256:8291246657fe003f6b0eea6cdf8646268ae3e687c9d623065f9f73660eb44ed3
 
 # Copy rootfs to root
 COPY --from=rootfs --chown=65532:65532 /rootfs/ /
