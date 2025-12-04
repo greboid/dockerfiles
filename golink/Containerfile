@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/golink/Containerfile.gotpl
-# BOM: {"apk:binutils":"2.45.1-r0","apk:brotli-libs":"1.2.0-r0","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20251003-r0","apk:gcc":"15.2.0-r2","apk:git":"2.52.0-r0","apk:gmp":"6.3.0-r4","apk:go":"1.25.4-r0","apk:isl25":"0.25-r2","apk:jansson":"2.14.1-r0","apk:libatomic":"15.2.0-r2","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.3-r0","apk:libgcc":"15.2.0-r2","apk:libgomp":"15.2.0-r2","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.2-r0","apk:musl":"1.2.5-r21","apk:musl-dev":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:pcre2":"10.47-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","github:tailscale/golink":"v1.0.0","image:base":"34b4850808fb1e6f5ae4308bac6e4df4c155b83b3ddcf1e0fab93fff0265901c","image:golang":"466d3c052361afdddf4d413255faf7c70e3784a12d8175490e7d1781c3dec91a"}
+# BOM: {"apk:binutils":"2.45.1-r0","apk:brotli-libs":"1.2.0-r0","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20251003-r0","apk:gcc":"15.2.0-r2","apk:git":"2.52.0-r0","apk:gmp":"6.3.0-r4","apk:go":"1.25.5-r0","apk:isl25":"0.25-r2","apk:jansson":"2.14.1-r0","apk:libatomic":"15.2.0-r2","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.3-r0","apk:libgcc":"15.2.0-r2","apk:libgomp":"15.2.0-r2","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.2-r0","apk:musl":"1.2.5-r21","apk:musl-dev":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:pcre2":"10.47-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","github:tailscale/golink":"v1.0.0","image:base":"34b4850808fb1e6f5ae4308bac6e4df4c155b83b3ddcf1e0fab93fff0265901c","image:golang":"9c4926ef4b05b0e5dfee30a84263ec4644dfaf416bcd59c4f6b1977688416365"}
 
-FROM reg.g5d.dev/golang@sha256:466d3c052361afdddf4d413255faf7c70e3784a12d8175490e7d1781c3dec91a AS build
+FROM reg.g5d.dev/golang@sha256:9c4926ef4b05b0e5dfee30a84263ec4644dfaf416bcd59c4f6b1977688416365 AS build
 
 RUN apk add --no-cache --virtual .build-go-static-deps \
     binutils=2.45.1-r0 \
@@ -11,7 +11,7 @@ RUN apk add --no-cache --virtual .build-go-static-deps \
     gcc=15.2.0-r2 \
     git=2.52.0-r0 \
     gmp=6.3.0-r4 \
-    go=1.25.4-r0 \
+    go=1.25.5-r0 \
     isl25=0.25-r2 \
     jansson=2.14.1-r0 \
     libatomic=15.2.0-r2 \
