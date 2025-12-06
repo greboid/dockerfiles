@@ -3,7 +3,7 @@ package:
   description: Puzzle games service
 
 stages:
-  - uses: go-app
+  - template: go-app
     with:
       repo: https://github.com/greboid/puzzles
       binary: puzzles

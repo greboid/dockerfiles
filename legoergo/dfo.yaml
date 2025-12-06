@@ -3,7 +3,7 @@ package:
   description: legoergo service
 
 stages:
-  - uses: multi-go-app
+  - template: multi-go-app
     with:
       binaries:
         - repo: https://github.com/ergochat/ergo

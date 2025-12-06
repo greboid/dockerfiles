@@ -3,7 +3,7 @@ package:
   description: IRC bouncer
 
 stages:
-  - uses: multi-go-app
+  - template: multi-go-app
     with:
       binaries:
         - repo: https://github.com/emersion/soju
