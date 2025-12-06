@@ -1,14 +1,21 @@
 FROM {{image "golang"}} AS build
 
-# Clone and build legoergo
-RUN apk add --no-cache --virtual .clone-and-build-go-deps \
-    {{- range $key, $value := alpine_packages "git" "go"}}
+RUN apk add --no-cache --virtual .clone-deps \
+    {{- range $key, $value := alpine_packages "git"}}
     {{$key}}={{$value}} \
     {{- end}}
     ;
 
 # Clone repository
 RUN git clone --depth=1 --branch {{github_tag "ergochat/ergo"}} "https://github.com/ergochat/ergo" /src/ergochat/ergo
+RUN apk del --no-network .clone-deps
+
+RUN apk add --no-cache --virtual .build-go-only-deps \
+    {{- range $key, $value := alpine_packages "go"}}
+    {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
 # Download dependencies
 WORKDIR /src/ergochat/ergo
 RUN go mod download
@@ -16,17 +23,24 @@ RUN go mod download
 RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /ergo .
 # Generate license notices
 RUN go run github.com/google/go-licenses@latest save . --save_path=/notices/ergo
-RUN apk del --no-network .clone-and-build-go-deps
+RUN apk del --no-network .build-go-only-deps
 
-# Clone and build certwrapper
-RUN apk add --no-cache --virtual .clone-and-build-go-deps \
-    {{- range $key, $value := alpine_packages "git" "go"}}
+RUN apk add --no-cache --virtual .clone-deps \
+    {{- range $key, $value := alpine_packages "git"}}
     {{$key}}={{$value}} \
     {{- end}}
     ;
 
 # Clone repository
 RUN git clone --depth=1 --branch {{github_tag "csmith/certwrapper"}} "https://github.com/csmith/certwrapper" /src/csmith/certwrapper
+RUN apk del --no-network .clone-deps
+
+RUN apk add --no-cache --virtual .build-go-only-deps \
+    {{- range $key, $value := alpine_packages "go"}}
+    {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
 # Download dependencies
 WORKDIR /src/csmith/certwrapper
 RUN go mod download
@@ -34,28 +48,29 @@ RUN go mod download
 RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /certwrapper .
 # Generate license notices
 RUN go run github.com/google/go-licenses@latest save . --save_path=/notices/certwrapper
-RUN apk del --no-network .clone-and-build-go-deps
+RUN apk del --no-network .build-go-only-deps
 
 
 FROM {{image "base"}} AS rootfs
 
-# Copy binaries to rootfs
 COPY --from=build /ergo /rootfs/ergo
 
 COPY --from=build /certwrapper /rootfs/certwrapper
 
-# Copy languages to rootfs
-COPY --from=build /src/ergochat/ergo/languages/ /rootfs/ircd-bin/languages/
+COPY --from=build /notices/ergo /rootfs/notices/ergo
 
-COPY --from=build /notices /rootfs/notices
+COPY --from=build /notices/certwrapper /rootfs/notices/certwrapper
+
+COPY --from=build /src/ergochat/ergo/languages/ /rootfs/ircd-bin/languages/
 
 
 FROM {{image "base"}}
 
-# Copy rootfs to root
 COPY --from=rootfs /rootfs/ /
 
 EXPOSE 8080
+
+ENTRYPOINT ["/ergo"]
 
 CMD ["/certwrapper", "/ergo", "run", "--conf", "/ircd/ircd.yaml"]
 

@@ -1,4 +1,4 @@
-FROM {{image "rust"}} AS server
+FROM {{image "rust"}} AS build
 
 # Install packages
 RUN set -eux; \
@@ -8,7 +8,6 @@ RUN set -eux; \
     {{- end}}
     ;
 
-# Clone and build vaultwarden
 RUN apk add --no-cache --virtual .clone-and-build-rust-deps \
     {{- range $key, $value := alpine_packages "busybox" "git" "cargo" "rust" "make"}}
     {{$key}}={{$value}} \
@@ -24,10 +23,14 @@ RUN find /src/dani-garcia/vaultwarden/target/x86_64-unknown-linux-musl/release -
 RUN apk del --no-network .clone-and-build-rust-deps
 
 
+FROM {{image "base"}} AS rootfs
+
+COPY --from=build /main /rootfs/vaultwarden
+
+
 FROM {{image "base"}}
 
-# Copy binary
-COPY --from=server /main /vaultwarden
+COPY --from=rootfs /rootfs/ /
 
 ENTRYPOINT ["/vaultwarden"]
 

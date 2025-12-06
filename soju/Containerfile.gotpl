@@ -1,14 +1,21 @@
-FROM {{image "golang"}} AS sojo
+FROM {{image "golang"}} AS build
 
-# Clone and build
-RUN apk add --no-cache --virtual .clone-and-build-go-deps \
-    {{- range $key, $value := alpine_packages "git" "go"}}
+RUN apk add --no-cache --virtual .clone-deps \
+    {{- range $key, $value := alpine_packages "git"}}
     {{$key}}={{$value}} \
     {{- end}}
     ;
 
 # Clone repository
 RUN git clone --depth=1 --branch {{github_tag "emersion/soju"}} "https://github.com/emersion/soju" /src/emersion/soju
+RUN apk del --no-network .clone-deps
+
+RUN apk add --no-cache --virtual .build-go-only-deps \
+    {{- range $key, $value := alpine_packages "go"}}
+    {{$key}}={{$value}} \
+    {{- end}}
+    ;
+
 # Download dependencies
 WORKDIR /src/emersion/soju
 RUN go mod download
@@ -16,28 +23,14 @@ RUN go mod download
 RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo,moderncsqlite' -ldflags='-s -w -extldflags "-static"' -o /soju ./cmd/soju
 # Generate license notices
 RUN go run github.com/google/go-licenses@latest save ./cmd/soju --save_path=/notices/soju --ignore codeberg.org/emersion/soju
-RUN apk del --no-network .clone-and-build-go-deps
+RUN apk del --no-network .build-go-only-deps
 
-
-FROM {{image "golang"}} AS sojuctl
-
-# Install packages
-RUN set -eux; \
-    apk add --no-cache \
-    {{- range $key, $value := alpine_packages "git"}}
-        {{$key}}={{$value}} \
-    {{- end}}
-    ;
-
-# Clone and build
-RUN apk add --no-cache --virtual .clone-and-build-go-deps \
-    {{- range $key, $value := alpine_packages "git" "go"}}
+RUN apk add --no-cache --virtual .build-go-only-deps \
+    {{- range $key, $value := alpine_packages "go"}}
     {{$key}}={{$value}} \
     {{- end}}
     ;
 
-# Clone repository
-RUN git clone --depth=1 --branch {{github_tag "emersion/soju"}} "https://github.com/emersion/soju" /src/emersion/soju
 # Download dependencies
 WORKDIR /src/emersion/soju
 RUN go mod download
@@ -45,28 +38,14 @@ RUN go mod download
 RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /sojuctl ./cmd/sojuctl
 # Generate license notices
 RUN go run github.com/google/go-licenses@latest save ./cmd/sojuctl --save_path=/notices/sojuctl --ignore codeberg.org/emersion/soju
-RUN apk del --no-network .clone-and-build-go-deps
+RUN apk del --no-network .build-go-only-deps
 
-
-FROM {{image "golang"}} AS sojudb
-
-# Install packages
-RUN set -eux; \
-    apk add --no-cache \
-    {{- range $key, $value := alpine_packages "git"}}
-        {{$key}}={{$value}} \
-    {{- end}}
-    ;
-
-# Clone and build
-RUN apk add --no-cache --virtual .clone-and-build-go-deps \
-    {{- range $key, $value := alpine_packages "git" "go"}}
+RUN apk add --no-cache --virtual .build-go-only-deps \
+    {{- range $key, $value := alpine_packages "go"}}
     {{$key}}={{$value}} \
     {{- end}}
     ;
 
-# Clone repository
-RUN git clone --depth=1 --branch {{github_tag "emersion/soju"}} "https://github.com/emersion/soju" /src/emersion/soju
 # Download dependencies
 WORKDIR /src/emersion/soju
 RUN go mod download
@@ -74,12 +53,8 @@ RUN go mod download
 RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo,moderncsqlite' -ldflags='-s -w -extldflags "-static"' -o /sojudb ./cmd/sojudb
 # Generate license notices
 RUN go run github.com/google/go-licenses@latest save ./cmd/sojudb --save_path=/notices/sojudb --ignore codeberg.org/emersion/soju
-RUN apk del --no-network .clone-and-build-go-deps
+RUN apk del --no-network .build-go-only-deps
 
-
-FROM {{image "alpine"}} AS volumes
-
-# Create volumes
 RUN apk add --no-cache --virtual .create-directories-deps \
     {{- range $key, $value := alpine_packages "busybox"}}
     {{$key}}={{$value}} \
@@ -87,27 +62,31 @@ RUN apk add --no-cache --virtual .create-directories-deps \
     ;
 
 # Create directories
-RUN mkdir -p /data
+RUN mkdir -p /data; \
+    chmod 777 /data; \
+    chown 65532:65532 /data
 RUN apk del --no-network .create-directories-deps
 
 
 FROM {{image "base"}} AS rootfs
 
-# Copy soju binaries to rootfs
-COPY --from=sojo /soju /rootfs/soju
+COPY --from=build /soju /rootfs/soju
 
-COPY --from=sojuctl /sojuctl /rootfs/sojuctl
+COPY --from=build /sojuctl /rootfs/sojuctl
 
-COPY --from=sojudb /sojudb /rootfs/sojudb
+COPY --from=build /sojudb /rootfs/sojudb
 
-COPY --from=volumes /data /rootfs/data
+COPY --from=build /notices/soju /rootfs/notices/soju
 
-COPY --from=sojo /notices/soju /rootfs/notices
+COPY --from=build /notices/sojuctl /rootfs/notices/sojuctl
+
+COPY --from=build /notices/sojudb /rootfs/notices/sojudb
+
+COPY --from=build /data /rootfs/data
 
 
 FROM {{image "base"}}
 
-# Copy rootfs to root
 COPY --from=rootfs /rootfs/ /
 
 ENTRYPOINT ["/soju"]
