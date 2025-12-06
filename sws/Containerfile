@@ -3,9 +3,28 @@
 
 FROM reg.g5d.dev/rust@sha256:cf02d28f3c301cc0e35bab111f839de6a72f19700b6f4874127423256ea4c050 AS build
 
-WORKDIR /src
+# Install packages
+RUN set -eux; \
+    apk add --no-cache \
+        brotli-libs=1.2.0-r0 \
+        c-ares=1.34.5-r0 \
+        ca-certificates-bundle=20251003-r0 \
+        git=2.52.0-r0 \
+        libcrypto3=3.5.4-r0 \
+        libcurl=8.17.0-r1 \
+        libexpat=2.7.3-r0 \
+        libidn2=2.3.8-r0 \
+        libpsl=0.21.5-r3 \
+        libssl3=3.5.4-r0 \
+        libunistring=1.4.1-r0 \
+        musl=1.2.5-r21 \
+        nghttp2-libs=1.68.0-r0 \
+        nghttp3=1.13.1-r0 \
+        pcre2=10.47-r0 \
+        zlib=1.3.1-r2 \
+        zstd-libs=1.5.7-r2 \
+    ;
 
-# Clone and build static-web-server
 RUN apk add --no-cache --virtual .clone-and-build-rust-deps \
     binutils=2.45.1-r0 \
     brotli-libs=1.2.0-r0 \
@@ -50,26 +69,24 @@ RUN apk add --no-cache --virtual .clone-and-build-rust-deps \
     ;
 
 # Clone repository
-RUN git clone --depth=1 --branch v2.40.0 "https://github.com/static-web-server/static-web-server" /src/static-web-server/static-web-server
+RUN git clone --depth=1 --branch v2.40.0 "https://github.com/static-web-server/static-web-server" /src
 # Apply patch keepqueriesonrewrites.diff
-COPY keepqueriesonrewrites.diff /src/static-web-server/static-web-server/
-RUN cd /src/static-web-server/static-web-server && patch -p1 < keepqueriesonrewrites.diff
+COPY keepqueriesonrewrites.diff /src/
+RUN cd /src && patch -p1 < keepqueriesonrewrites.diff
 # Build binary
-RUN cd /src/static-web-server/static-web-server && cargo build --release --target x86_64-unknown-linux-musl
+RUN cd /src && cargo build --release --target x86_64-unknown-linux-musl
 # Copy binary to final location
-RUN find /src/static-web-server/static-web-server/target/x86_64-unknown-linux-musl/release -maxdepth 1 -type f -executable -exec cp {} /main \;
+RUN find /src/target/x86_64-unknown-linux-musl/release -maxdepth 1 -type f -executable -exec cp {} /main \;
 RUN apk del --no-network .clone-and-build-rust-deps
 
 
 FROM reg.g5d.dev/base@sha256:34b4850808fb1e6f5ae4308bac6e4df4c155b83b3ddcf1e0fab93fff0265901c AS rootfs
 
-# Copy binary to rootfs
 COPY --from=build /main /rootfs/sws
 
 
 FROM reg.g5d.dev/base@sha256:34b4850808fb1e6f5ae4308bac6e4df4c155b83b3ddcf1e0fab93fff0265901c
 
-# Copy rootfs to root
 COPY --from=rootfs /rootfs/ /
 
 ENTRYPOINT ["/sws"]
