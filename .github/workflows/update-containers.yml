@@ -142,7 +142,6 @@ jobs:
     name: Build soju
     needs:
         - setup-cache
-        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
