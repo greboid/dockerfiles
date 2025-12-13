@@ -1,12 +1,12 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/dsp/Containerfile.gotpl
-# BOM: {"apk:binutils":"2.45.1-r0","apk:brotli-libs":"1.2.0-r0","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20251003-r0","apk:gcc":"15.2.0-r2","apk:git":"2.52.0-r0","apk:gmp":"6.3.0-r4","apk:go":"1.25.5-r0","apk:isl25":"0.25-r2","apk:jansson":"2.14.1-r0","apk:libatomic":"15.2.0-r2","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.3-r0","apk:libgcc":"15.2.0-r2","apk:libgomp":"15.2.0-r2","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.2-r0","apk:musl":"1.2.5-r21","apk:musl-dev":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:pcre2":"10.47-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","github:greboid/dsp":"v1.2.1","image:base":"34b4850808fb1e6f5ae4308bac6e4df4c155b83b3ddcf1e0fab93fff0265901c","image:golang":"9c4926ef4b05b0e5dfee30a84263ec4644dfaf416bcd59c4f6b1977688416365"}
+# BOM: {"apk:binutils":"2.45.1-r0","apk:brotli-libs":"1.2.0-r0","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:gcc":"15.2.0-r2","apk:git":"2.52.0-r0","apk:gmp":"6.3.0-r4","apk:go":"1.25.5-r0","apk:isl25":"0.25-r2","apk:jansson":"2.14.1-r0","apk:libatomic":"15.2.0-r2","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.3-r0","apk:libgcc":"15.2.0-r2","apk:libgomp":"15.2.0-r2","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.2-r0","apk:musl":"1.2.5-r21","apk:musl-dev":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:pcre2":"10.47-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","github:greboid/dsp":"v1.2.1","image:base":"f51cf2b2d5f5b7673f814fd7e2c4ae0809cd02e4d78ec19bc732028345c366f8","image:golang":"b1fb0e283b0f25e1d9e42f10069f1756c90787825c91da67b21b1def7d440e85"}
 
-FROM reg.g5d.dev/golang@sha256:9c4926ef4b05b0e5dfee30a84263ec4644dfaf416bcd59c4f6b1977688416365 AS build
+FROM reg.g5d.dev/golang@sha256:b1fb0e283b0f25e1d9e42f10069f1756c90787825c91da67b21b1def7d440e85 AS build
 
 RUN apk add --no-cache --virtual .build-go-static-deps \
     binutils=2.45.1-r0 \
     brotli-libs=1.2.0-r0 \
-    c-ares=1.34.5-r0 \
+    c-ares=1.34.6-r0 \
     ca-certificates-bundle=20251003-r0 \
     gcc=15.2.0-r2 \
     git=2.52.0-r0 \
@@ -48,14 +48,14 @@ RUN go run github.com/google/go-licenses@latest save ./cmd --save_path=/notices/
 RUN apk del --no-network .build-go-static-deps
 
 
-FROM reg.g5d.dev/base@sha256:34b4850808fb1e6f5ae4308bac6e4df4c155b83b3ddcf1e0fab93fff0265901c AS rootfs
+FROM reg.g5d.dev/base@sha256:f51cf2b2d5f5b7673f814fd7e2c4ae0809cd02e4d78ec19bc732028345c366f8 AS rootfs
 
 COPY --from=build /main /rootfs/dsp
 
 COPY --from=build /notices /rootfs/notices
 
 
-FROM reg.g5d.dev/base@sha256:34b4850808fb1e6f5ae4308bac6e4df4c155b83b3ddcf1e0fab93fff0265901c
+FROM reg.g5d.dev/base@sha256:f51cf2b2d5f5b7673f814fd7e2c4ae0809cd02e4d78ec19bc732028345c366f8
 
 COPY --from=rootfs /rootfs/ /
 
