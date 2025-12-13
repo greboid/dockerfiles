@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/thelounge/Containerfile.gotpl
-# BOM: {"apk:bash":"5.3.3-r1","apk:brotli-libs":"1.2.0-r0","apk:busybox":"1.37.0-r29","apk:busybox-binsh":"1.37.0-r29","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20251003-r0","apk:gdbm":"1.26-r0","apk:git":"2.52.0-r0","apk:libbz2":"1.0.8-r6","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.3-r0","apk:libffi":"3.5.2-r0","apk:libgcc":"15.2.0-r2","apk:libidn2":"2.3.8-r0","apk:libncursesw":"6.5_p20251123-r0","apk:libpanelw":"6.5_p20251123-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:mpdecimal":"4.0.1-r0","apk:musl":"1.2.5-r21","apk:ncurses-terminfo-base":"6.5_p20251123-r0","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:pcre2":"10.47-r0","apk:python3":"3.12.12-r0","apk:readline":"8.3.1-r0","apk:sqlite-libs":"3.51.1-r0","apk:xz-libs":"5.8.1-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","github:thelounge/thelounge":"v4.4.3","image:base":"34b4850808fb1e6f5ae4308bac6e4df4c155b83b3ddcf1e0fab93fff0265901c","image:node":"00563d6bd4db57393516741c7987fb6aca8d821b70874d22ccfc177b26b5acac"}
+# BOM: {"apk:bash":"5.3.3-r1","apk:brotli-libs":"1.2.0-r0","apk:busybox":"1.37.0-r29","apk:busybox-binsh":"1.37.0-r29","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:gdbm":"1.26-r0","apk:git":"2.52.0-r0","apk:libbz2":"1.0.8-r6","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.3-r0","apk:libffi":"3.5.2-r0","apk:libgcc":"15.2.0-r2","apk:libidn2":"2.3.8-r0","apk:libncursesw":"6.5_p20251123-r0","apk:libpanelw":"6.5_p20251123-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:mpdecimal":"4.0.1-r0","apk:musl":"1.2.5-r21","apk:ncurses-terminfo-base":"6.5_p20251123-r0","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:pcre2":"10.47-r0","apk:python3":"3.12.12-r0","apk:readline":"8.3.1-r0","apk:sqlite-libs":"3.51.1-r0","apk:xz-libs":"5.8.1-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","github:thelounge/thelounge":"v4.4.3","image:base":"f51cf2b2d5f5b7673f814fd7e2c4ae0809cd02e4d78ec19bc732028345c366f8","image:node":"00563d6bd4db57393516741c7987fb6aca8d821b70874d22ccfc177b26b5acac"}
 
 FROM reg.g5d.dev/node@sha256:00563d6bd4db57393516741c7987fb6aca8d821b70874d22ccfc177b26b5acac AS yarnbase
 
@@ -19,7 +19,7 @@ WORKDIR /app
 RUN apk add --no-cache --virtual .build-deps \
   brotli-libs=1.2.0-r0 \
   busybox=1.37.0-r29 \
-  c-ares=1.34.5-r0 \
+  c-ares=1.34.6-r0 \
   ca-certificates-bundle=20251003-r0 \
   gdbm=1.26-r0 \
   git=2.52.0-r0 \
@@ -68,7 +68,7 @@ RUN mkdir -p /home/nonroot; \
 RUN apk del --no-network .create-directories-deps
 
 
-FROM reg.g5d.dev/base@sha256:34b4850808fb1e6f5ae4308bac6e4df4c155b83b3ddcf1e0fab93fff0265901c AS rootfs
+FROM reg.g5d.dev/base@sha256:f51cf2b2d5f5b7673f814fd7e2c4ae0809cd02e4d78ec19bc732028345c366f8 AS rootfs
 
 # Copy thelounge to rootfs
 COPY --from=builder /app/thelounge /rootfs/app/thelounge
