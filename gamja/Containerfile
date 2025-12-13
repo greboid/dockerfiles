@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/gamja/Containerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.2.0-r0","apk:busybox-static":"1.37.0-r29","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20251003-r0","apk:git":"2.52.0-r0","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.3-r0","apk:libgcc":"15.2.0-r2","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:musl":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:pcre2":"10.47-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","image:alpine":"f0e4cd609a803b3f2e9dce4f5b927fa95a7b9ed786bb11392b32e3566e0e6959","image:base":"34b4850808fb1e6f5ae4308bac6e4df4c155b83b3ddcf1e0fab93fff0265901c","image:node":"00563d6bd4db57393516741c7987fb6aca8d821b70874d22ccfc177b26b5acac","image:sws":"7f41de833a3d31f4817b4b2dbe6c6cc25abb8dbb45eb26150949ee245c9555b8"}
+# BOM: {"apk:brotli-libs":"1.2.0-r0","apk:busybox-static":"1.37.0-r29","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:git":"2.52.0-r0","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.3-r0","apk:libgcc":"15.2.0-r2","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:musl":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:pcre2":"10.47-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","image:alpine":"f0e4cd609a803b3f2e9dce4f5b927fa95a7b9ed786bb11392b32e3566e0e6959","image:base":"f51cf2b2d5f5b7673f814fd7e2c4ae0809cd02e4d78ec19bc732028345c366f8","image:node":"00563d6bd4db57393516741c7987fb6aca8d821b70874d22ccfc177b26b5acac","image:sws":"346bca88dd84284b40b9c734d1ef71415adef580807017be3b059bbf102779cf"}
 
 FROM reg.g5d.dev/alpine@sha256:f0e4cd609a803b3f2e9dce4f5b927fa95a7b9ed786bb11392b32e3566e0e6959 AS busybox
 
@@ -17,7 +17,7 @@ WORKDIR /app
 # Clone and build gamja
 RUN apk add --no-cache --virtual .build-deps \
   brotli-libs=1.2.0-r0 \
-  c-ares=1.34.5-r0 \
+  c-ares=1.34.6-r0 \
   ca-certificates-bundle=20251003-r0 \
   git=2.52.0-r0 \
   libcrypto3=3.5.4-r0 \
@@ -44,7 +44,7 @@ RUN apk add --no-cache --virtual .build-deps \
   apk del --no-network .build-deps
 
 
-FROM reg.g5d.dev/base@sha256:34b4850808fb1e6f5ae4308bac6e4df4c155b83b3ddcf1e0fab93fff0265901c AS rootfs
+FROM reg.g5d.dev/base@sha256:f51cf2b2d5f5b7673f814fd7e2c4ae0809cd02e4d78ec19bc732028345c366f8 AS rootfs
 
 # Copy gamja dist to rootfs
 COPY --from=builder --chown=65532:65532 /app/gamja/dist /rootfs/public
@@ -57,7 +57,7 @@ COPY --from=busybox /bin/busybox.static /rootfs/bin/sh
 COPY --chmod=755 gamja /rootfs/usr/local/bin/gamja
 
 
-FROM reg.g5d.dev/sws@sha256:7f41de833a3d31f4817b4b2dbe6c6cc25abb8dbb45eb26150949ee245c9555b8
+FROM reg.g5d.dev/sws@sha256:346bca88dd84284b40b9c734d1ef71415adef580807017be3b059bbf102779cf
 
 # Copy rootfs to root
 COPY --from=rootfs --chown=65532:65532 /rootfs/ /
