@@ -1,9 +1,9 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/rust/Containerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.2.0-r0","apk:busybox":"1.37.0-r29","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20251003-r0","apk:curl":"8.17.0-r1","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libunistring":"1.4.1-r0","apk:musl":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","github:rust-lang/rust":"1.91.1","github:rust-lang/rustup":"1.28.2","image:alpine":"f0e4cd609a803b3f2e9dce4f5b927fa95a7b9ed786bb11392b32e3566e0e6959"}
+# BOM: {"apk:brotli-libs":"1.2.0-r0","apk:busybox":"1.37.0-r29","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:curl":"8.17.0-r1","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libunistring":"1.4.1-r0","apk:musl":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","github:rust-lang/rust":"1.92.0","github:rust-lang/rustup":"1.28.2","image:alpine":"f0e4cd609a803b3f2e9dce4f5b927fa95a7b9ed786bb11392b32e3566e0e6959"}
 
 FROM reg.g5d.dev/alpine@sha256:f0e4cd609a803b3f2e9dce4f5b927fa95a7b9ed786bb11392b32e3566e0e6959 AS build
 
-ARG RUSTTAG="1.91.1"
+ARG RUSTTAG="1.92.0"
 ARG RUSTUPTAG="1.28.2"
 
 ENV CARGO_HOME="/usr/local/cargo"
@@ -15,7 +15,7 @@ ENV RUST_VERSION="${RUSTTAG}"
 RUN apk add --no-cache --virtual .download-verify-extract-deps \
     brotli-libs=1.2.0-r0 \
     busybox=1.37.0-r29 \
-    c-ares=1.34.5-r0 \
+    c-ares=1.34.6-r0 \
     ca-certificates-bundle=20251003-r0 \
     curl=8.17.0-r1 \
     libcrypto3=3.5.4-r0 \
