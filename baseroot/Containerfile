@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/baseroot/Containerfile.gotpl
-# BOM: {"apk:acl-libs":"2.3.2-r1","apk:busybox":"1.37.0-r29","apk:ca-certificates-bundle":"20251003-r0","apk:libxxhash":"0.8.3-r0","apk:lz4-libs":"1.10.0-r0","apk:musl":"1.2.5-r21","apk:popt":"1.19-r4","apk:rsync":"3.4.1-r1","apk:tzdata":"2025c-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","image:alpine":"f0e4cd609a803b3f2e9dce4f5b927fa95a7b9ed786bb11392b32e3566e0e6959"}
+# BOM: {"apk:acl-libs":"2.3.2-r1","apk:busybox":"1.37.0-r30","apk:ca-certificates-bundle":"20251003-r0","apk:libxxhash":"0.8.3-r0","apk:lz4-libs":"1.10.0-r0","apk:musl":"1.2.5-r21","apk:popt":"1.19-r4","apk:rsync":"3.4.1-r1","apk:tzdata":"2025c-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","image:alpine":"94817fe036e2a98186058c6382acc6bfbe05dbfed4fbecfb617ef0a3691d9cee"}
 
-FROM reg.g5d.dev/alpine@sha256:f0e4cd609a803b3f2e9dce4f5b927fa95a7b9ed786bb11392b32e3566e0e6959 AS build
+FROM reg.g5d.dev/alpine@sha256:94817fe036e2a98186058c6382acc6bfbe05dbfed4fbecfb617ef0a3691d9cee AS build
 
 # Install packages
 RUN set -eux; \
@@ -28,7 +28,7 @@ RUN \
 
 # Create mount points and directories
 RUN apk add --no-cache --virtual .create-directories-deps \
-    busybox=1.37.0-r29 \
+    busybox=1.37.0-r30 \
     musl=1.2.5-r21 \
     ;
 
@@ -39,7 +39,7 @@ RUN apk del --no-network .create-directories-deps
 
 # Set up user accounts
 RUN apk add --no-cache --virtual .setup-users-groups-deps \
-    busybox=1.37.0-r29 \
+    busybox=1.37.0-r30 \
     musl=1.2.5-r21 \
     ;
 
