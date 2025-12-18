@@ -39,7 +39,7 @@ RUN git clone --depth=1 --branch v2.3.0 "https://github.com/csmith/centauri" /sr
 WORKDIR /src
 RUN go mod download
 # Build binary
-RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /main ./cmd/centauri
+RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo,lego_httpreq' -ldflags='-s -w -extldflags "-static"' -o /main ./cmd/centauri
 # Generate license notices
 RUN go run github.com/google/go-licenses@latest save ./cmd/centauri --save_path=/notices/main
 RUN apk del --no-network .build-go-static-deps
