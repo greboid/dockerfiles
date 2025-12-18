@@ -3,24 +3,29 @@ FROM {{image "alpine"}} AS build
 # Install packages
 RUN set -eux; \
     apk add --no-cache \
-    {{- range $key, $value := alpine_packages "rsync"}}
-        {{$key}}={{$value}} \
-    {{- end}}
+        acl-libs=2.3.2-r1 \
+        libxxhash=0.8.3-r0 \
+        lz4-libs=1.10.0-r0 \
+        musl=1.2.5-r21 \
+        popt=1.19-r4 \
+        rsync=3.4.1-r1 \
+        zlib=1.3.1-r2 \
+        zstd-libs=1.5.7-r2 \
     ;
 
 # Install packages into rootfs
 RUN \
-{{- range $key, $value := alpine_packages "ca-certificates-bundle" "musl" "tzdata"}}
-    apk add --no-cache {{$key}}={{$value}}; \
-    apk info -qL {{$key}} | rsync -aq --files-from=- / /rootfs/; \
-{{- end}}
-    true
+    apk add --no-cache ca-certificates-bundle=20251003-r0; \
+    apk info -qL ca-certificates-bundle | rsync -aq --files-from=- / /rootfs/; \
+    apk add --no-cache musl=1.2.5-r21; \
+    apk info -qL musl | rsync -aq --files-from=- / /rootfs/; \
+    apk add --no-cache tzdata=2025c-r0; \
+    apk info -qL tzdata | rsync -aq --files-from=- / /rootfs/; \
 
 # Create mount points and directories
 RUN apk add --no-cache --virtual .create-directories-deps \
-    {{- range $key, $value := alpine_packages "busybox"}}
-    {{$key}}={{$value}} \
-    {{- end}}
+    busybox=1.37.0-r30 \
+    musl=1.2.5-r21 \
     ;
 
 # Create directories
@@ -30,9 +35,8 @@ RUN apk del --no-network .create-directories-deps
 
 # Set up user accounts
 RUN apk add --no-cache --virtual .setup-users-groups-deps \
-    {{- range $key, $value := alpine_packages "busybox"}}
-    {{$key}}={{$value}} \
-    {{- end}}
+    busybox=1.37.0-r30 \
+    musl=1.2.5-r21 \
     ;
 
 # Set up users and groups

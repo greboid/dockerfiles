@@ -8,9 +8,22 @@ ENV PATH="$GOPATH/bin:/usr/local/go/bin:$PATH"
 
 # Download and verify Go
 RUN apk add --no-cache --virtual .download-verify-extract-deps \
-    {{- range $key, $value := alpine_packages "busybox" "curl"}}
-    {{$key}}={{$value}} \
-    {{- end}}
+    brotli-libs=1.2.0-r0 \
+    busybox=1.37.0-r30 \
+    c-ares=1.34.6-r0 \
+    ca-certificates-bundle=20251003-r0 \
+    curl=8.17.0-r1 \
+    libcrypto3=3.5.4-r0 \
+    libcurl=8.17.0-r1 \
+    libidn2=2.3.8-r0 \
+    libpsl=0.21.5-r3 \
+    libssl3=3.5.4-r0 \
+    libunistring=1.4.1-r0 \
+    musl=1.2.5-r21 \
+    nghttp2-libs=1.68.0-r0 \
+    nghttp3=1.13.1-r0 \
+    zlib=1.3.1-r2 \
+    zstd-libs=1.5.7-r2 \
     ;
 
 # Download, verify and extract
@@ -21,9 +34,42 @@ RUN apk del --no-network .download-verify-extract-deps
 
 # Bootstrap and install Go
 RUN apk add --no-cache --virtual .build-deps \
-  {{- range $key, $value := alpine_packages "bash" "go" "git"}}
-  {{$key}}={{$value}} \
-  {{- end}}
+  bash=5.3.3-r1 \
+  binutils=2.45.1-r0 \
+  brotli-libs=1.2.0-r0 \
+  busybox=1.37.0-r30 \
+  busybox-binsh=1.37.0-r30 \
+  c-ares=1.34.6-r0 \
+  ca-certificates-bundle=20251003-r0 \
+  gcc=15.2.0-r2 \
+  git=2.52.0-r0 \
+  gmp=6.3.0-r4 \
+  go=1.25.5-r0 \
+  isl25=0.25-r2 \
+  jansson=2.14.1-r0 \
+  libatomic=15.2.0-r2 \
+  libcrypto3=3.5.4-r0 \
+  libcurl=8.17.0-r1 \
+  libexpat=2.7.3-r0 \
+  libgcc=15.2.0-r2 \
+  libgomp=15.2.0-r2 \
+  libidn2=2.3.8-r0 \
+  libncursesw=6.5_p20251123-r0 \
+  libpsl=0.21.5-r3 \
+  libssl3=3.5.4-r0 \
+  libstdc++=15.2.0-r2 \
+  libunistring=1.4.1-r0 \
+  mpc1=1.3.1-r1 \
+  mpfr4=4.2.2-r0 \
+  musl=1.2.5-r21 \
+  musl-dev=1.2.5-r21 \
+  ncurses-terminfo-base=6.5_p20251123-r0 \
+  nghttp2-libs=1.68.0-r0 \
+  nghttp3=1.13.1-r0 \
+  pcre2=10.47-r0 \
+  readline=8.3.1-r0 \
+  zlib=1.3.1-r2 \
+  zstd-libs=1.5.7-r2 \
   ; \
   set -eux; \
   cd /usr/local/go/src; \
@@ -43,9 +89,8 @@ RUN apk add --no-cache --virtual .build-deps \
 
 # Create GOPATH directories
 RUN apk add --no-cache --virtual .create-directories-deps \
-    {{- range $key, $value := alpine_packages "busybox"}}
-    {{$key}}={{$value}} \
-    {{- end}}
+    busybox=1.37.0-r30 \
+    musl=1.2.5-r21 \
     ;
 
 # Create directories
@@ -72,9 +117,35 @@ ENV PATH="$GOPATH/bin:/usr/local/go/bin:$PATH"
 # Install packages
 RUN set -eux; \
     apk add --no-cache \
-    {{- range $key, $value := alpine_packages "gcc" "musl-dev" "git"}}
-        {{$key}}={{$value}} \
-    {{- end}}
+        binutils=2.45.1-r0 \
+        brotli-libs=1.2.0-r0 \
+        c-ares=1.34.6-r0 \
+        ca-certificates-bundle=20251003-r0 \
+        gcc=15.2.0-r2 \
+        git=2.52.0-r0 \
+        gmp=6.3.0-r4 \
+        isl25=0.25-r2 \
+        jansson=2.14.1-r0 \
+        libatomic=15.2.0-r2 \
+        libcrypto3=3.5.4-r0 \
+        libcurl=8.17.0-r1 \
+        libexpat=2.7.3-r0 \
+        libgcc=15.2.0-r2 \
+        libgomp=15.2.0-r2 \
+        libidn2=2.3.8-r0 \
+        libpsl=0.21.5-r3 \
+        libssl3=3.5.4-r0 \
+        libstdc++=15.2.0-r2 \
+        libunistring=1.4.1-r0 \
+        mpc1=1.3.1-r1 \
+        mpfr4=4.2.2-r0 \
+        musl=1.2.5-r21 \
+        musl-dev=1.2.5-r21 \
+        nghttp2-libs=1.68.0-r0 \
+        nghttp3=1.13.1-r0 \
+        pcre2=10.47-r0 \
+        zlib=1.3.1-r2 \
+        zstd-libs=1.5.7-r2 \
     ;
 
 # Copy rootfs to root

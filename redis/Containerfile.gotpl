@@ -5,9 +5,58 @@ ENV LDFLAGS="-static"
 # Install packages
 RUN set -eux; \
     apk add --no-cache \
-    {{- range $key, $value := alpine_packages "git" "build-base" "tzdata" "ca-certificates" "linux-headers" "pcre-dev" "musl-dev" "openssl-dev" "openssl-libs-static" "zlib-dev" "zlib-static"}}
-        {{$key}}={{$value}} \
-    {{- end}}
+        binutils=2.45.1-r0 \
+        brotli-libs=1.2.0-r0 \
+        build-base=0.5-r3 \
+        busybox=1.37.0-r30 \
+        busybox-binsh=1.37.0-r30 \
+        c-ares=1.34.6-r0 \
+        ca-certificates=20251003-r0 \
+        ca-certificates-bundle=20251003-r0 \
+        file=5.46-r2 \
+        fortify-headers=1.1-r5 \
+        g++=15.2.0-r2 \
+        gcc=15.2.0-r2 \
+        git=2.52.0-r0 \
+        gmp=6.3.0-r4 \
+        isl25=0.25-r2 \
+        jansson=2.14.1-r0 \
+        libatomic=15.2.0-r2 \
+        libcrypto3=3.5.4-r0 \
+        libcurl=8.17.0-r1 \
+        libexpat=2.7.3-r0 \
+        libgcc=15.2.0-r2 \
+        libgomp=15.2.0-r2 \
+        libidn2=2.3.8-r0 \
+        libmagic=5.46-r2 \
+        libpcre16=8.45-r4 \
+        libpcre32=8.45-r4 \
+        libpcrecpp=8.45-r4 \
+        libpsl=0.21.5-r3 \
+        libssl3=3.5.4-r0 \
+        libstdc++=15.2.0-r2 \
+        libstdc++-dev=15.2.0-r2 \
+        libunistring=1.4.1-r0 \
+        linux-headers=6.16.12-r0 \
+        make=4.4.1-r3 \
+        mpc1=1.3.1-r1 \
+        mpfr4=4.2.2-r0 \
+        musl=1.2.5-r21 \
+        musl-dev=1.2.5-r21 \
+        nghttp2-libs=1.68.0-r0 \
+        nghttp3=1.13.1-r0 \
+        openssl-dev=3.5.4-r0 \
+        openssl-libs-static=3.5.4-r0 \
+        patch=2.8-r0 \
+        pcre=8.45-r4 \
+        pcre-dev=8.45-r4 \
+        pcre2=10.47-r0 \
+        pkgconf=2.5.1-r0 \
+        tzdata=2025c-r0 \
+        zlib=1.3.1-r2 \
+        zlib-dev=1.3.1-r2 \
+        zlib-static=1.3.1-r2 \
+        zstd-libs=1.5.7-r2 \
     ;
 
 # Copy redis config
@@ -15,13 +64,33 @@ COPY redis.conf /redis.conf
 
 # Build Redis
 RUN apk add --no-cache --virtual .clone-and-build-make-deps \
-    {{- range $key, $value := alpine_packages "busybox" "git" "make" "binutils"}}
-    {{$key}}={{$value}} \
-    {{- end}}
+    binutils=2.45.1-r0 \
+    brotli-libs=1.2.0-r0 \
+    busybox=1.37.0-r30 \
+    c-ares=1.34.6-r0 \
+    ca-certificates-bundle=20251003-r0 \
+    git=2.52.0-r0 \
+    jansson=2.14.1-r0 \
+    libcrypto3=3.5.4-r0 \
+    libcurl=8.17.0-r1 \
+    libexpat=2.7.3-r0 \
+    libgcc=15.2.0-r2 \
+    libidn2=2.3.8-r0 \
+    libpsl=0.21.5-r3 \
+    libssl3=3.5.4-r0 \
+    libstdc++=15.2.0-r2 \
+    libunistring=1.4.1-r0 \
+    make=4.4.1-r3 \
+    musl=1.2.5-r21 \
+    nghttp2-libs=1.68.0-r0 \
+    nghttp3=1.13.1-r0 \
+    pcre2=10.47-r0 \
+    zlib=1.3.1-r2 \
+    zstd-libs=1.5.7-r2 \
     ;
 
 # Clone repository
-RUN git clone --depth=1 --branch {{github_tag "redis/redis"}} "https://github.com/redis/redis" /src/redis
+RUN git clone --depth=1 --branch 8.4.0 "https://github.com/redis/redis" /src/redis
 # Build with make
 WORKDIR /src/redis
 RUN make distclean; \
@@ -32,9 +101,8 @@ RUN apk del --no-network .clone-and-build-make-deps
 
 # Create data directory
 RUN apk add --no-cache --virtual .create-directories-deps \
-    {{- range $key, $value := alpine_packages "busybox"}}
-    {{$key}}={{$value}} \
-    {{- end}}
+    busybox=1.37.0-r30 \
+    musl=1.2.5-r21 \
     ;
 
 # Create directories
