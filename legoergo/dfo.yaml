@@ -2,13 +2,19 @@ package:
   name: legoergo
   description: legoergo service
 
+versions:
+  "https://github.com/ergochat/ergo": latest
+  "https://github.com/csmith/certwrapper": latest
+
 stages:
   - template: multi-go-app
     with:
       binaries:
         - repo: https://github.com/ergochat/ergo
+          tag: "%{versions.https://github.com/ergochat/ergo}"
           binary: ergo
         - repo: https://github.com/csmith/certwrapper
+          tag: "%{versions.https://github.com/csmith/certwrapper}"
           binary: certwrapper
       extra-copies:
         - from: /src/ergochat/ergo/languages/

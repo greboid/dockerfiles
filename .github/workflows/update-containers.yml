@@ -22,6 +22,10 @@ jobs:
           uses: mattdowdell/go-installer@v0.3.0
           with:
               package: github.com/csmith/contempt/cmd/contempt
+        - name: Install latest dfo
+          uses: mattdowdell/go-installer@v0.3.0
+          with:
+            package: github.com/greboid/dfo
   
   alpine:
     name: Build alpine
@@ -403,4 +407,3 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: gamja
-

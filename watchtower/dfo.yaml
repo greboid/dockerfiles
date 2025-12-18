@@ -2,10 +2,14 @@ package:
   name: watchtower
   description: Automatically update running Docker containers
 
+versions:
+  "https://github.com/containrrr/watchtower": latest
+
 stages:
   - template: go-app
     with:
       repo: https://github.com/containrrr/watchtower
+      tag: "%{versions.https://github.com/containrrr/watchtower}"
       binary: watchtower
       patches:
         - disable-slack.patch

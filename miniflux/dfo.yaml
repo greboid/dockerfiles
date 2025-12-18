@@ -2,8 +2,12 @@ package:
   name: miniflux
   description: Minimalist and opinionated feed reader
 
+versions:
+  "https://github.com/miniflux/v2": latest
+
 stages:
   - template: go-app
     with:
       repo: https://github.com/miniflux/v2
+      tag: "%{versions.https://github.com/miniflux/v2}"
       binary: miniflux

@@ -2,10 +2,14 @@ package:
   name: vaultwarden
   description: Unofficial Bitwarden server implementation
 
+versions:
+  "https://github.com/dani-garcia/vaultwarden": latest
+
 stages:
   - template: rust-app
     with:
       repo: "https://github.com/dani-garcia/vaultwarden"
+      tag: "%{versions.https://github.com/dani-garcia/vaultwarden}"
       binary: vaultwarden
       features: "sqlite,enable_mimalloc"
       packages:

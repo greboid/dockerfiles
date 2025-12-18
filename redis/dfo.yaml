@@ -2,6 +2,9 @@ package:
   name: redis
   description: Redis server
 
+versions:
+  "https://github.com/redis/redis": latest
+
 stages:
   - name: build
     environment:
@@ -30,6 +33,7 @@ stages:
         uses: clone-and-build-make
         with:
           repo: https://github.com/redis/redis
+          tag: "%{versions.https://github.com/redis/redis}"
           workdir: /src/redis
           make-steps:
             - make distclean

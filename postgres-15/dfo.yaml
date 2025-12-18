@@ -2,6 +2,9 @@ package:
   name: postgres-15
   description: PostgreSQL 15 database server
 
+versions:
+  postgres: latest:15
+
 stages:
   - name: build
     environment:
@@ -37,7 +40,7 @@ stages:
         with:
           repo: https://github.com/postgres/postgres
           workdir: /src/postgres
-          tag: REL_15_STABLE
+          tag: "%{versions.postgres}"
           configure-options:
             - --with-system-tzdata=/usr/share/zoneinfo
             - --with-includes=/usr/local/include

@@ -2,10 +2,14 @@ package:
   name: httpredirect
   description: httpredirect service
 
+versions:
+  "https://github.com/greboid/httpredirect": latest
+
 stages:
   - template: go-app
     with:
       repo: https://github.com/greboid/httpredirect
+      tag: "%{versions.https://github.com/greboid/httpredirect}"
       binary: httpredirect
       expose:
         - "8080"

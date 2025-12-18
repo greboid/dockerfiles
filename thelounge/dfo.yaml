@@ -2,6 +2,9 @@ package:
   name: thelounge
   description: Modern, responsive, and self-hosted web IRC client
 
+versions:
+  "https://github.com/thelounge/thelounge.git": latest
+
 stages:
   - name: yarnbase
     environment:
@@ -13,8 +16,6 @@ stages:
   - name: builder
     environment:
       base-image: node
-      args:
-        TAG: "{{github_tag \"thelounge/thelounge\"}}"
       environment:
         THELOUNGE_HOME: /var/opt/thelounge
       workdir: /app
@@ -26,7 +27,7 @@ stages:
           - busybox
         run: |
           set -eux;
-          git clone --branch v4.4.3 --single-branch https://github.com/thelounge/thelounge.git
+          git clone --branch %{versions.https://github.com/thelounge/thelounge.git} --single-branch https://github.com/thelounge/thelounge.git
           cd thelounge
           yarn install
           NODE_ENV=production yarn build
