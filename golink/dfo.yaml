@@ -12,7 +12,8 @@ stages:
       tag: "%{versions.https://github.com/tailscale/golink}"
       binary: golink
       package: ./cmd/golink
-      ignore: modernc.org/mathutil
+      ignore:
+        - modernc.org/mathutil
       expose:
         - "8080"
       cmd:
