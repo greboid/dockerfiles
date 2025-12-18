@@ -10,6 +10,7 @@ stages:
     with:
       repo: https://github.com/csmith/centauri
       tag: "%{versions.https://github.com/csmith/centauri.git}"
+      go-tags: lego_httpreq
       binary: centauri
       package: ./cmd/centauri
       expose:
