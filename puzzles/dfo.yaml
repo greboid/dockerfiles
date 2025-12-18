@@ -12,7 +12,7 @@ stages:
       tag: "%{versions.https://github.com/greboid/puzzles}"
       binary: puzzles
       extra-copies:
-        - from: /src/greboid/puzzles/wordlists/.
+        - from: /src/greboid/puzzles/wordlists
           to: /app/wordlists
       expose:
         - "8080"
