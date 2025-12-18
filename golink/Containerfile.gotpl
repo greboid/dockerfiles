@@ -41,7 +41,7 @@ RUN go mod download
 # Build binary
 RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /main ./cmd/golink
 # Generate license notices
-RUN go run github.com/google/go-licenses@latest save ./cmd/golink --save_path=/notices/main --ignore modernc.org/mathutil
+RUN go run github.com/google/go-licenses@latest save ./cmd/golink --save_path=/notices/main
 RUN apk del --no-network .build-go-static-deps
 
 
