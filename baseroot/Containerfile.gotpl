@@ -20,7 +20,7 @@ RUN \
     apk add --no-cache musl=1.2.5-r21; \
     apk info -qL musl | rsync -aq --files-from=- / /rootfs/; \
     apk add --no-cache tzdata=2025c-r0; \
-    apk info -qL tzdata | rsync -aq --files-from=- / /rootfs/; \
+    apk info -qL tzdata | rsync -aq --files-from=- / /rootfs/;
 
 # Create mount points and directories
 RUN apk add --no-cache --virtual .create-directories-deps \
