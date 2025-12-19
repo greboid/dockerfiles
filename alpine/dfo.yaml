@@ -2,20 +2,21 @@ package:
   name: alpine
   description: Alpine Linux base image from minirootfs
 
+versions:
+  alpine: latest
+
+
 stages:
   - name: verify
     environment:
       external-image: alpine
-      args:
-        ARCHIVE_URL: "{{alpine_url}}"
-        ARCHIVE_SUM: "{{alpine_checksum}}"
     pipeline:
       - name: Download and verify Alpine minirootfs
         uses: download-verify-extract
         with:
-          url: ${ARCHIVE_URL}
+          url: "%{versions.alpine.url}"
           destination: fs.tar.gz
-          checksum: ${ARCHIVE_SUM}
+          checksum: "%{versions.alpine.checksum}"
           extract-dir: /rootfs
       - name: Add git config
         uses: copy-files

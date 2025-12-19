@@ -2,13 +2,14 @@ package:
   name: rust
   description: Rust build environment on Alpine
 
+versions:
+  "https://github.com/rust-lang/rust": latest
+  "https://github.com/rust-lang/rustup": latest
+
 stages:
   - name: build
     environment:
       base-image: alpine
-      args:
-        RUSTTAG: "{{github_tag \"rust-lang/rust\"}}"
-        RUSTUPTAG: "{{github_tag \"rust-lang/rustup\"}}"
       environment:
         RUSTUP_HOME: "/usr/local/rustup"
         CARGO_HOME: "/usr/local/cargo"
@@ -19,9 +20,9 @@ stages:
       - name: Download and verify rustup
         uses: download-verify-extract
         with:
-          url: https://static.rust-lang.org/rustup/archive/${RUSTUPTAG}/x86_64-unknown-linux-musl/rustup-init
+          url: https://static.rust-lang.org/rustup/archive/%{versions.https://github.com/rust-lang/rustup}/x86_64-unknown-linux-musl/rustup-init
           destination: rustup-init
-          checksum-url: https://static.rust-lang.org/rustup/archive/${RUSTUPTAG}/x86_64-unknown-linux-musl/rustup-init.sha256
+          checksum-url: https://static.rust-lang.org/rustup/archive/%{versions.https://github.com/rust-lang/rustup}/x86_64-unknown-linux-musl/rustup-init.sha256
 
       - name: Install Rust
         build-deps:
@@ -29,7 +30,7 @@ stages:
         run: |
           set -eux;
           chmod +x rustup-init;
-          ./rustup-init -y --no-modify-path --profile minimal --default-toolchain ${RUSTTAG} --default-host x86_64-unknown-linux-musl;
+          ./rustup-init -y --no-modify-path --profile minimal --default-toolchain %{versions.https://github.com/rust-lang/rust} --default-host x86_64-unknown-linux-musl;
           rm rustup-init*;
           chmod -R a+w $RUSTUP_HOME $CARGO_HOME;
           ln -s $CARGO_HOME/bin/cargo /usr/local/bin/cargo

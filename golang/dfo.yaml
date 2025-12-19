@@ -2,13 +2,13 @@ package:
   name: golang
   description: Go build environment on Alpine
 
+versions:
+  go: latest
+
 stages:
   - name: build
     environment:
       base-image: alpine
-      args:
-        ARCHIVE_URL: "{{golang_url}}"
-        ARCHIVE_SUM: "{{golang_checksum}}"
       environment:
         GOPATH: "/go"
         PATH: "$GOPATH/bin:/usr/local/go/bin:$PATH"
@@ -16,9 +16,9 @@ stages:
       - name: Download and verify Go
         uses: download-verify-extract
         with:
-          url: ${ARCHIVE_URL}
+          url: "%{versions.go.url}"
           destination: go.tar.gz
-          checksum: ${ARCHIVE_SUM}
+          checksum: "%{versions.go.checksum}"
           extract-dir: /usr/local
 
       - name: Bootstrap and install Go
