@@ -49,7 +49,7 @@ RUN go mod download
 # Build binary
 RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo,moderncsqlite' -ldflags='-s -w -extldflags "-static"' -o /soju ./cmd/soju
 # Generate license notices
-RUN go run github.com/google/go-licenses@latest save ./cmd/soju --save_path=/notices/soju
+RUN go run github.com/google/go-licenses@latest save ./cmd/soju --save_path=/notices/soju --ignore codeberg.org/emersion/soju
 RUN apk del --no-network .build-go-only-deps
 
 RUN apk add --no-cache --virtual .build-go-only-deps \
@@ -77,7 +77,7 @@ RUN go mod download
 # Build binary
 RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo' -ldflags='-s -w -extldflags "-static"' -o /sojuctl ./cmd/sojuctl
 # Generate license notices
-RUN go run github.com/google/go-licenses@latest save ./cmd/sojuctl --save_path=/notices/sojuctl
+RUN go run github.com/google/go-licenses@latest save ./cmd/sojuctl --save_path=/notices/sojuctl --ignore codeberg.org/emersion/soju
 RUN apk del --no-network .build-go-only-deps
 
 RUN apk add --no-cache --virtual .build-go-only-deps \
@@ -105,7 +105,7 @@ RUN go mod download
 # Build binary
 RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo,moderncsqlite' -ldflags='-s -w -extldflags "-static"' -o /sojudb ./cmd/sojudb
 # Generate license notices
-RUN go run github.com/google/go-licenses@latest save ./cmd/sojudb --save_path=/notices/sojudb
+RUN go run github.com/google/go-licenses@latest save ./cmd/sojudb --save_path=/notices/sojudb --ignore codeberg.org/emersion/soju
 RUN apk del --no-network .build-go-only-deps
 
 RUN apk add --no-cache --virtual .create-directories-deps \
