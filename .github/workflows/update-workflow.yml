@@ -3,6 +3,9 @@ on:
   push:
     paths-ignore:
       - '.github/workflows/update-containers.yml'
+      - '**/Containerfile.gotpl'
+      - '**/Containerfile'
+      - '**/Dockerfile'
       - 'README.md'
 name: Update Workflow
 jobs:
