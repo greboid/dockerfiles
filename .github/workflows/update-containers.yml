@@ -1,14 +1,12 @@
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Update Workflow"]
+    types:
+      - completed
   schedule:
     - cron: '42 12 * * *'
-  push:
-    paths-ignore:
-      - '**/Containerfile'
-      - '**/Dockerfile'
-      - '.github/**'
-      - 'README.md'
 name: Update Containers
 concurrency: dockerfiles
 permissions:
