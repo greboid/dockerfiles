@@ -41,7 +41,7 @@ RUN go mod download
 # Build binary
 RUN CGO_ENABLED=0 go build -trimpath -tags 'netgo,osusergo,lego_httpreq' -ldflags='-s -w -extldflags "-static"' -o /main ./cmd/centauri
 # Generate license notices
-RUN go run github.com/google/go-licenses@latest save ./cmd/centauri --save_path=/notices/main
+RUN go run github.com/google/go-licenses@latest save ./cmd/centauri --save_path=/notices/main --ignore github.com/go-acme/tencentclouddnspod/v20210323 --ignore github.com/go-acme/tencentedgdeone/v20220901 --ignore github.com/nrdcg/oci-go-sdk/common/v1065 --ignore github.com/nrdcg/oci-go-sdk/common/v1065/auth --ignore github.com/nrdcg/oci-go-sdk/common/v1065/utils --ignore github.com/nrdcg/oci-go-sdk/dns/v1065
 RUN apk del --no-network .build-go-static-deps
 
 
