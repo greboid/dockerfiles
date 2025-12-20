@@ -1,5 +1,0 @@
-FROM {{image "baseroot"}}
-
-USER nonroot
-
-
