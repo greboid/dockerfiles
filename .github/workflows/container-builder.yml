@@ -12,32 +12,22 @@
       steps:
         - name: Checkout source
           uses: actions/checkout@master
-        - name: Setup Go
-          uses: actions/setup-go@v6
-          with:
-            go-version: 'stable'
-            cache: false
-        - name: Install latest contempt
-          uses: mattdowdell/go-installer@v0.3.0
-          with:
-            package: github.com/csmith/contempt/cmd/contempt
         - name: Login to private registry
           uses: redhat-actions/podman-login@v1
           with:
             username: ${{ secrets.REGISTRY_USER }}
             password: ${{ secrets.REGISTRY_PASS }}
             registry: ${{ secrets.REGISTRY }}
-        - name: Configure Git
-          uses: snow-actions/git-config-user@v1.0.0
-          with:
-            name: ${{ secrets.GIT_USERNAME }}
-            email: ${{ secrets.GIT_EMAIL }}
-        - name: Update
+        - name: Build and push container
           env:
             BUILDAH_ISOLATION: chroot
             REGISTRY: ${{ secrets.REGISTRY }}
-            SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
-          run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project ${{ inputs.PROJECT_NAME }} . .
+          run: |
+            cd ${{ inputs.PROJECT_NAME }}
+            if [ -f Containerfile ]; then
+              buildah build -t "$REGISTRY/${{ inputs.PROJECT_NAME }}" .
+              buildah push "$REGISTRY/${{ inputs.PROJECT_NAME }}"
+            fi
         - name: Check mirror
           uses: andstor/file-existence-action@v3
           id: check_mirror
@@ -57,7 +47,3 @@
         - name: Mirror the image
           if: steps.check_mirror_exists.outputs.status == 'success'
           run: buildah push ghcr.io/${{ github.repository }}/${{ inputs.PROJECT_NAME }}
-        - name: Push changes
-          uses: cutlerydrawer/action-git-try-push@v2
-          with:
-            tries: 5
