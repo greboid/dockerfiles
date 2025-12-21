@@ -6,7 +6,7 @@ on:
     paths:
       - '**/dfo.yaml'
       - '.github/workflows/*.yml'
-name: Orchestrate
+name: Update Workflow
 jobs:
   update-workflow:
     runs-on: ubuntu-latest
