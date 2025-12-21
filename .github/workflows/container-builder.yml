@@ -12,13 +12,20 @@
       steps:
         - name: Checkout source
           uses: actions/checkout@master
+        - name: Check for IGNORE file
+          uses: andstor/file-existence-action@v3
+          id: check_ignore
+          with:
+            files: "${{ inputs.PROJECT_NAME }}/IGNORE"
         - name: Login to private registry
+          if: steps.check_ignore.outputs.files_exists == 'false'
           uses: redhat-actions/podman-login@v1
           with:
             username: ${{ secrets.REGISTRY_USER }}
             password: ${{ secrets.REGISTRY_PASS }}
             registry: ${{ secrets.REGISTRY }}
         - name: Build and push container
+          if: steps.check_ignore.outputs.files_exists == 'false'
           env:
             BUILDAH_ISOLATION: chroot
             REGISTRY: ${{ secrets.REGISTRY }}
@@ -29,21 +36,22 @@
               buildah push "$REGISTRY/${{ inputs.PROJECT_NAME }}"
             fi
         - name: Check mirror
+          if: steps.check_ignore.outputs.files_exists == 'false'
           uses: andstor/file-existence-action@v3
           id: check_mirror
           with:
             files: "${{ inputs.PROJECT_NAME }}/MIRROR"
         - name: Check if image was built
-          if: steps.check_mirror.outputs.files_exists == 'true'
+          if: steps.check_ignore.outputs.files_exists == 'false' && steps.check_mirror.outputs.files_exists == 'true'
           continue-on-error: true
           id: check_mirror_exists
           run: buildah images ${{ secrets.REGISTRY }}/${{ inputs.PROJECT_NAME }} > /dev/null 2>&1 && echo "status=success" >> "$GITHUB_OUTPUT"; true
         - name: Login to mirror target registry
-          if: steps.check_mirror_exists.outputs.status == 'success'
+          if: steps.check_ignore.outputs.files_exists == 'false' && steps.check_mirror_exists.outputs.status == 'success'
           run: /usr/bin/podman login -u "${{ github.repository_owner }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io --verbose
         - name: Retag image to mirror
-          if: steps.check_mirror_exists.outputs.status == 'success'
+          if: steps.check_ignore.outputs.files_exists == 'false' && steps.check_mirror_exists.outputs.status == 'success'
           run: buildah tag ${{ secrets.REGISTRY }}/${{ inputs.PROJECT_NAME }} ghcr.io/${{ github.repository }}/${{ inputs.PROJECT_NAME }}
         - name: Mirror the image
-          if: steps.check_mirror_exists.outputs.status == 'success'
+          if: steps.check_ignore.outputs.files_exists == 'false' && steps.check_mirror_exists.outputs.status == 'success'
           run: buildah push ghcr.io/${{ github.repository }}/${{ inputs.PROJECT_NAME }}
