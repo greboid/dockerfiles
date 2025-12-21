@@ -3,7 +3,7 @@ name: Update Containers
     workflow_dispatch: {}
     workflow_run:
         workflows:
-            - Update Workflow
+            - Orchestrate
         types:
             - completed
 concurrency: dockerfiles
