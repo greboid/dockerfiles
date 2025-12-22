@@ -1,6 +1,6 @@
-# BOM: {"apk:brotli-libs":"1.2.0-r0","apk:busybox":"1.37.0-r30","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:curl":"8.17.0-r1","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libunistring":"1.4.1-r0","apk:musl":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","https://github.com/rust-lang/rust":"1.92.0","https://github.com/rust-lang/rustup":"1.28.2","image:alpine":"f1a54e13862fadb820283522484f2d1e8305212670e7ed63d1363462b3fa604e"}
+# BOM: {"apk:brotli-libs":"1.2.0-r0","apk:busybox":"1.37.0-r30","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:curl":"8.17.0-r1","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libunistring":"1.4.1-r0","apk:musl":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","https://github.com/rust-lang/rust":"1.92.0","https://github.com/rust-lang/rustup":"1.28.2","image:alpine":"fee62ed7f1bc6bb4ee7d2dc7b3fb3d319a1e5ac2a93e2893e873fb78435d8a32"}
 
-FROM reg.g5d.dev/alpine@sha256:f1a54e13862fadb820283522484f2d1e8305212670e7ed63d1363462b3fa604e AS build
+FROM reg.g5d.dev/alpine@sha256:fee62ed7f1bc6bb4ee7d2dc7b3fb3d319a1e5ac2a93e2893e873fb78435d8a32 AS build
 
 ENV CARGO_HOME="/usr/local/cargo"
 ENV PATH="/usr/local/cargo/bin:$PATH"
@@ -47,7 +47,7 @@ RUN apk add --no-cache --virtual .build-deps \
   apk del --no-network .build-deps
 
 
-FROM reg.g5d.dev/alpine@sha256:f1a54e13862fadb820283522484f2d1e8305212670e7ed63d1363462b3fa604e AS rootfs
+FROM reg.g5d.dev/alpine@sha256:fee62ed7f1bc6bb4ee7d2dc7b3fb3d319a1e5ac2a93e2893e873fb78435d8a32 AS rootfs
 
 # Copy Rust to rootfs
 COPY --from=build /usr/local/rustup /rootfs/usr/local/rustup
@@ -59,7 +59,7 @@ COPY --from=build /usr/local/cargo /rootfs/usr/local/cargo
 COPY --from=build /usr/local/bin/cargo /rootfs/usr/local/bin/cargo
 
 
-FROM reg.g5d.dev/alpine@sha256:f1a54e13862fadb820283522484f2d1e8305212670e7ed63d1363462b3fa604e
+FROM reg.g5d.dev/alpine@sha256:fee62ed7f1bc6bb4ee7d2dc7b3fb3d319a1e5ac2a93e2893e873fb78435d8a32
 
 ENV CARGO_HOME="/usr/local/cargo"
 ENV PATH="/usr/local/cargo/bin:$PATH"
