@@ -1,6 +1,6 @@
-# BOM: {"image:baseroot":"658019b766b06aa629fa000d63aea405c410b91b6bd6ebc03c0b88192324b886"}
+# BOM: {"image:baseroot":"78fad50cbb0f9ad3caad934f86a4c68223740343a9762b0c06e7c0905496d352"}
 
-FROM reg.g5d.dev/baseroot@sha256:658019b766b06aa629fa000d63aea405c410b91b6bd6ebc03c0b88192324b886
+FROM reg.g5d.dev/baseroot@sha256:78fad50cbb0f9ad3caad934f86a4c68223740343a9762b0c06e7c0905496d352
 
 USER nonroot
 
