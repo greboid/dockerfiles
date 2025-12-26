@@ -1,6 +1,6 @@
-# BOM: {"apk:binutils":"2.45.1-r0","apk:brotli-libs":"1.2.0-r0","apk:busybox":"1.37.0-r30","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:cargo":"1.91.1-r0","apk:gcc":"15.2.0-r2","apk:git":"2.52.0-r0","apk:gmp":"6.3.0-r4","apk:isl25":"0.25-r2","apk:jansson":"2.14.1-r0","apk:libatomic":"15.2.0-r2","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.3-r0","apk:libffi":"3.5.2-r0","apk:libgcc":"15.2.0-r2","apk:libgomp":"15.2.0-r2","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:libxml2":"2.13.9-r0","apk:llvm21-libs":"21.1.2-r1","apk:make":"4.4.1-r3","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.2-r0","apk:musl":"1.2.5-r21","apk:musl-dev":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:patch":"2.8-r0","apk:pcre2":"10.47-r0","apk:rust":"1.91.1-r0","apk:scudo-malloc":"21.1.2-r0","apk:sqlite-libs":"3.51.1-r0","apk:xz-libs":"5.8.1-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","https://github.com/static-web-server/static-web-server":"v2.40.1","image:base":"d94d2ca2509024756458b825a8e1327657b22184df22e90e772c19c3f972337a","image:rust":"fc6baf1bab1c1ef3873e65c5a59ec8d6fb6b98eb59b1909f7a9db7860ea77fd6"}
+# BOM: {"apk:binutils":"2.45.1-r0","apk:brotli-libs":"1.2.0-r0","apk:busybox":"1.37.0-r30","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:cargo":"1.91.1-r0","apk:gcc":"15.2.0-r2","apk:git":"2.52.0-r0","apk:gmp":"6.3.0-r4","apk:isl25":"0.25-r2","apk:jansson":"2.14.1-r0","apk:libatomic":"15.2.0-r2","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.3-r0","apk:libffi":"3.5.2-r0","apk:libgcc":"15.2.0-r2","apk:libgomp":"15.2.0-r2","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:libxml2":"2.13.9-r0","apk:llvm21-libs":"21.1.2-r1","apk:make":"4.4.1-r3","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.2-r0","apk:musl":"1.2.5-r21","apk:musl-dev":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:patch":"2.8-r0","apk:pcre2":"10.47-r0","apk:rust":"1.91.1-r0","apk:scudo-malloc":"21.1.2-r0","apk:sqlite-libs":"3.51.1-r0","apk:xz-libs":"5.8.1-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","https://github.com/static-web-server/static-web-server":"v2.40.1","image:base":"0da3584c72f2c9c8ef920745d5f1828b105e72626d8a2ebe43e8d1eba29dc713","image:rust":"c3dab5e874b6dc424632b32901f7b6c0ac1a5acdd62dc271285074d8bfc9a37f"}
 
-FROM reg.g5d.dev/rust@sha256:fc6baf1bab1c1ef3873e65c5a59ec8d6fb6b98eb59b1909f7a9db7860ea77fd6 AS build
+FROM reg.g5d.dev/rust@sha256:c3dab5e874b6dc424632b32901f7b6c0ac1a5acdd62dc271285074d8bfc9a37f AS build
 
 # Install packages
 RUN set -eux; \
@@ -79,12 +79,12 @@ RUN find /src/target/x86_64-unknown-linux-musl/release -maxdepth 1 -type f -exec
 RUN apk del --no-network .clone-and-build-rust-deps
 
 
-FROM reg.g5d.dev/base@sha256:d94d2ca2509024756458b825a8e1327657b22184df22e90e772c19c3f972337a AS rootfs
+FROM reg.g5d.dev/base@sha256:0da3584c72f2c9c8ef920745d5f1828b105e72626d8a2ebe43e8d1eba29dc713 AS rootfs
 
 COPY --from=build /main /rootfs/sws
 
 
-FROM reg.g5d.dev/base@sha256:d94d2ca2509024756458b825a8e1327657b22184df22e90e772c19c3f972337a
+FROM reg.g5d.dev/base@sha256:0da3584c72f2c9c8ef920745d5f1828b105e72626d8a2ebe43e8d1eba29dc713
 
 COPY --from=rootfs /rootfs/ /
 
