@@ -24,6 +24,10 @@ jobs:
         uses: mattdowdell/go-installer@v0.3.0
         with:
           package: github.com/greboid/dfo
+      - name: Do stuff
+        run: |
+          git clone https://github.com/greboid/dfo.git
+          go install -C ./dfo .
       - name: Generate Containerfiles and update workflow
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
