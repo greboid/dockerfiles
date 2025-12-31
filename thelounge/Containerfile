@@ -1,12 +1,12 @@
-# BOM: {"apk:bash":"5.3.3-r1","apk:brotli-libs":"1.2.0-r0","apk:busybox":"1.37.0-r30","apk:busybox-binsh":"1.37.0-r30","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:gdbm":"1.26-r0","apk:git":"2.52.0-r0","apk:libbz2":"1.0.8-r6","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.3-r0","apk:libffi":"3.5.2-r0","apk:libgcc":"15.2.0-r2","apk:libidn2":"2.3.8-r0","apk:libncursesw":"6.5_p20251123-r0","apk:libpanelw":"6.5_p20251123-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:mpdecimal":"4.0.1-r0","apk:musl":"1.2.5-r21","apk:ncurses-terminfo-base":"6.5_p20251123-r0","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:pcre2":"10.47-r0","apk:python3":"3.12.12-r0","apk:readline":"8.3.1-r0","apk:sqlite-libs":"3.51.1-r0","apk:xz-libs":"5.8.1-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","https://github.com/thelounge/thelounge.git":"v4.4.3","image:base":"fbbf5dfe5df9bb6ebbc49d338e1bf30599e436cb2a75b768ebc539beb5b3ba51","image:node":"58fb2db621de3fea7e9b5e2c19ed5573608e92b4022f60b5d449320423a6aafe"}
+# BOM: {"apk:bash":"5.3.3-r1","apk:brotli-libs":"1.2.0-r0","apk:busybox":"1.37.0-r30","apk:busybox-binsh":"1.37.0-r30","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:gdbm":"1.26-r0","apk:git":"2.52.0-r0","apk:libbz2":"1.0.8-r6","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.3-r0","apk:libffi":"3.5.2-r0","apk:libgcc":"15.2.0-r2","apk:libidn2":"2.3.8-r0","apk:libncursesw":"6.5_p20251123-r0","apk:libpanelw":"6.5_p20251123-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:mpdecimal":"4.0.1-r0","apk:musl":"1.2.5-r21","apk:ncurses-terminfo-base":"6.5_p20251123-r0","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:pcre2":"10.47-r0","apk:python3":"3.12.12-r0","apk:readline":"8.3.1-r0","apk:sqlite-libs":"3.51.1-r0","apk:xz-libs":"5.8.1-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","https://github.com/thelounge/thelounge.git":"v4.4.3","image:base":"6ac61c342495fd0547a6d609a5b81a0fce1a15ae800a059e5caf036aff138ae1","image:node":"9db9723a8dfffef12e65f21e4cfbca73f87c830b9b022cc6091f7b1cc7487f67"}
 
-FROM reg.g5d.dev/node@sha256:58fb2db621de3fea7e9b5e2c19ed5573608e92b4022f60b5d449320423a6aafe AS yarnbase
+FROM reg.g5d.dev/node@sha256:9db9723a8dfffef12e65f21e4cfbca73f87c830b9b022cc6091f7b1cc7487f67 AS yarnbase
 
 # Enable corepack
 RUN corepack enable
 
 
-FROM reg.g5d.dev/node@sha256:58fb2db621de3fea7e9b5e2c19ed5573608e92b4022f60b5d449320423a6aafe AS builder
+FROM reg.g5d.dev/node@sha256:9db9723a8dfffef12e65f21e4cfbca73f87c830b9b022cc6091f7b1cc7487f67 AS builder
 
 ENV THELOUNGE_HOME="/var/opt/thelounge"
 
@@ -65,7 +65,7 @@ RUN mkdir -p /home/nonroot; \
 RUN apk del --no-network .create-directories-deps
 
 
-FROM reg.g5d.dev/base@sha256:fbbf5dfe5df9bb6ebbc49d338e1bf30599e436cb2a75b768ebc539beb5b3ba51 AS rootfs
+FROM reg.g5d.dev/base@sha256:6ac61c342495fd0547a6d609a5b81a0fce1a15ae800a059e5caf036aff138ae1 AS rootfs
 
 # Copy thelounge to rootfs
 COPY --from=builder /app/thelounge /rootfs/app/thelounge
@@ -78,7 +78,7 @@ COPY --chmod=755 thelounge /rootfs/usr/local/bin/thelounge
 COPY --from=builder /home/nonroot /rootfs/home/nonroot
 
 
-FROM reg.g5d.dev/node@sha256:58fb2db621de3fea7e9b5e2c19ed5573608e92b4022f60b5d449320423a6aafe
+FROM reg.g5d.dev/node@sha256:9db9723a8dfffef12e65f21e4cfbca73f87c830b9b022cc6091f7b1cc7487f67
 
 ENV THELOUNGE_HOME="/var/opt/thelounge"
 

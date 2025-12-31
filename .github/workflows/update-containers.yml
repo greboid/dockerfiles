@@ -147,6 +147,16 @@ jobs:
         secrets: inherit
         with:
             PROJECT_NAME: identd
+    immich:
+        name: Build immich
+        needs:
+            - setup-cache
+            - alpine
+            - node
+        uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
+        with:
+            PROJECT_NAME: immich
     irc-bot:
         name: Build irc-bot
         needs:
