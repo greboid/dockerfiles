@@ -59,6 +59,11 @@ jobs:
               uses: actions/checkout@v4
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
+            - name: Setup Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
             - name: Install latest dfo
               uses: mattdowdell/go-installer@v0.3.0
               with:
@@ -405,6 +410,11 @@ jobs:
         name: Setup cache
         runs-on: ubuntu-latest
         steps:
+            - name: Setup Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
             - name: Install latest dfo
               uses: mattdowdell/go-installer@v0.3.0
               with:
@@ -474,6 +484,11 @@ jobs:
               uses: actions/checkout@v4
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
+            - name: Setup Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
             - name: Install latest dfo
               uses: mattdowdell/go-installer@v0.3.0
               with:
@@ -498,6 +513,11 @@ jobs:
               uses: actions/checkout@v4
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
+            - name: Setup Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
             - name: Install latest dfo
               uses: mattdowdell/go-installer@v0.3.0
               with:
@@ -527,6 +547,11 @@ jobs:
               uses: actions/checkout@v4
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
+            - name: Setup Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
             - name: Install latest dfo
               uses: mattdowdell/go-installer@v0.3.0
               with:
@@ -577,6 +602,11 @@ jobs:
               uses: actions/checkout@v4
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
+            - name: Setup Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
             - name: Install latest dfo
               uses: mattdowdell/go-installer@v0.3.0
               with:
@@ -653,6 +683,11 @@ jobs:
               uses: actions/checkout@v4
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
+            - name: Setup Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
             - name: Install latest dfo
               uses: mattdowdell/go-installer@v0.3.0
               with:
