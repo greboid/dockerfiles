@@ -72,44 +72,44 @@ jobs:
               run: |
                 set -e
                 echo 'Updating all Containerfiles with built image digests...'
-                dfo single alpine
-                dfo single baseroot
-                dfo single golang
-                dfo single node
-                dfo single rust
-                dfo single texlive
-                dfo single base
-                dfo single immich
-                dfo single centauri
-                dfo single dockercleanup
-                dfo single dotege
-                dfo single dsp
-                dfo single githubmirror
-                dfo single golink
-                dfo single goplum
-                dfo single httpredirect
-                dfo single identd
-                dfo single irc-bot
-                dfo single irc-distribution
-                dfo single irc-github
-                dfo single irc-goplum
-                dfo single irc-notifier
-                dfo single irc-webhook
-                dfo single legoergo
-                dfo single linx-server
-                dfo single miniflux
-                dfo single postgres-15
-                dfo single puzzles
-                dfo single redis
-                dfo single registryauth
-                dfo single soju
-                dfo single sws
-                dfo single thelounge
-                dfo single tsp
-                dfo single vaultwarden
-                dfo single watchtower
-                dfo single webhooked
-                dfo single gamja
+                dfo single --registry "${{ secrets.REGISTRY }}" alpine
+                dfo single --registry "${{ secrets.REGISTRY }}" baseroot
+                dfo single --registry "${{ secrets.REGISTRY }}" golang
+                dfo single --registry "${{ secrets.REGISTRY }}" node
+                dfo single --registry "${{ secrets.REGISTRY }}" rust
+                dfo single --registry "${{ secrets.REGISTRY }}" texlive
+                dfo single --registry "${{ secrets.REGISTRY }}" base
+                dfo single --registry "${{ secrets.REGISTRY }}" immich
+                dfo single --registry "${{ secrets.REGISTRY }}" centauri
+                dfo single --registry "${{ secrets.REGISTRY }}" dockercleanup
+                dfo single --registry "${{ secrets.REGISTRY }}" dotege
+                dfo single --registry "${{ secrets.REGISTRY }}" dsp
+                dfo single --registry "${{ secrets.REGISTRY }}" githubmirror
+                dfo single --registry "${{ secrets.REGISTRY }}" golink
+                dfo single --registry "${{ secrets.REGISTRY }}" goplum
+                dfo single --registry "${{ secrets.REGISTRY }}" httpredirect
+                dfo single --registry "${{ secrets.REGISTRY }}" identd
+                dfo single --registry "${{ secrets.REGISTRY }}" irc-bot
+                dfo single --registry "${{ secrets.REGISTRY }}" irc-distribution
+                dfo single --registry "${{ secrets.REGISTRY }}" irc-github
+                dfo single --registry "${{ secrets.REGISTRY }}" irc-goplum
+                dfo single --registry "${{ secrets.REGISTRY }}" irc-notifier
+                dfo single --registry "${{ secrets.REGISTRY }}" irc-webhook
+                dfo single --registry "${{ secrets.REGISTRY }}" legoergo
+                dfo single --registry "${{ secrets.REGISTRY }}" linx-server
+                dfo single --registry "${{ secrets.REGISTRY }}" miniflux
+                dfo single --registry "${{ secrets.REGISTRY }}" postgres-15
+                dfo single --registry "${{ secrets.REGISTRY }}" puzzles
+                dfo single --registry "${{ secrets.REGISTRY }}" redis
+                dfo single --registry "${{ secrets.REGISTRY }}" registryauth
+                dfo single --registry "${{ secrets.REGISTRY }}" soju
+                dfo single --registry "${{ secrets.REGISTRY }}" sws
+                dfo single --registry "${{ secrets.REGISTRY }}" thelounge
+                dfo single --registry "${{ secrets.REGISTRY }}" tsp
+                dfo single --registry "${{ secrets.REGISTRY }}" vaultwarden
+                dfo single --registry "${{ secrets.REGISTRY }}" watchtower
+                dfo single --registry "${{ secrets.REGISTRY }}" webhooked
+                dfo single --registry "${{ secrets.REGISTRY }}" gamja
             - name: Commit and push changes
               run: |-
                 git config user.name "github-actions[bot]"
@@ -497,7 +497,7 @@ jobs:
               run: |
                 set -e
                 echo 'Updating alpine...'
-                dfo single alpine
+                dfo single --registry "${{ secrets.REGISTRY }}" alpine
     update-layer-1:
         name: Update layer 1 tags
         runs-on: ubuntu-latest
@@ -526,15 +526,15 @@ jobs:
               run: |
                 set -e
                 echo 'Updating baseroot...'
-                dfo single baseroot
+                dfo single --registry "${{ secrets.REGISTRY }}" baseroot
                 echo 'Updating golang...'
-                dfo single golang
+                dfo single --registry "${{ secrets.REGISTRY }}" golang
                 echo 'Updating node...'
-                dfo single node
+                dfo single --registry "${{ secrets.REGISTRY }}" node
                 echo 'Updating rust...'
-                dfo single rust
+                dfo single --registry "${{ secrets.REGISTRY }}" rust
                 echo 'Updating texlive...'
-                dfo single texlive
+                dfo single --registry "${{ secrets.REGISTRY }}" texlive
     update-layer-2:
         name: Update layer 2 tags
         runs-on: ubuntu-latest
@@ -560,9 +560,9 @@ jobs:
               run: |
                 set -e
                 echo 'Updating base...'
-                dfo single base
+                dfo single --registry "${{ secrets.REGISTRY }}" base
                 echo 'Updating immich...'
-                dfo single immich
+                dfo single --registry "${{ secrets.REGISTRY }}" immich
     update-layer-3:
         name: Update layer 3 tags
         runs-on: ubuntu-latest
@@ -615,63 +615,63 @@ jobs:
               run: |
                 set -e
                 echo 'Updating centauri...'
-                dfo single centauri
+                dfo single --registry "${{ secrets.REGISTRY }}" centauri
                 echo 'Updating dockercleanup...'
-                dfo single dockercleanup
+                dfo single --registry "${{ secrets.REGISTRY }}" dockercleanup
                 echo 'Updating dotege...'
-                dfo single dotege
+                dfo single --registry "${{ secrets.REGISTRY }}" dotege
                 echo 'Updating dsp...'
-                dfo single dsp
+                dfo single --registry "${{ secrets.REGISTRY }}" dsp
                 echo 'Updating githubmirror...'
-                dfo single githubmirror
+                dfo single --registry "${{ secrets.REGISTRY }}" githubmirror
                 echo 'Updating golink...'
-                dfo single golink
+                dfo single --registry "${{ secrets.REGISTRY }}" golink
                 echo 'Updating goplum...'
-                dfo single goplum
+                dfo single --registry "${{ secrets.REGISTRY }}" goplum
                 echo 'Updating httpredirect...'
-                dfo single httpredirect
+                dfo single --registry "${{ secrets.REGISTRY }}" httpredirect
                 echo 'Updating identd...'
-                dfo single identd
+                dfo single --registry "${{ secrets.REGISTRY }}" identd
                 echo 'Updating irc-bot...'
-                dfo single irc-bot
+                dfo single --registry "${{ secrets.REGISTRY }}" irc-bot
                 echo 'Updating irc-distribution...'
-                dfo single irc-distribution
+                dfo single --registry "${{ secrets.REGISTRY }}" irc-distribution
                 echo 'Updating irc-github...'
-                dfo single irc-github
+                dfo single --registry "${{ secrets.REGISTRY }}" irc-github
                 echo 'Updating irc-goplum...'
-                dfo single irc-goplum
+                dfo single --registry "${{ secrets.REGISTRY }}" irc-goplum
                 echo 'Updating irc-notifier...'
-                dfo single irc-notifier
+                dfo single --registry "${{ secrets.REGISTRY }}" irc-notifier
                 echo 'Updating irc-webhook...'
-                dfo single irc-webhook
+                dfo single --registry "${{ secrets.REGISTRY }}" irc-webhook
                 echo 'Updating legoergo...'
-                dfo single legoergo
+                dfo single --registry "${{ secrets.REGISTRY }}" legoergo
                 echo 'Updating linx-server...'
-                dfo single linx-server
+                dfo single --registry "${{ secrets.REGISTRY }}" linx-server
                 echo 'Updating miniflux...'
-                dfo single miniflux
+                dfo single --registry "${{ secrets.REGISTRY }}" miniflux
                 echo 'Updating postgres-15...'
-                dfo single postgres-15
+                dfo single --registry "${{ secrets.REGISTRY }}" postgres-15
                 echo 'Updating puzzles...'
-                dfo single puzzles
+                dfo single --registry "${{ secrets.REGISTRY }}" puzzles
                 echo 'Updating redis...'
-                dfo single redis
+                dfo single --registry "${{ secrets.REGISTRY }}" redis
                 echo 'Updating registryauth...'
-                dfo single registryauth
+                dfo single --registry "${{ secrets.REGISTRY }}" registryauth
                 echo 'Updating soju...'
-                dfo single soju
+                dfo single --registry "${{ secrets.REGISTRY }}" soju
                 echo 'Updating sws...'
-                dfo single sws
+                dfo single --registry "${{ secrets.REGISTRY }}" sws
                 echo 'Updating thelounge...'
-                dfo single thelounge
+                dfo single --registry "${{ secrets.REGISTRY }}" thelounge
                 echo 'Updating tsp...'
-                dfo single tsp
+                dfo single --registry "${{ secrets.REGISTRY }}" tsp
                 echo 'Updating vaultwarden...'
-                dfo single vaultwarden
+                dfo single --registry "${{ secrets.REGISTRY }}" vaultwarden
                 echo 'Updating watchtower...'
-                dfo single watchtower
+                dfo single --registry "${{ secrets.REGISTRY }}" watchtower
                 echo 'Updating webhooked...'
-                dfo single webhooked
+                dfo single --registry "${{ secrets.REGISTRY }}" webhooked
     update-layer-4:
         name: Update layer 4 tags
         runs-on: ubuntu-latest
@@ -696,7 +696,7 @@ jobs:
               run: |
                 set -e
                 echo 'Updating gamja...'
-                dfo single gamja
+                dfo single --registry "${{ secrets.REGISTRY }}" gamja
     vaultwarden:
         name: Build vaultwarden
         needs:
