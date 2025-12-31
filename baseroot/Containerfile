@@ -1,6 +1,6 @@
-# BOM: {"apk:acl-libs":"2.3.2-r1","apk:busybox":"1.37.0-r30","apk:ca-certificates-bundle":"20251003-r0","apk:libxxhash":"0.8.3-r0","apk:lz4-libs":"1.10.0-r0","apk:musl":"1.2.5-r21","apk:popt":"1.19-r4","apk:rsync":"3.4.1-r1","apk:tzdata":"2025c-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","image:alpine":"6186d350669adc7ad9783ab9d77ddf8dff3b69dd936e7a5c9157fdbea46d6831"}
+# BOM: {"apk:acl-libs":"2.3.2-r1","apk:busybox":"1.37.0-r30","apk:ca-certificates-bundle":"20251003-r0","apk:libxxhash":"0.8.3-r0","apk:lz4-libs":"1.10.0-r0","apk:musl":"1.2.5-r21","apk:popt":"1.19-r4","apk:rsync":"3.4.1-r1","apk:tzdata":"2025c-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","image:alpine":"0bbe43fc5c5b41bdd3840ca44ca635a3e214bb8ca348d51c85b4bf1e114c7a45"}
 
-FROM reg.g5d.dev/alpine@sha256:6186d350669adc7ad9783ab9d77ddf8dff3b69dd936e7a5c9157fdbea46d6831 AS build
+FROM reg.g5d.dev/alpine@sha256:0bbe43fc5c5b41bdd3840ca44ca635a3e214bb8ca348d51c85b4bf1e114c7a45 AS build
 
 # Install packages
 RUN set -eux; \
