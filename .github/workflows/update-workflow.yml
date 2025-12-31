@@ -29,7 +29,7 @@ jobs:
           REGISTRY: ${{ secrets.REGISTRY }}
         run: |
           dfo all --registry "$REGISTRY"
-          dfo orchestrate --directory . --output .github/workflows/update-containers.yml
+          dfo orchestrate --workflow --directory .
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
