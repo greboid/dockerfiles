@@ -72,44 +72,44 @@ jobs:
               run: |
                 set -e
                 echo 'Updating all Containerfiles with built image digests...'
-                dfo single -d alpine
-                dfo single -d baseroot
-                dfo single -d golang
-                dfo single -d node
-                dfo single -d rust
-                dfo single -d texlive
-                dfo single -d base
-                dfo single -d immich
-                dfo single -d centauri
-                dfo single -d dockercleanup
-                dfo single -d dotege
-                dfo single -d dsp
-                dfo single -d githubmirror
-                dfo single -d golink
-                dfo single -d goplum
-                dfo single -d httpredirect
-                dfo single -d identd
-                dfo single -d irc-bot
-                dfo single -d irc-distribution
-                dfo single -d irc-github
-                dfo single -d irc-goplum
-                dfo single -d irc-notifier
-                dfo single -d irc-webhook
-                dfo single -d legoergo
-                dfo single -d linx-server
-                dfo single -d miniflux
-                dfo single -d postgres-15
-                dfo single -d puzzles
-                dfo single -d redis
-                dfo single -d registryauth
-                dfo single -d soju
-                dfo single -d sws
-                dfo single -d thelounge
-                dfo single -d tsp
-                dfo single -d vaultwarden
-                dfo single -d watchtower
-                dfo single -d webhooked
-                dfo single -d gamja
+                dfo single alpine
+                dfo single baseroot
+                dfo single golang
+                dfo single node
+                dfo single rust
+                dfo single texlive
+                dfo single base
+                dfo single immich
+                dfo single centauri
+                dfo single dockercleanup
+                dfo single dotege
+                dfo single dsp
+                dfo single githubmirror
+                dfo single golink
+                dfo single goplum
+                dfo single httpredirect
+                dfo single identd
+                dfo single irc-bot
+                dfo single irc-distribution
+                dfo single irc-github
+                dfo single irc-goplum
+                dfo single irc-notifier
+                dfo single irc-webhook
+                dfo single legoergo
+                dfo single linx-server
+                dfo single miniflux
+                dfo single postgres-15
+                dfo single puzzles
+                dfo single redis
+                dfo single registryauth
+                dfo single soju
+                dfo single sws
+                dfo single thelounge
+                dfo single tsp
+                dfo single vaultwarden
+                dfo single watchtower
+                dfo single webhooked
+                dfo single gamja
             - name: Commit and push changes
               run: |-
                 git config user.name "github-actions[bot]"
@@ -497,7 +497,7 @@ jobs:
               run: |
                 set -e
                 echo 'Updating alpine...'
-                dfo single -d alpine
+                dfo single alpine
     update-layer-1:
         name: Update layer 1 tags
         runs-on: ubuntu-latest
@@ -526,15 +526,15 @@ jobs:
               run: |
                 set -e
                 echo 'Updating baseroot...'
-                dfo single -d baseroot
+                dfo single baseroot
                 echo 'Updating golang...'
-                dfo single -d golang
+                dfo single golang
                 echo 'Updating node...'
-                dfo single -d node
+                dfo single node
                 echo 'Updating rust...'
-                dfo single -d rust
+                dfo single rust
                 echo 'Updating texlive...'
-                dfo single -d texlive
+                dfo single texlive
     update-layer-2:
         name: Update layer 2 tags
         runs-on: ubuntu-latest
@@ -560,9 +560,9 @@ jobs:
               run: |
                 set -e
                 echo 'Updating base...'
-                dfo single -d base
+                dfo single base
                 echo 'Updating immich...'
-                dfo single -d immich
+                dfo single immich
     update-layer-3:
         name: Update layer 3 tags
         runs-on: ubuntu-latest
@@ -615,63 +615,63 @@ jobs:
               run: |
                 set -e
                 echo 'Updating centauri...'
-                dfo single -d centauri
+                dfo single centauri
                 echo 'Updating dockercleanup...'
-                dfo single -d dockercleanup
+                dfo single dockercleanup
                 echo 'Updating dotege...'
-                dfo single -d dotege
+                dfo single dotege
                 echo 'Updating dsp...'
-                dfo single -d dsp
+                dfo single dsp
                 echo 'Updating githubmirror...'
-                dfo single -d githubmirror
+                dfo single githubmirror
                 echo 'Updating golink...'
-                dfo single -d golink
+                dfo single golink
                 echo 'Updating goplum...'
-                dfo single -d goplum
+                dfo single goplum
                 echo 'Updating httpredirect...'
-                dfo single -d httpredirect
+                dfo single httpredirect
                 echo 'Updating identd...'
-                dfo single -d identd
+                dfo single identd
                 echo 'Updating irc-bot...'
-                dfo single -d irc-bot
+                dfo single irc-bot
                 echo 'Updating irc-distribution...'
-                dfo single -d irc-distribution
+                dfo single irc-distribution
                 echo 'Updating irc-github...'
-                dfo single -d irc-github
+                dfo single irc-github
                 echo 'Updating irc-goplum...'
-                dfo single -d irc-goplum
+                dfo single irc-goplum
                 echo 'Updating irc-notifier...'
-                dfo single -d irc-notifier
+                dfo single irc-notifier
                 echo 'Updating irc-webhook...'
-                dfo single -d irc-webhook
+                dfo single irc-webhook
                 echo 'Updating legoergo...'
-                dfo single -d legoergo
+                dfo single legoergo
                 echo 'Updating linx-server...'
-                dfo single -d linx-server
+                dfo single linx-server
                 echo 'Updating miniflux...'
-                dfo single -d miniflux
+                dfo single miniflux
                 echo 'Updating postgres-15...'
-                dfo single -d postgres-15
+                dfo single postgres-15
                 echo 'Updating puzzles...'
-                dfo single -d puzzles
+                dfo single puzzles
                 echo 'Updating redis...'
-                dfo single -d redis
+                dfo single redis
                 echo 'Updating registryauth...'
-                dfo single -d registryauth
+                dfo single registryauth
                 echo 'Updating soju...'
-                dfo single -d soju
+                dfo single soju
                 echo 'Updating sws...'
-                dfo single -d sws
+                dfo single sws
                 echo 'Updating thelounge...'
-                dfo single -d thelounge
+                dfo single thelounge
                 echo 'Updating tsp...'
-                dfo single -d tsp
+                dfo single tsp
                 echo 'Updating vaultwarden...'
-                dfo single -d vaultwarden
+                dfo single vaultwarden
                 echo 'Updating watchtower...'
-                dfo single -d watchtower
+                dfo single watchtower
                 echo 'Updating webhooked...'
-                dfo single -d webhooked
+                dfo single webhooked
     update-layer-4:
         name: Update layer 4 tags
         runs-on: ubuntu-latest
@@ -696,7 +696,7 @@ jobs:
               run: |
                 set -e
                 echo 'Updating gamja...'
-                dfo single -d gamja
+                dfo single gamja
     vaultwarden:
         name: Build vaultwarden
         needs:
