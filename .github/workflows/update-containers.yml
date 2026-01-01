@@ -56,7 +56,7 @@ jobs:
             - update-layer-4
         steps:
             - name: Checkout code
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
             - name: Setup Go
@@ -481,7 +481,7 @@ jobs:
             - alpine
         steps:
             - name: Checkout code
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
             - name: Setup Go
@@ -510,7 +510,7 @@ jobs:
             - texlive
         steps:
             - name: Checkout code
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
             - name: Setup Go
@@ -544,7 +544,7 @@ jobs:
             - immich
         steps:
             - name: Checkout code
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
             - name: Setup Go
@@ -599,7 +599,7 @@ jobs:
             - webhooked
         steps:
             - name: Checkout code
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
             - name: Setup Go
@@ -680,7 +680,7 @@ jobs:
             - gamja
         steps:
             - name: Checkout code
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
             - name: Setup Go
