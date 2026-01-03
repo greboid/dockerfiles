@@ -1,6 +1,6 @@
-# BOM: {"apk:brotli-libs":"1.2.0-r0","apk:busybox-static":"1.37.0-r30","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:git":"2.52.0-r0","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.3-r0","apk:libgcc":"15.2.0-r2","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:musl":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:pcre2":"10.47-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","image:alpine":"8e31680fa35033e98b74e12dd7323b34d3e4981f7bef9d36b41ffcbac307c8ac","image:base":"57984783c52101b565b0fd0fd5fe956c1f750a3b43030a38b7ccc2f74873185c","image:node":"df5a146832e9d6db2758e1eb0aa797b85950d9f152a6d3ba76c7d16c0b94fd41","image:sws":"6983ebae605eb93298dab768d9ae91b698057589750902e1305746764d8ce993"}
+# BOM: {"apk:brotli-libs":"1.2.0-r0","apk:busybox-static":"1.37.0-r30","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:git":"2.52.0-r0","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.3-r0","apk:libgcc":"15.2.0-r2","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:musl":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:pcre2":"10.47-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","image:alpine":"ff3c4ab7894048068651441fb65c72c1e6e7bb52e00cb4eaed1f130ced1fe1b6","image:base":"937bdca5efb9ac2c3a91a638b067ac00f5e509cf3be4bee2ff1d742d22d7ab1d","image:node":"02680ddfd2ced1e0740ae7fb4e2d62b921b96e8e2b3e945f9e34bd5547c2f388","image:sws":"73d51d249970884f2aadaa28b677c97c026fc2dd8ea4ca18f36aad76bf74413b"}
 
-FROM reg.g5d.dev/alpine@sha256:8e31680fa35033e98b74e12dd7323b34d3e4981f7bef9d36b41ffcbac307c8ac AS busybox
+FROM reg.g5d.dev/alpine@sha256:ff3c4ab7894048068651441fb65c72c1e6e7bb52e00cb4eaed1f130ced1fe1b6 AS busybox
 
 # Install packages
 RUN set -eux; \
@@ -9,7 +9,7 @@ RUN set -eux; \
     ;
 
 
-FROM reg.g5d.dev/node@sha256:df5a146832e9d6db2758e1eb0aa797b85950d9f152a6d3ba76c7d16c0b94fd41 AS builder
+FROM reg.g5d.dev/node@sha256:02680ddfd2ced1e0740ae7fb4e2d62b921b96e8e2b3e945f9e34bd5547c2f388 AS builder
 
 WORKDIR /app
 
@@ -43,7 +43,7 @@ RUN apk add --no-cache --virtual .build-deps \
   apk del --no-network .build-deps
 
 
-FROM reg.g5d.dev/base@sha256:57984783c52101b565b0fd0fd5fe956c1f750a3b43030a38b7ccc2f74873185c AS rootfs
+FROM reg.g5d.dev/base@sha256:937bdca5efb9ac2c3a91a638b067ac00f5e509cf3be4bee2ff1d742d22d7ab1d AS rootfs
 
 # Copy gamja dist to rootfs
 COPY --from=builder --chown=65532:65532 /app/gamja/dist /rootfs/public
@@ -56,7 +56,7 @@ COPY --from=busybox /bin/busybox.static /rootfs/bin/sh
 COPY --chmod=755 gamja /rootfs/usr/local/bin/gamja
 
 
-FROM reg.g5d.dev/sws@sha256:6983ebae605eb93298dab768d9ae91b698057589750902e1305746764d8ce993
+FROM reg.g5d.dev/sws@sha256:73d51d249970884f2aadaa28b677c97c026fc2dd8ea4ca18f36aad76bf74413b
 
 # Copy rootfs to root
 COPY --from=rootfs --chown=65532:65532 /rootfs/ /
