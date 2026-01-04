@@ -84,6 +84,7 @@ jobs:
                 dfo single --registry "${{ secrets.REGISTRY }}" dockercleanup
                 dfo single --registry "${{ secrets.REGISTRY }}" dotege
                 dfo single --registry "${{ secrets.REGISTRY }}" dsp
+                dfo single --registry "${{ secrets.REGISTRY }}" ergo
                 dfo single --registry "${{ secrets.REGISTRY }}" githubmirror
                 dfo single --registry "${{ secrets.REGISTRY }}" golink
                 dfo single --registry "${{ secrets.REGISTRY }}" goplum
@@ -95,7 +96,6 @@ jobs:
                 dfo single --registry "${{ secrets.REGISTRY }}" irc-goplum
                 dfo single --registry "${{ secrets.REGISTRY }}" irc-notifier
                 dfo single --registry "${{ secrets.REGISTRY }}" irc-webhook
-                dfo single --registry "${{ secrets.REGISTRY }}" legoergo
                 dfo single --registry "${{ secrets.REGISTRY }}" linx-server
                 dfo single --registry "${{ secrets.REGISTRY }}" miniflux
                 dfo single --registry "${{ secrets.REGISTRY }}" postgres-15
@@ -154,6 +154,17 @@ jobs:
         secrets: inherit
         with:
             PROJECT_NAME: dsp
+    ergo:
+        name: Build ergo
+        needs:
+            - setup-cache
+            - base
+            - golang
+            - update-layer-2
+        uses: ./.github/workflows/container-builder.yml
+        secrets: inherit
+        with:
+            PROJECT_NAME: ergo
     gamja:
         name: Build gamja
         needs:
@@ -309,17 +320,6 @@ jobs:
         secrets: inherit
         with:
             PROJECT_NAME: irc-webhook
-    legoergo:
-        name: Build legoergo
-        needs:
-            - setup-cache
-            - base
-            - golang
-            - update-layer-2
-        uses: ./.github/workflows/container-builder.yml
-        secrets: inherit
-        with:
-            PROJECT_NAME: legoergo
     linx-server:
         name: Build linx-server
         needs:
@@ -572,6 +572,7 @@ jobs:
             - dockercleanup
             - dotege
             - dsp
+            - ergo
             - githubmirror
             - golink
             - goplum
@@ -583,7 +584,6 @@ jobs:
             - irc-goplum
             - irc-notifier
             - irc-webhook
-            - legoergo
             - linx-server
             - miniflux
             - postgres-15
@@ -622,6 +622,8 @@ jobs:
                 dfo single --registry "${{ secrets.REGISTRY }}" dotege
                 echo 'Updating dsp...'
                 dfo single --registry "${{ secrets.REGISTRY }}" dsp
+                echo 'Updating ergo...'
+                dfo single --registry "${{ secrets.REGISTRY }}" ergo
                 echo 'Updating githubmirror...'
                 dfo single --registry "${{ secrets.REGISTRY }}" githubmirror
                 echo 'Updating golink...'
@@ -644,8 +646,6 @@ jobs:
                 dfo single --registry "${{ secrets.REGISTRY }}" irc-notifier
                 echo 'Updating irc-webhook...'
                 dfo single --registry "${{ secrets.REGISTRY }}" irc-webhook
-                echo 'Updating legoergo...'
-                dfo single --registry "${{ secrets.REGISTRY }}" legoergo
                 echo 'Updating linx-server...'
                 dfo single --registry "${{ secrets.REGISTRY }}" linx-server
                 echo 'Updating miniflux...'
