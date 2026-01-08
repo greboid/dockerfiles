@@ -1,6 +1,6 @@
-# BOM: {"apk:brotli-libs":"1.2.0-r0","apk:busybox-static":"1.37.0-r30","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:git":"2.52.0-r0","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.3-r0","apk:libgcc":"15.2.0-r2","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:musl":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:pcre2":"10.47-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","image:alpine":"bb84d0bbe92f72ea9ecbee7abd9e1374a781d81a776d817229b656cdb18bdc29","image:base":"ac7930501839926284d94be99def6ff8f0691f0f38f35f21d667f16709f66347","image:node":"941b91dd247e41d3a34686ec2f59ec9fd7402dd8d65aa81a074277b98b321054","image:sws":"c49978fd7f579fe40cbf59034701e41e2ebb700c90617ae881b4bd4e48262868"}
+# BOM: {"apk:brotli-libs":"1.2.0-r0","apk:busybox-static":"1.37.0-r30","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:git":"2.52.0-r0","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.3-r0","apk:libgcc":"15.2.0-r2","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:musl":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:pcre2":"10.47-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2"}
 
-FROM reg.g5d.dev/alpine@sha256:bb84d0bbe92f72ea9ecbee7abd9e1374a781d81a776d817229b656cdb18bdc29 AS busybox
+FROM reg.g5d.dev/alpine:latest AS busybox
 
 # Install packages
 RUN set -eux; \
@@ -9,7 +9,7 @@ RUN set -eux; \
     ;
 
 
-FROM reg.g5d.dev/node@sha256:941b91dd247e41d3a34686ec2f59ec9fd7402dd8d65aa81a074277b98b321054 AS builder
+FROM reg.g5d.dev/node:latest AS builder
 
 WORKDIR /app
 
@@ -43,7 +43,7 @@ RUN apk add --no-cache --virtual .build-deps \
   apk del --no-network .build-deps
 
 
-FROM reg.g5d.dev/base@sha256:ac7930501839926284d94be99def6ff8f0691f0f38f35f21d667f16709f66347 AS rootfs
+FROM reg.g5d.dev/base:latest AS rootfs
 
 # Copy gamja dist to rootfs
 COPY --from=builder --chown=65532:65532 /app/gamja/dist /rootfs/public
@@ -56,7 +56,7 @@ COPY --from=busybox /bin/busybox.static /rootfs/bin/sh
 COPY --chmod=755 gamja /rootfs/usr/local/bin/gamja
 
 
-FROM reg.g5d.dev/sws@sha256:c49978fd7f579fe40cbf59034701e41e2ebb700c90617ae881b4bd4e48262868
+FROM reg.g5d.dev/sws:latest
 
 # Copy rootfs to root
 COPY --from=rootfs --chown=65532:65532 /rootfs/ /
