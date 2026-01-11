@@ -1,6 +1,6 @@
-# BOM: {"apk:acl-libs":"2.3.2-r1","apk:bash":"5.3.3-r1","apk:brotli-libs":"1.2.0-r0","apk:busybox":"1.37.0-r30","apk:busybox-binsh":"1.37.0-r30","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:curl":"8.17.0-r1","apk:gcompat":"1.1.0-r4","apk:gdbm":"1.26-r0","apk:git":"2.52.0-r0","apk:gmp":"6.3.0-r4","apk:gnupg":"2.4.9-r0","apk:gnupg-dirmngr":"2.4.9-r0","apk:gnupg-gpgconf":"2.4.9-r0","apk:gnupg-keyboxd":"2.4.9-r0","apk:gnupg-utils":"2.4.9-r0","apk:gnupg-wks-client":"2.4.9-r0","apk:gnutls":"3.8.11-r0","apk:gpg":"2.4.9-r0","apk:gpg-agent":"2.4.9-r0","apk:gpg-wks-server":"2.4.9-r0","apk:gpgsm":"2.4.9-r0","apk:gpgv":"2.4.9-r0","apk:libassuan":"3.0.2-r0","apk:libbz2":"1.0.8-r6","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.3-r0","apk:libffi":"3.5.2-r0","apk:libgcc":"15.2.0-r2","apk:libgcrypt":"1.11.2-r0","apk:libgpg-error":"1.55-r0","apk:libidn2":"2.3.8-r0","apk:libksba":"1.6.7-r0","apk:libldap":"2.6.10-r0","apk:libncursesw":"6.5_p20251123-r0","apk:libpsl":"0.21.5-r3","apk:libsasl":"2.1.28-r9","apk:libssl3":"3.5.4-r0","apk:libstdc++":"15.2.0-r2","apk:libtasn1":"4.20.0-r0","apk:libucontext":"1.3.3-r0","apk:libunistring":"1.4.1-r0","apk:libxxhash":"0.8.3-r0","apk:lz4-libs":"1.10.0-r0","apk:musl":"1.2.5-r21","apk:musl-obstack":"1.2.3-r2","apk:ncurses-terminfo-base":"6.5_p20251123-r0","apk:nettle":"3.10.2-r0","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:npth":"1.8-r0","apk:p11-kit":"0.25.5-r2","apk:pcre2":"10.47-r0","apk:pinentry":"1.3.2-r0","apk:popt":"1.19-r4","apk:readline":"8.3.1-r0","apk:rsync":"3.4.1-r1","apk:sqlite-libs":"3.51.1-r0","apk:tar":"1.35-r4","apk:xz":"5.8.1-r0","apk:xz-libs":"5.8.1-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","https://github.com/nodejs/node":"v25.2.1"}
+# BOM: {"apk:acl-libs":"2.3.2-r1","apk:bash":"5.3.3-r1","apk:brotli-libs":"1.2.0-r0","apk:busybox":"1.37.0-r30","apk:busybox-binsh":"1.37.0-r30","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:curl":"8.17.0-r1","apk:gcompat":"1.1.0-r4","apk:gdbm":"1.26-r0","apk:git":"2.52.0-r0","apk:gmp":"6.3.0-r4","apk:gnupg":"2.4.9-r0","apk:gnupg-dirmngr":"2.4.9-r0","apk:gnupg-gpgconf":"2.4.9-r0","apk:gnupg-keyboxd":"2.4.9-r0","apk:gnupg-utils":"2.4.9-r0","apk:gnupg-wks-client":"2.4.9-r0","apk:gnutls":"3.8.11-r0","apk:gpg":"2.4.9-r0","apk:gpg-agent":"2.4.9-r0","apk:gpg-wks-server":"2.4.9-r0","apk:gpgsm":"2.4.9-r0","apk:gpgv":"2.4.9-r0","apk:libassuan":"3.0.2-r0","apk:libbz2":"1.0.8-r6","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.3-r0","apk:libffi":"3.5.2-r0","apk:libgcc":"15.2.0-r2","apk:libgcrypt":"1.11.2-r0","apk:libgpg-error":"1.55-r0","apk:libidn2":"2.3.8-r0","apk:libksba":"1.6.7-r0","apk:libldap":"2.6.10-r0","apk:libncursesw":"6.5_p20251123-r0","apk:libpsl":"0.21.5-r3","apk:libsasl":"2.1.28-r9","apk:libssl3":"3.5.4-r0","apk:libstdc++":"15.2.0-r2","apk:libtasn1":"4.20.0-r0","apk:libucontext":"1.3.3-r0","apk:libunistring":"1.4.1-r0","apk:libxxhash":"0.8.3-r0","apk:lz4-libs":"1.10.0-r0","apk:musl":"1.2.5-r21","apk:musl-obstack":"1.2.3-r2","apk:ncurses-terminfo-base":"6.5_p20251123-r0","apk:nettle":"3.10.2-r0","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:npth":"1.8-r0","apk:p11-kit":"0.25.5-r2","apk:pcre2":"10.47-r0","apk:pinentry":"1.3.2-r0","apk:popt":"1.19-r4","apk:readline":"8.3.1-r0","apk:rsync":"3.4.1-r1","apk:sqlite-libs":"3.51.1-r0","apk:tar":"1.35-r4","apk:xz":"5.8.1-r0","apk:xz-libs":"5.8.1-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","https://github.com/nodejs/node":"v25.2.1","image:alpine":"14dc126b317bdce30c2539357b1242160df85d6c188f4e1144d25caa462624d7"}
 
-FROM reg.g5d.dev/alpine:latest AS build
+FROM reg.g5d.dev/alpine@sha256:14dc126b317bdce30c2539357b1242160df85d6c188f4e1144d25caa462624d7 AS build
 
 # Install packages
 RUN set -eux; \
@@ -109,7 +109,7 @@ RUN rsync -ap /src/node*/ /usr/local/; \
 RUN npm install --global corepack
 
 
-FROM reg.g5d.dev/alpine:latest AS rootfs
+FROM reg.g5d.dev/alpine@sha256:14dc126b317bdce30c2539357b1242160df85d6c188f4e1144d25caa462624d7 AS rootfs
 
 # Install packages
 RUN set -eux; \
@@ -142,7 +142,7 @@ RUN set -eux; \
 COPY --from=build /usr/local /rootfs/usr/local
 
 
-FROM reg.g5d.dev/alpine:latest
+FROM reg.g5d.dev/alpine@sha256:14dc126b317bdce30c2539357b1242160df85d6c188f4e1144d25caa462624d7
 
 # Copy rootfs to root
 COPY --from=rootfs /rootfs/ /

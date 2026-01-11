@@ -1,4 +1,6 @@
-FROM reg.g5d.dev/baseroot:latest
+# BOM: {"image:baseroot":"7365c030622066649eb20077121cd6e1929647655ea6e184d0d0a063c4be8497"}
+
+FROM reg.g5d.dev/baseroot@sha256:7365c030622066649eb20077121cd6e1929647655ea6e184d0d0a063c4be8497
 
 USER nonroot
 
