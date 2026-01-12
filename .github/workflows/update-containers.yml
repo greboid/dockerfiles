@@ -25,10 +25,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -54,10 +50,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -83,10 +75,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -113,10 +101,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -253,10 +237,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -283,10 +263,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -313,10 +289,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -343,10 +315,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -375,10 +343,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -405,10 +369,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -434,10 +394,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -464,10 +420,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -494,10 +446,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -524,10 +472,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -554,10 +498,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -584,10 +524,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -614,10 +550,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -644,10 +576,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -674,10 +602,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -704,10 +628,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -734,10 +654,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -764,10 +680,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -794,10 +706,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -824,10 +732,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -853,10 +757,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -883,10 +783,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -913,10 +809,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -943,10 +835,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -973,10 +861,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -1002,10 +886,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -1032,10 +912,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -1062,10 +938,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -1091,10 +963,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -1121,10 +989,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -1151,10 +1015,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -1181,10 +1041,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -1211,10 +1067,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
@@ -1241,10 +1093,6 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Set up buildah
-              uses: redhat-actions/setup-podman@v1
-              with:
-                dockerfile: "false"
             - name: Login to registry
               uses: redhat-actions/podman-login@v1
               with:
