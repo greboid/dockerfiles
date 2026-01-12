@@ -28,11 +28,10 @@ jobs:
         run: |
           git clone https://github.com/greboid/dfo.git
           go install -C ./dfo .
-      - name: Generate Containerfiles and update workflow
+      - name: Update workflow
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
         run: |
-          dfo all --registry "$REGISTRY"
           dfo orchestrate --workflow --directory .
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v7
@@ -40,6 +39,6 @@ jobs:
             commit_message: "Update container workflow"
             commit_user_name: ${{ secrets.GIT_USERNAME }}
             commit_user_email: ${{ secrets.GIT_EMAIL }}
-            file_pattern: '.github/workflows/update-containers.yml **/Containerfile'
+            file_pattern: '.github/workflows/update-containers.yml'
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2
