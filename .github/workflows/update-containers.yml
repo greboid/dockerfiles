@@ -13,12 +13,10 @@ jobs:
     alpine:
         name: Build alpine
         runs-on: ubuntu-latest
-        needs:
-            - setup-cache
         steps:
             - name: Checkout code
               uses: actions/checkout@v6
-            - name: Setup Go
+            - name: Set up Go
               uses: actions/setup-go@v6
               with:
                 cache: "false"
@@ -27,19 +25,27 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
             - name: Build alpine
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" alpine
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" alpine
     base:
         name: Build base
         runs-on: ubuntu-latest
         needs:
-            - setup-cache
             - baseroot
-            - update-layer-1
         steps:
             - name: Checkout code
               uses: actions/checkout@v6
-            - name: Setup Go
+            - name: Set up Go
               uses: actions/setup-go@v6
               with:
                 cache: "false"
@@ -48,19 +54,27 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
             - name: Build base
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" base
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" base
     baseroot:
         name: Build baseroot
         runs-on: ubuntu-latest
         needs:
-            - setup-cache
             - alpine
-            - update-layer-0
         steps:
             - name: Checkout code
               uses: actions/checkout@v6
-            - name: Setup Go
+            - name: Set up Go
               uses: actions/setup-go@v6
               with:
                 cache: "false"
@@ -69,20 +83,28 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
             - name: Build baseroot
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" baseroot
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" baseroot
     centauri:
         name: Build centauri
         runs-on: ubuntu-latest
         needs:
-            - setup-cache
             - base
             - golang
-            - update-layer-2
         steps:
             - name: Checkout code
               uses: actions/checkout@v6
-            - name: Setup Go
+            - name: Set up Go
               uses: actions/setup-go@v6
               with:
                 cache: "false"
@@ -91,879 +113,38 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
             - name: Build centauri
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" centauri
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" centauri
     commit-changes:
         name: Commit updated files
         runs-on: ubuntu-latest
         needs:
-            - update-layer-4
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-              with:
-                token: ${{ secrets.GITHUB_TOKEN }}
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Update all Containerfiles with built image digests
-              run: |
-                set -e
-                echo 'Updating all Containerfiles with built image digests...'
-                dfo single --registry "${{ secrets.REGISTRY }}" alpine
-                dfo single --registry "${{ secrets.REGISTRY }}" baseroot
-                dfo single --registry "${{ secrets.REGISTRY }}" golang
-                dfo single --registry "${{ secrets.REGISTRY }}" node
-                dfo single --registry "${{ secrets.REGISTRY }}" rust
-                dfo single --registry "${{ secrets.REGISTRY }}" texlive
-                dfo single --registry "${{ secrets.REGISTRY }}" base
-                dfo single --registry "${{ secrets.REGISTRY }}" immich
-                dfo single --registry "${{ secrets.REGISTRY }}" centauri
-                dfo single --registry "${{ secrets.REGISTRY }}" dockercleanup
-                dfo single --registry "${{ secrets.REGISTRY }}" dotege
-                dfo single --registry "${{ secrets.REGISTRY }}" dsp
-                dfo single --registry "${{ secrets.REGISTRY }}" ergo
-                dfo single --registry "${{ secrets.REGISTRY }}" githubmirror
-                dfo single --registry "${{ secrets.REGISTRY }}" golink
-                dfo single --registry "${{ secrets.REGISTRY }}" goplum
-                dfo single --registry "${{ secrets.REGISTRY }}" httpredirect
-                dfo single --registry "${{ secrets.REGISTRY }}" identd
-                dfo single --registry "${{ secrets.REGISTRY }}" irc-bot
-                dfo single --registry "${{ secrets.REGISTRY }}" irc-distribution
-                dfo single --registry "${{ secrets.REGISTRY }}" irc-github
-                dfo single --registry "${{ secrets.REGISTRY }}" irc-goplum
-                dfo single --registry "${{ secrets.REGISTRY }}" irc-notifier
-                dfo single --registry "${{ secrets.REGISTRY }}" irc-webhook
-                dfo single --registry "${{ secrets.REGISTRY }}" linx-server
-                dfo single --registry "${{ secrets.REGISTRY }}" miniflux
-                dfo single --registry "${{ secrets.REGISTRY }}" postgres-15
-                dfo single --registry "${{ secrets.REGISTRY }}" puzzles
-                dfo single --registry "${{ secrets.REGISTRY }}" redis
-                dfo single --registry "${{ secrets.REGISTRY }}" registryauth
-                dfo single --registry "${{ secrets.REGISTRY }}" soju
-                dfo single --registry "${{ secrets.REGISTRY }}" sws
-                dfo single --registry "${{ secrets.REGISTRY }}" thelounge
-                dfo single --registry "${{ secrets.REGISTRY }}" tsp
-                dfo single --registry "${{ secrets.REGISTRY }}" vaultwarden
-                dfo single --registry "${{ secrets.REGISTRY }}" watchtower
-                dfo single --registry "${{ secrets.REGISTRY }}" webhooked
-                dfo single --registry "${{ secrets.REGISTRY }}" gamja
-            - name: Commit and push changes
-              run: |-
-                git config user.name "github-actions[bot]"
-                git config user.email "github-actions[bot]@users.noreply.github.com"
-                git add .
-                if git diff --staged --quiet; then
-                  echo "No changes to commit"
-                else
-                  git commit -m "Update Containerfiles and BOMs with built image digests"
-                  git pull --rebase origin $(git branch --show-current)
-                  git push
-                fi
-    dockercleanup:
-        name: Build dockercleanup
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - golang
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build dockercleanup
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" dockercleanup
-    dotege:
-        name: Build dotege
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - golang
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build dotege
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" dotege
-    dsp:
-        name: Build dsp
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - golang
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build dsp
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" dsp
-    ergo:
-        name: Build ergo
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - golang
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build ergo
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" ergo
-    gamja:
-        name: Build gamja
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
             - alpine
             - base
-            - node
-            - sws
-            - update-layer-3
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build gamja
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" gamja
-    githubmirror:
-        name: Build githubmirror
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - golang
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build githubmirror
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" githubmirror
-    golang:
-        name: Build golang
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - alpine
-            - update-layer-0
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build golang
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" golang
-    golink:
-        name: Build golink
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - golang
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build golink
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" golink
-    goplum:
-        name: Build goplum
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - golang
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build goplum
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" goplum
-    httpredirect:
-        name: Build httpredirect
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - golang
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build httpredirect
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" httpredirect
-    identd:
-        name: Build identd
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - golang
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build identd
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" identd
-    immich:
-        name: Build immich
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - alpine
-            - node
-            - update-layer-1
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build immich
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" immich
-    irc-bot:
-        name: Build irc-bot
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - golang
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build irc-bot
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" irc-bot
-    irc-distribution:
-        name: Build irc-distribution
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - golang
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build irc-distribution
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" irc-distribution
-    irc-github:
-        name: Build irc-github
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - golang
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build irc-github
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" irc-github
-    irc-goplum:
-        name: Build irc-goplum
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - golang
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build irc-goplum
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" irc-goplum
-    irc-notifier:
-        name: Build irc-notifier
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - golang
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build irc-notifier
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" irc-notifier
-    irc-webhook:
-        name: Build irc-webhook
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - golang
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build irc-webhook
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" irc-webhook
-    linx-server:
-        name: Build linx-server
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - golang
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build linx-server
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" linx-server
-    miniflux:
-        name: Build miniflux
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - golang
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build miniflux
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" miniflux
-    node:
-        name: Build node
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - alpine
-            - update-layer-0
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build node
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" node
-    postgres-15:
-        name: Build postgres-15
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - alpine
-            - base
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build postgres-15
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" postgres-15
-    puzzles:
-        name: Build puzzles
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - golang
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build puzzles
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" puzzles
-    redis:
-        name: Build redis
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - alpine
-            - base
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build redis
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" redis
-    registryauth:
-        name: Build registryauth
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - golang
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build registryauth
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" registryauth
-    rust:
-        name: Build rust
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - alpine
-            - update-layer-0
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build rust
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" rust
-    setup-cache:
-        name: Setup cache
-        runs-on: ubuntu-latest
-        steps:
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-    soju:
-        name: Build soju
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - golang
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build soju
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" soju
-    sws:
-        name: Build sws
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - rust
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build sws
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" sws
-    texlive:
-        name: Build texlive
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - alpine
-            - update-layer-0
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build texlive
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" texlive
-    thelounge:
-        name: Build thelounge
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - node
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build thelounge
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" thelounge
-    tsp:
-        name: Build tsp
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - golang
-            - update-layer-2
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Build tsp
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" tsp
-    update-layer-0:
-        name: Update layer 0 tags
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - alpine
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-              with:
-                token: ${{ secrets.GITHUB_TOKEN }}
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Update layer 0 Containerfiles
-              run: |
-                set -e
-                echo 'Updating alpine...'
-                dfo single --registry "${{ secrets.REGISTRY }}" alpine
-    update-layer-1:
-        name: Update layer 1 tags
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
             - baseroot
-            - golang
-            - node
-            - rust
-            - texlive
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-              with:
-                token: ${{ secrets.GITHUB_TOKEN }}
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Update layer 1 Containerfiles
-              run: |
-                set -e
-                echo 'Updating baseroot...'
-                dfo single --registry "${{ secrets.REGISTRY }}" baseroot
-                echo 'Updating golang...'
-                dfo single --registry "${{ secrets.REGISTRY }}" golang
-                echo 'Updating node...'
-                dfo single --registry "${{ secrets.REGISTRY }}" node
-                echo 'Updating rust...'
-                dfo single --registry "${{ secrets.REGISTRY }}" rust
-                echo 'Updating texlive...'
-                dfo single --registry "${{ secrets.REGISTRY }}" texlive
-    update-layer-2:
-        name: Update layer 2 tags
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
-            - base
-            - immich
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
-              with:
-                token: ${{ secrets.GITHUB_TOKEN }}
-            - name: Setup Go
-              uses: actions/setup-go@v6
-              with:
-                cache: "false"
-                go-version: stable
-            - name: Install latest dfo
-              uses: mattdowdell/go-installer@v0.3.0
-              with:
-                package: github.com/greboid/dfo
-            - name: Update layer 2 Containerfiles
-              run: |
-                set -e
-                echo 'Updating base...'
-                dfo single --registry "${{ secrets.REGISTRY }}" base
-                echo 'Updating immich...'
-                dfo single --registry "${{ secrets.REGISTRY }}" immich
-    update-layer-3:
-        name: Update layer 3 tags
-        runs-on: ubuntu-latest
-        needs:
-            - setup-cache
             - centauri
             - dockercleanup
             - dotege
             - dsp
             - ergo
+            - gamja
             - githubmirror
+            - golang
             - golink
             - goplum
             - httpredirect
             - identd
+            - immich
             - irc-bot
             - irc-distribution
             - irc-github
@@ -972,12 +153,15 @@ jobs:
             - irc-webhook
             - linx-server
             - miniflux
+            - node
             - postgres-15
             - puzzles
             - redis
             - registryauth
+            - rust
             - soju
             - sws
+            - texlive
             - thelounge
             - tsp
             - vaultwarden
@@ -997,79 +181,70 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Update layer 3 Containerfiles
+            - name: Update all Containerfiles with built image digests
               run: |
                 set -e
-                echo 'Updating centauri...'
+                echo 'Updating all Containerfiles with built image digests...'
+                dfo single --registry "${{ secrets.REGISTRY }}" alpine
+                dfo single --registry "${{ secrets.REGISTRY }}" base
+                dfo single --registry "${{ secrets.REGISTRY }}" baseroot
                 dfo single --registry "${{ secrets.REGISTRY }}" centauri
-                echo 'Updating dockercleanup...'
                 dfo single --registry "${{ secrets.REGISTRY }}" dockercleanup
-                echo 'Updating dotege...'
                 dfo single --registry "${{ secrets.REGISTRY }}" dotege
-                echo 'Updating dsp...'
                 dfo single --registry "${{ secrets.REGISTRY }}" dsp
-                echo 'Updating ergo...'
                 dfo single --registry "${{ secrets.REGISTRY }}" ergo
-                echo 'Updating githubmirror...'
+                dfo single --registry "${{ secrets.REGISTRY }}" gamja
                 dfo single --registry "${{ secrets.REGISTRY }}" githubmirror
-                echo 'Updating golink...'
+                dfo single --registry "${{ secrets.REGISTRY }}" golang
                 dfo single --registry "${{ secrets.REGISTRY }}" golink
-                echo 'Updating goplum...'
                 dfo single --registry "${{ secrets.REGISTRY }}" goplum
-                echo 'Updating httpredirect...'
                 dfo single --registry "${{ secrets.REGISTRY }}" httpredirect
-                echo 'Updating identd...'
                 dfo single --registry "${{ secrets.REGISTRY }}" identd
-                echo 'Updating irc-bot...'
+                dfo single --registry "${{ secrets.REGISTRY }}" immich
                 dfo single --registry "${{ secrets.REGISTRY }}" irc-bot
-                echo 'Updating irc-distribution...'
                 dfo single --registry "${{ secrets.REGISTRY }}" irc-distribution
-                echo 'Updating irc-github...'
                 dfo single --registry "${{ secrets.REGISTRY }}" irc-github
-                echo 'Updating irc-goplum...'
                 dfo single --registry "${{ secrets.REGISTRY }}" irc-goplum
-                echo 'Updating irc-notifier...'
                 dfo single --registry "${{ secrets.REGISTRY }}" irc-notifier
-                echo 'Updating irc-webhook...'
                 dfo single --registry "${{ secrets.REGISTRY }}" irc-webhook
-                echo 'Updating linx-server...'
                 dfo single --registry "${{ secrets.REGISTRY }}" linx-server
-                echo 'Updating miniflux...'
                 dfo single --registry "${{ secrets.REGISTRY }}" miniflux
-                echo 'Updating postgres-15...'
+                dfo single --registry "${{ secrets.REGISTRY }}" node
                 dfo single --registry "${{ secrets.REGISTRY }}" postgres-15
-                echo 'Updating puzzles...'
                 dfo single --registry "${{ secrets.REGISTRY }}" puzzles
-                echo 'Updating redis...'
                 dfo single --registry "${{ secrets.REGISTRY }}" redis
-                echo 'Updating registryauth...'
                 dfo single --registry "${{ secrets.REGISTRY }}" registryauth
-                echo 'Updating soju...'
+                dfo single --registry "${{ secrets.REGISTRY }}" rust
                 dfo single --registry "${{ secrets.REGISTRY }}" soju
-                echo 'Updating sws...'
                 dfo single --registry "${{ secrets.REGISTRY }}" sws
-                echo 'Updating thelounge...'
+                dfo single --registry "${{ secrets.REGISTRY }}" texlive
                 dfo single --registry "${{ secrets.REGISTRY }}" thelounge
-                echo 'Updating tsp...'
                 dfo single --registry "${{ secrets.REGISTRY }}" tsp
-                echo 'Updating vaultwarden...'
                 dfo single --registry "${{ secrets.REGISTRY }}" vaultwarden
-                echo 'Updating watchtower...'
                 dfo single --registry "${{ secrets.REGISTRY }}" watchtower
-                echo 'Updating webhooked...'
                 dfo single --registry "${{ secrets.REGISTRY }}" webhooked
-    update-layer-4:
-        name: Update layer 4 tags
+            - name: Commit and push changes
+              run: |-
+                git config user.name "github-actions[bot]"
+                git config user.email "github-actions[bot]@users.noreply.github.com"
+                git add .
+                if git diff --staged --quiet; then
+                  echo "No changes to commit"
+                else
+                  git commit -m "Update Containerfiles and BOMs with built image digests"
+                  git pull --rebase origin $(git branch --show-current)
+                  git push
+                fi
+    dockercleanup:
+        name: Build dockercleanup
         runs-on: ubuntu-latest
         needs:
-            - setup-cache
-            - gamja
+            - base
+            - golang
         steps:
             - name: Checkout code
               uses: actions/checkout@v6
-              with:
-                token: ${{ secrets.GITHUB_TOKEN }}
-            - name: Setup Go
+            - name: Set up Go
               uses: actions/setup-go@v6
               with:
                 cache: "false"
@@ -1078,23 +253,926 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
-            - name: Update layer 4 Containerfiles
-              run: |
-                set -e
-                echo 'Updating gamja...'
-                dfo single --registry "${{ secrets.REGISTRY }}" gamja
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build dockercleanup
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" dockercleanup
+    dotege:
+        name: Build dotege
+        runs-on: ubuntu-latest
+        needs:
+            - base
+            - golang
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build dotege
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" dotege
+    dsp:
+        name: Build dsp
+        runs-on: ubuntu-latest
+        needs:
+            - base
+            - golang
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build dsp
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" dsp
+    ergo:
+        name: Build ergo
+        runs-on: ubuntu-latest
+        needs:
+            - base
+            - golang
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build ergo
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" ergo
+    gamja:
+        name: Build gamja
+        runs-on: ubuntu-latest
+        needs:
+            - alpine
+            - base
+            - node
+            - sws
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build gamja
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" gamja
+    githubmirror:
+        name: Build githubmirror
+        runs-on: ubuntu-latest
+        needs:
+            - base
+            - golang
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build githubmirror
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" githubmirror
+    golang:
+        name: Build golang
+        runs-on: ubuntu-latest
+        needs:
+            - alpine
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build golang
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" golang
+    golink:
+        name: Build golink
+        runs-on: ubuntu-latest
+        needs:
+            - base
+            - golang
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build golink
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" golink
+    goplum:
+        name: Build goplum
+        runs-on: ubuntu-latest
+        needs:
+            - base
+            - golang
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build goplum
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" goplum
+    httpredirect:
+        name: Build httpredirect
+        runs-on: ubuntu-latest
+        needs:
+            - base
+            - golang
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build httpredirect
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" httpredirect
+    identd:
+        name: Build identd
+        runs-on: ubuntu-latest
+        needs:
+            - base
+            - golang
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build identd
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" identd
+    immich:
+        name: Build immich
+        runs-on: ubuntu-latest
+        needs:
+            - alpine
+            - node
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build immich
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" immich
+    irc-bot:
+        name: Build irc-bot
+        runs-on: ubuntu-latest
+        needs:
+            - base
+            - golang
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build irc-bot
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" irc-bot
+    irc-distribution:
+        name: Build irc-distribution
+        runs-on: ubuntu-latest
+        needs:
+            - base
+            - golang
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build irc-distribution
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" irc-distribution
+    irc-github:
+        name: Build irc-github
+        runs-on: ubuntu-latest
+        needs:
+            - base
+            - golang
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build irc-github
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" irc-github
+    irc-goplum:
+        name: Build irc-goplum
+        runs-on: ubuntu-latest
+        needs:
+            - base
+            - golang
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build irc-goplum
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" irc-goplum
+    irc-notifier:
+        name: Build irc-notifier
+        runs-on: ubuntu-latest
+        needs:
+            - base
+            - golang
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build irc-notifier
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" irc-notifier
+    irc-webhook:
+        name: Build irc-webhook
+        runs-on: ubuntu-latest
+        needs:
+            - base
+            - golang
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build irc-webhook
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" irc-webhook
+    linx-server:
+        name: Build linx-server
+        runs-on: ubuntu-latest
+        needs:
+            - base
+            - golang
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build linx-server
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" linx-server
+    miniflux:
+        name: Build miniflux
+        runs-on: ubuntu-latest
+        needs:
+            - base
+            - golang
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build miniflux
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" miniflux
+    node:
+        name: Build node
+        runs-on: ubuntu-latest
+        needs:
+            - alpine
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build node
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" node
+    postgres-15:
+        name: Build postgres-15
+        runs-on: ubuntu-latest
+        needs:
+            - alpine
+            - base
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build postgres-15
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" postgres-15
+    puzzles:
+        name: Build puzzles
+        runs-on: ubuntu-latest
+        needs:
+            - base
+            - golang
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build puzzles
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" puzzles
+    redis:
+        name: Build redis
+        runs-on: ubuntu-latest
+        needs:
+            - alpine
+            - base
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build redis
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" redis
+    registryauth:
+        name: Build registryauth
+        runs-on: ubuntu-latest
+        needs:
+            - base
+            - golang
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build registryauth
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" registryauth
+    rust:
+        name: Build rust
+        runs-on: ubuntu-latest
+        needs:
+            - alpine
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build rust
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" rust
+    soju:
+        name: Build soju
+        runs-on: ubuntu-latest
+        needs:
+            - base
+            - golang
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build soju
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" soju
+    sws:
+        name: Build sws
+        runs-on: ubuntu-latest
+        needs:
+            - base
+            - rust
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build sws
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" sws
+    texlive:
+        name: Build texlive
+        runs-on: ubuntu-latest
+        needs:
+            - alpine
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build texlive
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" texlive
+    thelounge:
+        name: Build thelounge
+        runs-on: ubuntu-latest
+        needs:
+            - base
+            - node
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build thelounge
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" thelounge
+    tsp:
+        name: Build tsp
+        runs-on: ubuntu-latest
+        needs:
+            - base
+            - golang
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                cache: "false"
+                go-version: stable
+            - name: Install latest dfo
+              uses: mattdowdell/go-installer@v0.3.0
+              with:
+                package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
+            - name: Build tsp
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" tsp
     vaultwarden:
         name: Build vaultwarden
         runs-on: ubuntu-latest
         needs:
-            - setup-cache
             - base
             - rust
-            - update-layer-2
         steps:
             - name: Checkout code
               uses: actions/checkout@v6
-            - name: Setup Go
+            - name: Set up Go
               uses: actions/setup-go@v6
               with:
                 cache: "false"
@@ -1103,20 +1181,28 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
             - name: Build vaultwarden
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" vaultwarden
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" vaultwarden
     watchtower:
         name: Build watchtower
         runs-on: ubuntu-latest
         needs:
-            - setup-cache
             - base
             - golang
-            - update-layer-2
         steps:
             - name: Checkout code
               uses: actions/checkout@v6
-            - name: Setup Go
+            - name: Set up Go
               uses: actions/setup-go@v6
               with:
                 cache: "false"
@@ -1125,20 +1211,28 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
             - name: Build watchtower
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" watchtower
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" watchtower
     webhooked:
         name: Build webhooked
         runs-on: ubuntu-latest
         needs:
-            - setup-cache
             - base
             - golang
-            - update-layer-2
         steps:
             - name: Checkout code
               uses: actions/checkout@v6
-            - name: Setup Go
+            - name: Set up Go
               uses: actions/setup-go@v6
               with:
                 cache: "false"
@@ -1147,5 +1241,15 @@ jobs:
               uses: mattdowdell/go-installer@v0.3.0
               with:
                 package: github.com/greboid/dfo
+            - name: Set up buildah
+              uses: redhat-actions/setup-podman@v1
+              with:
+                dockerfile: "false"
+            - name: Login to registry
+              uses: redhat-actions/podman-login@v1
+              with:
+                password: ${{ secrets.REGISTRY_PASS }}
+                registry: ${{ secrets.REGISTRY }}
+                username: ${{ secrets.REGISTRY_USER }}
             - name: Build webhooked
-              run: dfo single --build --registry "${{ secrets.REGISTRY }}" webhooked
+              run: dfo single --build --push --registry "${{ secrets.REGISTRY }}" webhooked
