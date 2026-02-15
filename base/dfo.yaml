@@ -1,9 +1,0 @@
-package:
-  name: base
-  description: Base image with nonroot user
-
-stages:
-  - name: Final
-    environment:
-      base-image: baseroot
-      user: nonroot

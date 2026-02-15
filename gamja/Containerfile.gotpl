@@ -1,0 +1,33 @@
+FROM {{image "alpine"}} AS busybox
+
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "busybox-static" -}}
+        {{$key}}={{$value}} \
+        {{end}};
+
+FROM {{image "node"}} AS build
+
+ARG GAMJATAG="{{github_tag "emersion/gamja"}}"
+
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "git" "libstdc++" -}}
+        {{$key}}={{$value}} \
+        {{end}}; \
+    git clone --depth=1 -b $GAMJATAG --single-branch https://codeberg.org/emersion/gamja.git /gamja; \
+    cd /gamja; \
+    npm install --include=dev; \
+    npm run build;
+
+FROM {{image "base"}} AS rootfs
+
+COPY --from=build --chown=65532:65532 /gamja/dist /rootfs/public
+COPY --from=busybox /bin/busybox.static /rootfs/bin/sh
+COPY --chmod=755 gamja /rootfs/usr/local/bin/gamja
+
+FROM {{image "sws"}}
+
+COPY --from=rootfs --chown=65532:65532 /rootfs/ /
+
+ENTRYPOINT ["/usr/local/bin/gamja"]
