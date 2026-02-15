@@ -1,11 +1,9 @@
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 0 * * *'  # Daily at midnight UTC
   push:
-    paths:
-      - '**/dfo.yaml'
-      - '.github/workflows/*.yml'
+    paths-ignore:
+      - '.github/workflows/update-containers.yml'
+      - 'README.md'
 name: Update Workflow
 jobs:
   update-workflow:
@@ -20,19 +18,14 @@ jobs:
         with:
           go-version: 'stable'
           cache: false
-      - name: Install latest dfo
-        uses: mattdowdell/go-installer@v0.3.0
-        with:
-          package: github.com/greboid/dfo
-      - name: Do stuff
-        run: |
-          git clone https://github.com/greboid/dfo.git
-          go install -C ./dfo .
-      - name: Update workflow
+      - name: Install contempt orchestrator
+        run: go install github.com/csmith/contempt/cmd/orchestrator@latest
+      - name: Run contempt orchestrator
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
-        run: |
-          dfo orchestrate --workflow --directory .
+          TEMPLATE: .github/workflows/update-containers.yml.gotpl
+          OUTPUT: .github/workflows/update-containers.yml
+        run: orchestrator .
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
