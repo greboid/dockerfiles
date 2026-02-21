@@ -1,231 +1,156 @@
-# BOM: {"apk:acl-libs":"2.3.2-r1","apk:autoconf":"2.72-r1","apk:automake":"1.18.1-r0","apk:bash":"5.3.3-r1","apk:binutils":"2.45.1-r0","apk:bison":"3.8.2-r2","apk:brotli-libs":"1.2.0-r0","apk:busybox":"1.37.0-r30","apk:busybox-binsh":"1.37.0-r30","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:flex":"2.6.4-r7","apk:g++":"15.2.0-r2","apk:gcc":"15.2.0-r2","apk:git":"2.52.0-r0","apk:gmp":"6.3.0-r4","apk:isl25":"0.25-r2","apk:jansson":"2.14.1-r0","apk:libatomic":"15.2.0-r2","apk:libbz2":"1.0.8-r6","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.3-r0","apk:libformw":"6.5_p20251123-r0","apk:libgcc":"15.2.0-r2","apk:libgomp":"15.2.0-r2","apk:libhistory":"8.3.1-r0","apk:libidn2":"2.3.8-r0","apk:libintl":"0.24.1-r1","apk:libmenuw":"6.5_p20251123-r0","apk:libncurses++":"6.5_p20251123-r0","apk:libncursesw":"6.5_p20251123-r0","apk:libpanelw":"6.5_p20251123-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"15.2.0-r2","apk:libstdc++-dev":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:libxxhash":"0.8.3-r0","apk:linux-headers":"6.16.12-r0","apk:lz4-libs":"1.10.0-r0","apk:m4":"1.4.20-r0","apk:make":"4.4.1-r3","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.2-r0","apk:musl":"1.2.5-r21","apk:musl-dev":"1.2.5-r21","apk:musl-locales":"0.1.0-r1","apk:ncurses-dev":"6.5_p20251123-r0","apk:ncurses-terminfo-base":"6.5_p20251123-r0","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:openssl-dev":"3.5.4-r0","apk:pcre2":"10.47-r0","apk:perl":"5.42.0-r0","apk:pkgconf":"2.5.1-r0","apk:popt":"1.19-r4","apk:readline":"8.3.1-r0","apk:readline-dev":"8.3.1-r0","apk:rsync":"3.4.1-r1","apk:scanelf":"1.3.8-r2","apk:zlib":"1.3.1-r2","apk:zlib-dev":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","image:alpine":"14dc126b317bdce30c2539357b1242160df85d6c188f4e1144d25caa462624d7","image:base":"d1f6a9f3beede32e9679b62dd4a9b8cdc3fbadbd24e2da0807af6a0c23aeddaf","postgres":"REL_15_15"}
+# Generated from https://github.com/greboid/dockerfiles/blob/master/postgres-15/Containerfile.gotpl
+# BOM: {"apk:acl-libs":"2.3.2-r1","apk:bash":"5.2.37-r0","apk:binutils":"2.44-r3","apk:brotli-libs":"1.1.0-r2","apk:busybox":"1.37.0-r19","apk:busybox-binsh":"1.37.0-r19","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20250911-r0","apk:curl":"8.14.1-r2","apk:g++":"14.2.0-r6","apk:gcc":"14.2.0-r6","apk:git":"2.49.1-r0","apk:gmp":"6.3.0-r3","apk:isl25":"0.25-r2","apk:jansson":"2.14.1-r0","apk:libatomic":"14.2.0-r6","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.14.1-r2","apk:libexpat":"2.7.3-r0","apk:libformw":"6.5_p20250503-r0","apk:libgcc":"14.2.0-r6","apk:libgomp":"14.2.0-r6","apk:libhistory":"8.2.13-r1","apk:libidn2":"2.3.7-r0","apk:libintl":"0.24.1-r0","apk:libmenuw":"6.5_p20250503-r0","apk:libncurses++":"6.5_p20250503-r0","apk:libncursesw":"6.5_p20250503-r0","apk:libpanelw":"6.5_p20250503-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"14.2.0-r6","apk:libstdc++-dev":"14.2.0-r6","apk:libunistring":"1.3-r0","apk:libxxhash":"0.8.3-r0","apk:linux-headers":"6.14.2-r0","apk:lz4-libs":"1.10.0-r0","apk:make":"4.4.1-r3","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.1_p1-r0","apk:musl":"1.2.5-r10","apk:musl-dev":"1.2.5-r10","apk:musl-locales":"0.1.0-r1","apk:ncurses-dev":"6.5_p20250503-r0","apk:ncurses-terminfo-base":"6.5_p20250503-r0","apk:nghttp2-libs":"1.65.0-r0","apk:openssl-dev":"3.5.4-r0","apk:pcre2":"10.46-r0","apk:pkgconf":"2.4.3-r0","apk:popt":"1.19-r4","apk:readline":"8.2.13-r1","apk:readline-dev":"8.2.13-r1","apk:rsync":"3.4.1-r0","apk:scanelf":"1.3.8-r1","apk:zlib":"1.3.1-r2","apk:zlib-dev":"1.3.1-r2","apk:zstd-libs":"1.5.7-r0","image:alpine":"0a39502ed1eb25b61d9a0220e371d8039689489f604a2ebcb048b860b7efabdc","image:base":"30995361a09109d75245595ddd5d80fa2ece82defd0e37bedd42de2c2dc4cabd","postgres15":"15.14"}
 
-FROM reg.g5d.dev/alpine@sha256:14dc126b317bdce30c2539357b1242160df85d6c188f4e1144d25caa462624d7 AS build
+FROM reg.g5d.dev/alpine@sha256:0a39502ed1eb25b61d9a0220e371d8039689489f604a2ebcb048b860b7efabdc as build
 
-ARG ENTRYPOINT="39c3dc7046f5f7909179a51e25f2a61158781d57"
+ARG ARCHIVE_URL="https://ftp.postgresql.org/pub/source/v15.14/postgresql-15.14.tar.bz2"
+ARG ARCHIVE_SUM="06dd75d305cd3870ee62b3932e661c624543eaf9ae2ba37cdec0a4f8edd051d2"
+ARG ENTRYPOINT=39c3dc7046f5f7909179a51e25f2a61158781d57
 
-# Install packages
 RUN set -eux; \
     apk add --no-cache \
         acl-libs=2.3.2-r1 \
-        bash=5.3.3-r1 \
-        binutils=2.45.1-r0 \
-        bison=3.8.2-r2 \
-        brotli-libs=1.2.0-r0 \
-        busybox=1.37.0-r30 \
-        busybox-binsh=1.37.0-r30 \
-        c-ares=1.34.6-r0 \
-        ca-certificates-bundle=20251003-r0 \
-        flex=2.6.4-r7 \
-        g++=15.2.0-r2 \
-        gcc=15.2.0-r2 \
-        git=2.52.0-r0 \
-        gmp=6.3.0-r4 \
+        bash=5.2.37-r0 \
+        binutils=2.44-r3 \
+        brotli-libs=1.1.0-r2 \
+        busybox=1.37.0-r19 \
+        busybox-binsh=1.37.0-r19 \
+        c-ares=1.34.5-r0 \
+        ca-certificates-bundle=20250911-r0 \
+        curl=8.14.1-r2 \
+        g++=14.2.0-r6 \
+        gcc=14.2.0-r6 \
+        git=2.49.1-r0 \
+        gmp=6.3.0-r3 \
         isl25=0.25-r2 \
         jansson=2.14.1-r0 \
-        libatomic=15.2.0-r2 \
-        libbz2=1.0.8-r6 \
+        libatomic=14.2.0-r6 \
         libcrypto3=3.5.4-r0 \
-        libcurl=8.17.0-r1 \
+        libcurl=8.14.1-r2 \
         libexpat=2.7.3-r0 \
-        libformw=6.5_p20251123-r0 \
-        libgcc=15.2.0-r2 \
-        libgomp=15.2.0-r2 \
-        libhistory=8.3.1-r0 \
-        libidn2=2.3.8-r0 \
-        libintl=0.24.1-r1 \
-        libmenuw=6.5_p20251123-r0 \
-        libncurses++=6.5_p20251123-r0 \
-        libncursesw=6.5_p20251123-r0 \
-        libpanelw=6.5_p20251123-r0 \
+        libformw=6.5_p20250503-r0 \
+        libgcc=14.2.0-r6 \
+        libgomp=14.2.0-r6 \
+        libhistory=8.2.13-r1 \
+        libidn2=2.3.7-r0 \
+        libintl=0.24.1-r0 \
+        libmenuw=6.5_p20250503-r0 \
+        libncurses++=6.5_p20250503-r0 \
+        libncursesw=6.5_p20250503-r0 \
+        libpanelw=6.5_p20250503-r0 \
         libpsl=0.21.5-r3 \
         libssl3=3.5.4-r0 \
-        libstdc++=15.2.0-r2 \
-        libstdc++-dev=15.2.0-r2 \
-        libunistring=1.4.1-r0 \
+        libstdc++=14.2.0-r6 \
+        libstdc++-dev=14.2.0-r6 \
+        libunistring=1.3-r0 \
         libxxhash=0.8.3-r0 \
-        linux-headers=6.16.12-r0 \
+        linux-headers=6.14.2-r0 \
         lz4-libs=1.10.0-r0 \
-        m4=1.4.20-r0 \
         make=4.4.1-r3 \
         mpc1=1.3.1-r1 \
-        mpfr4=4.2.2-r0 \
-        musl=1.2.5-r21 \
-        musl-dev=1.2.5-r21 \
+        mpfr4=4.2.1_p1-r0 \
+        musl=1.2.5-r10 \
+        musl-dev=1.2.5-r10 \
         musl-locales=0.1.0-r1 \
-        ncurses-dev=6.5_p20251123-r0 \
-        ncurses-terminfo-base=6.5_p20251123-r0 \
-        nghttp2-libs=1.68.0-r0 \
-        nghttp3=1.13.1-r0 \
+        ncurses-dev=6.5_p20250503-r0 \
+        ncurses-terminfo-base=6.5_p20250503-r0 \
+        nghttp2-libs=1.65.0-r0 \
         openssl-dev=3.5.4-r0 \
-        pcre2=10.47-r0 \
-        perl=5.42.0-r0 \
-        pkgconf=2.5.1-r0 \
+        pcre2=10.46-r0 \
+        pkgconf=2.4.3-r0 \
         popt=1.19-r4 \
-        readline=8.3.1-r0 \
-        readline-dev=8.3.1-r0 \
-        rsync=3.4.1-r1 \
-        scanelf=1.3.8-r2 \
+        readline=8.2.13-r1 \
+        readline-dev=8.2.13-r1 \
+        rsync=3.4.1-r0 \
+        scanelf=1.3.8-r1 \
         zlib=1.3.1-r2 \
         zlib-dev=1.3.1-r2 \
-        zstd-libs=1.5.7-r2 \
-    ;
+        zstd-libs=1.5.7-r0 \
+        ;
 
-# Clone postgres docker entrypoint
-RUN apk add --no-cache --virtual .clone-deps \
-    brotli-libs=1.2.0-r0 \
-    c-ares=1.34.6-r0 \
-    ca-certificates-bundle=20251003-r0 \
-    git=2.52.0-r0 \
-    libcrypto3=3.5.4-r0 \
-    libcurl=8.17.0-r1 \
-    libexpat=2.7.3-r0 \
-    libidn2=2.3.8-r0 \
-    libpsl=0.21.5-r3 \
-    libssl3=3.5.4-r0 \
-    libunistring=1.4.1-r0 \
-    musl=1.2.5-r21 \
-    nghttp2-libs=1.68.0-r0 \
-    nghttp3=1.13.1-r0 \
-    pcre2=10.47-r0 \
-    zlib=1.3.1-r2 \
-    zstd-libs=1.5.7-r2 \
-    ;
+RUN set -eux; \
+    git clone -b master --single-branch https://github.com/docker-library/postgres /src/docker-postgres; \
+    cd /src/docker-postgres; \
+    git checkout $ENTRYPOINT
 
-# Clone repository
-RUN git clone "https://github.com/docker-library/postgres" /src/docker-postgres && \
-    cd /src/docker-postgres && \
-    git checkout 39c3dc7046f5f7909179a51e25f2a61158781d57
-RUN apk del --no-network .clone-deps
+RUN set -eux; \
+    curl -sfLo postgresql.tar.bz2 $ARCHIVE_URL; \
+    echo "$ARCHIVE_SUM *postgresql.tar.bz2" | sha256sum -wc -; \
+    mkdir -p /usr/local/postgres; \
+    tar -C /usr/local/postgres --strip-components 1 -xf postgresql.tar.bz2; \
+    cd /usr/local/postgres; \
+    ./configure \
+        --with-system-tzdata=/usr/share/zoneinfo \
+        --with-includes=/usr/local/include \
+        --with-libraries=/usr/local/lib \
+        --with-ssl=openssl; \
+    make -j$(nproc) world; \
+    make install-world; \
+    make -C contrib install;
 
-# Build PostgreSQL
-RUN apk add --no-cache --virtual .clone-and-build-autoconf-deps \
-    autoconf=2.72-r1 \
-    automake=1.18.1-r0 \
-    binutils=2.45.1-r0 \
-    brotli-libs=1.2.0-r0 \
-    busybox=1.37.0-r30 \
-    c-ares=1.34.6-r0 \
-    ca-certificates-bundle=20251003-r0 \
-    git=2.52.0-r0 \
-    jansson=2.14.1-r0 \
-    libbz2=1.0.8-r6 \
-    libcrypto3=3.5.4-r0 \
-    libcurl=8.17.0-r1 \
-    libexpat=2.7.3-r0 \
-    libgcc=15.2.0-r2 \
-    libidn2=2.3.8-r0 \
-    libpsl=0.21.5-r3 \
-    libssl3=3.5.4-r0 \
-    libstdc++=15.2.0-r2 \
-    libunistring=1.4.1-r0 \
-    m4=1.4.20-r0 \
-    make=4.4.1-r3 \
-    musl=1.2.5-r21 \
-    nghttp2-libs=1.68.0-r0 \
-    nghttp3=1.13.1-r0 \
-    pcre2=10.47-r0 \
-    perl=5.42.0-r0 \
-    zlib=1.3.1-r2 \
-    zstd-libs=1.5.7-r2 \
-    ;
-
-# Clone repository
-RUN git clone --depth=1 --branch REL_15_15 "https://github.com/postgres/postgres" /src/postgres
-# Configure
-WORKDIR /src/postgres
-RUN ./configure --with-system-tzdata=/usr/share/zoneinfo --with-includes=/usr/local/include --with-libraries=/usr/local/lib --with-ssl=openssl
-# Build with make
-RUN make -j$(nproc) world; \
-    make -j$(nproc) install; \
-    make -j$(nproc) -C contrib install
-# Strip binaries
-RUN find /src/postgres -type f -executable -exec strip {} + 2>/dev/null || true
-RUN apk del --no-network .clone-and-build-autoconf-deps
-
-# Prepare rootfs dependencies
 RUN set -eux; \
     DEPS=$(scanelf --needed --nobanner --format '%n#p' --recursive -l /usr/local /usr/local/pgsql/bin /usr/bin/locale \
     | tr ',' '\n' \
     | sort -u \
-    | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }'); \
+    | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }');\
     mkdir /rootfs; \
     for DEP in $DEPS; do \
-    apk add "${DEP}"; \
-    apk info -qL "${DEP}" | rsync -aq '--files-from=-' / /rootfs/; \
-    done
+      apk add "${DEP}"; \
+      apk info -qL "${DEP}" | rsync -aq '--files-from=-' / /rootfs/; \
+    done;
 
-# Create essential directories
-RUN apk add --no-cache --virtual .create-directories-deps \
-    busybox=1.37.0-r30 \
-    musl=1.2.5-r21 \
-    ;
-
-# Create directories
-RUN mkdir -p /rootfs/usr/bin /rootfs/bin /rootfs/usr/local/bin /rootfs/var/lib/postgresql/data
-RUN apk del --no-network .create-directories-deps
-
-# Copy essential binaries
 RUN set -eux; \
+    mkdir -p /rootfs/usr/bin; \
+    mkdir -p /rootfs/bin; \
+    mkdir -p /rootfs/usr/local/bin/; \
     cp /usr/bin/env /rootfs/usr/bin/env; \
     cp /bin/sh /rootfs/bin/sh; \
     cp /bin/ls /rootfs/bin/ls; \
     cp /bin/cat /rootfs/bin/cat; \
     cp /bin/bash /rootfs/bin/bash; \
-    cp /usr/bin/find /rootfs/usr/bin/find; \
     cp /usr/bin/locale /rootfs/usr/bin/locale; \
+    cp /bin/ls /rootfs/bin/ls; \
     cp /usr/bin/id /rootfs/usr/bin/id; \
     cp /bin/mkdir /rootfs/bin/mkdir; \
     cp /bin/chmod /rootfs/bin/chmod
 
-# Set up entrypoint script
 RUN set -eux; \
     cp /src/docker-postgres/15/alpine/docker-entrypoint.sh /rootfs/usr/local/bin/entry.sh; \
     chmod 777 /rootfs/usr/local/bin/entry.sh; \
     chown 65532:65532 /rootfs/usr/local/bin/entry.sh
 
-# Copy PostgreSQL installation
 RUN set -eux; \
     rsync -ap /usr/local/pgsql/ /rootfs/usr/local/pgsql/
 
-# Create volumes
-RUN apk add --no-cache --virtual .create-directories-deps \
-    busybox=1.37.0-r30 \
-    musl=1.2.5-r21 \
-    ;
+RUN set -eux; \
+    mkdir -p /rootfs/var/lib/postgresql/data; \
+    chown -R 65532:65532 /rootfs/var/lib/postgresql; \
+    chmod 750 /rootfs/var/lib/postgresql/data; \
+    chmod 777 /rootfs/var/lib/postgresql
 
-# Create directories
-RUN mkdir -p /rootfs/var/lib/postgresql /rootfs/var/lib/postgresql/data /rootfs/var/run /rootfs/tmp /rootfs/docker-entrypoint-initdb.d; \
-    chmod 777 /rootfs/var/lib/postgresql; \
-    chown 65532:65532 /rootfs/var/lib/postgresql; \
-    chmod 777 /rootfs/var/lib/postgresql/data; \
-    chown 65532:65532 /rootfs/var/lib/postgresql/data; \
-    chmod 777 /rootfs/var/run; \
+RUN set -eux; \
+    mkdir -p /rootfs/var/run; \
     chown 65532:65532 /rootfs/var/run; \
-    chmod 777 /rootfs/tmp; \
+    chmod -R 777 /rootfs/var/run
+
+RUN set -eux; \
+    mkdir -p /rootfs/tmp; \
     chown 65532:65532 /rootfs/tmp; \
-    chmod 644 /rootfs/docker-entrypoint-initdb.d; \
-    chown 65532:65532 /rootfs/docker-entrypoint-initdb.d
-RUN apk del --no-network .create-directories-deps
+    chmod -R 777 /rootfs/tmp
 
+RUN set -eux; \
+    mkdir -p /rootfs/docker-entrypoint-initdb.d; \
+    chmod 644 /rootfs/docker-entrypoint-initdb.d/; \
+    chown 65532:65532 /rootfs/docker-entrypoint-initdb.d/
 
-FROM reg.g5d.dev/base@sha256:d1f6a9f3beede32e9679b62dd4a9b8cdc3fbadbd24e2da0807af6a0c23aeddaf
+FROM reg.g5d.dev/base@sha256:30995361a09109d75245595ddd5d80fa2ece82defd0e37bedd42de2c2dc4cabd
 
-ENV LANG="en_US.utf8"
-ENV PATH="/usr/local/pgsql/bin:$PATH"
-ENV PGDATA="/var/lib/postgresql/data"
-ENV PGHOST="127.0.0.1"
-ENV PGUSER="postgres"
+ENV PATH="/usr/local/pgsql/bin:$PATH" LANG=en_US.utf8 PGDATA=/var/lib/postgresql/data PGHOST=127.0.0.1 PGUSER=postgres
 
-# Copy rootfs
 COPY --from=build /rootfs/ /
-
-EXPOSE 5432
 
 STOPSIGNAL SIGINT
 
+EXPOSE 5432
 ENTRYPOINT ["/usr/local/bin/entry.sh"]
-
 CMD ["postgres", "-c", "listen_addresses=*"]
-
-

@@ -1,153 +1,103 @@
-# BOM: {"apk:bash":"5.3.3-r1","apk:binutils":"2.45.1-r0","apk:brotli-libs":"1.2.0-r0","apk:busybox":"1.37.0-r30","apk:busybox-binsh":"1.37.0-r30","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:curl":"8.17.0-r1","apk:gcc":"15.2.0-r2","apk:git":"2.52.0-r0","apk:gmp":"6.3.0-r4","apk:go":"1.25.5-r0","apk:isl25":"0.25-r2","apk:jansson":"2.14.1-r0","apk:libatomic":"15.2.0-r2","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.3-r0","apk:libgcc":"15.2.0-r2","apk:libgomp":"15.2.0-r2","apk:libidn2":"2.3.8-r0","apk:libncursesw":"6.5_p20251123-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.2-r0","apk:musl":"1.2.5-r21","apk:musl-dev":"1.2.5-r21","apk:ncurses-terminfo-base":"6.5_p20251123-r0","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:pcre2":"10.47-r0","apk:readline":"8.3.1-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","go":"go1.25.5","image:alpine":"14dc126b317bdce30c2539357b1242160df85d6c188f4e1144d25caa462624d7"}
+# Generated from https://github.com/greboid/dockerfiles/blob/master/golang/Containerfile.gotpl
+# BOM: {"apk:bash":"5.2.37-r0","apk:binutils":"2.44-r3","apk:brotli-libs":"1.1.0-r2","apk:busybox":"1.37.0-r19","apk:busybox-binsh":"1.37.0-r19","apk:c-ares":"1.34.5-r0","apk:ca-certificates-bundle":"20250911-r0","apk:curl":"8.14.1-r2","apk:gcc":"14.2.0-r6","apk:git":"2.49.1-r0","apk:gmp":"6.3.0-r3","apk:go":"1.24.9-r0","apk:isl25":"0.25-r2","apk:jansson":"2.14.1-r0","apk:libatomic":"14.2.0-r6","apk:libcrypto3":"3.5.4-r0","apk:libcurl":"8.14.1-r2","apk:libexpat":"2.7.3-r0","apk:libgcc":"14.2.0-r6","apk:libgomp":"14.2.0-r6","apk:libidn2":"2.3.7-r0","apk:libncursesw":"6.5_p20250503-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.4-r0","apk:libstdc++":"14.2.0-r6","apk:libunistring":"1.3-r0","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.1_p1-r0","apk:musl":"1.2.5-r10","apk:musl-dev":"1.2.5-r10","apk:ncurses-terminfo-base":"6.5_p20250503-r0","apk:nghttp2-libs":"1.65.0-r0","apk:pcre2":"10.46-r0","apk:readline":"8.2.13-r1","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r0","golang":"go1.25.3","image:alpine":"0a39502ed1eb25b61d9a0220e371d8039689489f604a2ebcb048b860b7efabdc"}
 
-FROM reg.g5d.dev/alpine@sha256:14dc126b317bdce30c2539357b1242160df85d6c188f4e1144d25caa462624d7 AS build
+FROM reg.g5d.dev/alpine@sha256:0a39502ed1eb25b61d9a0220e371d8039689489f604a2ebcb048b860b7efabdc
 
-ENV GOPATH="/go"
-ENV PATH="$GOPATH/bin:/usr/local/go/bin:$PATH"
+ARG ARCHIVE_URL="https://golang.org/dl/go1.25.3.src.tar.gz"
+ARG ARCHIVE_SUM="a81a4ba593d0015e10c51e267de3ff07c7ac914dfca037d9517d029517097795"
 
-# Download and verify Go
-RUN apk add --no-cache --virtual .download-verify-extract-deps \
-    brotli-libs=1.2.0-r0 \
-    busybox=1.37.0-r30 \
-    c-ares=1.34.6-r0 \
-    ca-certificates-bundle=20251003-r0 \
-    curl=8.17.0-r1 \
-    libcrypto3=3.5.4-r0 \
-    libcurl=8.17.0-r1 \
-    libidn2=2.3.8-r0 \
-    libpsl=0.21.5-r3 \
-    libssl3=3.5.4-r0 \
-    libunistring=1.4.1-r0 \
-    musl=1.2.5-r21 \
-    nghttp2-libs=1.68.0-r0 \
-    nghttp3=1.13.1-r0 \
-    zlib=1.3.1-r2 \
-    zstd-libs=1.5.7-r2 \
-    ;
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
 
-# Download, verify and extract
-RUN curl -fsSL -o go.tar.gz "https://golang.org/dl/go1.25.5.src.tar.gz" && \
-    echo "22a5fd0a91efcd28a1b0537106b9959b2804b61f59c3758b51e8e5429c1a954f  go.tar.gz" | sha256sum -c && \
-    mkdir -p "/usr/local" && tar -xf "go.tar.gz" -C "/usr/local" --strip-components=0
-RUN apk del --no-network .download-verify-extract-deps
-
-# Bootstrap and install Go
-RUN apk add --no-cache --virtual .build-deps \
-  bash=5.3.3-r1 \
-  binutils=2.45.1-r0 \
-  brotli-libs=1.2.0-r0 \
-  busybox=1.37.0-r30 \
-  busybox-binsh=1.37.0-r30 \
-  c-ares=1.34.6-r0 \
-  ca-certificates-bundle=20251003-r0 \
-  gcc=15.2.0-r2 \
-  git=2.52.0-r0 \
-  gmp=6.3.0-r4 \
-  go=1.25.5-r0 \
-  isl25=0.25-r2 \
-  jansson=2.14.1-r0 \
-  libatomic=15.2.0-r2 \
-  libcrypto3=3.5.4-r0 \
-  libcurl=8.17.0-r1 \
-  libexpat=2.7.3-r0 \
-  libgcc=15.2.0-r2 \
-  libgomp=15.2.0-r2 \
-  libidn2=2.3.8-r0 \
-  libncursesw=6.5_p20251123-r0 \
-  libpsl=0.21.5-r3 \
-  libssl3=3.5.4-r0 \
-  libstdc++=15.2.0-r2 \
-  libunistring=1.4.1-r0 \
-  mpc1=1.3.1-r1 \
-  mpfr4=4.2.2-r0 \
-  musl=1.2.5-r21 \
-  musl-dev=1.2.5-r21 \
-  ncurses-terminfo-base=6.5_p20251123-r0 \
-  nghttp2-libs=1.68.0-r0 \
-  nghttp3=1.13.1-r0 \
-  pcre2=10.47-r0 \
-  readline=8.3.1-r0 \
-  zlib=1.3.1-r2 \
-  zstd-libs=1.5.7-r2 \
-  ; \
-  set -eux; \
-  cd /usr/local/go/src; \
-  GOROOT_BOOTSTRAP="$(go env GOROOT)" GOHOSTOS="linux" GOHOSTARCH="amd64" ./make.bash; \
-  go install std; \
-  rm -rf \
-  /go.tar.gz \
-  /root/.cache \
-  /usr/local/go/pkg/*/cmd \
-  /usr/local/go/pkg/bootstrap \
-  /usr/local/go/pkg/obj \
-  /usr/local/go/pkg/tool/*/api \
-  /usr/local/go/pkg/tool/*/go_bootstrap \
-  /usr/local/go/src/cmd/dist/dist; \
-  go install github.com/google/go-licenses@v1.6.0; \
-  apk del --no-network .build-deps
-
-# Create GOPATH directories
-RUN apk add --no-cache --virtual .create-directories-deps \
-    busybox=1.37.0-r30 \
-    musl=1.2.5-r21 \
-    ;
-
-# Create directories
-RUN mkdir -p $GOPATH/src $GOPATH/bin; \
-    chmod 777 $GOPATH/src; \
-    chmod 777 $GOPATH/bin
-RUN apk del --no-network .create-directories-deps
-
-
-FROM reg.g5d.dev/alpine@sha256:14dc126b317bdce30c2539357b1242160df85d6c188f4e1144d25caa462624d7 AS rootfs
-
-# Copy Go to rootfs
-COPY --from=build /usr/local/go /rootfs/usr/local/go
-
-# Copy GOPATH to rootfs
-COPY --from=build /go /rootfs/go
-
-
-FROM reg.g5d.dev/alpine@sha256:14dc126b317bdce30c2539357b1242160df85d6c188f4e1144d25caa462624d7
-
-ENV GOPATH="/go"
-ENV PATH="$GOPATH/bin:/usr/local/go/bin:$PATH"
-
-# Install packages
 RUN set -eux; \
-    apk add --no-cache \
-        binutils=2.45.1-r0 \
-        brotli-libs=1.2.0-r0 \
-        c-ares=1.34.6-r0 \
-        ca-certificates-bundle=20251003-r0 \
-        gcc=15.2.0-r2 \
-        git=2.52.0-r0 \
-        gmp=6.3.0-r4 \
+    # Dependencies and source for bootstrapping go
+    apk add --no-cache --virtual .build-deps \
+        bash=5.2.37-r0 \
+        binutils=2.44-r3 \
+        brotli-libs=1.1.0-r2 \
+        busybox=1.37.0-r19 \
+        busybox-binsh=1.37.0-r19 \
+        c-ares=1.34.5-r0 \
+        ca-certificates-bundle=20250911-r0 \
+        curl=8.14.1-r2 \
+        gcc=14.2.0-r6 \
+        git=2.49.1-r0 \
+        gmp=6.3.0-r3 \
+        go=1.24.9-r0 \
         isl25=0.25-r2 \
         jansson=2.14.1-r0 \
-        libatomic=15.2.0-r2 \
+        libatomic=14.2.0-r6 \
         libcrypto3=3.5.4-r0 \
-        libcurl=8.17.0-r1 \
+        libcurl=8.14.1-r2 \
         libexpat=2.7.3-r0 \
-        libgcc=15.2.0-r2 \
-        libgomp=15.2.0-r2 \
-        libidn2=2.3.8-r0 \
+        libgcc=14.2.0-r6 \
+        libgomp=14.2.0-r6 \
+        libidn2=2.3.7-r0 \
+        libncursesw=6.5_p20250503-r0 \
         libpsl=0.21.5-r3 \
         libssl3=3.5.4-r0 \
-        libstdc++=15.2.0-r2 \
-        libunistring=1.4.1-r0 \
+        libstdc++=14.2.0-r6 \
+        libunistring=1.3-r0 \
         mpc1=1.3.1-r1 \
-        mpfr4=4.2.2-r0 \
-        musl=1.2.5-r21 \
-        musl-dev=1.2.5-r21 \
-        nghttp2-libs=1.68.0-r0 \
-        nghttp3=1.13.1-r0 \
-        pcre2=10.47-r0 \
+        mpfr4=4.2.1_p1-r0 \
+        musl=1.2.5-r10 \
+        musl-dev=1.2.5-r10 \
+        ncurses-terminfo-base=6.5_p20250503-r0 \
+        nghttp2-libs=1.65.0-r0 \
+        pcre2=10.46-r0 \
+        readline=8.2.13-r1 \
         zlib=1.3.1-r2 \
-        zstd-libs=1.5.7-r2 \
-    ;
-
-# Copy rootfs to root
-COPY --from=rootfs /rootfs/ /
-
-
+        zstd-libs=1.5.7-r0 \
+        ; \
+    curl -sfLo go.tar.gz $ARCHIVE_URL; \
+    echo "$ARCHIVE_SUM *go.tar.gz" | sha256sum -wc -; \
+    tar -C /usr/local -xzf go.tar.gz; \
+    # Bootstrap and install the standard library
+    cd /usr/local/go/src && GOROOT_BOOTSTRAP="$(go env GOROOT)" GOHOSTOS="linux" GOHOSTARCH="amd64" ./make.bash; \
+    go install std; \
+    # Clean up a little
+	apk del --no-network .build-deps; \
+    rm -rf \
+            /go.tar.gz \
+            /root/.cache \
+    		/usr/local/go/pkg/*/cmd \
+    		/usr/local/go/pkg/bootstrap \
+    		/usr/local/go/pkg/obj \
+    		/usr/local/go/pkg/tool/*/api \
+    		/usr/local/go/pkg/tool/*/go_bootstrap \
+    		/usr/local/go/src/cmd/dist/dist; \
+    # Dependencies commonly needed for building go apps
+    apk add --no-cache \
+        binutils=2.44-r3 \
+        brotli-libs=1.1.0-r2 \
+        c-ares=1.34.5-r0 \
+        ca-certificates-bundle=20250911-r0 \
+        gcc=14.2.0-r6 \
+        git=2.49.1-r0 \
+        gmp=6.3.0-r3 \
+        isl25=0.25-r2 \
+        jansson=2.14.1-r0 \
+        libatomic=14.2.0-r6 \
+        libcrypto3=3.5.4-r0 \
+        libcurl=8.14.1-r2 \
+        libexpat=2.7.3-r0 \
+        libgcc=14.2.0-r6 \
+        libgomp=14.2.0-r6 \
+        libidn2=2.3.7-r0 \
+        libpsl=0.21.5-r3 \
+        libssl3=3.5.4-r0 \
+        libstdc++=14.2.0-r6 \
+        libunistring=1.3-r0 \
+        mpc1=1.3.1-r1 \
+        mpfr4=4.2.1_p1-r0 \
+        musl=1.2.5-r10 \
+        musl-dev=1.2.5-r10 \
+        nghttp2-libs=1.65.0-r0 \
+        pcre2=10.46-r0 \
+        zlib=1.3.1-r2 \
+        zstd-libs=1.5.7-r0 \
+        ; \
+    # Set up the go path
+    mkdir -p $GOPATH/src $GOPATH/bin; \
+    chmod -R 777 $GOPATH; \
+    go install github.com/google/go-licenses@v1.6.0

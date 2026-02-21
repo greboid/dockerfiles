@@ -33,16 +33,6 @@ jobs:
     with:
         PROJECT_NAME: alpine
 
-  texlive:
-    name: Build texlive
-    needs:
-        - setup-cache
-        - alpine
-    uses: ./.github/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: texlive
-
   rust:
     name: Build rust
     needs:
@@ -83,6 +73,27 @@ jobs:
     with:
         PROJECT_NAME: baseroot
 
+  thelounge:
+    name: Build thelounge
+    needs:
+        - setup-cache
+        - node
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: thelounge
+
+  dsp:
+    name: Build dsp
+    needs:
+        - setup-cache
+        - baseroot
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: dsp
+
   base:
     name: Build base
     needs:
@@ -115,17 +126,6 @@ jobs:
     with:
         PROJECT_NAME: watchtower
 
-  vaultwarden:
-    name: Build vaultwarden
-    needs:
-        - setup-cache
-        - base
-        - rust
-    uses: ./.github/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: vaultwarden
-
   tsp:
     name: Build tsp
     needs:
@@ -137,16 +137,16 @@ jobs:
     with:
         PROJECT_NAME: tsp
 
-  thelounge:
-    name: Build thelounge
+  tailscale:
+    name: Build tailscale
     needs:
         - setup-cache
         - base
-        - node
+        - golang
     uses: ./.github/workflows/container-builder.yml
     secrets: inherit
     with:
-        PROJECT_NAME: thelounge
+        PROJECT_NAME: tailscale
 
   sws:
     name: Build sws
@@ -235,6 +235,17 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: linx-server
+
+  legoergo:
+    name: Build legoergo
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: legoergo
 
   irc-webhook:
     name: Build irc-webhook
@@ -356,17 +367,6 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: githubmirror
-
-  dsp:
-    name: Build dsp
-    needs:
-        - setup-cache
-        - base
-        - golang
-    uses: ./.github/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: dsp
 
   dotege:
     name: Build dotege
