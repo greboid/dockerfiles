@@ -137,17 +137,6 @@ jobs:
     with:
         PROJECT_NAME: tsp
 
-  tailscale:
-    name: Build tailscale
-    needs:
-        - setup-cache
-        - base
-        - golang
-    uses: ./.github/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: tailscale
-
   sws:
     name: Build sws
     needs:
@@ -235,17 +224,6 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: linx-server
-
-  legoergo:
-    name: Build legoergo
-    needs:
-        - setup-cache
-        - base
-        - golang
-    uses: ./.github/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: legoergo
 
   irc-webhook:
     name: Build irc-webhook
@@ -367,6 +345,17 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: githubmirror
+
+  ergo:
+    name: Build ergo
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: ergo
 
   dotege:
     name: Build dotege
