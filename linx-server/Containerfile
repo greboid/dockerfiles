@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/linx-server/Containerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.2.0-r0","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:git":"2.52.0-r0","apk:libcrypto3":"3.5.5-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.4-r0","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.5-r0","apk:libunistring":"1.4.1-r0","apk:musl":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:pcre2":"10.47-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","github:csmith/linx-server":"v3.1.0","image:base":"108d1930f95fecb6a510f66d3f1833295acf8dbf64eb2f1ab273ac2ffa6c80e9","image:golang":"8d0ddbe41fe4d224516c7e843b497c10a9476ceba7bcf874dc44775a77787e56"}
+# BOM: {"apk:brotli-libs":"1.2.0-r0","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:git":"2.52.0-r0","apk:libcrypto3":"3.5.5-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.4-r0","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.5-r0","apk:libunistring":"1.4.1-r0","apk:musl":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:pcre2":"10.47-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","github:csmith/linx-server":"v3.1.0","image:base":"5ee9578466fd89bf14eedaa365d1fbb37a8f99be69c5b0438fa91160e015c71a","image:golang":"c481c70b83c187751947e63a634ed05392bfa92e86d0e9213e81699355be243a"}
 
-FROM reg.g5d.dev/golang@sha256:8d0ddbe41fe4d224516c7e843b497c10a9476ceba7bcf874dc44775a77787e56 AS build
+FROM reg.g5d.dev/golang@sha256:c481c70b83c187751947e63a634ed05392bfa92e86d0e9213e81699355be243a AS build
 
 ARG TAG="v3.1.0"
 
@@ -32,7 +32,7 @@ RUN set -eux; \
     mkdir -p /data/files /data/meta; \
     chown -R 65532:65532 /data;
 
-FROM reg.g5d.dev/base@sha256:108d1930f95fecb6a510f66d3f1833295acf8dbf64eb2f1ab273ac2ffa6c80e9
+FROM reg.g5d.dev/base@sha256:5ee9578466fd89bf14eedaa365d1fbb37a8f99be69c5b0438fa91160e015c71a
 
 COPY --from=build /go/src/github.com/csmith/linx-server/main /linx-server
 COPY --from=build /data /data
