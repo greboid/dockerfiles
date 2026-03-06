@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/soju/Containerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.2.0-r0","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:git":"2.52.0-r0","apk:libcrypto3":"3.5.5-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.4-r0","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.5-r0","apk:libunistring":"1.4.1-r0","apk:musl":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:patch":"2.8-r0","apk:pcre2":"10.47-r0","apk:zlib":"1.3.1-r2","apk:zstd-libs":"1.5.7-r2","github:csmith/certwrapper":"v4.3.0","github:emersion/soju":"v0.10.1","image:base":"ebb599860afc6aade81d191ddd7f0b20bf56765f1b6f000d4bd791a9ed687993","image:golang":"c481c70b83c187751947e63a634ed05392bfa92e86d0e9213e81699355be243a"}
+# BOM: {"apk:brotli-libs":"1.2.0-r0","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:git":"2.52.0-r0","apk:libcrypto3":"3.5.5-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.4-r0","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.5-r0","apk:libunistring":"1.4.1-r0","apk:musl":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:patch":"2.8-r0","apk:pcre2":"10.47-r0","apk:zlib":"1.3.2-r0","apk:zstd-libs":"1.5.7-r2","github:csmith/certwrapper":"v4.3.0","github:emersion/soju":"v0.10.1","image:base":"ebb599860afc6aade81d191ddd7f0b20bf56765f1b6f000d4bd791a9ed687993","image:golang":"8079b9e51a12d5dcd333447d79e8101b3e0d79c7b8f7b102848d1baa1a9a1bb8"}
 
-FROM reg.g5d.dev/golang@sha256:c481c70b83c187751947e63a634ed05392bfa92e86d0e9213e81699355be243a AS build
+FROM reg.g5d.dev/golang@sha256:8079b9e51a12d5dcd333447d79e8101b3e0d79c7b8f7b102848d1baa1a9a1bb8 AS build
 
 ARG SOJUTAG="v0.10.1"
 ARG CERTTAG="v4.3.0"
@@ -24,7 +24,7 @@ RUN set -eux; \
         nghttp3=1.13.1-r0 \
         patch=2.8-r0 \
         pcre2=10.47-r0 \
-        zlib=1.3.1-r2 \
+        zlib=1.3.2-r0 \
         zstd-libs=1.5.7-r2 \
         ; \
     git clone --depth=1 -b $SOJUTAG --single-branch https://github.com/emersion/soju /go/src/github.com/emersion/soju; \
