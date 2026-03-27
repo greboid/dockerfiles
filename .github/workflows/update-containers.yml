@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         - name: Install latest contempt
-          uses: mattdowdell/go-installer@v0.3.0
+          uses: mattdowdell/go-installer@v0.4.0
           with:
               package: github.com/csmith/contempt/cmd/contempt
   
