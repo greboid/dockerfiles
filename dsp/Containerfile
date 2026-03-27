@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/dsp/Containerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.2.0-r0","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:git":"2.52.0-r0","apk:libcrypto3":"3.5.5-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.5-r0","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.5-r0","apk:libunistring":"1.4.1-r0","apk:musl":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:pcre2":"10.47-r0","apk:zlib":"1.3.2-r0","apk:zstd-libs":"1.5.7-r2","github:greboid/dsp":"v1.2.4","image:baseroot":"e06bb4e06fa68bb74cd11586fbaba8c7fa98c0fa15fd11f089063ed474a450ad","image:golang":"d616deade6e217ddd3e76f3f1077fd9983354cb6722d45b9f473ec270f8d3908"}
+# BOM: {"apk:brotli-libs":"1.2.0-r0","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:git":"2.52.0-r0","apk:libcrypto3":"3.5.5-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.5-r0","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.5-r0","apk:libunistring":"1.4.1-r0","apk:musl":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:pcre2":"10.47-r0","apk:zlib":"1.3.2-r0","apk:zstd-libs":"1.5.7-r2","github:greboid/dsp":"v1.2.4","image:baseroot":"2c3382c7e3b67bfc61923db5d0fb3ef7e4d6f55a69ce06af9da6c68b63d0056c","image:golang":"598596689adab49ef11a9a18c9f06bd5d238e8c56a8c4abed5bab00bf038d8fb"}
 
-FROM reg.g5d.dev/golang@sha256:d616deade6e217ddd3e76f3f1077fd9983354cb6722d45b9f473ec270f8d3908 AS build
+FROM reg.g5d.dev/golang@sha256:598596689adab49ef11a9a18c9f06bd5d238e8c56a8c4abed5bab00bf038d8fb AS build
 
 ARG TAG="v1.2.4"
 
@@ -30,7 +30,7 @@ RUN set -eux; \
     CGO_ENABLED=0 go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main ./cmd; \
     go-licenses save ./... --save_path=/notices;
 
-FROM reg.g5d.dev/baseroot@sha256:e06bb4e06fa68bb74cd11586fbaba8c7fa98c0fa15fd11f089063ed474a450ad
+FROM reg.g5d.dev/baseroot@sha256:2c3382c7e3b67bfc61923db5d0fb3ef7e4d6f55a69ce06af9da6c68b63d0056c
 
 COPY --from=build /src/main /dsp
 COPY --from=build /notices /notices
