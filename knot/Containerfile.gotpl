@@ -1,0 +1,19 @@
+FROM {{image "golang"}} AS build
+
+ARG TAG="{{git_tag "https://tangled.org/tangled.org/core"}}"
+
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "git" -}}
+        {{$key}}={{$value}}\
+        {{end}}; \
+    git clone --depth=1 -b $TAG --single-branch https://tangled.org/tangled.org/core /src; \
+    cd /src; \
+    go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid=" -o knot ./cmd/knot; \
+    go-licenses save ./... --save_path=/notices;
+
+FROM {{image "base"}}
+
+COPY --from=build /src/knot /knot
+COPY --from=build /notices /notices
+ENTRYPOINT ["/knot"]
