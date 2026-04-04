@@ -9,6 +9,7 @@ RUN set -eux; \
         {{end}}; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/purser /go/src/github.com/csmith/purser; \
     cd /go/src/github.com/csmith/purser; \
+    export GOEXPERIMENT=jsonv2; \
     CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid=" -o main .; \
     go-licenses save ./... --save_path=/notices \
         --ignore github.com/xi2/xz \
