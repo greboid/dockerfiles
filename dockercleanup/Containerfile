@@ -35,4 +35,5 @@ FROM reg.g5d.dev/base@sha256:ca91e5dda22f25c3cf1000a42682c5e6e2440de2d4f3f611a51
 COPY --from=build /go/src/github.com/greboid/dockercleanup/main /dockercleanup
 COPY --from=build /notices /notices
 EXPOSE 8080
+
 ENTRYPOINT ["/dockercleanup"]
