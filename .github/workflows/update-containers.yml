@@ -4,6 +4,8 @@ on:
   schedule:
     - cron: '42 12 * * *'
   push:
+    branches:
+      - master
     paths-ignore:
       - '**/Containerfile'
       - '**/Dockerfile'

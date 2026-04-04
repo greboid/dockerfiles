@@ -1,6 +1,8 @@
 on:
   workflow_dispatch:
   push:
+    branches:
+      - master
     paths-ignore:
       - '.github/workflows/update-containers.yml'
       - 'README.md'
