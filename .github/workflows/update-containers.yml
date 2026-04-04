@@ -4,8 +4,6 @@ on:
   schedule:
     - cron: '42 12 * * *'
   push:
-    branches:
-      - master
     paths-ignore:
       - '**/Containerfile'
       - '**/Dockerfile'
@@ -21,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         - name: Cache contempt
-          uses: actions/cache@v5
+          uses: actions/cache@v4
           id: cache
           with:
               path: ~/go/bin/contempt
