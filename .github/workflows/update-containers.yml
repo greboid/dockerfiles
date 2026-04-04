@@ -18,13 +18,15 @@ jobs:
     name: Setup cache
     runs-on: ubuntu-latest
     steps:
-        - name: Install latest contempt
-          run: go install github.com/csmith/contempt/cmd/contempt@latest
-        - name: Save contempt to cache
-          uses: actions/cache/save@v4
+        - name: Cache contempt
+          uses: actions/cache@v4
+          id: cache
           with:
               path: ~/go/bin/contempt
-              key: contempt-${{ runner.os }}-${{ runner.arch }}-${{ github.run_id }}
+              key: contempt-${{ runner.os }}-${{ runner.arch }}-latest
+        - name: Install latest contempt
+          if: steps.cache.outputs.cache-hit != 'true'
+          run: go install github.com/csmith/contempt/cmd/contempt@latest
   
   alpine:
     name: Build alpine
