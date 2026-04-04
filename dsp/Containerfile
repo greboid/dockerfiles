@@ -1,39 +1,20 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/dsp/Containerfile.gotpl
-# BOM: {"apk:brotli-libs":"1.2.0-r0","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20251003-r0","apk:git":"2.52.0-r0","apk:libcrypto3":"3.5.5-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.5-r0","apk:libidn2":"2.3.8-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.5-r0","apk:libunistring":"1.4.1-r0","apk:musl":"1.2.5-r21","apk:nghttp2-libs":"1.68.0-r0","apk:nghttp3":"1.13.1-r0","apk:pcre2":"10.47-r0","apk:zlib":"1.3.2-r0","apk:zstd-libs":"1.5.7-r2","github:greboid/dsp":"v1.2.4","image:baseroot":"2c3382c7e3b67bfc61923db5d0fb3ef7e4d6f55a69ce06af9da6c68b63d0056c","image:golang":"598596689adab49ef11a9a18c9f06bd5d238e8c56a8c4abed5bab00bf038d8fb"}
+# BOM: {"github:greboid/dsp":"v1.2.4","image:baseroot":"2c3382c7e3b67bfc61923db5d0fb3ef7e4d6f55a69ce06af9da6c68b63d0056c","image:golang":"598596689adab49ef11a9a18c9f06bd5d238e8c56a8c4abed5bab00bf038d8fb"}
 
 FROM reg.g5d.dev/golang@sha256:598596689adab49ef11a9a18c9f06bd5d238e8c56a8c4abed5bab00bf038d8fb AS build
 
 ARG TAG="v1.2.4"
 
 RUN set -eux; \
-    apk add --no-cache \
-        brotli-libs=1.2.0-r0\
-        c-ares=1.34.6-r0\
-        ca-certificates-bundle=20251003-r0\
-        git=2.52.0-r0\
-        libcrypto3=3.5.5-r0\
-        libcurl=8.17.0-r1\
-        libexpat=2.7.5-r0\
-        libidn2=2.3.8-r0\
-        libpsl=0.21.5-r3\
-        libssl3=3.5.5-r0\
-        libunistring=1.4.1-r0\
-        musl=1.2.5-r21\
-        nghttp2-libs=1.68.0-r0\
-        nghttp3=1.13.1-r0\
-        pcre2=10.47-r0\
-        zlib=1.3.2-r0\
-        zstd-libs=1.5.7-r2\
-        ; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/dsp /go/src/github.com/greboid/dsp; \
     cd /go/src/github.com/greboid/dsp; \
-    CGO_ENABLED=0 go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid=" -tags netgo,opusergo -o main ./cmd; \
+    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main ./cmd; \
     go-licenses save ./... --save_path=/notices;
 
 FROM reg.g5d.dev/baseroot@sha256:2c3382c7e3b67bfc61923db5d0fb3ef7e4d6f55a69ce06af9da6c68b63d0056c
 
 COPY --from=build /go/src/github.com/greboid/dsp/main /dsp
 COPY --from=build /notices /notices
-
 EXPOSE 8080
+
 ENTRYPOINT ["/dsp"]
