@@ -48,16 +48,6 @@ jobs:
     with:
         PROJECT_NAME: rust
 
-  node:
-    name: Build node
-    needs:
-        - setup-cache
-        - alpine
-    uses: ./.github/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: node
-
   golang:
     name: Build golang
     needs:
@@ -77,16 +67,6 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: baseroot
-
-  thelounge:
-    name: Build thelounge
-    needs:
-        - setup-cache
-        - node
-    uses: ./.github/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: thelounge
 
   dsp:
     name: Build dsp
@@ -142,6 +122,17 @@ jobs:
     with:
         PROJECT_NAME: tsp
 
+  thp:
+    name: Build thp
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: thp
+
   sws:
     name: Build sws
     needs:
@@ -152,6 +143,17 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: sws
+
+  spindle:
+    name: Build spindle
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: spindle
 
   soju:
     name: Build soju
@@ -197,6 +199,17 @@ jobs:
     with:
         PROJECT_NAME: puzzles
 
+  purser:
+    name: Build purser
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: purser
+
   postgres-15:
     name: Build postgres-15
     needs:
@@ -229,6 +242,17 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: linx-server
+
+  knot:
+    name: Build knot
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: knot
 
   irc-webhook:
     name: Build irc-webhook
@@ -383,6 +407,28 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: dockercleanup
+
+  cocoon:
+    name: Build cocoon
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: cocoon
+
+  centauri-docker-confd:
+    name: Build centauri-docker-confd
+    needs:
+        - setup-cache
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: centauri-docker-confd
 
   centauri:
     name: Build centauri
