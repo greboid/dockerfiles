@@ -7,14 +7,15 @@ RUN set -eux; \
         {{range $key, $value := alpine_packages "git" -}}
         {{$key}}={{$value}}\
         {{end}}; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/dsp /src; \
-    cd /src; \
-    CGO_ENABLED=0 go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main ./cmd; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/dsp /go/src/github.com/greboid/dsp; \
+    cd /go/src/github.com/greboid/dsp; \
+    CGO_ENABLED=0 go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid=" -tags netgo,opusergo -o main ./cmd; \
     go-licenses save ./... --save_path=/notices;
 
 FROM {{image "baseroot"}}
 
-COPY --from=build /src/main /dsp
+COPY --from=build /go/src/github.com/greboid/dsp/main /dsp
 COPY --from=build /notices /notices
+
 EXPOSE 8080
 ENTRYPOINT ["/dsp"]

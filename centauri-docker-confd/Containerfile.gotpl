@@ -1,0 +1,1 @@
+{{template "go-app" (map "repo" "csmith/centauri-docker-confd" "name" "centauri-docker-confd")}}

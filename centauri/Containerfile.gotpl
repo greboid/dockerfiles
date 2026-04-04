@@ -1,6 +1,5 @@
 FROM {{image "golang"}} AS build
 
-ARG REPO="csmith/centauri"
 ARG TAG="{{github_tag "csmith/centauri"}}"
 
 RUN set -eux; \
@@ -8,18 +7,26 @@ RUN set -eux; \
         {{range $key, $value := alpine_packages "git" -}}
         {{$key}}={{$value}}\
         {{end}}; \
-    git clone -b master --single-branch https://github.com/$REPO /go/src; \
-    cd /go/src; \
-    git checkout $TAG; \
-    GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -tags lego_httpreq -o main ./cmd/centauri; \
-    chmod +x /go/src/main; \
-    mkdir -p /rootfs/home/nonroot/.config; \
-    mkdir -p /rootfs/data; \
-    mv /go/src/main /rootfs/centauri
+    git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/centauri /go/src/github.com/csmith/centauri; \
+    cd /go/src/github.com/csmith/centauri; \
+    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid=" -tags lego_httpreq -o main ./cmd/centauri; \
+    go-licenses save ./... --save_path=/notices \
+        --ignore github.com/go-acme/tencentclouddnspod/v20210323 \
+        --ignore github.com/go-acme/tencentedgdeone/v20220901 \
+        --ignore github.com/nrdcg/oci-go-sdk/common/v1065 \
+        --ignore github.com/nrdcg/oci-go-sdk/common/v1065/auth \
+        --ignore github.com/nrdcg/oci-go-sdk/common/v1065/utils \
+        --ignore github.com/nrdcg/oci-go-sdk/dns/v1065; \
+    mkdir -p /data; \
+    chown -R 65532:65532 /data;
 
 FROM {{image "base"}}
 
-COPY --from=build --chown=65532:65532 /rootfs/ /
+COPY --from=build /go/src/github.com/csmith/centauri/main /centauri
+COPY --from=build /data /data
+COPY --from=build /notices /notices
+
+VOLUME ["/data"]
 EXPOSE 8080
 EXPOSE 8443
 ENTRYPOINT ["/centauri"]

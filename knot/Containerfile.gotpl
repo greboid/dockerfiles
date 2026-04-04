@@ -1,6 +1,6 @@
 FROM {{image "golang"}} AS build
 
-ARG TAG="{{git_tag "https://tangled.org/tangled.org/core"}}"
+ARG TAG="{{unreleased_git_tag "https://tangled.org/tangled.org/core"}}"
 
 RUN set -eux; \
     apk add --no-cache \
@@ -10,7 +10,7 @@ RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://tangled.org/tangled.org/core /src; \
     cd /src; \
     go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid=" -o knot ./cmd/knot; \
-    go-licenses save ./... --save_path=/notices;
+    go-licenses save ./... --ignore github.com/ipfs/bbloom --ignore github.com/multiformats/go-base36 --save_path=/notices;
 
 FROM {{image "base"}}
 
