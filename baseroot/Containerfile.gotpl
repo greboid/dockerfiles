@@ -2,7 +2,7 @@ FROM {{image "alpine"}} AS build
 
 RUN set -eux; \
     # Sort out our dependencies (and sources)
-    apk add --no-cache \
+    apk add \
         {{range $key, $value := alpine_packages "rsync" -}}
         {{$key}}={{$value}} \
         {{end}}; \
@@ -17,12 +17,12 @@ RUN set -eux; \
     chmod 01777 /rootfs/tmp; \
     # Add packages into rootfs
     {{ range $key, $value := alpine_packages "ca-certificates-bundle" "musl" "tzdata" -}}
-      apk add --no-cache {{$key}}={{$value}}; \
+      apk add {{$key}}={{$value}}; \
       apk info -qL {{$key}} | rsync -aq --files-from=- / /rootfs/; \
-    {{ end -}}
-    # Add general git config to avoid adding it in each image 
-    echo "[advice]" > /rootfs/etc/gitconfig; \
-    echo "    detachedHead = false" >> /rootfs/etc/gitconfig;
+    {{ end -}} \
+    apk cache purge
+    
+COPY gitconfig /rootfs/gitconfig
 
 FROM scratch
 

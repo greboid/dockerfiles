@@ -5,7 +5,7 @@ FROM reg.g5d.dev/alpine@sha256:0ce3d04e65a442e33c6bea56ac61cd2e4326e42535b5184c1
 
 RUN set -eux; \
     # Sort out our dependencies (and sources)
-    apk add --no-cache \
+    apk add \
         acl-libs=2.3.2-r1 \
         libxxhash=0.8.3-r0 \
         lz4-libs=1.10.0-r0 \
@@ -25,15 +25,16 @@ RUN set -eux; \
     chown 65532:65532 /rootfs/home/nonroot; \
     chmod 01777 /rootfs/tmp; \
     # Add packages into rootfs
-    apk add --no-cache ca-certificates-bundle=20251003-r0; \
+    apk add ca-certificates-bundle=20251003-r0; \
       apk info -qL ca-certificates-bundle | rsync -aq --files-from=- / /rootfs/; \
-    apk add --no-cache musl=1.2.5-r21; \
+    apk add musl=1.2.5-r21; \
       apk info -qL musl | rsync -aq --files-from=- / /rootfs/; \
-    apk add --no-cache tzdata=2026a-r0; \
+    apk add tzdata=2026a-r0; \
       apk info -qL tzdata | rsync -aq --files-from=- / /rootfs/; \
-    # Add general git config to avoid adding it in each image 
-    echo "[advice]" > /rootfs/etc/gitconfig; \
-    echo "    detachedHead = false" >> /rootfs/etc/gitconfig;
+    \
+    apk cache purge
+    
+COPY gitconfig /rootfs/gitconfig
 
 FROM scratch
 
