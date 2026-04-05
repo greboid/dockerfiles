@@ -3,8 +3,6 @@
 
 FROM reg.g5d.dev/alpine@sha256:0ce3d04e65a442e33c6bea56ac61cd2e4326e42535b5184c1871ddd098a9f3b6 AS build
 
-ARG TAG="8.6.2"
-
 ENV LDFLAGS="-static"
 
 COPY redis.conf /redis.conf
@@ -79,6 +77,13 @@ COPY --from=build --chown=65532:65532 /src/redis/src/redis-server /home/nonroot/
 
 ENTRYPOINT ["/home/nonroot/redis"]
 
+FROM reg.g5d.dev/alpine@sha256:0ce3d04e65a442e33c6bea56ac61cd2e4326e42535b5184c1871ddd098a9f3b6 AS prepare
+COPY --from=build /src/src/redis-server /rootfs/redis
+COPY --from=build /redis.conf /rootfs/redis.conf
+RUN mkdir -p /rootfs/home/nonroot/database
+FROM reg.g5d.dev/base@sha256:c356611e776024293582cbefc05437d61f9e0ea6a0e02aa8cfd583d700ca77ad
+COPY --from=prepare --chown=65532:65532 /rootfs/ /
 EXPOSE 6379
-VOLUME "/home/nonroot/database"
-CMD ["/home/nonroot/redis.conf"]
+VOLUME ["/home/nonroot/database"]
+ENTRYPOINT ["/redis"]
+CMD ["/redis.conf"]

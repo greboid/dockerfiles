@@ -78,7 +78,9 @@ RUN set -eux; \
     curl -sfLo postgresql.tar.bz2 $ARCHIVE_URL; \
     echo "$ARCHIVE_SUM *postgresql.tar.bz2" | sha256sum -wc -; \
     mkdir -p /usr/local/postgres; \
-    tar -C /usr/local/postgres --strip-components 1 -xf postgresql.tar.bz2; \
+    tar -C /usr/local/postgres --strip-components 1 -xf postgresql.tar.bz2
+
+RUN set -eux; \
     cd /usr/local/postgres; \
     ./configure \
         --with-system-tzdata=/usr/share/zoneinfo \

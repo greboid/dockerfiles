@@ -1,23 +1,6 @@
 FROM {{image "golang"}} AS build
-
-ARG TAG="{{github_tag "csmith/purser"}}"
-
-RUN set -eux; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/purser /go/src/github.com/csmith/purser; \
-    cd /go/src/github.com/csmith/purser; \
-    export GOEXPERIMENT=jsonv2; \
-    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid=" -o main .; \
-    go-licenses save ./... --save_path=/notices \
-        --ignore github.com/xi2/xz \
-        --ignore modernc.org/mathutil; \
-    mkdir -p /data/cache /data/output; \
-    chown -R 65532:65532 /data;
-
-FROM {{image "base"}}
-
-COPY --from=build /go/src/github.com/csmith/purser/main /purser
-COPY --from=build /data /data
-COPY --from=build /notices /notices
-
-VOLUME ["/data/cache", "/data/output"]
-ENTRYPOINT ["/purser"]
+{{template "clone" (map "repo" "csmith/purser")}}
+{{template "build-go" (map "go_experiments" (arr "jsonv2"))}}
+{{template "go-licenses" (map "go_experiments" (arr "jsonv2") "ignores" (arr "github.com/xi2/xz" "modernc.org/mathutil"))}}
+{{template "prepare" (map "name" "purser" "volumes" (arr "/data/cache" "/data/output"))}}
+{{template "runtime" (map "name" "purser" "volumes" (arr "/data/cache" "/data/output"))}}

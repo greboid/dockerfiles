@@ -1,1 +1,6 @@
-{{template "go-app" (map "repo" "csmith/webhooked" "name" "webhooked")}}
+FROM {{image "golang"}} AS build
+{{template "clone" (map "repo" "csmith/webhooked")}}
+{{template "build-go" (map)}}
+{{template "go-licenses" (map)}}
+{{template "prepare" (map "name" "webhooked")}}
+{{template "runtime" (map "name" "webhooked")}}

@@ -1,1 +1,6 @@
-{{template "go-app" (map "repo" "csmith/irc-distribution" "subdir" "./cmd/distribution" "name" "irc-distribution")}}
+FROM {{image "golang"}} AS build
+{{template "clone" (map "repo" "csmith/irc-distribution")}}
+{{template "build-go" (map "subdir" "./cmd/distribution")}}
+{{template "go-licenses" (map)}}
+{{template "prepare" (map "name" "irc-distribution")}}
+{{template "runtime" (map "name" "irc-distribution")}}

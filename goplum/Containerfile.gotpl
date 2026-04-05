@@ -1,1 +1,6 @@
-{{template "go-app" (map "repo" "csmith/goplum" "name" "goplum" "subdir" "./cmd/goplum" "exposes" (arr "8080"))}}
+FROM {{image "golang"}} AS build
+{{template "clone" (map "repo" "csmith/goplum")}}
+{{template "build-go" (map "subdir" "./cmd/goplum")}}
+{{template "go-licenses" (map)}}
+{{template "prepare" (map "name" "goplum")}}
+{{template "runtime" (map "name" "goplum" "exposes" (arr "8080"))}}

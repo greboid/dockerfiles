@@ -1,1 +1,6 @@
-{{template "go-app" (map "repo" "greboid/httpredirect" "name" "httpredirect" "exposes" (arr "8080"))}}
+FROM {{image "golang"}} AS build
+{{template "clone" (map "repo" "greboid/httpredirect")}}
+{{template "build-go" (map)}}
+{{template "go-licenses" (map)}}
+{{template "prepare" (map "name" "httpredirect")}}
+{{template "runtime" (map "name" "httpredirect" "exposes" (arr "8080"))}}

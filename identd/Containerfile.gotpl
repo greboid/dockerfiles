@@ -1,1 +1,6 @@
-{{template "go-app" (map "repo" "greboid/identd" "name" "identd" "exposes" (arr "8000"))}}
+FROM {{image "golang"}} AS build
+{{template "clone" (map "repo" "greboid/identd")}}
+{{template "build-go" (map)}}
+{{template "go-licenses" (map)}}
+{{template "prepare" (map "name" "identd")}}
+{{template "runtime" (map "name" "identd" "exposes" (arr "8000"))}}

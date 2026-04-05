@@ -1,20 +1,6 @@
 FROM {{image "golang"}} AS build
-
-ARG TAG="{{github_tag "greboid/thp"}}"
-
-RUN set -eux; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/thp /go/src/github.com/greboid/thp; \
-    cd /go/src/github.com/greboid/thp; \
-    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid=" -o main .; \
-    go-licenses save ./... --save_path=/notices; \
-    mkdir -p /config; \
-    chown -R 65532:65532 /config;
-
-FROM {{image "base"}}
-
-COPY --from=build /go/src/github.com/greboid/thp/main /thp
-COPY --from=build /config /config
-COPY --from=build /notices /notices
-
-VOLUME ["/config"]
-ENTRYPOINT ["/thp", "--tailscale-config-dir=/config"]
+{{template "clone" (map "repo" "greboid/thp")}}
+{{template "build-go" (map)}}
+{{template "go-licenses" (map)}}
+{{template "prepare" (map "name" "thp" "volumes" (arr "/config"))}}
+{{template "runtime" (map "name" "thp" "volumes" (arr "/config") "args" (arr "--tailscale-config-dir=/config"))}}

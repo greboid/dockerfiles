@@ -5,6 +5,8 @@ FROM reg.g5d.dev/golang@sha256:5aa7f746159d6523484c8a32e8599653480770234d82750bc
 
 ARG ERGOTAG="v2.18.0"
 
+FROM reg.g5d.dev/golang@sha256:5aa7f746159d6523484c8a32e8599653480770234d82750bcd679bf837663e4b AS build
+ARG TAG="v2.18.0"
 RUN set -eux; \
     git clone --depth=1 -b $ERGOTAG --single-branch https://github.com/ergochat/ergo /go/src/github.com/ergochat/ergo; \
     cd /go/src/github.com/ergochat/ergo; \

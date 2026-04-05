@@ -1,1 +1,6 @@
-{{template "go-app" (map "repo" "greboid/dockercleanup" "name" "dockercleanup" "exposes" (arr "8080"))}}
+FROM {{image "golang"}} AS build
+{{template "clone" (map "repo" "greboid/dockercleanup")}}
+{{template "build-go" (map)}}
+{{template "go-licenses" (map)}}
+{{template "prepare" (map "name" "dockercleanup")}}
+{{template "runtime" (map "name" "dockercleanup" "exposes" (arr "8080"))}}

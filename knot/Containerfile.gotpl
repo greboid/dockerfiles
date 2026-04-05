@@ -1,15 +1,6 @@
 FROM {{image "golang"}} AS build
-
-ARG TAG="{{unreleased_git_tag "https://tangled.org/tangled.org/core"}}"
-
-RUN set -eux; \
-    git clone --depth=1 -b $TAG --single-branch https://tangled.org/tangled.org/core /go/src/tangled.org/core; \
-    cd /go/src/tangled.org/core; \
-    go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid=" -o knot ./cmd/knot; \
-    go-licenses save ./... --ignore github.com/ipfs/bbloom --ignore github.com/multiformats/go-base36 --save_path=/notices;
-
-FROM {{image "base"}}
-
-COPY --from=build /go/src/tangled.org/core/knot /knot
-COPY --from=build /notices /notices
-ENTRYPOINT ["/knot"]
+{{template "clone" (map "url" "https://tangled.org/tangled.org/core" "tag" (unreleased_git_tag "https://tangled.org/tangled.org/core"))}}
+{{template "build-go" (map "subdir" "./cmd/knot")}}
+{{template "go-licenses" (map "ignores" (arr "github.com/ipfs/bbloom" "github.com/multiformats/go-base36"))}}
+{{template "prepare" (map "name" "knot")}}
+{{template "runtime" (map "name" "knot")}}

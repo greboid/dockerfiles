@@ -6,14 +6,13 @@ FROM reg.g5d.dev/alpine AS verify
 ARG ARCHIVE_URL="https://dl-cdn.alpinelinux.org/alpine/latest-stable/releases/x86_64/alpine-minirootfs-3.23.3-x86_64.tar.gz"
 ARG ARCHIVE_SUM="42d0e6d8de5521e7bf92e075e032b5690c1d948fa9775efa32a51a38b25460fb"
 
+RUN apk add --no-cache curl
 RUN set -eux; \
-    apk add --no-cache curl; \
     curl -sfLo fs.tar.gz $ARCHIVE_URL; \
     echo "$ARCHIVE_SUM *fs.tar.gz" | sha256sum -wc -; \
-    mkdir /fs; \
-    tar -C /fs -xzf fs.tar.gz; \
-    echo "[advice]" > /fs/etc/gitconfig; \
-    echo "    detachedHead = false" >> /fs/etc/gitconfig;
+    mkdir -p /fs; \
+    tar -C /fs -z -xf fs.tar.gz
+RUN echo "[advice]" > /fs/etc/gitconfig && echo "    detachedHead = false" >> /fs/etc/gitconfig
 
 FROM scratch
 COPY --from=verify /fs/ /

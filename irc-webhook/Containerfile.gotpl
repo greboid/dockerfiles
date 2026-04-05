@@ -1,1 +1,6 @@
-{{template "go-app" (map "repo" "greboid/irc-webhook" "subdir" "./cmd/webhook" "name" "irc-webhook")}}
+FROM {{image "golang"}} AS build
+{{template "clone" (map "repo" "greboid/irc-webhook")}}
+{{template "build-go" (map "subdir" "./cmd/webhook")}}
+{{template "go-licenses" (map)}}
+{{template "prepare" (map "name" "irc-webhook")}}
+{{template "runtime" (map "name" "irc-webhook")}}

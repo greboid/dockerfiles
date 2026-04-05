@@ -3,8 +3,8 @@
 
 FROM reg.g5d.dev/golang@sha256:5aa7f746159d6523484c8a32e8599653480770234d82750bcd679bf837663e4b AS build
 
+FROM reg.g5d.dev/golang@sha256:5aa7f746159d6523484c8a32e8599653480770234d82750bcd679bf837663e4b AS build
 ARG TAG="v0.9.0"
-
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/haileyok/cocoon /go/src/github.com/haileyok/cocoon; \
     cd /go/src/github.com/haileyok/cocoon; \

@@ -5,7 +5,6 @@ FROM reg.g5d.dev/golang@sha256:5aa7f746159d6523484c8a32e8599653480770234d82750bc
 
 ARG REPO="csmith/tsp"
 ARG TAG="v1.2.0"
-
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/$REPO /go/src/github.com/$REPO; \
     cd /go/src/github.com/$REPO; \
@@ -20,4 +19,6 @@ FROM reg.g5d.dev/base@sha256:c356611e776024293582cbefc05437d61f9e0ea6a0e02aa8cfd
 COPY --from=build --chown=65532:65532 /rootfs/ /
 EXPOSE 8080
 EXPOSE 8443
+VOLUME ["/home/nonroot/.config"]
+VOLUME ["/config"]
 ENTRYPOINT ["/tsp"]

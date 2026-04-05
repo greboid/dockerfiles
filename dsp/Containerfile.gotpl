@@ -1,1 +1,6 @@
-{{template "go-app" (map "repo" "greboid/dsp" "subdir" "./cmd" "name" "dsp" "runtime_image" "baseroot" "exposes" (arr "8080"))}}
+FROM {{image "golang"}} AS build
+{{template "clone" (map "repo" "greboid/dsp")}}
+{{template "build-go" (map "subdir" "./cmd")}}
+{{template "go-licenses" (map)}}
+{{template "prepare" (map "name" "dsp")}}
+{{template "runtime" (map "name" "dsp" "runtime_image" "baseroot" "exposes" (arr "8080"))}}

@@ -1,0 +1,3 @@
+{{- define "build-go" -}}
+RUN {{ if .cgo_enabled}}CGO_ENABLED=1 {{else}}CGO_ENABLED=0 {{end}}{{if .go_experiments}}GOEXPERIMENT={{range $i, $e := .go_experiments}}{{if $i}},{{end}}{{$e}}{{end}} {{end}}go build -a -ldflags '-extldflags "-static" -s -w -buildid={{or .ldflags ""}}' -trimpath{{range .tags}} -tags {{.}}{{end}} -o {{or .output "main"}} {{or .subdir "."}}
+{{- end -}}

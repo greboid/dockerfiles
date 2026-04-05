@@ -6,6 +6,8 @@ FROM reg.g5d.dev/golang@sha256:5aa7f746159d6523484c8a32e8599653480770234d82750bc
 ARG SOJUTAG="v0.10.1"
 ARG CERTTAG="v4.3.0"
 
+FROM reg.g5d.dev/golang@sha256:5aa7f746159d6523484c8a32e8599653480770234d82750bcd679bf837663e4b AS build
+ARG TAG="v0.10.1"
 RUN set -eux; \
     git clone --depth=1 -b $SOJUTAG --single-branch https://github.com/emersion/soju /go/src/github.com/emersion/soju; \
     cd /go/src/github.com/emersion/soju; \

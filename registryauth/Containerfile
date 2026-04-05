@@ -3,8 +3,8 @@
 
 FROM reg.g5d.dev/golang@sha256:5aa7f746159d6523484c8a32e8599653480770234d82750bcd679bf837663e4b AS build
 
+FROM reg.g5d.dev/golang@sha256:5aa7f746159d6523484c8a32e8599653480770234d82750bcd679bf837663e4b AS build
 ARG TAG="v1.0.20"
-
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/registryauth /go/src/github.com/greboid/registryauth; \
     cd /go/src/github.com/greboid/registryauth; \
@@ -18,4 +18,5 @@ COPY --from=build /go/src/github.com/greboid/registryauth/main /authedreg
 COPY --from=build --chown=65532:65532 /data /data
 COPY --from=build /notices /notices
 EXPOSE 8080
-ENTRYPOINT ["/authedreg"]
+VOLUME ["/data"]
+ENTRYPOINT ["/registryauth"]

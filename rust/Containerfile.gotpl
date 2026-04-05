@@ -1,4 +1,4 @@
-FROM {{image "alpine"}} AS rustbuild
+FROM {{image "alpine"}}
 
 ARG RUSTTAG="{{github_tag "rust-lang/rust"}}"
 ARG RUSTUPTAG="{{github_tag "rust-lang/rustup"}}"
@@ -9,15 +9,16 @@ ENV RUSTUP_HOME=/usr/local/rustup \
     RUST_VERSION=${RUSTTAG}
 
 RUN set -eux; \
-apk add curl; \
-curl -sfLo rustup-init https://static.rust-lang.org/rustup/archive/${RUSTUPTAG}/x86_64-unknown-linux-musl/rustup-init; \
-curl -sfLo rustup-init.sha256 https://static.rust-lang.org/rustup/archive/${RUSTUPTAG}/x86_64-unknown-linux-musl/rustup-init.sha256
-
-RUN set -eux; \
-apk add curl gpg gpg-agent musl-utils bash libgcc patch; \
-echo $(cat rustup-init.sha256 | awk '{print $1}') *rustup-init | sha256sum -wc -; \
-chmod +x rustup-init; \
-./rustup-init -y --no-modify-path --profile minimal --default-toolchain ${RUSTTAG} --default-host x86_64-unknown-linux-musl; \
-rm rustup-init*; \
-chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
-ln -s $CARGO_HOME/bin/cargo /usr/local/bin/cargo
+    apk add \
+        {{range $key, $value := alpine_packages "curl" "gpg" "gpg-agent" "git" "musl-utils" "bash" "libgcc" "patch" "gcc" "musl-dev" "make" -}}
+        {{$key}}={{$value}} \
+        {{end -}}
+    ; \
+    curl -sfLo rustup-init https://static.rust-lang.org/rustup/archive/${RUSTUPTAG}/x86_64-unknown-linux-musl/rustup-init; \
+    curl -sfLo rustup-init.sha256 https://static.rust-lang.org/rustup/archive/${RUSTUPTAG}/x86_64-unknown-linux-musl/rustup-init.sha256; \
+    echo $(cat rustup-init.sha256 | awk '{print $1}') *rustup-init | sha256sum -wc -; \
+    chmod +x rustup-init; \
+    ./rustup-init -y --no-modify-path --profile minimal --default-toolchain ${RUSTTAG} --default-host x86_64-unknown-linux-musl; \
+    rm rustup-init*; \
+    chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
+    ln -s $CARGO_HOME/bin/cargo /usr/local/bin/cargo

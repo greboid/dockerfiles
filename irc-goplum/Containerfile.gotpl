@@ -1,1 +1,6 @@
-{{template "go-app" (map "repo" "greboid/irc-goplum" "subdir" "./cmd/goplum" "name" "irc-goplum")}}
+FROM {{image "golang"}} AS build
+{{template "clone" (map "repo" "greboid/irc-goplum")}}
+{{template "build-go" (map "subdir" "./cmd/goplum")}}
+{{template "go-licenses" (map)}}
+{{template "prepare" (map "name" "irc-goplum")}}
+{{template "runtime" (map "name" "irc-goplum")}}

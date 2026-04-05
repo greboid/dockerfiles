@@ -3,8 +3,8 @@
 
 FROM reg.g5d.dev/golang@sha256:5aa7f746159d6523484c8a32e8599653480770234d82750bcd679bf837663e4b AS build
 
+FROM reg.g5d.dev/golang@sha256:5aa7f746159d6523484c8a32e8599653480770234d82750bcd679bf837663e4b AS build
 ARG TAG="v1.1.2"
-
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/purser /go/src/github.com/csmith/purser; \
     cd /go/src/github.com/csmith/purser; \

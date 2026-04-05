@@ -1,0 +1,10 @@
+{{- define "clone" -}}
+ARG TAG="{{or .tag (github_tag .repo)}}"
+RUN set -eux; \
+    git clone --depth=1 -b $TAG --single-branch {{if .url}}{{.url}}{{else}}https://github.com/{{.repo}}{{end}} /src
+WORKDIR /src
+{{- range .patches}}
+COPY {{.}} /
+RUN git apply /{{.}}
+{{- end}}
+{{- end -}}

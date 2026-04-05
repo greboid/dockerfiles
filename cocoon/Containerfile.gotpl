@@ -1,18 +1,6 @@
 FROM {{image "golang"}} AS build
-
-ARG TAG="{{github_tag "haileyok/cocoon"}}"
-
-RUN set -eux; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/haileyok/cocoon /go/src/github.com/haileyok/cocoon; \
-    cd /go/src/github.com/haileyok/cocoon; \
-    ls; \
-    CGO_ENABLED=0 go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid= -X main.Version=$TAG" -o cocoon ./cmd/cocoon; \
-    go-licenses save ./... --ignore github.com/ipfs/bbloom --ignore github.com/multiformats/go-base36 --save_path=/notices;
-
-FROM {{image "base"}}
-
-COPY --from=build /go/src/github.com/haileyok/cocoon/cocoon /cocoon
-COPY --from=build /notices /notices
-EXPOSE 8080
-ENTRYPOINT ["/cocoon"]
-CMD ["run"]
+{{template "clone" (map "repo" "haileyok/cocoon")}}
+{{template "build-go" (map "subdir" "./cmd/cocoon" "ldflags" " -X main.Version=$TAG")}}
+{{template "go-licenses" (map "ignores" (arr "github.com/ipfs/bbloom" "github.com/multiformats/go-base36"))}}
+{{template "prepare" (map "name" "cocoon")}}
+{{template "runtime" (map "name" "cocoon" "exposes" (arr "8080") "cmd" `["run"]`)}}

@@ -3,8 +3,8 @@
 
 FROM reg.g5d.dev/golang@sha256:5aa7f746159d6523484c8a32e8599653480770234d82750bcd679bf837663e4b AS build
 
+FROM reg.g5d.dev/golang@sha256:5aa7f746159d6523484c8a32e8599653480770234d82750bcd679bf837663e4b AS build
 ARG TAG="v3.4.1"
-
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/linx-server /go/src/github.com/csmith/linx-server; \
     cd /go/src/github.com/csmith/linx-server; \
@@ -21,5 +21,7 @@ COPY --from=build /notices /notices
 
 VOLUME ["/data/files", "/data/meta"]
 EXPOSE 8080
+VOLUME ["/data/files"]
+VOLUME ["/data/meta"]
 ENTRYPOINT ["/linx-server", "-bind=0.0.0.0:8080", "-filespath=/data/files/", "-metapath=/data/meta/"]
 CMD ["-sitename=linx", "-allowhotlink"]

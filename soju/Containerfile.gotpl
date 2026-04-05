@@ -1,20 +1,7 @@
 FROM {{image "golang"}} AS build
-
-ARG SOJUTAG="{{github_tag "emersion/soju"}}"
-ARG CERTTAG="{{github_tag "csmith/certwrapper"}}"
-
-RUN set -eux; \
-    git clone --depth=1 -b $SOJUTAG --single-branch https://github.com/emersion/soju /go/src/github.com/emersion/soju; \
-    cd /go/src/github.com/emersion/soju; \
-    go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid=" -tags=moderncsqlite -o soju ./cmd/soju; \
-    go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid=" -tags=moderncsqlite -o sojuctl ./cmd/sojuctl; \
-    go-licenses save ./... --ignore codeberg.org/emersion/soju --save_path=/notices; \
-    mkdir /data
-
-FROM {{image "base"}}
-
-COPY --from=build /go/src/github.com/emersion/soju/soju /soju
-COPY --from=build /go/src/github.com/emersion/soju/sojuctl /sojuctl
-COPY --from=build /notices /notices
-COPY --from=build --chown=65535:65535 /data /data
-ENTRYPOINT ["/soju"]
+{{template "clone" (map "repo" "emersion/soju")}}
+{{template "build-go" (map "tags" (arr "moderncsqlite") "subdir" "./cmd/soju" "output" "soju")}}
+{{template "build-go" (map "tags" (arr "moderncsqlite") "subdir" "./cmd/sojuctl" "output" "sojuctl")}}
+{{template "go-licenses" (map "ignores" (arr "codeberg.org/emersion/soju"))}}
+{{template "prepare" (map "name" "soju" "output" "soju" "extra_binaries" (arr "sojuctl") "volumes" (arr "/data"))}}
+{{template "runtime" (map "name" "soju" "volumes" (arr "/data"))}}

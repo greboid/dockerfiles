@@ -1,0 +1,14 @@
+{{- define "runtime" -}}
+FROM {{image (or .runtime_image "base")}}
+COPY --from=prepare --chown=65532:65532 /rootfs/ /
+{{- range .exposes}}
+EXPOSE {{.}}
+{{- end}}
+{{- range .volumes}}
+VOLUME ["{{.}}"]
+{{- end}}
+ENTRYPOINT ["/{{.name}}"{{range .args}}, "{{.}}"{{end}}]
+{{- if .cmd}}
+CMD {{.cmd}}
+{{- end}}
+{{- end -}}

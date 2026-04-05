@@ -1,0 +1,9 @@
+{{- define "download-archive" -}}
+RUN set -eux; \
+    curl -sfLo {{.filename}} $ARCHIVE_URL; \
+    echo "$ARCHIVE_SUM *{{.filename}}" | sha256sum -wc -; \
+    {{- if .mkdir}}
+    mkdir -p {{.dest}}; \
+    {{- end}}
+    tar -C {{.dest}}{{range .tar_flags}} {{.}}{{end}} -xf {{.filename}}
+{{- end -}}

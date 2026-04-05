@@ -1,1 +1,6 @@
-{{template "go-app" (map "repo" "tailscale/golink" "name" "golink" "subdir" "./cmd/golink" "exposes" (arr "8080") "cmd" `["--sqlitedb", "/home/nonroot/golink.db"]`)}}
+FROM {{image "golang"}} AS build
+{{template "clone" (map "repo" "tailscale/golink")}}
+{{template "build-go" (map "subdir" "./cmd/golink")}}
+{{template "go-licenses" (map "ignores" (arr "modernc.org/mathutil"))}}
+{{template "prepare" (map "name" "golink")}}
+{{template "runtime" (map "name" "golink" "exposes" (arr "8080") "cmd" `["--sqlitedb", "/home/nonroot/golink.db"]`)}}

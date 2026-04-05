@@ -1,0 +1,16 @@
+{{- define "prepare" -}}
+FROM {{image "alpine"}} AS prepare
+COPY --from=build /src/{{or .output "main"}} /rootfs/{{.name}}
+{{- range .extra_binaries}}
+COPY --from=build /src/{{.}} /rootfs/{{.}}
+{{- end}}
+{{- range .extra_copies}}
+COPY --from=build {{.src}} /rootfs{{.dst}}
+{{- end}}
+{{- if not .skip_notices}}
+COPY --from=build /notices /rootfs/notices
+{{- end}}
+{{- range .volumes}}
+RUN mkdir -p /rootfs{{.}}
+{{- end}}
+{{- end -}}

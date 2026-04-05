@@ -1,20 +1,5 @@
 FROM {{image "golang"}} AS build
-
-ARG REPO="csmith/tsp"
-ARG TAG="{{github_tag "csmith/tsp"}}"
-
-RUN set -eux; \
-    git clone --depth=1 -b $TAG --single-branch https://github.com/$REPO /go/src/github.com/$REPO; \
-    cd /go/src/github.com/$REPO; \
-    GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \
-    chmod +x /go/src/github.com/$REPO/main; \
-    mkdir -p /rootfs/home/nonroot/.config; \
-    mkdir -p /rootfs/config; \
-    mv /go/src/github.com/$REPO/main /rootfs/tsp
-
-FROM {{image "base"}}
-
-COPY --from=build --chown=65532:65532 /rootfs/ /
-EXPOSE 8080
-EXPOSE 8443
-ENTRYPOINT ["/tsp"]
+{{template "clone" (map "repo" "csmith/tsp")}}
+{{template "build-go" (map)}}
+{{template "prepare" (map "name" "tsp" "skip_notices" true "volumes" (arr "/home/nonroot/.config" "/config"))}}
+{{template "runtime" (map "name" "tsp" "exposes" (arr "8080" "8443") "volumes" (arr "/home/nonroot/.config" "/config"))}}
