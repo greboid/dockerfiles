@@ -1,5 +1,6 @@
 FROM {{image "golang"}} AS build
 {{template "clone" (map "repo" "ergochat/ergo")}}
+ENV CGO_ENABLED=0
 {{template "build-go" (map)}}
 {{template "go-licenses" (map)}}
 {{template "prepare" (map "name" "ergo" "extra_copies" (arr (map "src" "/src/languages" "dst" "/ircd-bin/languages")))}}

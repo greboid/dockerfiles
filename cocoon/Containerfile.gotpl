@@ -1,5 +1,6 @@
 FROM {{image "golang"}} AS build
 {{template "clone" (map "repo" "haileyok/cocoon")}}
+ENV CGO_ENABLED=0
 {{template "build-go" (map "subdir" "./cmd/cocoon" "ldflags" " -X main.Version=$TAG")}}
 {{template "go-licenses" (map "ignores" (arr "github.com/ipfs/bbloom" "github.com/multiformats/go-base36"))}}
 {{template "prepare" (map "name" "cocoon")}}

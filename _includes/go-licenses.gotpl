@@ -1,3 +1,3 @@
 {{- define "go-licenses" -}}
-RUN {{if .go_experiments}}GOEXPERIMENT={{range $i, $e := .go_experiments}}{{if $i}},{{end}}{{$e}}{{end}} {{end}}go-licenses save ./... --save_path=/notices{{range .ignores}} --ignore {{.}}{{end}}
+RUN go-licenses save ./... --save_path=/notices{{range .ignores}} --ignore {{.}}{{end}}
 {{- end -}}

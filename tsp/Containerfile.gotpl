@@ -1,5 +1,6 @@
 FROM {{image "golang"}} AS build
 {{template "clone" (map "repo" "csmith/tsp")}}
+ENV CGO_ENABLED=0
 {{template "build-go" (map)}}
 {{template "prepare" (map "name" "tsp" "skip_notices" true "volumes" (arr "/home/nonroot/.config" "/config"))}}
 {{template "runtime" (map "name" "tsp" "exposes" (arr "8080" "8443") "volumes" (arr "/home/nonroot/.config" "/config"))}}

@@ -1,5 +1,6 @@
 FROM {{image "golang"}} AS build
 {{template "clone" (map "repo" "greboid/irc-notifier")}}
+ENV CGO_ENABLED=0
 {{template "build-go" (map "subdir" "./cmd/notifier")}}
 {{template "go-licenses" (map)}}
 {{template "prepare" (map "name" "irc-notifier")}}
