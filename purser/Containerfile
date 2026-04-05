@@ -6,8 +6,10 @@ ARG TAG="v1.1.2"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/purser /src
 WORKDIR /src
-RUN CGO_ENABLED=0 GOEXPERIMENT=jsonv2 go build -a -ldflags '-extldflags "-static" -s -w -buildid=' -trimpath -o main .
-RUN GOEXPERIMENT=jsonv2 go-licenses save ./... --save_path=/notices --ignore github.com/xi2/xz --ignore modernc.org/mathutil
+ENV CGO_ENABLED=0
+ENV GOEXPERIMENT=jsonv2
+RUN go build -a -ldflags '-extldflags "-static" -s -w -buildid=' -trimpath -o main .
+RUN go-licenses save ./... --save_path=/notices --ignore github.com/xi2/xz --ignore modernc.org/mathutil
 FROM reg.g5d.dev/alpine@sha256:0ce3d04e65a442e33c6bea56ac61cd2e4326e42535b5184c1871ddd098a9f3b6 AS prepare
 COPY --from=build /src/main /rootfs/purser
 COPY --from=build /notices /rootfs/notices
