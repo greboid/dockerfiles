@@ -106,6 +106,7 @@ jobs:
     name: Build tsp
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -117,6 +118,7 @@ jobs:
     name: Build thp
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -128,6 +130,7 @@ jobs:
     name: Build sws
     needs:
         - setup-cache
+        - alpine
         - base
         - rust
     uses: ./.github/workflows/container-builder.yml
@@ -139,6 +142,7 @@ jobs:
     name: Build spindle
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -150,6 +154,7 @@ jobs:
     name: Build soju
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -161,6 +166,7 @@ jobs:
     name: Build registryauth
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -183,6 +189,7 @@ jobs:
     name: Build puzzles
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -194,6 +201,7 @@ jobs:
     name: Build purser
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -216,6 +224,7 @@ jobs:
     name: Build miniflux
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -227,6 +236,7 @@ jobs:
     name: Build linx-server
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -238,6 +248,7 @@ jobs:
     name: Build knot
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -381,6 +392,7 @@ jobs:
     name: Build ergo
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -404,6 +416,7 @@ jobs:
     name: Build cocoon
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -427,6 +440,7 @@ jobs:
     name: Build centauri
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
