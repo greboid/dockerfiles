@@ -6,7 +6,8 @@ ARG TAG="v1.0.3"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/puzzles /src
 WORKDIR /src
-RUN CGO_ENABLED=0 go build -a -ldflags '-extldflags "-static" -s -w -buildid=' -trimpath -o main .
+ENV CGO_ENABLED=0
+RUN go build -a -ldflags '-extldflags "-static" -s -w -buildid=' -trimpath -o main .
 RUN go-licenses save ./... --save_path=/notices
 FROM reg.g5d.dev/alpine@sha256:0ce3d04e65a442e33c6bea56ac61cd2e4326e42535b5184c1871ddd098a9f3b6 AS prepare
 COPY --from=build /src/main /rootfs/puzzles
