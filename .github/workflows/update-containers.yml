@@ -72,6 +72,7 @@ jobs:
     name: Build dsp
     needs:
         - setup-cache
+        - alpine
         - baseroot
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -93,23 +94,13 @@ jobs:
     name: Build webhooked
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
     secrets: inherit
     with:
         PROJECT_NAME: webhooked
-
-  watchtower:
-    name: Build watchtower
-    needs:
-        - setup-cache
-        - base
-        - golang
-    uses: ./.github/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: watchtower
 
   tsp:
     name: Build tsp
@@ -258,6 +249,7 @@ jobs:
     name: Build irc-webhook
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -269,6 +261,7 @@ jobs:
     name: Build irc-notifier
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -280,6 +273,7 @@ jobs:
     name: Build irc-goplum
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -291,6 +285,7 @@ jobs:
     name: Build irc-github
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -302,6 +297,7 @@ jobs:
     name: Build irc-distribution
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -313,6 +309,7 @@ jobs:
     name: Build irc-bot
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -324,6 +321,7 @@ jobs:
     name: Build identd
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -335,6 +333,7 @@ jobs:
     name: Build httpredirect
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -346,6 +345,7 @@ jobs:
     name: Build goplum
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -357,6 +357,7 @@ jobs:
     name: Build golink
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -368,6 +369,7 @@ jobs:
     name: Build githubmirror
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -386,21 +388,11 @@ jobs:
     with:
         PROJECT_NAME: ergo
 
-  dotege:
-    name: Build dotege
-    needs:
-        - setup-cache
-        - base
-        - golang
-    uses: ./.github/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: dotege
-
   dockercleanup:
     name: Build dockercleanup
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
@@ -423,6 +415,7 @@ jobs:
     name: Build centauri-docker-confd
     needs:
         - setup-cache
+        - alpine
         - base
         - golang
     uses: ./.github/workflows/container-builder.yml
