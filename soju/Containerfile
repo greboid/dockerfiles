@@ -1,25 +1,20 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/soju/Containerfile.gotpl
-# BOM: {"github:csmith/certwrapper":"v4.3.0","github:emersion/soju":"v0.10.1","image:base":"c356611e776024293582cbefc05437d61f9e0ea6a0e02aa8cfd583d700ca77ad","image:golang":"5aa7f746159d6523484c8a32e8599653480770234d82750bcd679bf837663e4b"}
-
-FROM reg.g5d.dev/golang@sha256:5aa7f746159d6523484c8a32e8599653480770234d82750bcd679bf837663e4b AS build
-
-ARG SOJUTAG="v0.10.1"
-ARG CERTTAG="v4.3.0"
+# BOM: {"github:emersion/soju":"v0.10.1","image:alpine":"0ce3d04e65a442e33c6bea56ac61cd2e4326e42535b5184c1871ddd098a9f3b6","image:base":"c356611e776024293582cbefc05437d61f9e0ea6a0e02aa8cfd583d700ca77ad","image:golang":"5aa7f746159d6523484c8a32e8599653480770234d82750bcd679bf837663e4b"}
 
 FROM reg.g5d.dev/golang@sha256:5aa7f746159d6523484c8a32e8599653480770234d82750bcd679bf837663e4b AS build
 ARG TAG="v0.10.1"
 RUN set -eux; \
-    git clone --depth=1 -b $SOJUTAG --single-branch https://github.com/emersion/soju /go/src/github.com/emersion/soju; \
-    cd /go/src/github.com/emersion/soju; \
-    go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid=" -tags=moderncsqlite -o soju ./cmd/soju; \
-    go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid=" -tags=moderncsqlite -o sojuctl ./cmd/sojuctl; \
-    go-licenses save ./... --ignore codeberg.org/emersion/soju --save_path=/notices; \
-    mkdir /data
-
+    git clone --depth=1 -b $TAG --single-branch https://github.com/emersion/soju /src
+WORKDIR /src
+RUN CGO_ENABLED=0 go build -a -ldflags '-extldflags "-static" -s -w -buildid=' -trimpath -tags moderncsqlite -o soju ./cmd/soju
+RUN CGO_ENABLED=0 go build -a -ldflags '-extldflags "-static" -s -w -buildid=' -trimpath -tags moderncsqlite -o sojuctl ./cmd/sojuctl
+RUN go-licenses save ./... --save_path=/notices --ignore codeberg.org/emersion/soju
+FROM reg.g5d.dev/alpine@sha256:0ce3d04e65a442e33c6bea56ac61cd2e4326e42535b5184c1871ddd098a9f3b6 AS prepare
+COPY --from=build /src/soju /rootfs/soju
+COPY --from=build /src/sojuctl /rootfs/sojuctl
+COPY --from=build /notices /rootfs/notices
+RUN mkdir -p /rootfs/data
 FROM reg.g5d.dev/base@sha256:c356611e776024293582cbefc05437d61f9e0ea6a0e02aa8cfd583d700ca77ad
-
-COPY --from=build /go/src/github.com/emersion/soju/soju /soju
-COPY --from=build /go/src/github.com/emersion/soju/sojuctl /sojuctl
-COPY --from=build /notices /notices
-COPY --from=build --chown=65535:65535 /data /data
+COPY --from=prepare --chown=65532:65532 /rootfs/ /
+VOLUME ["/data"]
 ENTRYPOINT ["/soju"]
