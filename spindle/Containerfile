@@ -6,7 +6,8 @@ ARG TAG="v1.13.0-alpha"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://tangled.org/tangled.org/core /src
 WORKDIR /src
-RUN CGO_ENABLED=0 go build -a -ldflags '-extldflags "-static" -s -w -buildid=' -trimpath -o main ./cmd/spindle
+ENV CGO_ENABLED=0
+RUN go build -a -ldflags '-extldflags "-static" -s -w -buildid=' -trimpath -o main ./cmd/spindle
 RUN go-licenses save ./... --save_path=/notices --ignore github.com/ipfs/bbloom --ignore github.com/multiformats/go-base36
 FROM reg.g5d.dev/alpine@sha256:0ce3d04e65a442e33c6bea56ac61cd2e4326e42535b5184c1871ddd098a9f3b6 AS prepare
 COPY --from=build /src/main /rootfs/spindle
