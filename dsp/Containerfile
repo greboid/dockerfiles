@@ -1,14 +1,14 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/dsp/Containerfile.gotpl
-# BOM: {"github:greboid/dsp":"v1.2.4","image:baseroot":"2c3382c7e3b67bfc61923db5d0fb3ef7e4d6f55a69ce06af9da6c68b63d0056c","image:golang":"598596689adab49ef11a9a18c9f06bd5d238e8c56a8c4abed5bab00bf038d8fb"}
+# BOM: {"github:greboid/dsp":"v1.2.4","image:baseroot":"2c3382c7e3b67bfc61923db5d0fb3ef7e4d6f55a69ce06af9da6c68b63d0056c","image:golang":"edf0a7db9f233c05c02422843c29dc2f20d4d53efd0e09c7d0a439ca19509ec5"}
 
-FROM reg.g5d.dev/golang@sha256:598596689adab49ef11a9a18c9f06bd5d238e8c56a8c4abed5bab00bf038d8fb AS build
+FROM reg.g5d.dev/golang@sha256:edf0a7db9f233c05c02422843c29dc2f20d4d53efd0e09c7d0a439ca19509ec5 AS build
 
 ARG TAG="v1.2.4"
 
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/dsp /go/src/github.com/greboid/dsp; \
     cd /go/src/github.com/greboid/dsp; \
-    CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main ./cmd; \
+    CGO_ENABLED=0 go build -a -ldflags '-extldflags "-static" -s -w -buildid=' -trimpath -o main ./cmd; \
     go-licenses save ./... --save_path=/notices;
 
 FROM reg.g5d.dev/baseroot@sha256:2c3382c7e3b67bfc61923db5d0fb3ef7e4d6f55a69ce06af9da6c68b63d0056c

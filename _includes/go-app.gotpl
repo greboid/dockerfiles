@@ -6,7 +6,7 @@ ARG TAG="{{github_tag .repo}}"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/{{.repo}} /go/src/github.com/{{.repo}}; \
     cd /go/src/github.com/{{.repo}}; \
-    {{- if .cgo_enabled}}CGO_ENABLED=1 {{else}}CGO_ENABLED=0 {{end}}{{if .go_experiments}}GOEXPERIMENT={{range $i, $e := .go_experiments}}{{if $i}},{{end}}{{$e}}{{end}} {{end}}GOOS=linux go build -a -ldflags '-extldflags "-static" -s -w -buildid=' -trimpath -o main {{or .subdir "."}}; \
+    {{ if .cgo_enabled}}CGO_ENABLED=1 {{else}}CGO_ENABLED=0 {{end}}{{if .go_experiments}}GOEXPERIMENT={{range $i, $e := .go_experiments}}{{if $i}},{{end}}{{$e}}{{end}} {{end}}go build -a -ldflags '-extldflags "-static" -s -w -buildid=' -trimpath -o main {{or .subdir "."}}; \
     go-licenses save ./... --save_path=/notices{{range .ignores}} --ignore {{.}}{{end}};
 
 FROM {{image (or .runtime_image "base")}}
