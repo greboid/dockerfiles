@@ -2,6 +2,6 @@ FROM {{image "golang"}} AS build
 {{template "clone" (map "repo" "csmith/centauri")}}
 ENV CGO_ENABLED=0
 {{template "build-go" (map "subdir" "./cmd/centauri" "tags" (arr "lego_httpreq"))}}
-{{template "go-licenses" (map "ignores" (arr "github.com/go-acme/tencentclouddnspod/v20210323" "github.com/go-acme/tencentedgdeone/v20220901" "github.com/nrdcg/oci-go-sdk/common/v1065" "github.com/nrdcg/oci-go-sdk/common/v1065/auth" "github.com/nrdcg/oci-go-sdk/common/v1065/utils" "github.com/nrdcg/oci-go-sdk/dns/v1065"))}}
+{{template "go-licenses" (map "tags" (arr "lego_httpreq") "ignores" (arr "github.com/go-acme/tencentclouddnspod/v20210323" "github.com/go-acme/tencentedgdeone/v20220901" "github.com/nrdcg/oci-go-sdk/common/v1065" "github.com/nrdcg/oci-go-sdk/common/v1065/auth" "github.com/nrdcg/oci-go-sdk/common/v1065/utils" "github.com/nrdcg/oci-go-sdk/dns/v1065"))}}
 {{template "prepare" (map "name" "centauri" "volumes" (arr "/data"))}}
 {{template "runtime" (map "name" "centauri" "exposes" (arr "8080" "8443") "volumes" (arr "/data"))}}

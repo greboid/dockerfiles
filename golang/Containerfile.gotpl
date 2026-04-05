@@ -34,4 +34,4 @@ RUN set -eux; \
         {{end}}; \
     mkdir -p $GOPATH/src $GOPATH/bin; \
     chmod -R 777 $GOPATH; \
-    go install github.com/google/go-licenses@v1.6.0
+    go install github.com/google/go-licenses/v2@{{github_tag "google/go-licenses"}}

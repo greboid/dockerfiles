@@ -1,3 +1,3 @@
 {{- define "go-licenses" -}}
-RUN go-licenses save ./... --save_path=/notices{{range .ignores}} --ignore {{.}}{{end}}
+RUN {{if .tags}}GOFLAGS="{{range $i, $t := .tags}}{{if $i}} {{end}}-tags={{$t}}{{end}}" {{end}}go-licenses save ./... --save_path=/notices{{range .ignores}} --ignore {{.}}{{end}}
 {{- end -}}
