@@ -3,10 +3,6 @@ FROM {{image "golang"}} AS build
 ARG ERGOTAG="{{github_tag "ergochat/ergo"}}"
 
 RUN set -eux; \
-    apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
-        {{$key}}={{$value}} \
-        {{end}}; \
     git clone --depth=1 -b $ERGOTAG --single-branch https://github.com/ergochat/ergo /go/src/github.com/ergochat/ergo; \
     cd /go/src/github.com/ergochat/ergo; \
     CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags=-buildid= -o main .; \

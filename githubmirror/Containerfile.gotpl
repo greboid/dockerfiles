@@ -1,1 +1,1 @@
-{{template "go-app" (map "repo" "greboid/githubmirror" "name" "githubmirror" "expose" "8080")}}
+{{template "go-app" (map "repo" "greboid/githubmirror" "name" "githubmirror" "exposes" (arr "8080"))}}

@@ -3,10 +3,6 @@ FROM {{image "golang"}} AS build
 ARG TAG="{{github_tag "csmith/purser"}}"
 
 RUN set -eux; \
-    apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
-        {{$key}}={{$value}}\
-        {{end}}; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/purser /go/src/github.com/csmith/purser; \
     cd /go/src/github.com/csmith/purser; \
     export GOEXPERIMENT=jsonv2; \

@@ -4,10 +4,6 @@ ARG SOJUTAG="{{github_tag "emersion/soju"}}"
 ARG CERTTAG="{{github_tag "csmith/certwrapper"}}"
 
 RUN set -eux; \
-    apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" "patch" -}}
-        {{$key}}={{$value}} \
-        {{end}}; \
     git clone --depth=1 -b $SOJUTAG --single-branch https://github.com/emersion/soju /go/src/github.com/emersion/soju; \
     cd /go/src/github.com/emersion/soju; \
     go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid=" -tags=moderncsqlite -o soju ./cmd/soju; \

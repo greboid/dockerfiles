@@ -1,1 +1,1 @@
-{{template "go-app" (map "repo" "greboid/dsp" "subdir" "./cmd" "name" "dsp" "runtime_image" "baseroot" "expose" "8080")}}
+{{template "go-app" (map "repo" "greboid/dsp" "subdir" "./cmd" "name" "dsp" "runtime_image" "baseroot" "exposes" (arr "8080"))}}

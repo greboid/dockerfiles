@@ -3,17 +3,13 @@ FROM {{image "golang"}} AS build
 ARG TAG="{{unreleased_git_tag "https://tangled.org/tangled.org/core"}}"
 
 RUN set -eux; \
-    apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
-        {{$key}}={{$value}}\
-        {{end}}; \
-    git clone --depth=1 -b $TAG --single-branch https://tangled.org/tangled.org/core /src; \
-    cd /src; \
+    git clone --depth=1 -b $TAG --single-branch https://tangled.org/tangled.org/core /go/src/tangled.org/core; \
+    cd /go/src/tangled.org/core; \
     go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid=" -o spindle ./cmd/spindle; \
     go-licenses save ./... --ignore github.com/ipfs/bbloom --ignore github.com/multiformats/go-base36 --save_path=/notices;
 
 FROM {{image "base"}}
 
-COPY --from=build /src/spindle /spindle
+COPY --from=build /go/src/tangled.org/core/spindle /spindle
 COPY --from=build /notices /notices
 ENTRYPOINT ["/spindle"]

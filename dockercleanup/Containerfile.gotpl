@@ -1,1 +1,1 @@
-{{template "go-app" (map "repo" "greboid/dockercleanup" "name" "dockercleanup" "expose" "8080")}}
+{{template "go-app" (map "repo" "greboid/dockercleanup" "name" "dockercleanup" "exposes" (arr "8080"))}}

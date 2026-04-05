@@ -3,10 +3,6 @@ FROM {{image "golang"}} AS build
 ARG TAG="{{github_tag "csmith/centauri"}}"
 
 RUN set -eux; \
-    apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
-        {{$key}}={{$value}}\
-        {{end}}; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/centauri /go/src/github.com/csmith/centauri; \
     cd /go/src/github.com/csmith/centauri; \
     CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -trimpath -ldflags="-s -w -buildid=" -tags lego_httpreq -o main ./cmd/centauri; \

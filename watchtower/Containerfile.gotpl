@@ -5,10 +5,6 @@ ARG TAG="{{github_tag "containrrr/watchtower"}}"
 COPY disable-slack.patch /
 
 RUN set -eux; \
-    apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" -}}
-        {{$key}}={{$value}}\
-        {{end}}; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/containrrr/watchtower /go/src/github.com/containrrr/watchtower; \
     cd /go/src/github.com/containrrr/watchtower; \
     git apply /disable-slack.patch; \

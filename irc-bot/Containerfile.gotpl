@@ -1,1 +1,1 @@
-{{template "go-app" (map "repo" "greboid/irc-bot" "subdir" "./cmd/bot" "name" "irc-bot" "expose" "8080")}}
+{{template "go-app" (map "repo" "greboid/irc-bot" "subdir" "./cmd/bot" "name" "irc-bot" "exposes" (arr "8080"))}}

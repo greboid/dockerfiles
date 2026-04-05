@@ -31,7 +31,7 @@ RUN set -eux; \
     		/usr/local/go/src/cmd/dist/dist; \
     # Dependencies commonly needed for building go apps
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "gcc" "musl-dev" "git" -}}
+        {{range $key, $value := alpine_packages "gcc" "musl-dev" "git" "patch" -}}
         {{$key}}={{$value}} \
         {{end}}; \
     # Set up the go path

@@ -1,1 +1,1 @@
-{{template "go-app" (map "repo" "greboid/httpredirect" "name" "httpredirect" "expose" "8080")}}
+{{template "go-app" (map "repo" "greboid/httpredirect" "name" "httpredirect" "exposes" (arr "8080"))}}

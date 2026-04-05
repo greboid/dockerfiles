@@ -1,1 +1,1 @@
-{{template "go-app" (map "repo" "greboid/identd" "name" "identd" "expose" "8000")}}
+{{template "go-app" (map "repo" "greboid/identd" "name" "identd" "exposes" (arr "8000"))}}
