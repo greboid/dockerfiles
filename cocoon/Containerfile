@@ -6,9 +6,9 @@ ARG TAG="v0.9.0"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/haileyok/cocoon /src
 WORKDIR /src
-ENV CGO_ENABLED=1
-RUN go build -a -ldflags '-linkmode external -extldflags "-static" -s -w -buildid= -X main.Version=$TAG' -trimpath -o main ./cmd/cocoon
-RUN go-licenses save ./... --save_path=/notices --ignore github.com/ipfs/bbloom --ignore github.com/multiformats/go-base36 --ignore gitlab.com/yawning/secp256k1-voi/internal/fiat/secp256k1montgomery --ignore github.com/jmespath/go-jmespath
+ENV CGO_ENABLED=0
+RUN go build -a -ldflags '-extldflags "-static" -s -w -buildid= -X main.Version=$TAG' -trimpath -o main ./cmd/cocoon
+RUN go-licenses save ./... --save_path=/notices --ignore github.com/ipfs/bbloom --ignore github.com/multiformats/go-base36 --ignore github.com/jmespath/go-jmespath --ignore gitlab.com/yawning/secp256k1-voi/internal/fiat/secp256k1montgomery
 FROM reg.g5d.dev/alpine@sha256:0ce3d04e65a442e33c6bea56ac61cd2e4326e42535b5184c1871ddd098a9f3b6 AS prepare
 COPY --from=build /src/main /rootfs/cocoon
 COPY --from=build /notices /rootfs/notices

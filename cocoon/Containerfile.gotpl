@@ -2,6 +2,6 @@ FROM {{image "golang"}} AS build
 {{template "clone" (map "repo" "haileyok/cocoon")}}
 ENV CGO_ENABLED=0
 {{template "build-go" (map "subdir" "./cmd/cocoon" "ldflags" " -X main.Version=$TAG")}}
-{{template "go-licenses" (map "ignores" (arr "github.com/ipfs/bbloom" "github.com/multiformats/go-base36"))}}
+{{template "go-licenses" (map "ignores" (arr "github.com/ipfs/bbloom" "github.com/multiformats/go-base36" "github.com/jmespath/go-jmespath" "gitlab.com/yawning/secp256k1-voi/internal/fiat/secp256k1montgomery"))}}
 {{template "prepare" (map "name" "cocoon")}}
 {{template "runtime" (map "name" "cocoon" "exposes" (arr "8080") "cmd" `["run"]`)}}

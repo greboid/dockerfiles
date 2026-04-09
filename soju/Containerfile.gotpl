@@ -3,6 +3,6 @@ FROM {{image "golang"}} AS build
 ENV CGO_ENABLED=0
 {{template "build-go" (map "tags" (arr "moderncsqlite") "subdir" "./cmd/soju" "output" "soju")}}
 {{template "build-go" (map "tags" (arr "moderncsqlite") "subdir" "./cmd/sojuctl" "output" "sojuctl")}}
-{{template "go-licenses" (map "tags" (arr "moderncsqlite") "ignores" (arr "codeberg.org/emersion/soju" "modernc.org/mathutil"))}}
+{{template "go-licenses" (map "tags" (arr "moderncsqlite") "ignores" (arr "codeberg.org/emersion/soju" "modernc.org/mathutil" "git.sr.ht/~sircmpwn/go-bare"))}}
 {{template "prepare" (map "name" "soju" "output" "soju" "extra_binaries" (arr "sojuctl") "volumes" (arr "/data"))}}
 {{template "runtime" (map "name" "soju" "volumes" (arr "/data"))}}

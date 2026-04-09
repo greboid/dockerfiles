@@ -2,6 +2,6 @@ FROM {{image "golang"}} AS build
 {{template "clone" (map "url" "https://tangled.org/tangled.org/core" "tag" (unreleased_git_tag "https://tangled.org/tangled.org/core"))}}
 ENV CGO_ENABLED=0
 {{template "build-go" (map "subdir" "./cmd/knot")}}
-{{template "go-licenses" (map "ignores" (arr "github.com/ipfs/bbloom" "github.com/multiformats/go-base36"))}}
+{{template "go-licenses" (map "ignores" (arr "github.com/ipfs/bbloom" "github.com/multiformats/go-base36" "gitlab.com/yawning/secp256k1-voi/internal/fiat/secp256k1montgomery"))}}
 {{template "prepare" (map "name" "knot")}}
 {{template "runtime" (map "name" "knot")}}

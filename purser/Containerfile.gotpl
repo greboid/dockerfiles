@@ -3,6 +3,6 @@ FROM {{image "golang"}} AS build
 ENV CGO_ENABLED=0
 ENV GOEXPERIMENT=jsonv2
 {{template "build-go" (map)}}
-{{template "go-licenses" (map "ignores" (arr "github.com/xi2/xz" "modernc.org/mathutil"))}}
+{{template "go-licenses" (map "ignores" (arr "github.com/xi2/xz" "modernc.org/mathutil" "github.com/cyberphone/json-canonicalization/go/src/webpki.org/jsoncanonicalizer" "github.com/in-toto/in-toto-golang/in_toto" "github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/common" "github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/v0.1" "github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/v0.2" "github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/v1"))}}
 {{template "prepare" (map "name" "purser" "volumes" (arr "/data/cache" "/data/output"))}}
 {{template "runtime" (map "name" "purser" "volumes" (arr "/data/cache" "/data/output"))}}
