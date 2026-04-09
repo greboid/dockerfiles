@@ -220,6 +220,18 @@ jobs:
     with:
         PROJECT_NAME: postgres-15
 
+  pdsps:
+    name: Build pdsps
+    needs:
+        - setup-cache
+        - alpine
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: pdsps
+
   miniflux:
     name: Build miniflux
     needs:
