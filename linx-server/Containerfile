@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/linx-server/Containerfile.gotpl
-# BOM: {"github:csmith/linx-server":"v3.4.1","image:alpine":"0ce3d04e65a442e33c6bea56ac61cd2e4326e42535b5184c1871ddd098a9f3b6","image:base":"c356611e776024293582cbefc05437d61f9e0ea6a0e02aa8cfd583d700ca77ad","image:golang":"2ef5a79d62e19cd268a9232ad290f27a37330accd2ebf70fb8e932838e48ef96"}
+# BOM: {"github:csmith/linx-server":"v3.4.1","image:alpine":"0ce3d04e65a442e33c6bea56ac61cd2e4326e42535b5184c1871ddd098a9f3b6","image:base":"db4418ea7442f5d32ef96ced55b769502465cfc36641ee6d10701716a8949c59","image:golang":"999fb4caa190f3aabfb852e36395eef92c71329984bcc36653bea556b4630279"}
 
-FROM reg.g5d.dev/golang@sha256:2ef5a79d62e19cd268a9232ad290f27a37330accd2ebf70fb8e932838e48ef96 AS build
+FROM reg.g5d.dev/golang@sha256:999fb4caa190f3aabfb852e36395eef92c71329984bcc36653bea556b4630279 AS build
 ARG TAG="v3.4.1"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/linx-server /src
@@ -14,7 +14,7 @@ COPY --from=build /src/main /rootfs/linx-server
 COPY --from=build /notices /rootfs/notices
 RUN mkdir -p /rootfs/data/files
 RUN mkdir -p /rootfs/data/meta
-FROM reg.g5d.dev/base@sha256:c356611e776024293582cbefc05437d61f9e0ea6a0e02aa8cfd583d700ca77ad
+FROM reg.g5d.dev/base@sha256:db4418ea7442f5d32ef96ced55b769502465cfc36641ee6d10701716a8949c59
 COPY --from=prepare --chown=65532:65532 /rootfs/ /
 EXPOSE 8080
 VOLUME ["/data/files"]
