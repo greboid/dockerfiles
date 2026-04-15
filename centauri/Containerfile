@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/centauri/Containerfile.gotpl
-# BOM: {"github:csmith/centauri":"v2.5.0","image:alpine":"0ce3d04e65a442e33c6bea56ac61cd2e4326e42535b5184c1871ddd098a9f3b6","image:base":"6f335baa34857a6ec001bcce8162b5478e93c40b36bef1d33342bee504cdfd75","image:golang":"7b73f53cfebc93ce6aab0a23bfe60f1ddca33f11bbd412b6dcf2145902d2b41d"}
+# BOM: {"github:csmith/centauri":"v2.5.0","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"c8d413f5d8d4b448840f6e18361ab157313151c8a25a36d2837c16575b189df7","image:golang":"45de954f379a38393d751c3409c2a9b8bd544dc4806aafce075dfef9c9c721ec"}
 
-FROM reg.g5d.dev/golang@sha256:7b73f53cfebc93ce6aab0a23bfe60f1ddca33f11bbd412b6dcf2145902d2b41d AS build
+FROM reg.g5d.dev/golang@sha256:45de954f379a38393d751c3409c2a9b8bd544dc4806aafce075dfef9c9c721ec AS build
 ARG TAG="v2.5.0"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/centauri /src
@@ -9,11 +9,11 @@ WORKDIR /src
 ENV CGO_ENABLED=0
 RUN go build -a -ldflags '-extldflags "-static" -s -w -buildid=' -trimpath -tags lego_httpreq -o main ./cmd/centauri
 RUN GOFLAGS="-tags=lego_httpreq" go-licenses save ./... --save_path=/notices --ignore github.com/go-acme/tencentclouddnspod/v20210323 --ignore github.com/go-acme/tencentedgdeone/v20220901 --ignore github.com/nrdcg/oci-go-sdk/common/v1065 --ignore github.com/nrdcg/oci-go-sdk/common/v1065/auth --ignore github.com/nrdcg/oci-go-sdk/common/v1065/utils --ignore github.com/nrdcg/oci-go-sdk/dns/v1065
-FROM reg.g5d.dev/alpine@sha256:0ce3d04e65a442e33c6bea56ac61cd2e4326e42535b5184c1871ddd098a9f3b6 AS prepare
+FROM reg.g5d.dev/alpine@sha256:79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89 AS prepare
 COPY --from=build /src/main /rootfs/centauri
 COPY --from=build /notices /rootfs/notices
 RUN mkdir -p /rootfs/data
-FROM reg.g5d.dev/base@sha256:6f335baa34857a6ec001bcce8162b5478e93c40b36bef1d33342bee504cdfd75
+FROM reg.g5d.dev/base@sha256:c8d413f5d8d4b448840f6e18361ab157313151c8a25a36d2837c16575b189df7
 COPY --from=prepare --chown=65532:65532 /rootfs/ /
 EXPOSE 8080
 EXPOSE 8443
