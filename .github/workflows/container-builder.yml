@@ -46,7 +46,7 @@
             SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
           run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project ${{ inputs.PROJECT_NAME }} . .
         - name: Run integration tests
-          if: hashFiles('${{ inputs.PROJECT_NAME }}/test.sh') != ''
+          if: hashFiles(format('{0}/test.sh', inputs.PROJECT_NAME)) != ''
           run: |
             chmod +x ${{ inputs.PROJECT_NAME }}/test.sh
             cd ${{ inputs.PROJECT_NAME }}
