@@ -6,8 +6,8 @@ if !command -v yq &> /dev/null; then
   echo "yq needs to be installed"
   exit 2
 fi
-if !command -v docker &> /dev/null; then
-  echo "docker needs to be installed"
+if !command -v podman &> /dev/null; then
+  echo "podman needs to be installed"
   exit 2
 fi
 if [ -z "$1" ]; then
@@ -47,8 +47,8 @@ echo "CMD [\"/bin/sh\"]" >> $DIR/Dockerfile
 cat $DIR/Dockerfile
 
 #Build and push image
-docker build -t $1/alpine $DIR
-docker push $1/alpine
+podman build -t $1/alpine $DIR
+podman push $1/alpine
 
 #Removing temp dir
 rm -rf $DIR
