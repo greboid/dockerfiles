@@ -43,6 +43,8 @@ jobs:
               cd /tmp/contempt
               go build -o ~/go/bin/update ./cmd/update
         - name: Run updater
+          env:
+              GH_TOKEN: ${{ github.token }}
           run: update -githubpr -registry reg.g5d.dev -template Containerfile.gotpl .
   setup-cache:
     name: Setup cache
