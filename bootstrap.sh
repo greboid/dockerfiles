@@ -53,4 +53,8 @@ podman push $1/alpine
 #Removing temp dir
 rm -rf $DIR
 
-go run github.com/csmith/contempt/cmd/contempt@latest -force-build=1 -push=1 -commit=1 -registry $1 -source-link "https://github.com/greboid/dockerfiles/blob/master/" . .
+git clone -b splitupdating https://github.com/greboid/contempt.git /tmp/contempt
+cd /tmp/contempt
+go build -o ~/go/bin/contempt ./cmd/contempt
+cd -
+contempt -force-build=1 -push=1 -commit=1 -registry $1 -source-link "https://github.com/greboid/dockerfiles/blob/master/" . .
