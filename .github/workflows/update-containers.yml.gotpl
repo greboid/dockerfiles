@@ -4,6 +4,8 @@ on:
   schedule:
     - cron: '42 12 * * *'
   push:
+    branches:
+      - master
     paths-ignore:
       - '**/Containerfile'
       - '**/Dockerfile'
@@ -13,6 +15,7 @@ name: Update Containers
 concurrency: dockerfiles
 permissions:
   contents: write
+  pull-requests: write
 jobs:
   update-versions:
     name: Update versions
