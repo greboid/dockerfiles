@@ -22,12 +22,13 @@
           id: cache
           with:
             path: ~/go/bin/contempt
-            key: contempt-${{ runner.os }}-${{ runner.arch }}-${{ github.run_id }}
-            restore-keys: |
-              contempt-${{ runner.os }}-${{ runner.arch }}-
-        - name: Install latest contempt
+            key: contempt-${{ runner.os }}-${{ runner.arch }}-splitupdating
+        - name: Clone and build contempt
           if: steps.cache.outputs.cache-hit != 'true'
-          run: go install github.com/csmith/contempt/cmd/contempt@latest
+          run: |
+            git clone -b splitupdating https://github.com/greboid/contempt.git /tmp/contempt
+            cd /tmp/contempt
+            go build -o ~/go/bin/contempt ./cmd/contempt
         - name: Login to private registry
           uses: redhat-actions/podman-login@v1
           with:

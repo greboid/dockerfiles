@@ -14,8 +14,37 @@ concurrency: dockerfiles
 permissions:
   contents: write
 jobs:
+  update-versions:
+    name: Update versions
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout source
+          uses: actions/checkout@master
+          with:
+            token: ${{ secrets.CONTEMPT_TOKEN }}
+        - name: Setup Go
+          uses: actions/setup-go@v6
+          with:
+            go-version: 'stable'
+            cache: false
+        - name: Cache updater
+          uses: actions/cache@v5
+          id: cache
+          with:
+              path: ~/go/bin/update
+              key: updater-${{ runner.os }}-${{ runner.arch }}-splitupdating
+        - name: Clone and build updater
+          if: steps.cache.outputs.cache-hit != 'true'
+          run: |
+              git clone -b splitupdating https://github.com/greboid/contempt.git /tmp/contempt
+              cd /tmp/contempt
+              go build -o ~/go/bin/update ./cmd/update
+        - name: Run updater
+          run: update -githubpr .
   setup-cache:
     name: Setup cache
+    needs:
+        - update-versions
     runs-on: ubuntu-latest
     steps:
         - name: Cache contempt
@@ -23,10 +52,13 @@ jobs:
           id: cache
           with:
               path: ~/go/bin/contempt
-              key: contempt-${{ runner.os }}-${{ runner.arch }}-latest
-        - name: Install latest contempt
+              key: contempt-${{ runner.os }}-${{ runner.arch }}-splitupdating
+        - name: Clone and build contempt
           if: steps.cache.outputs.cache-hit != 'true'
-          run: go install github.com/csmith/contempt/cmd/contempt@latest
+          run: |
+              git clone -b splitupdating https://github.com/greboid/contempt.git /tmp/contempt
+              cd /tmp/contempt
+              go build -o ~/go/bin/contempt ./cmd/contempt
   
   alpine:
     name: Build alpine

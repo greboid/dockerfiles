@@ -25,10 +25,13 @@ jobs:
         id: cache
         with:
           path: ~/go/bin/orchestrator
-          key: orchestrator-${{ runner.os }}-${{ runner.arch }}-latest
-      - name: Install latest orchestrator
+          key: orchestrator-${{ runner.os }}-${{ runner.arch }}-splitupdating
+      - name: Clone and build orchestrator
         if: steps.cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/orchestrator@latest
+        run: |
+          git clone -b splitupdating https://github.com/greboid/contempt.git /tmp/contempt
+          cd /tmp/contempt
+          go build -o ~/go/bin/orchestrator ./cmd/orchestrator
       - name: Run contempt orchestrator
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
