@@ -4,5 +4,6 @@
   "github:csmith/irc-distribution": "v1.1.0",
   "github:csmith/linx-server": "v3.4.1",
   "github:csmith/pdsps": "v1.0.0",
-  "github:csmith/purser": "v1.1.2"
+  "github:csmith/purser": "v1.1.2",
+  "golang": "go1.26.2"
 }
