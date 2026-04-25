@@ -1,0 +1,60 @@
+name: Contempt
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  push:
+    branches: [master]
+
+jobs:
+  check:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Cache updater
+        uses: actions/cache@v5
+        id: cache
+        with:
+          path: ~/go/bin/update
+          key: updater-${{ runner.os }}-${{ runner.arch }}-splitupdating
+      - name: Clone and build updater
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          git clone -b splitupdating https://github.com/greboid/contempt.git /tmp/contempt
+          cd /tmp/contempt
+          go build -o ~/go/bin/update ./cmd/update
+      - run: ~/go/bin/update -githubpr .
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  rebase-prs:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Cache updater
+        uses: actions/cache@v5
+        id: cache
+        with:
+          path: ~/go/bin/update
+          key: updater-${{ runner.os }}-${{ runner.arch }}-splitupdating
+      - name: Clone and build updater
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          git clone -b splitupdating https://github.com/greboid/contempt.git /tmp/contempt
+          cd /tmp/contempt
+          go build -o ~/go/bin/update ./cmd/update
+      - run: ~/go/bin/update -update-prs .
+        env:
+          GH_TOKEN: ${{ github.token }}
