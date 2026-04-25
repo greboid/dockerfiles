@@ -2,6 +2,7 @@
   "alpine": "3.23.4",
   "git:https://tangled.org/tangled.org/core": "v1.13.0-alpha",
   "github:csmith/centauri": "v2.6.0",
+  "github:csmith/centauri-docker-confd": "v1.2.0",
   "github:csmith/goplum": "v1.0.0",
   "github:csmith/irc-distribution": "v1.1.0",
   "github:csmith/linx-server": "v3.4.1",
