@@ -13,6 +13,7 @@
   "github:emersion/soju": "v0.10.1",
   "github:ergochat/ergo": "v2.18.0",
   "github:google/go-licenses": "v2.0.1",
+  "github:greboid/dockercleanup": "v1.0.3",
   "github:greboid/httpredirect": "v1.1.0",
   "github:greboid/identd": "v1.0.4",
   "github:greboid/irc-bot": "v5.0.8",
