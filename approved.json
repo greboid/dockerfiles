@@ -13,5 +13,6 @@
   "github:greboid/irc-notifier": "v1.0.6",
   "github:greboid/thp": "v1.2.2",
   "github:miniflux/v2": "2.2.19",
+  "github:rust-lang/rust": "1.95.0",
   "golang": "go1.26.2"
 }
