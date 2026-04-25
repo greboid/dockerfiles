@@ -7,6 +7,7 @@
   "github:csmith/pdsps": "v1.0.0",
   "github:csmith/purser": "v1.1.2",
   "github:google/go-licenses": "v2.0.1",
+  "github:greboid/thp": "v1.2.2",
   "github:miniflux/v2": "2.2.19",
   "golang": "go1.26.2"
 }
