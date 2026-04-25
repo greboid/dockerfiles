@@ -23,5 +23,6 @@
   "github:miniflux/v2": "2.2.19",
   "github:rust-lang/rust": "1.95.0",
   "github:rust-lang/rustup": "1.29.0",
+  "github:static-web-server/static-web-server": "v2.42.0",
   "golang": "go1.26.2"
 }
