@@ -22,7 +22,7 @@ jobs:
         id: cache
         with:
           path: ~/go/bin/update
-          key: updater-${{ runner.os }}-${{ runner.arch }}-splitupdating
+          key: updater-${{ runner.os }}-${{ runner.arch }}-${{ github.ref_type == 'tag' && github.ref_name || github.sha }}
       - name: Clone and build updater
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
@@ -46,7 +46,7 @@ jobs:
         id: cache
         with:
           path: ~/go/bin/update
-          key: updater-${{ runner.os }}-${{ runner.arch }}-splitupdating
+          key: updater-${{ runner.os }}-${{ runner.arch }}-${{ github.ref_type == 'tag' && github.ref_name || github.sha }}
       - name: Clone and build updater
         if: steps.cache.outputs.cache-hit != 'true'
         run: |

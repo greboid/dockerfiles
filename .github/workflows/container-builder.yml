@@ -22,7 +22,7 @@
           id: cache
           with:
             path: ~/go/bin/contempt
-            key: contempt-${{ runner.os }}-${{ runner.arch }}-splitupdating
+            key: contempt-${{ runner.os }}-${{ runner.arch }}-${{ github.ref_type == 'tag' && github.ref_name || github.sha }}
         - name: Clone and build contempt
           if: steps.cache.outputs.cache-hit != 'true'
           run: |
