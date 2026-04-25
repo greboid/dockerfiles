@@ -20,6 +20,7 @@
   "github:greboid/irc-goplum": "v4.0.2",
   "github:greboid/irc-notifier": "v1.0.6",
   "github:greboid/irc-webhook": "v4.1.1",
+  "github:greboid/registryauth": "v1.0.20",
   "github:greboid/thp": "v1.2.2",
   "github:haileyok/cocoon": "v0.9.0",
   "github:miniflux/v2": "2.2.19",
