@@ -26,6 +26,7 @@
   "github:greboid/thp": "v1.2.2",
   "github:haileyok/cocoon": "v0.9.0",
   "github:miniflux/v2": "2.2.19",
+  "github:redis/redis": "8.6.2",
   "github:rust-lang/rust": "1.95.0",
   "github:rust-lang/rustup": "1.29.0",
   "github:static-web-server/static-web-server": "v2.42.0",
