@@ -12,6 +12,7 @@
   "github:emersion/soju": "v0.10.1",
   "github:google/go-licenses": "v2.0.1",
   "github:greboid/identd": "v1.0.4",
+  "github:greboid/irc-github": "v4.0.3",
   "github:greboid/irc-notifier": "v1.0.6",
   "github:greboid/thp": "v1.2.2",
   "github:miniflux/v2": "2.2.19",
