@@ -3,9 +3,8 @@ on:
   push:
     branches:
       - master
-    paths-ignore:
-      - '.github/workflows/update-containers.yml'
-      - 'README.md'
+    paths:
+      - '**/Containerfile'
 name: Update Workflow
 jobs:
   update-workflow:

@@ -6,11 +6,12 @@ on:
   push:
     branches:
       - master
-    paths-ignore:
-      - '**/Containerfile'
-      - '**/Dockerfile'
-      - '.github/**'
-      - 'README.md'
+    paths:
+      - '*/**'
+      - '!.github/**'
+      - '.github/workflows/update-containers.yml'
+      - '!**/Containerfile'
+      - '!**/Dockerfile'
 name: Update Containers
 concurrency: dockerfiles
 permissions:
