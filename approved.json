@@ -13,6 +13,7 @@
   "github:ergochat/ergo": "v2.18.0",
   "github:google/go-licenses": "v2.0.1",
   "github:greboid/identd": "v1.0.4",
+  "github:greboid/irc-bot": "v5.0.8",
   "github:greboid/irc-github": "v4.0.3",
   "github:greboid/irc-goplum": "v4.0.2",
   "github:greboid/irc-notifier": "v1.0.6",
