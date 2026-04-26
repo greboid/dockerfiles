@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/identd/Containerfile.gotpl
-# BOM: {"github:greboid/identd":"v1.0.4","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"c8d413f5d8d4b448840f6e18361ab157313151c8a25a36d2837c16575b189df7","image:golang":"e05c1171c5adab0728a1ff03acf950cc5bb4685df1e18dde5f1ebd802d8fd73c"}
+# BOM: {"github:greboid/identd":"v1.0.4","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"c8d413f5d8d4b448840f6e18361ab157313151c8a25a36d2837c16575b189df7","image:golang":"6c36db8ceb4d718b3f1e56227cf00dcdb790d991a3a52c1b44d452dc90adca3a"}
 
-FROM reg.g5d.dev/golang@sha256:e05c1171c5adab0728a1ff03acf950cc5bb4685df1e18dde5f1ebd802d8fd73c AS build
+FROM reg.g5d.dev/golang@sha256:6c36db8ceb4d718b3f1e56227cf00dcdb790d991a3a52c1b44d452dc90adca3a AS build
 ARG TAG="v1.0.4"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/identd /src
