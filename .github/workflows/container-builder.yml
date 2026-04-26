@@ -33,11 +33,7 @@
             cd /tmp/contempt
             go build -o ~/go/bin/contempt ./cmd/contempt
         - name: Login to private registry
-          uses: redhat-actions/podman-login@v1
-          with:
-            username: ${{ secrets.REGISTRY_USER }}
-            password: ${{ secrets.REGISTRY_PASS }}
-            registry: ${{ secrets.REGISTRY }}
+          run: echo "${{ secrets.REGISTRY_PASS }}" | podman login -u "${{ secrets.REGISTRY_USER }}" --password-stdin "${{ secrets.REGISTRY }}"
         - name: Configure Git
           uses: snow-actions/git-config-user@v1.0.0
           with:
