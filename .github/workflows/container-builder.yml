@@ -72,6 +72,6 @@
           if: steps.check_mirror_exists.outputs.status == 'success'
           run: buildah push ghcr.io/${{ github.repository }}/${{ inputs.PROJECT_NAME }}
         - name: Push changes
-          uses: cutlerydrawer/action-git-try-push@v2
+          uses: cutlerydrawer/action-git-try-push@v2.0.1
           with:
             tries: 5
