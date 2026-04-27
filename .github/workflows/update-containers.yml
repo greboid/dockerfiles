@@ -21,13 +21,18 @@ jobs:
   setup-cache:
     name: Setup cache
     runs-on: ubuntu-latest
+    outputs:
+      contempt-sha: ${{ steps.get-sha.outputs.sha }}
     steps:
+        - name: Get contempt commit SHA
+          id: get-sha
+          run: echo "sha=$(git ls-remote --heads https://github.com/greboid/contempt.git splitupdating | cut -f1)" >> "$GITHUB_OUTPUT"
         - name: Cache contempt
           uses: actions/cache@v5
           id: cache
           with:
               path: ~/go/bin/contempt
-              key: contempt-${{ runner.os }}-${{ runner.arch }}-splitupdating
+              key: contempt-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-sha.outputs.sha }}
         - name: Clone and build contempt
           if: steps.cache.outputs.cache-hit != 'true'
           run: |
