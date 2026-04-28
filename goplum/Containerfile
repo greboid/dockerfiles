@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/goplum/Containerfile.gotpl
-# BOM: {"github:csmith/goplum":"v1.1.0","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"c8d413f5d8d4b448840f6e18361ab157313151c8a25a36d2837c16575b189df7","image:golang":"d50964e4db0f8d59e943b0e65983162c2e0cc96cafdf48fbed13952dffb3787e"}
+# BOM: {"github:csmith/goplum":"v1.1.0","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"c8d413f5d8d4b448840f6e18361ab157313151c8a25a36d2837c16575b189df7","image:golang":"e5cd26c7cd4637e8376e93fde764be9dc511b01d5366687193b7cf97a869f9e1"}
 
-FROM reg.g5d.dev/golang@sha256:d50964e4db0f8d59e943b0e65983162c2e0cc96cafdf48fbed13952dffb3787e AS build
+FROM reg.g5d.dev/golang@sha256:e5cd26c7cd4637e8376e93fde764be9dc511b01d5366687193b7cf97a869f9e1 AS build
 ARG TAG="v1.1.0"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/goplum /src
