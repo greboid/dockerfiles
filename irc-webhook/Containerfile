@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/irc-webhook/Containerfile.gotpl
-# BOM: {"github:greboid/irc-webhook":"v4.1.1","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"c8d413f5d8d4b448840f6e18361ab157313151c8a25a36d2837c16575b189df7","image:golang":"e5cd26c7cd4637e8376e93fde764be9dc511b01d5366687193b7cf97a869f9e1"}
+# BOM: {"github:greboid/irc-webhook":"v4.1.1","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd","image:golang":"14074a1bdf3f26490c9729678e38f8c3b40d096424e2be4df2fbdaac42ffe65a"}
 
-FROM reg.g5d.dev/golang@sha256:e5cd26c7cd4637e8376e93fde764be9dc511b01d5366687193b7cf97a869f9e1 AS build
+FROM reg.g5d.dev/golang@sha256:14074a1bdf3f26490c9729678e38f8c3b40d096424e2be4df2fbdaac42ffe65a AS build
 ARG TAG="v4.1.1"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/irc-webhook /src
@@ -12,6 +12,6 @@ RUN go-licenses save ./... --save_path=/notices
 FROM reg.g5d.dev/alpine@sha256:79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89 AS prepare
 COPY --from=build /src/main /rootfs/irc-webhook
 COPY --from=build /notices /rootfs/notices
-FROM reg.g5d.dev/base@sha256:c8d413f5d8d4b448840f6e18361ab157313151c8a25a36d2837c16575b189df7
+FROM reg.g5d.dev/base@sha256:809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd
 COPY --from=prepare --chown=65532:65532 /rootfs/ /
 ENTRYPOINT ["/irc-webhook"]
