@@ -1,6 +1,5 @@
 FROM {{image "golang"}} AS build
 {{template "clone" (map "repo" "greboid/thp")}}
-ENV CGO_ENABLED=0
 {{template "build-go" (map)}}
 {{template "go-licenses" (map)}}
 {{template "prepare" (map "name" "thp" "volumes" (arr "/config"))}}

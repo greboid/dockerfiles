@@ -1,6 +1,5 @@
 FROM {{image "golang"}} AS build
 {{template "clone" (map "repo" "tailscale/golink")}}
-ENV CGO_ENABLED=0
 {{template "build-go" (map "subdir" "./cmd/golink")}}
 {{template "go-licenses" (map "ignores" (arr "modernc.org/mathutil" "github.com/jmespath/go-jmespath"))}}
 {{template "prepare" (map "name" "golink")}}

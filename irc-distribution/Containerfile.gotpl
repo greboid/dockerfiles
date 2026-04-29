@@ -1,6 +1,5 @@
 FROM {{image "golang"}} AS build
 {{template "clone" (map "repo" "csmith/irc-distribution")}}
-ENV CGO_ENABLED=0
 {{template "build-go" (map "subdir" "./cmd/distribution")}}
 {{template "go-licenses" (map)}}
 {{template "prepare" (map "name" "irc-distribution")}}

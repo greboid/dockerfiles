@@ -1,6 +1,5 @@
 FROM {{image "golang"}} AS build
 {{template "clone" (map "repo" "miniflux/v2")}}
-ENV CGO_ENABLED=0
 {{template "build-go" (map "ldflags" ` -X miniflux.app/version.Version=$TAG -X miniflux.app/version.Commit=$TAG`)}}
 {{template "go-licenses" (map)}}
 {{template "prepare" (map "name" "miniflux")}}
