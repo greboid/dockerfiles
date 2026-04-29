@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/sws/Containerfile.gotpl
-# BOM: {"github:static-web-server/static-web-server":"v2.42.0","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"c8d413f5d8d4b448840f6e18361ab157313151c8a25a36d2837c16575b189df7","image:rust":"cf91e86e319a946ae004e0811809321bf538c1ecf89394532202629cf0d64b02"}
+# BOM: {"github:static-web-server/static-web-server":"v2.42.0","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd","image:rust":"14d0663db30daca9035fa1d139866270802f188099006120a3466e77d367aa08"}
 
-FROM reg.g5d.dev/rust@sha256:cf91e86e319a946ae004e0811809321bf538c1ecf89394532202629cf0d64b02 AS build
+FROM reg.g5d.dev/rust@sha256:14d0663db30daca9035fa1d139866270802f188099006120a3466e77d367aa08 AS build
 ARG TAG="v2.42.0"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/static-web-server/static-web-server /src
@@ -11,6 +11,6 @@ RUN git apply /keepqueriesonrewrites.diff
 RUN cargo build --release
 FROM reg.g5d.dev/alpine@sha256:79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89 AS prepare
 COPY --from=build /src/target/release/static-web-server /rootfs/sws
-FROM reg.g5d.dev/base@sha256:c8d413f5d8d4b448840f6e18361ab157313151c8a25a36d2837c16575b189df7
+FROM reg.g5d.dev/base@sha256:809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd
 COPY --from=prepare --chown=65532:65532 /rootfs/ /
 ENTRYPOINT ["/sws"]
