@@ -1,6 +1,6 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/base/Containerfile.gotpl
-# BOM: {"image:baseroot":"6a9dd67d5101541918c4a3f900eed64bbe965c04078572580e4a89510da5c6aa"}
+# BOM: {"image:baseroot":"a04d00e5c3c6f98dc9f3c804d6ccc38b482ed785b27c89be7196b0018460b596"}
 
-FROM reg.g5d.dev/baseroot@sha256:6a9dd67d5101541918c4a3f900eed64bbe965c04078572580e4a89510da5c6aa AS build
+FROM reg.g5d.dev/baseroot@sha256:a04d00e5c3c6f98dc9f3c804d6ccc38b482ed785b27c89be7196b0018460b596 AS build
 
 USER nonroot
