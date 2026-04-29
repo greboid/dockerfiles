@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/purser/Containerfile.gotpl
-# BOM: {"github:csmith/purser":"v1.1.2","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd","image:golang":"14074a1bdf3f26490c9729678e38f8c3b40d096424e2be4df2fbdaac42ffe65a"}
+# BOM: {"github:csmith/purser":"v1.1.2","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd","image:golang":"48185d5d96b7b4eeae158f78fbca2b64da1cbd3977f36fa45432c6173e76fdda"}
 
-FROM reg.g5d.dev/golang@sha256:14074a1bdf3f26490c9729678e38f8c3b40d096424e2be4df2fbdaac42ffe65a AS build
+FROM reg.g5d.dev/golang@sha256:48185d5d96b7b4eeae158f78fbca2b64da1cbd3977f36fa45432c6173e76fdda AS build
 ARG TAG="v1.1.2"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/purser /src
