@@ -4,4 +4,4 @@ ENV CGO_ENABLED=0
 {{template "build-go" (map "subdir" "./cmd/spindle")}}
 {{template "go-licenses" (map "ignores" (arr "github.com/ipfs/bbloom" "github.com/multiformats/go-base36" "gitlab.com/yawning/secp256k1-voi/internal/fiat/secp256k1montgomery"))}}
 {{template "prepare" (map "name" "spindle")}}
-{{template "runtime" (map "name" "spindle")}}
+{{template "runtime" (map "name" "spindle" "runtime_image" "baseroot")}}

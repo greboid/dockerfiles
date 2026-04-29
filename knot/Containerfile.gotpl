@@ -4,4 +4,4 @@ ENV CGO_ENABLED=0
 {{template "build-go" (map "subdir" "./cmd/knot")}}
 {{template "go-licenses" (map "ignores" (arr "github.com/ipfs/bbloom" "github.com/multiformats/go-base36" "gitlab.com/yawning/secp256k1-voi/internal/fiat/secp256k1montgomery"))}}
 {{template "prepare" (map "name" "knot")}}
-{{template "runtime" (map "name" "knot")}}
+{{template "runtime" (map "name" "knot" "runtime_image" "baseroot")}}
