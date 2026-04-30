@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/githubmirror/Containerfile.gotpl
-# BOM: {"github:greboid/githubmirror":"v1.0.3","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd","image:golang":"33b6d0521c2a8943ad75fb5ee3c23ef9a0c32b12c1a41c954a4094e31da8a591"}
+# BOM: {"github:greboid/githubmirror":"v1.0.3","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd","image:golang":"33a6556dc8e97765478bc32b3e58e9900e3c93b21fcb61a0f5ff24ffe6d81684"}
 
-FROM reg.g5d.dev/golang@sha256:33b6d0521c2a8943ad75fb5ee3c23ef9a0c32b12c1a41c954a4094e31da8a591 AS build
+FROM reg.g5d.dev/golang@sha256:33a6556dc8e97765478bc32b3e58e9900e3c93b21fcb61a0f5ff24ffe6d81684 AS build
 ARG TAG="v1.0.3"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/githubmirror /src
