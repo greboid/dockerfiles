@@ -70,6 +70,16 @@ jobs:
     with:
         PROJECT_NAME: golang
 
+  git:
+    name: Build git
+    needs:
+        - setup-cache
+        - alpine
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: git
+
   baseroot:
     name: Build baseroot
     needs:
@@ -79,6 +89,42 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: baseroot
+
+  spindle:
+    name: Build spindle
+    needs:
+        - setup-cache
+        - alpine
+        - baseroot
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: spindle
+
+  knotssh:
+    name: Build knotssh
+    needs:
+        - setup-cache
+        - alpine
+        - baseroot
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: knotssh
+
+  knot:
+    name: Build knot
+    needs:
+        - setup-cache
+        - alpine
+        - baseroot
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: knot
 
   dsp:
     name: Build dsp
@@ -149,18 +195,6 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: sws
-
-  spindle:
-    name: Build spindle
-    needs:
-        - setup-cache
-        - alpine
-        - base
-        - golang
-    uses: ./.github/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: spindle
 
   soju:
     name: Build soju
@@ -267,18 +301,6 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: linx-server
-
-  knot:
-    name: Build knot
-    needs:
-        - setup-cache
-        - alpine
-        - base
-        - golang
-    uses: ./.github/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: knot
 
   irc-webhook:
     name: Build irc-webhook
