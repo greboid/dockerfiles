@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/sws/Containerfile.gotpl
-# BOM: {"github:static-web-server/static-web-server":"v2.42.0","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd","image:rust":"5c94d54f6ee0c6a54415b40c0546fa72b1f8c455729bee5b9d53f616b2a0e705"}
+# BOM: {"github:static-web-server/static-web-server":"v2.42.0","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd","image:rust":"1dc7d67f75b2378570e3fe0fd3bafd8a806c9dcec3107364d16d6ef77ec9f877"}
 
-FROM reg.g5d.dev/rust@sha256:5c94d54f6ee0c6a54415b40c0546fa72b1f8c455729bee5b9d53f616b2a0e705 AS build
+FROM reg.g5d.dev/rust@sha256:1dc7d67f75b2378570e3fe0fd3bafd8a806c9dcec3107364d16d6ef77ec9f877 AS build
 ARG TAG="v2.42.0"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/static-web-server/static-web-server /src
