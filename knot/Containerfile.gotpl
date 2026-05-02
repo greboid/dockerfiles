@@ -3,4 +3,5 @@ FROM {{image "golang"}} AS build
 {{template "build-go" (map "cgo" "true" "subdir" "./cmd/knot")}}
 {{template "go-licenses" (map "ignores" (arr "github.com/ipfs/bbloom" "github.com/multiformats/go-base36" "gitlab.com/yawning/secp256k1-voi/internal/fiat/secp256k1montgomery"))}}
 {{template "prepare" (map "name" "knot")}}
+COPY --from={{image "git"}} / /rootfs/
 {{template "runtime" (map "name" "knot" "runtime_image" "baseroot")}}

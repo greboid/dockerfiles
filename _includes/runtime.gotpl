@@ -1,6 +1,7 @@
 {{- define "runtime" -}}
 FROM {{image (or .runtime_image "base")}}
 COPY --from=prepare --chown=65532:65532 /rootfs/ /
+USER 65532:65532
 {{- range .exposes}}
 EXPOSE {{.}}
 {{- end}}

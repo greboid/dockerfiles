@@ -14,5 +14,6 @@ COPY --from=build /src/main /rootfs/dsp
 COPY --from=build /notices /rootfs/notices
 FROM reg.g5d.dev/baseroot@sha256:a04d00e5c3c6f98dc9f3c804d6ccc38b482ed785b27c89be7196b0018460b596
 COPY --from=prepare --chown=65532:65532 /rootfs/ /
+USER 65532:65532
 EXPOSE 8080
 ENTRYPOINT ["/dsp"]

@@ -1,0 +1,24 @@
+FROM {{image "alpine"}} AS git-build
+RUN set -eux; \
+    apk add --no-cache \
+    {{range $key, $value := alpine_packages "build-base" "zlib-dev" "zlib-static" "musl-dev" "curl" -}}
+    {{$key}}={{$value}} \
+    {{end}}; \
+    TAG="{{github_tag "git/git"}}"; \
+    VERSION="${TAG#v}"; \
+    curl -sL "https://mirrors.edge.kernel.org/pub/software/scm/git/git-${VERSION}.tar.gz" | tar xz; \
+    cd "git-${VERSION}"; \
+    make NO_CURL=1 NO_EXPAT=1 NO_GETTEXT=1 NO_TCLTK=1 NO_OPENSSL=1 \
+         USE_LIBPCRE2= NO_REGEX=NeedStartEnd CFLAGS="-static" \
+         LDFLAGS="-static -lz" -j$(nproc) && \
+    strip git && \
+    mkdir -p /out/usr/bin && \
+    cp git /out/usr/bin/git && \
+    cd /out/usr/bin && \
+    ln -s git git-receive-pack && \
+    ln -s git git-upload-pack && \
+    ln -s git git-upload-archive
+
+FROM scratch
+
+COPY --from=git-build /out/ /

@@ -14,4 +14,5 @@ COPY --from=build /src/main /rootfs/irc-goplum
 COPY --from=build /notices /rootfs/notices
 FROM reg.g5d.dev/base@sha256:809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd
 COPY --from=prepare --chown=65532:65532 /rootfs/ /
+USER 65532:65532
 ENTRYPOINT ["/irc-goplum"]
