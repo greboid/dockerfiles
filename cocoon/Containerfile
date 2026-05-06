@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/cocoon/Containerfile.gotpl
-# BOM: {"github:haileyok/cocoon":"v0.9.0","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd","image:golang":"e8bfc1a091338e2bc94e9cb6081b12e9ed3eb6a94cca0c439a2e251b598082d4"}
+# BOM: {"github:haileyok/cocoon":"v0.9.0","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd","image:golang":"f732f6f630aa45adb37816e7204faee3ee71ac8f1bd1b922b1441498768a1f8e"}
 
-FROM reg.g5d.dev/golang@sha256:e8bfc1a091338e2bc94e9cb6081b12e9ed3eb6a94cca0c439a2e251b598082d4 AS build
+FROM reg.g5d.dev/golang@sha256:f732f6f630aa45adb37816e7204faee3ee71ac8f1bd1b922b1441498768a1f8e AS build
 ARG TAG="v0.9.0"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/haileyok/cocoon /src
