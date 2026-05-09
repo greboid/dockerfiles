@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/dockercleanup/Containerfile.gotpl
-# BOM: {"github:greboid/dockercleanup":"v1.0.3","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd","image:golang":"7696f4eab837e27897d3eaf7ca875382a77f5145371c091deb192f74d92b6806"}
+# BOM: {"github:greboid/dockercleanup":"v1.0.3","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd","image:golang":"3f42cca1e501daf94035b1ceddeffb0326a0410a22aee8c5c865ec052cc6f450"}
 
-FROM reg.g5d.dev/golang@sha256:7696f4eab837e27897d3eaf7ca875382a77f5145371c091deb192f74d92b6806 AS build
+FROM reg.g5d.dev/golang@sha256:3f42cca1e501daf94035b1ceddeffb0326a0410a22aee8c5c865ec052cc6f450 AS build
 ARG TAG="v1.0.3"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/dockercleanup /src
