@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/dsp/Containerfile.gotpl
-# BOM: {"github:greboid/dsp":"v1.2.4","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:baseroot":"a04d00e5c3c6f98dc9f3c804d6ccc38b482ed785b27c89be7196b0018460b596","image:golang":"3f42cca1e501daf94035b1ceddeffb0326a0410a22aee8c5c865ec052cc6f450"}
+# BOM: {"github:greboid/dsp":"v1.2.4","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:baseroot":"a04d00e5c3c6f98dc9f3c804d6ccc38b482ed785b27c89be7196b0018460b596","image:golang":"dd5de63c4ae86a3b327ce24bcdb4b34e009626ed5e09b32b7ea85c74bfc49444"}
 
-FROM reg.g5d.dev/golang@sha256:3f42cca1e501daf94035b1ceddeffb0326a0410a22aee8c5c865ec052cc6f450 AS build
+FROM reg.g5d.dev/golang@sha256:dd5de63c4ae86a3b327ce24bcdb4b34e009626ed5e09b32b7ea85c74bfc49444 AS build
 ARG TAG="v1.2.4"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/dsp /src
