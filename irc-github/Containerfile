@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/irc-github/Containerfile.gotpl
-# BOM: {"github:greboid/irc-github":"v4.0.3","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd","image:golang":"6133d6c7015949017b456587c870190a143101b1fbb28789eb3907c4ba78c43f"}
+# BOM: {"github:greboid/irc-github":"v4.0.3","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd","image:golang":"54541209df3745598f210aba11409e554ddf34d67c71bb13a0e2d7587791f04c"}
 
-FROM reg.g5d.dev/golang@sha256:6133d6c7015949017b456587c870190a143101b1fbb28789eb3907c4ba78c43f AS build
+FROM reg.g5d.dev/golang@sha256:54541209df3745598f210aba11409e554ddf34d67c71bb13a0e2d7587791f04c AS build
 ARG TAG="v4.0.3"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/irc-github /src
