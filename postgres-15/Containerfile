@@ -1,10 +1,10 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/postgres-15/Containerfile.gotpl
-# BOM: {"apk:acl-libs":"2.3.2-r1","apk:bash":"5.3.3-r1","apk:binutils":"2.45.1-r0","apk:brotli-libs":"1.2.0-r0","apk:busybox":"1.37.0-r30","apk:busybox-binsh":"1.37.0-r30","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20260413-r0","apk:curl":"8.17.0-r1","apk:g++":"15.2.0-r2","apk:gcc":"15.2.0-r2","apk:git":"2.52.0-r0","apk:gmp":"6.3.0-r4","apk:isl25":"0.25-r2","apk:jansson":"2.14.1-r0","apk:libatomic":"15.2.0-r2","apk:libcrypto3":"3.5.6-r0","apk:libcurl":"8.17.0-r1","apk:libexpat":"2.7.5-r0","apk:libformw":"6.5_p20251123-r0","apk:libgcc":"15.2.0-r2","apk:libgomp":"15.2.0-r2","apk:libhistory":"8.3.1-r0","apk:libidn2":"2.3.8-r0","apk:libintl":"0.24.1-r1","apk:libmenuw":"6.5_p20251123-r0","apk:libncurses++":"6.5_p20251123-r0","apk:libncursesw":"6.5_p20251123-r0","apk:libpanelw":"6.5_p20251123-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.6-r0","apk:libstdc++":"15.2.0-r2","apk:libstdc++-dev":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:libxxhash":"0.8.3-r0","apk:linux-headers":"6.16.12-r0","apk:lz4-libs":"1.10.0-r0","apk:make":"4.4.1-r3","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.2-r0","apk:musl":"1.2.5-r23","apk:musl-dev":"1.2.5-r23","apk:musl-locales":"0.1.0-r1","apk:ncurses-dev":"6.5_p20251123-r0","apk:ncurses-terminfo-base":"6.5_p20251123-r0","apk:nghttp2-libs":"1.69.0-r0","apk:nghttp3":"1.13.1-r0","apk:openssl-dev":"3.5.6-r0","apk:pcre2":"10.47-r0","apk:pkgconf":"2.5.1-r0","apk:popt":"1.19-r4","apk:readline":"8.3.1-r0","apk:readline-dev":"8.3.1-r0","apk:rsync":"3.4.2-r0","apk:scanelf":"1.3.8-r2","apk:zlib":"1.3.2-r0","apk:zlib-dev":"1.3.2-r0","apk:zstd-libs":"1.5.7-r2","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd","postgres15":"15.17"}
+# BOM: {"apk:acl-libs":"2.3.2-r1","apk:bash":"5.3.3-r1","apk:binutils":"2.45.1-r0","apk:brotli-libs":"1.2.0-r0","apk:busybox":"1.37.0-r30","apk:busybox-binsh":"1.37.0-r30","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20260413-r0","apk:curl":"8.19.0-r0","apk:g++":"15.2.0-r2","apk:gcc":"15.2.0-r2","apk:git":"2.52.0-r0","apk:gmp":"6.3.0-r4","apk:isl25":"0.25-r2","apk:jansson":"2.14.1-r0","apk:libatomic":"15.2.0-r2","apk:libcrypto3":"3.5.6-r0","apk:libcurl":"8.19.0-r0","apk:libexpat":"2.7.5-r0","apk:libformw":"6.5_p20251123-r0","apk:libgcc":"15.2.0-r2","apk:libgomp":"15.2.0-r2","apk:libhistory":"8.3.1-r0","apk:libidn2":"2.3.8-r0","apk:libintl":"0.24.1-r1","apk:libmenuw":"6.5_p20251123-r0","apk:libncurses++":"6.5_p20251123-r0","apk:libncursesw":"6.5_p20251123-r0","apk:libpanelw":"6.5_p20251123-r0","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.6-r0","apk:libstdc++":"15.2.0-r2","apk:libstdc++-dev":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:libxxhash":"0.8.3-r0","apk:linux-headers":"6.16.12-r0","apk:lz4-libs":"1.10.0-r0","apk:make":"4.4.1-r3","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.2-r0","apk:musl":"1.2.5-r23","apk:musl-dev":"1.2.5-r23","apk:musl-locales":"0.1.0-r1","apk:ncurses-dev":"6.5_p20251123-r0","apk:ncurses-terminfo-base":"6.5_p20251123-r0","apk:nghttp2-libs":"1.69.0-r0","apk:nghttp3":"1.13.1-r0","apk:openssl-dev":"3.5.6-r0","apk:pcre2":"10.47-r0","apk:pkgconf":"2.5.1-r0","apk:popt":"1.19-r4","apk:readline":"8.3.1-r0","apk:readline-dev":"8.3.1-r0","apk:rsync":"3.4.2-r0","apk:scanelf":"1.3.8-r2","apk:zlib":"1.3.2-r0","apk:zlib-dev":"1.3.2-r0","apk:zstd-libs":"1.5.7-r2","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd","postgres15":"15.17"}
 
 FROM reg.g5d.dev/alpine@sha256:79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89 as build
 
-ARG ARCHIVE_URL="https://ftp.postgresql.org/pub/source/v15.17/postgresql-15.17.tar.bz2"
-ARG ARCHIVE_SUM="ae14f24c14727e0b2ded1c5553031666099bd1054db3ef44bfa6e2bd6d554a56"
+ARG ARCHIVE_URL="https://ftp.postgresql.org/pub/source/v15.18/postgresql-15.18.tar.bz2"
+ARG ARCHIVE_SUM="11df0df97fe3ea4ba9a791faaf39cee1d2fe571e78885b5b55d8517d27c323b4"
 ARG ENTRYPOINT=39c3dc7046f5f7909179a51e25f2a61158781d57
 
 RUN set -eux; \
@@ -17,7 +17,7 @@ RUN set -eux; \
         busybox-binsh=1.37.0-r30 \
         c-ares=1.34.6-r0 \
         ca-certificates-bundle=20260413-r0 \
-        curl=8.17.0-r1 \
+        curl=8.19.0-r0 \
         g++=15.2.0-r2 \
         gcc=15.2.0-r2 \
         git=2.52.0-r0 \
@@ -26,7 +26,7 @@ RUN set -eux; \
         jansson=2.14.1-r0 \
         libatomic=15.2.0-r2 \
         libcrypto3=3.5.6-r0 \
-        libcurl=8.17.0-r1 \
+        libcurl=8.19.0-r0 \
         libexpat=2.7.5-r0 \
         libformw=6.5_p20251123-r0 \
         libgcc=15.2.0-r2 \
@@ -55,7 +55,6 @@ RUN set -eux; \
         ncurses-dev=6.5_p20251123-r0 \
         ncurses-terminfo-base=6.5_p20251123-r0 \
         nghttp2-libs=1.69.0-r0 \
-        nghttp3=1.13.1-r0 \
         openssl-dev=3.5.6-r0 \
         pcre2=10.47-r0 \
         pkgconf=2.5.1-r0 \
