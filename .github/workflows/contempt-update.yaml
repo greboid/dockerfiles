@@ -32,7 +32,7 @@ jobs:
           go build -o ~/go/bin/update ./cmd/update
       - run: ~/go/bin/update -githubpr .
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
           REGISTRY: ${{ secrets.REGISTRY }}
           SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
           TEMPLATE: Containerfile.gotpl
@@ -62,7 +62,7 @@ jobs:
           go build -o ~/go/bin/update ./cmd/update
       - run: ~/go/bin/update -update-prs .
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
           REGISTRY: ${{ secrets.REGISTRY }}
           TEMPLATE: Containerfile.gotpl
           OUTPUT: Containerfile
