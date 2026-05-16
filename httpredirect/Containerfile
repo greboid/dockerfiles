@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/httpredirect/Containerfile.gotpl
-# BOM: {"github:greboid/httpredirect":"v1.1.0","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd","image:golang":"9901d08d9f5b0203a74ac90efad4c10e7ed787de5cd5f1907151c9234a784604"}
+# BOM: {"github:greboid/httpredirect":"v1.1.0","image:alpine":"fa014963574ed066d668c07507776a6d5a33f13c3ef94cdaf9ccc3296a200e49","image:base":"e8432024bc1b4954bdeebb8a9c319493cea2feb89bbb2ad30e2ebacffc6b8ac5","image:golang":"8e7a70400cdbf3dc7230962ccdce7a548b458899fe870c93152fc7aad747f60a"}
 
-FROM reg.g5d.dev/golang@sha256:9901d08d9f5b0203a74ac90efad4c10e7ed787de5cd5f1907151c9234a784604 AS build
+FROM reg.g5d.dev/golang@sha256:8e7a70400cdbf3dc7230962ccdce7a548b458899fe870c93152fc7aad747f60a AS build
 ARG TAG="v1.1.0"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/httpredirect /src
@@ -9,10 +9,10 @@ WORKDIR /src
 ENV CGO_ENABLED=0
 RUN go build -a -ldflags "-extldflags \"-static\" -s -w -buildid=" -trimpath -o main .
 RUN go-licenses save ./... --save_path=/notices
-FROM reg.g5d.dev/alpine@sha256:79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89 AS prepare
+FROM reg.g5d.dev/alpine@sha256:fa014963574ed066d668c07507776a6d5a33f13c3ef94cdaf9ccc3296a200e49 AS prepare
 COPY --from=build /src/main /rootfs/httpredirect
 COPY --from=build /notices /rootfs/notices
-FROM reg.g5d.dev/base@sha256:809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd
+FROM reg.g5d.dev/base@sha256:e8432024bc1b4954bdeebb8a9c319493cea2feb89bbb2ad30e2ebacffc6b8ac5
 COPY --from=prepare --chown=65532:65532 /rootfs/ /
 USER 65532:65532
 EXPOSE 8080
