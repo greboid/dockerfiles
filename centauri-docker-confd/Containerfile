@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/centauri-docker-confd/Containerfile.gotpl
-# BOM: {"github:csmith/centauri-docker-confd":"v1.2.0","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd","image:golang":"06f2f5cca775b8eb2b4ddffeb5ecf37fb80e5b65145b7832c7663b0cfe925c25"}
+# BOM: {"github:csmith/centauri-docker-confd":"v1.2.0","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd","image:golang":"590ae698bd8d17e440f4787961050bb79b18610fa764611f823e10fb59520b31"}
 
-FROM reg.g5d.dev/golang@sha256:06f2f5cca775b8eb2b4ddffeb5ecf37fb80e5b65145b7832c7663b0cfe925c25 AS build
+FROM reg.g5d.dev/golang@sha256:590ae698bd8d17e440f4787961050bb79b18610fa764611f823e10fb59520b31 AS build
 ARG TAG="v1.2.0"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/centauri-docker-confd /src
