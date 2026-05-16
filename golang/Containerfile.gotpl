@@ -16,9 +16,10 @@ RUN set -eux; \
 {{template "download-archive" (map "filename" "go.tar.gz" "dest" "/usr/local" "tar_flags" (arr "-z"))}}
 
 ENV SOURCE_DATE_EPOCH=0
+ENV GOTELEMETRY=off
 RUN set -eux; \
-    cd /usr/local/go/src && GOROOT_BOOTSTRAP="$(go env GOROOT)" GOHOSTOS="linux" GOHOSTARCH="amd64" ./make.bash; \
-    go install std; \
+    cd /usr/local/go/src && GOROOT_BOOTSTRAP="$(go env GOROOT)" GOHOSTOS="linux" GOHOSTARCH="amd64" GOTELEMETRY=off ./make.bash; \
+    GOTELEMETRY=off go install std; \
     apk del --no-network .build-deps; \
     rm -rf \
             /go.tar.gz \
@@ -36,4 +37,4 @@ RUN set -eux; \
     mkdir -p $GOPATH/src $GOPATH/bin; \
     chmod -R 777 $GOPATH; \
     go install github.com/google/go-licenses/v2@{{github_tag "google/go-licenses"}}; \
-    rm -rf /root/.cache
+    rm -rf /root/.cache /root/.config /go/pkg/mod/cache /var/log/apk.log
