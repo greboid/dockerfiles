@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/httpredirect/Containerfile.gotpl
-# BOM: {"github:greboid/httpredirect":"v1.1.0","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd","image:golang":"e7e8884737e8d470864745970e6da2224643d4d805e2e5ea77e2098b80f8c4b3"}
+# BOM: {"github:greboid/httpredirect":"v1.1.0","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:base":"809eb34aa233e41504d63a67527ec6892827371beea269f6f3de529804a48ddd","image:golang":"a57c057c7a9958e214a7ec75a703ad0c109a3f4c0a521171b4d6ff832d6e5e48"}
 
-FROM reg.g5d.dev/golang@sha256:e7e8884737e8d470864745970e6da2224643d4d805e2e5ea77e2098b80f8c4b3 AS build
+FROM reg.g5d.dev/golang@sha256:a57c057c7a9958e214a7ec75a703ad0c109a3f4c0a521171b4d6ff832d6e5e48 AS build
 ARG TAG="v1.1.0"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/httpredirect /src
