@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/irc-bot/Containerfile.gotpl
-# BOM: {"github:greboid/irc-bot":"v5.0.8","image:alpine":"cfc36a2dbe8e9f59f61bf87a016f5360fcadb54262b11a1f5dd120dde070abcf","image:base":"1bbe14d3322e3d4b47a8fcb69d295cb672da8207394d0d61c6eb38a503a16254","image:golang":"5296a0b228ce1a5aeffcd3c8233cae4319b6ba5e81c75f94ea167cdea2c14faa"}
+# BOM: {"github:greboid/irc-bot":"v5.0.8","image:alpine":"cfc36a2dbe8e9f59f61bf87a016f5360fcadb54262b11a1f5dd120dde070abcf","image:base":"1bbe14d3322e3d4b47a8fcb69d295cb672da8207394d0d61c6eb38a503a16254","image:golang":"2958ef96045f3a000a2dcf7ab3d3f3bcb7c603d445bc9d3a1f21450f85b21c10"}
 
-FROM reg.g5d.dev/golang@sha256:5296a0b228ce1a5aeffcd3c8233cae4319b6ba5e81c75f94ea167cdea2c14faa AS build
+FROM reg.g5d.dev/golang@sha256:2958ef96045f3a000a2dcf7ab3d3f3bcb7c603d445bc9d3a1f21450f85b21c10 AS build
 ARG TAG="v5.0.8"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/irc-bot /src
