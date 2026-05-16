@@ -1,18 +1,18 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/tsp/Containerfile.gotpl
-# BOM: {"github:csmith/tsp":"v1.2.0","image:alpine":"fa014963574ed066d668c07507776a6d5a33f13c3ef94cdaf9ccc3296a200e49","image:base":"e8432024bc1b4954bdeebb8a9c319493cea2feb89bbb2ad30e2ebacffc6b8ac5","image:golang":"7b6f4d47dfde1bcd963937d95eeb1933f3b6024b9c9b3c87ecff8206826a42c4"}
+# BOM: {"github:csmith/tsp":"v1.2.0","image:alpine":"cfc36a2dbe8e9f59f61bf87a016f5360fcadb54262b11a1f5dd120dde070abcf","image:base":"1bbe14d3322e3d4b47a8fcb69d295cb672da8207394d0d61c6eb38a503a16254","image:golang":"5296a0b228ce1a5aeffcd3c8233cae4319b6ba5e81c75f94ea167cdea2c14faa"}
 
-FROM reg.g5d.dev/golang@sha256:7b6f4d47dfde1bcd963937d95eeb1933f3b6024b9c9b3c87ecff8206826a42c4 AS build
+FROM reg.g5d.dev/golang@sha256:5296a0b228ce1a5aeffcd3c8233cae4319b6ba5e81c75f94ea167cdea2c14faa AS build
 ARG TAG="v1.2.0"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/tsp /src
 WORKDIR /src
 ENV CGO_ENABLED=0
 RUN go build -a -ldflags "-extldflags \"-static\" -s -w -buildid=" -trimpath -o main .
-FROM reg.g5d.dev/alpine@sha256:fa014963574ed066d668c07507776a6d5a33f13c3ef94cdaf9ccc3296a200e49 AS prepare
+FROM reg.g5d.dev/alpine@sha256:cfc36a2dbe8e9f59f61bf87a016f5360fcadb54262b11a1f5dd120dde070abcf AS prepare
 COPY --from=build /src/main /rootfs/tsp
 RUN mkdir -p /rootfs/home/nonroot/.config
 RUN mkdir -p /rootfs/config
-FROM reg.g5d.dev/base@sha256:e8432024bc1b4954bdeebb8a9c319493cea2feb89bbb2ad30e2ebacffc6b8ac5
+FROM reg.g5d.dev/base@sha256:1bbe14d3322e3d4b47a8fcb69d295cb672da8207394d0d61c6eb38a503a16254
 COPY --from=prepare --chown=65532:65532 /rootfs/ /
 USER 65532:65532
 EXPOSE 8080
