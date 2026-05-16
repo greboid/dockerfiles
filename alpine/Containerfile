@@ -1,4 +1,4 @@
-# Generated from https://github.com/greboid/dockerfiles/blob/master/alpine/Containerfile.gotpl
+# Generated from alpine/Containerfile.gotpl
 # BOM: {"alpine":"3.23.4"}
 
 FROM reg.g5d.dev/alpine AS verify
