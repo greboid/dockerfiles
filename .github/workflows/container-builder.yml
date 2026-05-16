@@ -37,7 +37,7 @@
             sudo apt-get install -y libgpgme-dev libseccomp-dev libbtrfs-dev libdevmapper-dev pkg-config
             git clone --depth 1 --branch v1.43.1 https://github.com/containers/buildah.git /tmp/buildah
             cd /tmp/buildah
-            make binary
+            make bin/buildah
             sudo make install
             buildah --version
         - name: Login to private registry
