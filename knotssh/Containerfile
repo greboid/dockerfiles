@@ -1,7 +1,7 @@
-# Generated from knotssh/Containerfile.gotpl
-# BOM: {"github:greboid/knotssh":"v0.0.1","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:baseroot":"a04d00e5c3c6f98dc9f3c804d6ccc38b482ed785b27c89be7196b0018460b596","image:git":"5cb238b935ff29bd305d3590e3883295eb36e9aa6b923af53426f390bf8ca90f","image:golang":"a57c057c7a9958e214a7ec75a703ad0c109a3f4c0a521171b4d6ff832d6e5e48"}
+# Generated from https://github.com/greboid/dockerfiles/blob/master/knotssh/Containerfile.gotpl
+# BOM: {"github:greboid/knotssh":"v0.0.1","image:alpine":"79d2a3cd657c65f1cb09e22e6cd09fd4a0a3e03b9196cc0f2f73d4f8dc90cc89","image:baseroot":"a04d00e5c3c6f98dc9f3c804d6ccc38b482ed785b27c89be7196b0018460b596","image:git":"5cb238b935ff29bd305d3590e3883295eb36e9aa6b923af53426f390bf8ca90f","image:golang":"c82906b56ac00bd739049dea7b582b2482f85acc3ce93ae7cfab88dcad4d63aa"}
 
-FROM reg.g5d.dev/golang@sha256:a57c057c7a9958e214a7ec75a703ad0c109a3f4c0a521171b4d6ff832d6e5e48 AS build
+FROM reg.g5d.dev/golang@sha256:c82906b56ac00bd739049dea7b582b2482f85acc3ce93ae7cfab88dcad4d63aa AS build
 ARG TAG="v0.0.1"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/knotssh /src
@@ -20,5 +20,5 @@ COPY --from=prepare --chown=65532:65532 /rootfs/ /
 USER 65532:65532
 EXPOSE 222
 VOLUME ["/home/nonroot/repos"]
-VOLUME ["/home/nonroot/keys"]
+VOLUME ["/keys"]
 ENTRYPOINT ["/knot-ssh"]
