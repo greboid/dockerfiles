@@ -4,4 +4,4 @@ FROM {{image "golang"}} AS build
 {{template "go-licenses"}}
 {{template "prepare" (map "name" "knot-ssh" "volumes" (arr "/home/git" "/etc/ssh/host_keys"))}}
 COPY --from={{image "git"}} / /rootfs/
-{{template "runtime" (map "name" "knot-ssh" "runtime_image" "baseroot" "exposes" (arr "222") "volumes" (arr "/home/nonroot/repos" "/home/nonroot/keys"))}}
+{{template "runtime" (map "name" "knot-ssh" "runtime_image" "baseroot" "exposes" (arr "222") "volumes" (arr "/home/nonroot/repos" "/keys"))}}
