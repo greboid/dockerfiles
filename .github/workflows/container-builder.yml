@@ -32,6 +32,14 @@
             git clone -b splitupdating https://github.com/greboid/contempt.git /tmp/contempt
             cd /tmp/contempt
             go build -o ~/go/bin/contempt ./cmd/contempt
+        - name: Install buildah from source
+          run: |
+            sudo apt-get install -y libgpgme-dev libseccomp-dev libbtrfs-dev libdevmapper-dev pkg-config
+            git clone --depth 1 --branch v1.43.1 https://github.com/containers/buildah.git /tmp/buildah
+            cd /tmp/buildah
+            make binary
+            sudo make install
+            buildah --version
         - name: Login to private registry
           run: echo "${{ secrets.REGISTRY_PASS }}" | podman login -u "${{ secrets.REGISTRY_USER }}" --password-stdin "${{ secrets.REGISTRY }}"
         - name: Configure Git
