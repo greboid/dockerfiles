@@ -38,7 +38,7 @@
             git clone --depth 1 --branch v1.43.1 https://github.com/containers/buildah.git /tmp/buildah
             cd /tmp/buildah
             make bin/buildah
-            sudo make install
+            sudo install -m 755 bin/buildah /usr/bin/buildah
             buildah --version
         - name: Login to private registry
           run: echo "${{ secrets.REGISTRY_PASS }}" | podman login -u "${{ secrets.REGISTRY_USER }}" --password-stdin "${{ secrets.REGISTRY }}"
