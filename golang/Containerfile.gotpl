@@ -15,6 +15,7 @@ RUN set -eux; \
 
 {{template "download-archive" (map "filename" "go.tar.gz" "dest" "/usr/local" "tar_flags" (arr "-z"))}}
 
+ENV SOURCE_DATE_EPOCH=0
 RUN set -eux; \
     cd /usr/local/go/src && GOROOT_BOOTSTRAP="$(go env GOROOT)" GOHOSTOS="linux" GOHOSTARCH="amd64" ./make.bash; \
     go install std; \
