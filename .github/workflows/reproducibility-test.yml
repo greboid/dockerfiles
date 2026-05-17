@@ -27,10 +27,12 @@ jobs:
         env:
           BUILDAH_ISOLATION: chroot
         run: |
+          set +e
           DIR=$(mktemp -d)
           echo "Working in $DIR"
           BUILDS=5
           REF_LAYER=""
+          REF_N=""
 
           for i in $(seq 1 $BUILDS); do
             echo "=== Build $i/$BUILDS ==="
@@ -54,61 +56,68 @@ jobs:
             elif [ "$LAYER" != "$REF_LAYER" ]; then
               echo ""
               echo "!!! DIFFERENCE DETECTED: build $REF_N vs build $i !!!"
-              echo ""
+              DIFF_N=$i
+              break
+            fi
+          done
 
-              mkdir -p $DIR/lref $DIR/ldiff
-              REF_FILE=$DIR/build${REF_N}/${REF_LAYER}
-              DIFF_FILE=$DIR/build${i}/${LAYER}
+          if [ -z "$DIFF_N" ]; then
+            echo ""
+            echo "=== All $BUILDS builds produced identical layers ==="
+            echo "Layer digest: $REF_LAYER"
+            exit 0
+          fi
 
-              if file $REF_FILE | grep -q gzip; then
-                zcat $REF_FILE | tar -C $DIR/lref -xf -
-                zcat $DIFF_FILE | tar -C $DIR/ldiff -xf -
-              else
-                tar -C $DIR/lref -xf $REF_FILE
-                tar -C $DIR/ldiff -xf $DIFF_FILE
-              fi
+          echo ""
+          echo "=== Differing files ==="
+          mkdir -p $DIR/lref $DIR/ldiff
+          REF_FILE=$DIR/build${REF_N}/${REF_LAYER}
+          DIFF_FILE=$DIR/build${DIFF_N}/${LAYER}
 
-              echo "=== Differing files ==="
-              diff <(cd $DIR/lref && find . -type f -exec sha256sum {} \; | sort) <(cd $DIR/ldiff && find . -type f -exec sha256sum {} \; | sort) > $DIR/content-diff.txt 2>&1
-              DIFF_FILES=$(comm -12 <(grep "^<" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) <(grep "^>" $DIR/content-diff.txt | awk '{print $NF}' | sort -u))
-              echo "$DIFF_FILES"
+          echo "Extracting ref layer..."
+          tar -C $DIR/lref -xf $REF_FILE 2>&1 || true
+          echo "Extracting diff layer..."
+          tar -C $DIR/ldiff -xf $DIFF_FILE 2>&1 || true
 
-              for f in $DIFF_FILES; do
-                echo ""
-                echo "--- $f ---"
-                SIZE1=$(stat -c%s "$DIR/lref$f" 2>/dev/null)
-                SIZE2=$(stat -c%s "$DIR/ldiff$f" 2>/dev/null)
-                echo "Size: $SIZE1 vs $SIZE2"
-                echo "Type: $(file "$DIR/lref$f")"
-                if command -v readelf > /dev/null 2>&1; then
-                  echo "Build ID 1: $(readelf -n "$DIR/lref$f" 2>/dev/null | grep "Build ID" | head -1)"
-                  echo "Build ID 2: $(readelf -n "$DIR/ldiff$f" 2>/dev/null | grep "Build ID" | head -1)"
-                fi
-                BYTE_DIFF=$(cmp -l "$DIR/lref$f" "$DIR/ldiff$f" | wc -l)
-                FIRST_DIFF=$(cmp -l "$DIR/lref$f" "$DIR/ldiff$f" | head -1 | awk '{print $1}')
-                echo "Byte differences: $BYTE_DIFF  First diff at: $FIRST_DIFF"
-                if command -v xxd > /dev/null 2>&1 && [ -n "$FIRST_DIFF" ]; then
-                  echo "Context (build ref):"
-                  dd if="$DIR/lref$f" bs=1 skip=$((FIRST_DIFF - 16)) count=64 2>/dev/null | xxd | head -6
-                  echo "Context (build $i):"
-                  dd if="$DIR/ldiff$f" bs=1 skip=$((FIRST_DIFF - 16)) count=64 2>/dev/null | xxd | head -6
-                fi
-              done
+          diff <(cd $DIR/lref && find . -type f -exec sha256sum {} \; | sort) <(cd $DIR/ldiff && find . -type f -exec sha256sum {} \; | sort) > $DIR/content-diff.txt 2>&1 || true
+          DIFF_FILES=$(comm -12 <(grep "^<" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) <(grep "^>" $DIR/content-diff.txt | awk '{print $NF}' | sort -u))
+          DIFF_COUNT=$(echo "$DIFF_FILES" | grep -c . || true)
+          echo "$DIFF_COUNT differing files:"
+          echo "$DIFF_FILES"
 
-              echo ""
-              echo "=== Raw tar comparison ==="
-              SIZE_REF=$(stat -c%s "$REF_FILE")
-              SIZE_DIFF=$(stat -c%s "$DIFF_FILE")
-              echo "Tar sizes: $SIZE_REF vs $SIZE_DIFF"
-              TAR_DIFF=$(cmp -l "$REF_FILE" "$DIFF_FILE" | wc -l)
-              echo "Tar byte differences: $TAR_DIFF"
-              echo "First tar diff:"
-              cmp -l "$REF_FILE" "$DIFF_FILE" | head -5
-
-              exit 1
+          for f in $DIFF_FILES; do
+            echo ""
+            echo "--- $f ---"
+            SIZE1=$(stat -c%s "$DIR/lref$f" 2>/dev/null || echo N/A)
+            SIZE2=$(stat -c%s "$DIR/ldiff$f" 2>/dev/null || echo N/A)
+            echo "Size: $SIZE1 vs $SIZE2"
+            TYPE1=$(file "$DIR/lref$f" 2>/dev/null || echo N/A)
+            echo "Type: $TYPE1"
+            if command -v readelf > /dev/null 2>&1; then
+              echo "Build ID ref: $(readelf -n "$DIR/lref$f" 2>/dev/null | grep "Build ID" | head -1)"
+              echo "Build ID diff: $(readelf -n "$DIR/ldiff$f" 2>/dev/null | grep "Build ID" | head -1)"
+            fi
+            BYTE_DIFF=$(cmp -l "$DIR/lref$f" "$DIR/ldiff$f" 2>/dev/null | wc -l)
+            FIRST_DIFF=$(cmp -l "$DIR/lref$f" "$DIR/ldiff$f" 2>/dev/null | head -1 | awk '{print $1}')
+            echo "Byte differences: $BYTE_DIFF  First diff at: $FIRST_DIFF"
+            if command -v xxd > /dev/null 2>&1 && [ -n "$FIRST_DIFF" ]; then
+              echo "Context (build $REF_N):"
+              dd if="$DIR/lref$f" bs=1 skip=$((FIRST_DIFF - 16)) count=64 2>/dev/null | xxd | head -6
+              echo "Context (build $DIFF_N):"
+              dd if="$DIR/ldiff$f" bs=1 skip=$((FIRST_DIFF - 16)) count=64 2>/dev/null | xxd | head -6
+            fi
+            # Check if go.buildid is nearby
+            if command -v strings > /dev/null 2>&1; then
+              GOID1=$(strings "$DIR/lref$f" | grep -A0 "go[0-9]\+\.[0-9]\+\." | head -1)
+              GOID2=$(strings "$DIR/ldiff$f" | grep -A0 "go[0-9]\+\.[0-9]\+\." | head -1)
+              echo "Go version string 1: $GOID1"
+              echo "Go version string 2: $GOID2"
             fi
           done
 
           echo ""
-          echo "=== All $BUILDS builds produced identical layers ==="
-          echo "Layer digest: $REF_LAYER"
+          echo "=== Raw tar comparison ==="
+          TAR_DIFF=$(cmp -l "$REF_FILE" "$DIFF_FILE" 2>/dev/null | wc -l)
+          echo "Tar byte differences: $TAR_DIFF"
+
+          exit 1
