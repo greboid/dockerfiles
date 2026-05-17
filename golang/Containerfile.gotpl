@@ -17,9 +17,11 @@ RUN set -eux; \
 
 ENV SOURCE_DATE_EPOCH=0
 ENV GOTELEMETRY=off
+ENV GOAMD64=v1
+ENV GOFLAGS=-buildvcs=false
 RUN set -eux; \
-    cd /usr/local/go/src && GOROOT_BOOTSTRAP="$(go env GOROOT)" GOHOSTOS="linux" GOHOSTARCH="amd64" GOTELEMETRY=off ./make.bash; \
-    GOTELEMETRY=off go install std; \
+    cd /usr/local/go/src && GOROOT_BOOTSTRAP="$(go env GOROOT)" GOHOSTOS="linux" GOHOSTARCH="amd64" GOAMD64=v1 GOTELEMETRY=off ./make.bash; \
+    GOAMD64=v1 GOTELEMETRY=off go install std; \
     apk del --no-network .build-deps; \
     rm -rf \
             /go.tar.gz \
