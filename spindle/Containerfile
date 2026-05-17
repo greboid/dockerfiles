@@ -1,4 +1,4 @@
-# Generated from https://github.com/greboid/dockerfiles/blob/master/spindle/Containerfile.gotpl
+# Generated from spindle/Containerfile.gotpl
 # BOM: {"git:https://tangled.org/tangled.org/core":"v1.13.0-alpha","image:alpine":"7df57775ab85b95030a217e2322117b4a92ce539195fa28bd551b933320e83f9","image:base":"c8d413f5d8d4b448840f6e18361ab157313151c8a25a36d2837c16575b189df7","image:baseroot":"281ef46bd464c496646b971b5047bed5ed95cc219b4e164735265a8d6c005686","image:golang":"b1f54309ab4ef1f71571543ca4fb5a8e2c57f970e81fc8b5f71ef32c3eb91e3b"}
 
 FROM reg.g5d.dev/golang@sha256:b1f54309ab4ef1f71571543ca4fb5a8e2c57f970e81fc8b5f71ef32c3eb91e3b AS build
