@@ -31,19 +31,15 @@ jobs:
           echo "Base image reference: $ALPINE_REF"
 
           echo ""
-          echo "=== Inspecting remote image manifest ==="
-          skopeo inspect --raw $ALPINE_REF 2>/dev/null | python3 -m json.tool || echo "skopeo not available, using buildah"
-
-          echo ""
           echo "=== Pull and inspect round 1 ==="
           buildah pull $ALPINE_REF 2>&1
           INSPECT1=$(buildah inspect --type image $ALPINE_REF)
-          DIGEST1=$(echo "$INSPECT1" | python3 -c "import json,sys; print(json.load(sys.stdin)['OCIv1']['digest'])")
           FROMDIGEST1=$(echo "$INSPECT1" | python3 -c "import json,sys; print(json.load(sys.stdin)['FromImageDigest'])")
-          IMGID1=$(echo "$INSPECT1" | python3 -c "import json,sys; print(json.load(sys.stdin)['FromImageID'])")
-          echo "  OCIv1 digest:     $DIGEST1"
+          FROMID1=$(echo "$INSPECT1" | python3 -c "import json,sys; print(json.load(sys.stdin)['FromImageID'])")
+          FROMNAME1=$(echo "$INSPECT1" | python3 -c "import json,sys; print(json.load(sys.stdin)['FromImage'])")
+          echo "  FromImage:        $FROMNAME1"
+          echo "  FromImageID:      $FROMID1"
           echo "  FromImageDigest:  $FROMDIGEST1"
-          echo "  FromImageID:      $IMGID1"
 
           echo ""
           echo "=== Remove local image ==="
@@ -53,18 +49,17 @@ jobs:
           echo "=== Pull and inspect round 2 ==="
           buildah pull $ALPINE_REF 2>&1
           INSPECT2=$(buildah inspect --type image $ALPINE_REF)
-          DIGEST2=$(echo "$INSPECT2" | python3 -c "import json,sys; print(json.load(sys.stdin)['OCIv1']['digest'])")
           FROMDIGEST2=$(echo "$INSPECT2" | python3 -c "import json,sys; print(json.load(sys.stdin)['FromImageDigest'])")
-          IMGID2=$(echo "$INSPECT2" | python3 -c "import json,sys; print(json.load(sys.stdin)['FromImageID'])")
-          echo "  OCIv1 digest:     $DIGEST2"
+          FROMID2=$(echo "$INSPECT2" | python3 -c "import json,sys; print(json.load(sys.stdin)['FromImageID'])")
+          FROMNAME2=$(echo "$INSPECT2" | python3 -c "import json,sys; print(json.load(sys.stdin)['FromImage'])")
+          echo "  FromImage:        $FROMNAME2"
+          echo "  FromImageID:      $FROMID2"
           echo "  FromImageDigest:  $FROMDIGEST2"
-          echo "  FromImageID:      $IMGID2"
 
           echo ""
           echo "=== Comparison ==="
-          echo "  OCIv1 digest match:    $([ "$DIGEST1" = "$DIGEST2" ] && echo YES || echo NO)"
           echo "  FromImageDigest match: $([ "$FROMDIGEST1" = "$FROMDIGEST2" ] && echo YES || echo NO)"
-          echo "  FromImageID match:     $([ "$IMGID1" = "$IMGID2" ] && echo YES || echo NO)"
+          echo "  FromImageID match:     $([ "$FROMID1" = "$FROMID2" ] && echo YES || echo NO)"
 
           if [ "$FROMDIGEST1" != "$FROMDIGEST2" ]; then
             echo ""
