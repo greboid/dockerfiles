@@ -88,5 +88,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
           REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
           TEMPLATE: Containerfile.gotpl
           OUTPUT: Containerfile
