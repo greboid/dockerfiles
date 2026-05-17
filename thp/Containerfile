@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/thp/Containerfile.gotpl
-# BOM: {"github:greboid/thp":"v1.2.2","image:alpine":"cfc36a2dbe8e9f59f61bf87a016f5360fcadb54262b11a1f5dd120dde070abcf","image:base":"1bbe14d3322e3d4b47a8fcb69d295cb672da8207394d0d61c6eb38a503a16254","image:golang":"83cbc4e28b6f7404143b4a38fb616f563f173ed09ac179affed168cc485979e4"}
+# BOM: {"github:greboid/thp":"v1.2.2","image:alpine":"7df57775ab85b95030a217e2322117b4a92ce539195fa28bd551b933320e83f9","image:base":"53bb0cbcb81a7955284c1f020e4fe49f7827ae61f3b733c1409e05d1b6d94e97","image:golang":"f098aca786fad3e835b2d6423c758f724a93cffb1d21a91440add38ed2939e5b"}
 
-FROM reg.g5d.dev/golang@sha256:83cbc4e28b6f7404143b4a38fb616f563f173ed09ac179affed168cc485979e4 AS build
+FROM reg.g5d.dev/golang@sha256:f098aca786fad3e835b2d6423c758f724a93cffb1d21a91440add38ed2939e5b AS build
 ARG TAG="v1.2.2"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/thp /src
@@ -9,11 +9,11 @@ WORKDIR /src
 ENV CGO_ENABLED=0
 RUN go build -a -ldflags "-extldflags \"-static\" -s -w -buildid=" -trimpath -o main .
 RUN go-licenses save ./... --save_path=/notices
-FROM reg.g5d.dev/alpine@sha256:cfc36a2dbe8e9f59f61bf87a016f5360fcadb54262b11a1f5dd120dde070abcf AS prepare
+FROM reg.g5d.dev/alpine@sha256:7df57775ab85b95030a217e2322117b4a92ce539195fa28bd551b933320e83f9 AS prepare
 COPY --from=build /src/main /rootfs/thp
 COPY --from=build /notices /rootfs/notices
 RUN mkdir -p /rootfs/config
-FROM reg.g5d.dev/base@sha256:1bbe14d3322e3d4b47a8fcb69d295cb672da8207394d0d61c6eb38a503a16254
+FROM reg.g5d.dev/base@sha256:53bb0cbcb81a7955284c1f020e4fe49f7827ae61f3b733c1409e05d1b6d94e97
 COPY --from=prepare --chown=65532:65532 /rootfs/ /
 USER 65532:65532
 VOLUME ["/config"]
