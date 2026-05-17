@@ -1,0 +1,167 @@
+name: Reproducibility Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  reproducibility-test:
+    name: Reproducibility Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+
+      - name: Install buildah from source
+        run: |
+          sudo apt-get install -y libgpgme-dev libseccomp-dev libbtrfs-dev libdevmapper-dev pkg-config
+          git clone --depth 1 --branch v1.43.1 https://github.com/containers/buildah.git /tmp/buildah
+          cd /tmp/buildah
+          make bin/buildah
+          sudo install -m 755 bin/buildah /usr/bin/buildah
+          buildah --version
+
+      - name: Build golang image twice
+        env:
+          BUILDAH_ISOLATION: chroot
+        run: |
+          DIR=$(mktemp -d)
+          echo "Working in $DIR"
+
+          echo "=== Build 1 ==="
+          buildah bud \
+            --source-date-epoch 0 \
+            --rewrite-timestamp \
+            --omit-history \
+            --layers=true \
+            --squash \
+            --tag dir:$DIR/build1 \
+            golang/
+
+          echo "=== Build 2 ==="
+          buildah bud \
+            --source-date-epoch 0 \
+            --rewrite-timestamp \
+            --omit-history \
+            --layers=true \
+            --squash \
+            --tag dir:$DIR/build2 \
+            golang/
+
+          echo ""
+          echo "=== Build 1 manifest ==="
+          cat $DIR/build1/manifest.json | python3 -m json.tool
+          echo ""
+          echo "=== Build 2 manifest ==="
+          cat $DIR/build2/manifest.json | python3 -m json.tool
+
+          echo ""
+          echo "=== Manifest diff ==="
+          diff <(cat $DIR/build1/manifest.json | python3 -m json.tool) <(cat $DIR/build2/manifest.json | python3 -m json.tool) && echo "Manifests identical" || echo "Manifests differ"
+
+          echo ""
+          echo "=== Config diff ==="
+          CFG1=$(python3 -c "import json; print(json.load(open('$DIR/build1/manifest.json'))['config']['digest'].split(':')[1])")
+          CFG2=$(python3 -c "import json; print(json.load(open('$DIR/build2/manifest.json'))['config']['digest'].split(':')[1])")
+          echo "Config 1: $CFG1"
+          echo "Config 2: $CFG2"
+          diff <(cat $DIR/build1/$CFG1 | python3 -m json.tool) <(cat $DIR/build2/$CFG2 | python3 -m json.tool) && echo "Configs identical" || echo "Configs differ"
+
+          echo ""
+          echo "=== Layer comparison ==="
+          LAYERS1=$(python3 -c "import json; print('\n'.join(l.split(':')[1] for l in json.load(open('$DIR/build1/manifest.json'))['layers']))")
+          LAYERS2=$(python3 -c "import json; print('\n'.join(l.split(':')[1] for l in json.load(open('$DIR/build2/manifest.json'))['layers']))")
+
+          echo "Layers 1:"
+          echo "$LAYERS1"
+          echo ""
+          echo "Layers 2:"
+          echo "$LAYERS2"
+
+          if [ "$LAYERS1" = "$LAYERS2" ]; then
+            echo ""
+            echo "=== ALL LAYERS IDENTICAL - IMAGE IS REPRODUCIBLE ==="
+            exit 0
+          fi
+
+          echo ""
+          echo "=== LAYERS DIFFER ==="
+          echo ""
+
+          LAYER1=$(echo "$LAYERS1" | head -1)
+          LAYER2=$(echo "$LAYERS2" | head -1)
+
+          echo "Extracting layer contents..."
+          mkdir -p $DIR/l1 $DIR/l2
+          if file $DIR/build1/$LAYER1 | grep -q gzip; then
+            zcat $DIR/build1/$LAYER1 | tar -C $DIR/l1 -xf -
+            zcat $DIR/build2/$LAYER2 | tar -C $DIR/l2 -xf -
+          else
+            tar -C $DIR/l1 -xf $DIR/build1/$LAYER1
+            tar -C $DIR/l2 -xf $DIR/build2/$LAYER2
+          fi
+
+          echo ""
+          echo "=== File content diff (sha256sums) ==="
+          diff <(cd $DIR/l1 && find . -type f -exec sha256sum {} \; | sort) <(cd $DIR/l2 && find . -type f -exec sha256sum {} \; | sort) > $DIR/content-diff.txt 2>&1
+          if [ -s $DIR/content-diff.txt ]; then
+            echo "FILES WITH DIFFERENT CONTENT:"
+            head -100 $DIR/content-diff.txt
+            echo ""
+            echo "Files only in build 1:"
+            grep "^<" $DIR/content-diff.txt | awk '{print $NF}' | sort -u | head -30
+            echo ""
+            echo "Files only in build 2:"
+            grep "^>" $DIR/content-diff.txt | awk '{print $NF}' | sort -u | head -30
+            echo ""
+            echo "Files with different hashes:"
+            comm -12 <(grep "^<" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) <(grep "^>" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) | head -30
+          else
+            echo "File content is identical"
+          fi
+
+          echo ""
+          echo "=== Tar entry ordering diff ==="
+          diff <(tar -tf $DIR/build1/$LAYER1 | sort) <(tar -tf $DIR/build2/$LAYER2 | sort) > $DIR/order-diff.txt 2>&1
+          if [ -s $DIR/order-diff.txt ]; then
+            echo "Tar file ordering differs:"
+            head -50 $DIR/order-diff.txt
+          else
+            echo "Tar file ordering is identical"
+          fi
+
+          echo ""
+          echo "=== Tar metadata diff ==="
+          diff <(tar -tvf $DIR/build1/$LAYER1 | sort -k6) <(tar -tvf $DIR/build2/$LAYER2 | sort -k6) > $DIR/meta-diff.txt 2>&1
+          if [ -s $DIR/meta-diff.txt ]; then
+            echo "Tar metadata differs (first 100 lines):"
+            head -100 $DIR/meta-diff.txt
+          else
+            echo "Tar metadata is identical"
+          fi
+
+          echo ""
+          echo "=== Differing binary details ==="
+          for f in $(comm -12 <(grep "^<" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) <(grep "^>" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) | head -10); do
+            echo "--- $f ---"
+            echo "Build 1 size: $(stat -c%s $DIR/l1$f 2>/dev/null || echo N/A)"
+            echo "Build 2 size: $(stat -c%s $DIR/l2$f 2>/dev/null || echo N/A)"
+            if file $DIR/l1$f 2>/dev/null | grep -q "ELF\|executable\|Go"; then
+              echo "Build 1 type: $(file $DIR/l1$f)"
+              echo "Build 2 type: $(file $DIR/l2$f)"
+              if command -v readelf > /dev/null 2>&1; then
+                echo "Build 1 build-id: $(readelf -n $DIR/l1$f 2>/dev/null | grep "Build ID" | head -1)"
+                echo "Build 2 build-id: $(readelf -n $DIR/l2$f 2>/dev/null | grep "Build ID" | head -1)"
+                echo "Build 1 go.buildid: $(readelf -d $DIR/l1$f 2>/dev/null | grep go.buildid || echo "not found")"
+                echo "Build 2 go.buildid: $(readelf -d $DIR/l2$f 2>/dev/null | grep go.buildid || echo "not found")"
+              fi
+              echo "Build 1 sha256: $(sha256sum $DIR/l1$f | cut -d' ' -f1)"
+              echo "Build 2 sha256: $(sha256sum $DIR/l2$f | cut -d' ' -f1)"
+              if command -v xxd > /dev/null 2>&1; then
+                echo "First diff offset:"
+                cmp -l $DIR/l1$f $DIR/l2$f 2>/dev/null | head -5 || true
+              fi
+            fi
+            echo ""
+          done
+
+          exit 1
