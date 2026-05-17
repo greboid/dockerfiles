@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/registryauth/Containerfile.gotpl
-# BOM: {"github:greboid/registryauth":"v1.0.20","image:alpine":"7df57775ab85b95030a217e2322117b4a92ce539195fa28bd551b933320e83f9","image:base":"53bb0cbcb81a7955284c1f020e4fe49f7827ae61f3b733c1409e05d1b6d94e97","image:golang":"6cd35eca0d43cd377ee4c76343f018a1f493dd91b6681f92be87093f04a3ef59"}
+# BOM: {"github:greboid/registryauth":"v1.0.20","image:alpine":"7df57775ab85b95030a217e2322117b4a92ce539195fa28bd551b933320e83f9","image:base":"53bb0cbcb81a7955284c1f020e4fe49f7827ae61f3b733c1409e05d1b6d94e97","image:golang":"b1f54309ab4ef1f71571543ca4fb5a8e2c57f970e81fc8b5f71ef32c3eb91e3b"}
 
-FROM reg.g5d.dev/golang@sha256:6cd35eca0d43cd377ee4c76343f018a1f493dd91b6681f92be87093f04a3ef59 AS build
+FROM reg.g5d.dev/golang@sha256:b1f54309ab4ef1f71571543ca4fb5a8e2c57f970e81fc8b5f71ef32c3eb91e3b AS build
 ARG TAG="v1.0.20"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/registryauth /src
