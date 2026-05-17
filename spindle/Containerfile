@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/spindle/Containerfile.gotpl
-# BOM: {"git:https://tangled.org/tangled.org/core":"v1.13.0-alpha","image:alpine":"cfc36a2dbe8e9f59f61bf87a016f5360fcadb54262b11a1f5dd120dde070abcf","image:base":"c8d413f5d8d4b448840f6e18361ab157313151c8a25a36d2837c16575b189df7","image:baseroot":"8e92df92dc847052aa247613cfb14f389f85f9806c1266513b1f6f0b1ead3da6","image:golang":"9fc21944322e70996b27ece0b65b81de04a0178e24025f66fa146bf0c1fdaa76"}
+# BOM: {"git:https://tangled.org/tangled.org/core":"v1.13.0-alpha","image:alpine":"cfc36a2dbe8e9f59f61bf87a016f5360fcadb54262b11a1f5dd120dde070abcf","image:base":"c8d413f5d8d4b448840f6e18361ab157313151c8a25a36d2837c16575b189df7","image:baseroot":"8e92df92dc847052aa247613cfb14f389f85f9806c1266513b1f6f0b1ead3da6","image:golang":"83cbc4e28b6f7404143b4a38fb616f563f173ed09ac179affed168cc485979e4"}
 
-FROM reg.g5d.dev/golang@sha256:9fc21944322e70996b27ece0b65b81de04a0178e24025f66fa146bf0c1fdaa76 AS build
+FROM reg.g5d.dev/golang@sha256:83cbc4e28b6f7404143b4a38fb616f563f173ed09ac179affed168cc485979e4 AS build
 ARG TAG="v1.13.0-alpha"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://tangled.org/tangled.org/core /src
