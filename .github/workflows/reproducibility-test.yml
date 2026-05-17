@@ -20,6 +20,58 @@ jobs:
           sudo install -m 755 bin/buildah /usr/bin/buildah
           buildah --version
 
+      - name: Login to private registry
+        run: echo "${{ secrets.REGISTRY_PASS }}" | podman login -u "${{ secrets.REGISTRY_USER }}" --password-stdin "${{ secrets.REGISTRY }}"
+
+      - name: Investigate base image
+        env:
+          BUILDAH_ISOLATION: chroot
+        run: |
+          ALPINE_REF=$(grep '^FROM' golang/Containerfile | head -1 | awk '{print $2}')
+          echo "Base image reference: $ALPINE_REF"
+
+          echo ""
+          echo "=== Inspecting remote image manifest ==="
+          skopeo inspect --raw $ALPINE_REF 2>/dev/null | python3 -m json.tool || echo "skopeo not available, using buildah"
+
+          echo ""
+          echo "=== Pull and inspect round 1 ==="
+          buildah pull $ALPINE_REF 2>&1
+          INSPECT1=$(buildah inspect --type image $ALPINE_REF)
+          DIGEST1=$(echo "$INSPECT1" | python3 -c "import json,sys; print(json.load(sys.stdin)['OCIv1']['digest'])")
+          FROMDIGEST1=$(echo "$INSPECT1" | python3 -c "import json,sys; print(json.load(sys.stdin)['FromImageDigest'])")
+          IMGID1=$(echo "$INSPECT1" | python3 -c "import json,sys; print(json.load(sys.stdin)['FromImageID'])")
+          echo "  OCIv1 digest:     $DIGEST1"
+          echo "  FromImageDigest:  $FROMDIGEST1"
+          echo "  FromImageID:      $IMGID1"
+
+          echo ""
+          echo "=== Remove local image ==="
+          buildah rmi $ALPINE_REF 2>/dev/null || true
+
+          echo ""
+          echo "=== Pull and inspect round 2 ==="
+          buildah pull $ALPINE_REF 2>&1
+          INSPECT2=$(buildah inspect --type image $ALPINE_REF)
+          DIGEST2=$(echo "$INSPECT2" | python3 -c "import json,sys; print(json.load(sys.stdin)['OCIv1']['digest'])")
+          FROMDIGEST2=$(echo "$INSPECT2" | python3 -c "import json,sys; print(json.load(sys.stdin)['FromImageDigest'])")
+          IMGID2=$(echo "$INSPECT2" | python3 -c "import json,sys; print(json.load(sys.stdin)['FromImageID'])")
+          echo "  OCIv1 digest:     $DIGEST2"
+          echo "  FromImageDigest:  $FROMDIGEST2"
+          echo "  FromImageID:      $IMGID2"
+
+          echo ""
+          echo "=== Comparison ==="
+          echo "  OCIv1 digest match:    $([ "$DIGEST1" = "$DIGEST2" ] && echo YES || echo NO)"
+          echo "  FromImageDigest match: $([ "$FROMDIGEST1" = "$FROMDIGEST2" ] && echo YES || echo NO)"
+          echo "  FromImageID match:     $([ "$IMGID1" = "$IMGID2" ] && echo YES || echo NO)"
+
+          if [ "$FROMDIGEST1" != "$FROMDIGEST2" ]; then
+            echo ""
+            echo "=== Full inspect diff ==="
+            diff <(echo "$INSPECT1" | python3 -m json.tool) <(echo "$INSPECT2" | python3 -m json.tool) || true
+          fi
+
       - name: Build golang image twice
         env:
           BUILDAH_ISOLATION: chroot
@@ -48,18 +100,7 @@ jobs:
             golang/
 
           echo ""
-          echo "=== Build 1 manifest ==="
-          cat $DIR/build1/manifest.json | python3 -m json.tool
-          echo ""
-          echo "=== Build 2 manifest ==="
-          cat $DIR/build2/manifest.json | python3 -m json.tool
-
-          echo ""
-          echo "=== Manifest diff ==="
-          diff <(cat $DIR/build1/manifest.json | python3 -m json.tool) <(cat $DIR/build2/manifest.json | python3 -m json.tool) && echo "Manifests identical" || echo "Manifests differ"
-
-          echo ""
-          echo "=== Config diff ==="
+          echo "=== Config comparison ==="
           CFG1=$(python3 -c "import json; print(json.load(open('$DIR/build1/manifest.json'))['config']['digest'].split(':')[1])")
           CFG2=$(python3 -c "import json; print(json.load(open('$DIR/build2/manifest.json'))['config']['digest'].split(':')[1])")
           echo "Config 1: $CFG1"
@@ -68,100 +109,47 @@ jobs:
 
           echo ""
           echo "=== Layer comparison ==="
-          LAYERS1=$(python3 -c "import json; print('\n'.join(l.split(':')[1] for l in json.load(open('$DIR/build1/manifest.json'))['layers']))")
-          LAYERS2=$(python3 -c "import json; print('\n'.join(l.split(':')[1] for l in json.load(open('$DIR/build2/manifest.json'))['layers']))")
-
-          echo "Layers 1:"
-          echo "$LAYERS1"
-          echo ""
-          echo "Layers 2:"
-          echo "$LAYERS2"
-
-          if [ "$LAYERS1" = "$LAYERS2" ]; then
-            echo ""
-            echo "=== ALL LAYERS IDENTICAL - IMAGE IS REPRODUCIBLE ==="
-            exit 0
-          fi
-
-          echo ""
-          echo "=== LAYERS DIFFER ==="
-          echo ""
-
-          LAYER1=$(echo "$LAYERS1" | head -1)
-          LAYER2=$(echo "$LAYERS2" | head -1)
-
-          echo "Extracting layer contents..."
-          mkdir -p $DIR/l1 $DIR/l2
-          if file $DIR/build1/$LAYER1 | grep -q gzip; then
-            zcat $DIR/build1/$LAYER1 | tar -C $DIR/l1 -xf -
-            zcat $DIR/build2/$LAYER2 | tar -C $DIR/l2 -xf -
-          else
-            tar -C $DIR/l1 -xf $DIR/build1/$LAYER1
-            tar -C $DIR/l2 -xf $DIR/build2/$LAYER2
-          fi
+          python3 -c "
+          import json
+          m1 = json.load(open('$DIR/build1/manifest.json'))
+          m2 = json.load(open('$DIR/build2/manifest.json'))
+          l1 = [l['digest'] for l in m1['layers']]
+          l2 = [l['digest'] for l in m2['layers']]
+          print('Build 1 layers:')
+          for l in l1: print('  ' + l)
+          print('Build 2 layers:')
+          for l in l2: print('  ' + l)
+          if l1 == l2:
+              print('All layers identical')
+          else:
+              print('Layers differ')
+          "
 
           echo ""
-          echo "=== File content diff (sha256sums) ==="
-          diff <(cd $DIR/l1 && find . -type f -exec sha256sum {} \; | sort) <(cd $DIR/l2 && find . -type f -exec sha256sum {} \; | sort) > $DIR/content-diff.txt 2>&1
-          if [ -s $DIR/content-diff.txt ]; then
-            echo "FILES WITH DIFFERENT CONTENT:"
-            head -100 $DIR/content-diff.txt
-            echo ""
-            echo "Files only in build 1:"
-            grep "^<" $DIR/content-diff.txt | awk '{print $NF}' | sort -u | head -30
-            echo ""
-            echo "Files only in build 2:"
-            grep "^>" $DIR/content-diff.txt | awk '{print $NF}' | sort -u | head -30
-            echo ""
-            echo "Files with different hashes:"
-            comm -12 <(grep "^<" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) <(grep "^>" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) | head -30
-          else
-            echo "File content is identical"
-          fi
+          echo "=== Manifest diff ==="
+          diff <(cat $DIR/build1/manifest.json | python3 -m json.tool) <(cat $DIR/build2/manifest.json | python3 -m json.tool) && echo "Manifests identical" || echo "Manifests differ"
 
           echo ""
-          echo "=== Tar entry ordering diff ==="
-          diff <(tar -tf $DIR/build1/$LAYER1 | sort) <(tar -tf $DIR/build2/$LAYER2 | sort) > $DIR/order-diff.txt 2>&1
-          if [ -s $DIR/order-diff.txt ]; then
-            echo "Tar file ordering differs:"
-            head -50 $DIR/order-diff.txt
-          else
-            echo "Tar file ordering is identical"
-          fi
-
-          echo ""
-          echo "=== Tar metadata diff ==="
-          diff <(tar -tvf $DIR/build1/$LAYER1 | sort -k6) <(tar -tvf $DIR/build2/$LAYER2 | sort -k6) > $DIR/meta-diff.txt 2>&1
-          if [ -s $DIR/meta-diff.txt ]; then
-            echo "Tar metadata differs (first 100 lines):"
-            head -100 $DIR/meta-diff.txt
-          else
-            echo "Tar metadata is identical"
-          fi
-
-          echo ""
-          echo "=== Differing binary details ==="
-          for f in $(comm -12 <(grep "^<" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) <(grep "^>" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) | head -10); do
-            echo "--- $f ---"
-            echo "Build 1 size: $(stat -c%s $DIR/l1$f 2>/dev/null || echo N/A)"
-            echo "Build 2 size: $(stat -c%s $DIR/l2$f 2>/dev/null || echo N/A)"
-            if file $DIR/l1$f 2>/dev/null | grep -q "ELF\|executable\|Go"; then
-              echo "Build 1 type: $(file $DIR/l1$f)"
-              echo "Build 2 type: $(file $DIR/l2$f)"
-              if command -v readelf > /dev/null 2>&1; then
-                echo "Build 1 build-id: $(readelf -n $DIR/l1$f 2>/dev/null | grep "Build ID" | head -1)"
-                echo "Build 2 build-id: $(readelf -n $DIR/l2$f 2>/dev/null | grep "Build ID" | head -1)"
-                echo "Build 1 go.buildid: $(readelf -d $DIR/l1$f 2>/dev/null | grep go.buildid || echo "not found")"
-                echo "Build 2 go.buildid: $(readelf -d $DIR/l2$f 2>/dev/null | grep go.buildid || echo "not found")"
-              fi
-              echo "Build 1 sha256: $(sha256sum $DIR/l1$f | cut -d' ' -f1)"
-              echo "Build 2 sha256: $(sha256sum $DIR/l2$f | cut -d' ' -f1)"
-              if command -v xxd > /dev/null 2>&1; then
-                echo "First diff offset:"
-                cmp -l $DIR/l1$f $DIR/l2$f 2>/dev/null | head -5 || true
-              fi
-            fi
-            echo ""
-          done
-
-          exit 1
+          echo "=== Summary ==="
+          python3 -c "
+          import json, sys
+          m1 = json.load(open('$DIR/build1/manifest.json'))
+          m2 = json.load(open('$DIR/build2/manifest.json'))
+          layers_match = [l['digest'] for l in m1['layers']] == [l['digest'] for l in m2['layers']]
+          config_match = m1['config']['digest'] == m2['config']['digest']
+          if layers_match and config_match:
+              print('IMAGE IS REPRODUCIBLE (layers+config match)')
+              if m1.get('annotations') != m2.get('annotations'):
+                  print('Annotations differ:')
+                  for k in sorted(set(list(m1.get('annotations',{}).keys()) + list(m2.get('annotations',{}).keys()))):
+                      v1 = m1.get('annotations',{}).get(k, '<missing>')
+                      v2 = m2.get('annotations',{}).get(k, '<missing>')
+                      if v1 != v2:
+                          print(f'  {k}:')
+                          print(f'    build1: {v1}')
+                          print(f'    build2: {v2}')
+              sys.exit(0)
+          else:
+              print('IMAGE IS NOT REPRODUCIBLE')
+              sys.exit(1)
+          "
