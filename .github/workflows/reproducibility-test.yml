@@ -23,94 +23,109 @@ jobs:
       - name: Login to private registry
         run: echo "${{ secrets.REGISTRY_PASS }}" | podman login -u "${{ secrets.REGISTRY_USER }}" --password-stdin "${{ secrets.REGISTRY }}"
 
-      - name: Build golang three times and compare raw tar bytes
+      - name: Build golang twice and identify differing file
         env:
           BUILDAH_ISOLATION: chroot
         run: |
           DIR=$(mktemp -d)
           echo "Working in $DIR"
 
-          for i in 1 2 3; do
-            echo "=== Build $i ==="
-            buildah bud \
-              --source-date-epoch 0 \
-              --rewrite-timestamp \
-              --omit-history \
-              --layers=true \
-              --squash \
-              --unsetannotation org.opencontainers.image.base.digest \
-              --tag dir:$DIR/build$i \
-              golang/ 2>&1 | tail -3
-          done
+          echo "=== Build 1 ==="
+          buildah bud \
+            --source-date-epoch 0 \
+            --rewrite-timestamp \
+            --omit-history \
+            --layers=true \
+            --squash \
+            --unsetannotation org.opencontainers.image.base.digest \
+            --tag dir:$DIR/build1 \
+            golang/ 2>&1 | tail -3
 
-          echo ""
-          echo "=== Digests ==="
-          for i in 1 2 3; do
-            LAYER=$(python3 -c "import json; print(json.load(open('$DIR/build$i/manifest.json'))['layers'][0]['digest'].split(':')[1])")
-            CONFIG=$(python3 -c "import json; print(json.load(open('$DIR/build$i/manifest.json'))['config']['digest'].split(':')[1])")
-            SIZE=$(stat -c%s "$DIR/build$i/$LAYER" 2>/dev/null || echo N/A)
-            echo "Build $i: layer=$LAYER config=$CONFIG layer_size=$SIZE"
-          done
+          echo "=== Build 2 ==="
+          buildah bud \
+            --source-date-epoch 0 \
+            --rewrite-timestamp \
+            --omit-history \
+            --layers=true \
+            --squash \
+            --unsetannotation org.opencontainers.image.base.digest \
+            --tag dir:$DIR/build2 \
+            golang/ 2>&1 | tail -3
 
           LAYER1=$(python3 -c "import json; print(json.load(open('$DIR/build1/manifest.json'))['layers'][0]['digest'].split(':')[1])")
           LAYER2=$(python3 -c "import json; print(json.load(open('$DIR/build2/manifest.json'))['layers'][0]['digest'].split(':')[1])")
-          LAYER3=$(python3 -c "import json; print(json.load(open('$DIR/build3/manifest.json'))['layers'][0]['digest'].split(':')[1])")
 
-          if [ "$LAYER1" = "$LAYER2" ] && [ "$LAYER2" = "$LAYER3" ]; then
-            echo ""
-            echo "All layers identical"
-            diff <(cat $DIR/build1/manifest.json | python3 -m json.tool) <(cat $DIR/build3/manifest.json | python3 -m json.tool) && echo "All manifests identical" || echo "Manifests differ"
+          echo ""
+          echo "Layer 1: $LAYER1"
+          echo "Layer 2: $LAYER2"
+
+          if [ "$LAYER1" = "$LAYER2" ]; then
+            echo "Layers identical - checking manifests"
+            diff <(cat $DIR/build1/manifest.json | python3 -m json.tool) <(cat $DIR/build2/manifest.json | python3 -m json.tool) && echo "All identical" || echo "Manifests differ"
             exit 0
           fi
 
           echo ""
-          echo "=== Raw tar byte comparison ==="
-          # Compare 1 vs the first different one
-          if [ "$LAYER1" != "$LAYER3" ]; then
-            REF=$LAYER1
-            DIFF=$LAYER3
-            REF_N=1
-            DIFF_N=3
+          echo "=== Finding which file differs ==="
+          mkdir -p $DIR/l1 $DIR/l2
+          if file $DIR/build1/$LAYER1 | grep -q gzip; then
+            zcat $DIR/build1/$LAYER1 | tar -C $DIR/l1 -xf -
+            zcat $DIR/build2/$LAYER2 | tar -C $DIR/l2 -xf -
           else
-            REF=$LAYER1
-            DIFF=$LAYER2
-            REF_N=1
-            DIFF_N=2
+            tar -C $DIR/l1 -xf $DIR/build1/$LAYER1
+            tar -C $DIR/l2 -xf $DIR/build2/$LAYER2
           fi
 
-          echo "Comparing build $REF_N ($REF) vs build $DIFF_N ($DIFF)"
+          echo ""
+          echo "=== All differing files ==="
+          diff <(cd $DIR/l1 && find . -type f -exec sha256sum {} \; | sort) <(cd $DIR/l2 && find . -type f -exec sha256sum {} \; | sort) > $DIR/content-diff.txt 2>&1
+          DIFF_FILES=$(comm -12 <(grep "^<" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) <(grep "^>" $DIR/content-diff.txt | awk '{print $NF}' | sort -u))
+          echo "$DIFF_FILES"
+          DIFF_COUNT=$(echo "$DIFF_FILES" | grep -c .)
+          echo "Total: $DIFF_COUNT files with different content"
 
           echo ""
-          echo "=== File sizes ==="
-          SIZE_REF=$(stat -c%s "$DIR/build1/$REF")
-          SIZE_DIFF=$(stat -c%s "$DIR/build${DIFF_N}/$DIFF")
-          echo "Build $REF_N: $SIZE_REF bytes"
-          echo "Build $DIFF_N: $SIZE_DIFF bytes"
-          echo "Difference: $((SIZE_REF - SIZE_DIFF)) bytes"
+          echo "=== Analyzing each differing file ==="
+          for f in $DIFF_FILES; do
+            echo ""
+            echo "--- $f ---"
+            SIZE1=$(stat -c%s "$DIR/l1$f" 2>/dev/null)
+            SIZE2=$(stat -c%s "$DIR/l2$f" 2>/dev/null)
+            echo "Size: $SIZE1 vs $SIZE2"
+            TYPE1=$(file "$DIR/l1$f" 2>/dev/null)
+            TYPE2=$(file "$DIR/l2$f" 2>/dev/null)
+            echo "Type1: $TYPE1"
+            echo "Type2: $TYPE2"
+
+            if command -v readelf > /dev/null 2>&1; then
+              echo "Build ID 1: $(readelf -n "$DIR/l1$f" 2>/dev/null | grep "Build ID" | head -1)"
+              echo "Build ID 2: $(readelf -n "$DIR/l2$f" 2>/dev/null | grep "Build ID" | head -1)"
+
+              GO_BUILDID1=$(readelf -d "$DIR/l1$f" 2>/dev/null | grep -i "go.buildid" || strings "$DIR/l1$f" | grep -A0 "go.buildid" | head -1)
+              GO_BUILDID2=$(readelf -d "$DIR/l2$f" 2>/dev/null | grep -i "go.buildid" || strings "$DIR/l2$f" | grep -A0 "go.buildid" | head -1)
+              echo "Go buildid 1: $GO_BUILDID1"
+              echo "Go buildid 2: $GO_BUILDID2"
+            fi
+
+            echo "SHA256 1: $(sha256sum "$DIR/l1$f" | cut -d' ' -f1)"
+            echo "SHA256 2: $(sha256sum "$DIR/l2$f" | cut -d' ' -f1)"
+
+            BYTE_DIFF=$(cmp -l "$DIR/l1$f" "$DIR/l2$f" | wc -l)
+            echo "Byte differences: $BYTE_DIFF"
+
+            FIRST_DIFF=$(cmp -l "$DIR/l1$f" "$DIR/l2$f" | head -1 | awk '{print $1}')
+            echo "First difference at byte: $FIRST_DIFF"
+
+            echo "Bytes around first diff (build1):"
+            dd if="$DIR/l1$f" bs=1 skip=$((FIRST_DIFF - 16)) count=48 2>/dev/null | xxd | head -5
+            echo "Bytes around first diff (build2):"
+            dd if="$DIR/l2$f" bs=1 skip=$((FIRST_DIFF - 16)) count=48 2>/dev/null | xxd | head -5
+          done
 
           echo ""
-          echo "=== First byte difference ==="
-          cmp -l "$DIR/build1/$REF" "$DIR/build${DIFF_N}/$DIFF" | head -20
-
-          echo ""
-          echo "=== Number of byte differences ==="
-          DIFF_COUNT=$(cmp -l "$DIR/build1/$REF" "$DIR/build${DIFF_N}/$DIFF" | wc -l)
-          echo "$DIFF_COUNT differing bytes"
-
-          echo ""
-          echo "=== Byte difference offsets and values ==="
-          cmp -l "$DIR/build1/$REF" "$DIR/build${DIFF_N}/$DIFF" | awk '{printf "offset %d: build%d=0x%02x build%d=0x%02x\n", $1, '"$REF_N"', $2, '"$DIFF_N"', $3}' | head -30
-
-          echo ""
-          echo "=== Checking if it's PAX headers ==="
-          # PAX headers appear as ./PaxHeaders.XXXXX/ filenames in tar
-          mkdir -p $DIR/t1 $DIR/t3
-          tar -tf "$DIR/build1/$REF" | grep -i pax | head -10 > $DIR/pax1.txt
-          tar -tf "$DIR/build${DIFF_N}/$DIFF" | grep -i pax | head -10 > $DIR/pax3.txt
-          echo "PAX entries in build $REF_N: $(wc -l < $DIR/pax1.txt)"
-          echo "PAX entries in build $DIFF_N: $(wc -l < $DIR/pax3.txt)"
-          diff $DIR/pax1.txt $DIR/pax3.txt && echo "PAX entries identical" || echo "PAX entries differ"
-
-          echo ""
-          echo "=== Tar verbose diff (first 20 differences) ==="
-          diff <(tar -tvf "$DIR/build1/$REF") <(tar -tvf "$DIR/build${DIFF_N}/$DIFF") | head -20
+          echo "=== Checking for go.buildid in all differing files ==="
+          for f in $DIFF_FILES; do
+            if strings "$DIR/l1$f" | grep -q "go\.buildid"; then
+              echo "$f has go.buildid section"
+            fi
+          done
