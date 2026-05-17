@@ -10,6 +10,7 @@ on:
     types: [created]
 
 permissions:
+  contents: write
   issues: write
   pull-requests: write
 
@@ -77,7 +78,7 @@ jobs:
           git clone -b splitupdating https://github.com/greboid/contempt.git /tmp/contempt
           cd /tmp/contempt
           go build -o ~/go/bin/update ./cmd/update
-      - run: ~/go/bin/update -update-prs .
+      - run: ~/go/bin/update -update-prs ${{ github.event_name == 'issue_comment' && format('-pr {0}', github.event.issue.number) || '' }} .
         env:
           GH_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
           REGISTRY: ${{ secrets.REGISTRY }}
