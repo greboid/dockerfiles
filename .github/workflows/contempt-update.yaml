@@ -6,6 +6,12 @@ on:
     - cron: '0 6 * * *'
   push:
     branches: [master]
+  issue_comment:
+    types: [created]
+
+permissions:
+  issues: write
+  pull-requests: write
 
 jobs:
   check:
@@ -39,7 +45,18 @@ jobs:
           OUTPUT: Containerfile
 
   rebase-prs:
-    if: github.event_name == 'push'
+    if: >-
+      github.event_name == 'push' ||
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request &&
+        github.event.comment.body == 'rebase' &&
+        (
+          github.event.comment.author_association == 'OWNER' ||
+          github.event.comment.author_association == 'MEMBER' ||
+          github.event.comment.author_association == 'COLLABORATOR'
+        )
+      )
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
