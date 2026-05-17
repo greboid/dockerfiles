@@ -23,7 +23,7 @@ jobs:
       - name: Login to private registry
         run: echo "${{ secrets.REGISTRY_PASS }}" | podman login -u "${{ secrets.REGISTRY_USER }}" --password-stdin "${{ secrets.REGISTRY }}"
 
-      - name: Build golang three times and compare
+      - name: Build golang three times and compare raw tar bytes
         env:
           BUILDAH_ISOLATION: chroot
         run: |
@@ -44,69 +44,73 @@ jobs:
           done
 
           echo ""
-          echo "=== Comparing all builds ==="
+          echo "=== Digests ==="
           for i in 1 2 3; do
             LAYER=$(python3 -c "import json; print(json.load(open('$DIR/build$i/manifest.json'))['layers'][0]['digest'].split(':')[1])")
             CONFIG=$(python3 -c "import json; print(json.load(open('$DIR/build$i/manifest.json'))['config']['digest'].split(':')[1])")
-            echo "Build $i: layer=$LAYER config=$CONFIG"
+            SIZE=$(stat -c%s "$DIR/build$i/$LAYER" 2>/dev/null || echo N/A)
+            echo "Build $i: layer=$LAYER config=$CONFIG layer_size=$SIZE"
           done
+
+          LAYER1=$(python3 -c "import json; print(json.load(open('$DIR/build1/manifest.json'))['layers'][0]['digest'].split(':')[1])")
+          LAYER2=$(python3 -c "import json; print(json.load(open('$DIR/build2/manifest.json'))['layers'][0]['digest'].split(':')[1])")
+          LAYER3=$(python3 -c "import json; print(json.load(open('$DIR/build3/manifest.json'))['layers'][0]['digest'].split(':')[1])")
+
+          if [ "$LAYER1" = "$LAYER2" ] && [ "$LAYER2" = "$LAYER3" ]; then
+            echo ""
+            echo "All layers identical"
+            diff <(cat $DIR/build1/manifest.json | python3 -m json.tool) <(cat $DIR/build3/manifest.json | python3 -m json.tool) && echo "All manifests identical" || echo "Manifests differ"
+            exit 0
+          fi
 
           echo ""
-          ALL_SAME=true
-          REF_LAYER=$(python3 -c "import json; print(json.load(open('$DIR/build1/manifest.json'))['layers'][0]['digest'].split(':')[1])")
-          for i in 2 3; do
-            LAYER=$(python3 -c "import json; print(json.load(open('$DIR/build$i/manifest.json'))['layers'][0]['digest'].split(':')[1])")
-            if [ "$LAYER" != "$REF_LAYER" ]; then
-              ALL_SAME=false
-            fi
-          done
-
-          if $ALL_SAME; then
-            echo "All layers identical - checking manifests"
-            diff <(cat $DIR/build1/manifest.json | python3 -m json.tool) <(cat $DIR/build2/manifest.json | python3 -m json.tool) && echo "All manifests identical" || echo "Manifests differ"
+          echo "=== Raw tar byte comparison ==="
+          # Compare 1 vs the first different one
+          if [ "$LAYER1" != "$LAYER3" ]; then
+            REF=$LAYER1
+            DIFF=$LAYER3
+            REF_N=1
+            DIFF_N=3
           else
-            echo "Layers differ between builds - doing deep analysis"
-            
-            mkdir -p $DIR/l1 $DIR/l2
-            LAYER1=$(python3 -c "import json; print(json.load(open('$DIR/build1/manifest.json'))['layers'][0]['digest'].split(':')[1])")
-            LAYER2=$(python3 -c "import json; print(json.load(open('$DIR/build2/manifest.json'))['layers'][0]['digest'].split(':')[1])")
-            
-            if file $DIR/build1/$LAYER1 | grep -q gzip; then
-              zcat $DIR/build1/$LAYER1 | tar -C $DIR/l1 -xf -
-              zcat $DIR/build2/$LAYER2 | tar -C $DIR/l2 -xf -
-            else
-              tar -C $DIR/l1 -xf $DIR/build1/$LAYER1
-              tar -C $DIR/l2 -xf $DIR/build2/$LAYER2
-            fi
-
-            echo ""
-            echo "=== File content diff ==="
-            diff <(cd $DIR/l1 && find . -type f -exec sha256sum {} \; | sort) <(cd $DIR/l2 && find . -type f -exec sha256sum {} \; | sort) > $DIR/content-diff.txt 2>&1
-            if [ -s $DIR/content-diff.txt ]; then
-              DIFF_COUNT=$(comm -12 <(grep "^<" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) <(grep "^>" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) | wc -l)
-              echo "$DIFF_COUNT files with different content:"
-              comm -12 <(grep "^<" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) <(grep "^>" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) | head -20
-            else
-              echo "File content is identical - checking tar ordering"
-            fi
-
-            echo ""
-            echo "=== Tar entry ordering diff ==="
-            diff <(tar -tf $DIR/build1/$LAYER1) <(tar -tf $DIR/build2/$LAYER2) > $DIR/order-diff.txt 2>&1
-            if [ -s $DIR/order-diff.txt ]; then
-              echo "Tar ordering differs (first 50 lines):"
-              head -50 $DIR/order-diff.txt
-            else
-              echo "Tar ordering is identical"
-            fi
-
-            echo ""
-            echo "=== Tar metadata diff (sorted by path) ==="
-            diff <(tar -tvf $DIR/build1/$LAYER1 | awk '{$1=$2=$3=""; print substr($0,4)}' | sort) <(tar -tvf $DIR/build2/$LAYER2 | awk '{$1=$2=$3=""; print substr($0,4)}' | sort) > $DIR/meta-diff.txt 2>&1
-            if [ -s $DIR/meta-diff.txt ]; then
-              echo "Tar metadata differs (first 50 lines):"
-              head -50 $DIR/meta-diff.txt
-            else
-              echo "Tar metadata is identical"
-            fi
+            REF=$LAYER1
+            DIFF=$LAYER2
+            REF_N=1
+            DIFF_N=2
           fi
+
+          echo "Comparing build $REF_N ($REF) vs build $DIFF_N ($DIFF)"
+
+          echo ""
+          echo "=== File sizes ==="
+          SIZE_REF=$(stat -c%s "$DIR/build1/$REF")
+          SIZE_DIFF=$(stat -c%s "$DIR/build${DIFF_N}/$DIFF")
+          echo "Build $REF_N: $SIZE_REF bytes"
+          echo "Build $DIFF_N: $SIZE_DIFF bytes"
+          echo "Difference: $((SIZE_REF - SIZE_DIFF)) bytes"
+
+          echo ""
+          echo "=== First byte difference ==="
+          cmp -l "$DIR/build1/$REF" "$DIR/build${DIFF_N}/$DIFF" | head -20
+
+          echo ""
+          echo "=== Number of byte differences ==="
+          DIFF_COUNT=$(cmp -l "$DIR/build1/$REF" "$DIR/build${DIFF_N}/$DIFF" | wc -l)
+          echo "$DIFF_COUNT differing bytes"
+
+          echo ""
+          echo "=== Byte difference offsets and values ==="
+          cmp -l "$DIR/build1/$REF" "$DIR/build${DIFF_N}/$DIFF" | awk '{printf "offset %d: build%d=0x%02x build%d=0x%02x\n", $1, '"$REF_N"', $2, '"$DIFF_N"', $3}' | head -30
+
+          echo ""
+          echo "=== Checking if it's PAX headers ==="
+          # PAX headers appear as ./PaxHeaders.XXXXX/ filenames in tar
+          mkdir -p $DIR/t1 $DIR/t3
+          tar -tf "$DIR/build1/$REF" | grep -i pax | head -10 > $DIR/pax1.txt
+          tar -tf "$DIR/build${DIFF_N}/$DIFF" | grep -i pax | head -10 > $DIR/pax3.txt
+          echo "PAX entries in build $REF_N: $(wc -l < $DIR/pax1.txt)"
+          echo "PAX entries in build $DIFF_N: $(wc -l < $DIR/pax3.txt)"
+          diff $DIR/pax1.txt $DIR/pax3.txt && echo "PAX entries identical" || echo "PAX entries differ"
+
+          echo ""
+          echo "=== Tar verbose diff (first 20 differences) ==="
+          diff <(tar -tvf "$DIR/build1/$REF") <(tar -tvf "$DIR/build${DIFF_N}/$DIFF") | head -20
