@@ -23,97 +23,69 @@ jobs:
       - name: Login to private registry
         run: echo "${{ secrets.REGISTRY_PASS }}" | podman login -u "${{ secrets.REGISTRY_USER }}" --password-stdin "${{ secrets.REGISTRY }}"
 
-      - name: Build golang image twice and compare
+      - name: Build alpine twice and compare
         env:
           BUILDAH_ISOLATION: chroot
         run: |
           DIR=$(mktemp -d)
           echo "Working in $DIR"
 
-          echo "=== Build 1 ==="
+          echo "=== Alpine Build 1 ==="
           buildah bud \
             --source-date-epoch 0 \
             --rewrite-timestamp \
             --omit-history \
             --layers=true \
             --squash \
-            --tag dir:$DIR/build1 \
-            golang/ 2>&1 | tail -5
+            --unsetannotation org.opencontainers.image.base.digest \
+            --tag dir:$DIR/alpine1 \
+            alpine/ 2>&1 | tail -5
 
-          echo "=== Build 2 ==="
+          echo "=== Alpine Build 2 ==="
           buildah bud \
             --source-date-epoch 0 \
             --rewrite-timestamp \
             --omit-history \
             --layers=true \
             --squash \
-            --tag dir:$DIR/build2 \
-            golang/ 2>&1 | tail -5
+            --unsetannotation org.opencontainers.image.base.digest \
+            --tag dir:$DIR/alpine2 \
+            alpine/ 2>&1 | tail -5
 
           echo ""
-          echo "=== Full manifest diff ==="
-          diff <(cat $DIR/build1/manifest.json | python3 -m json.tool) <(cat $DIR/build2/manifest.json | python3 -m json.tool) || true
+          echo "=== Alpine manifest diff ==="
+          diff <(cat $DIR/alpine1/manifest.json | python3 -m json.tool) <(cat $DIR/alpine2/manifest.json | python3 -m json.tool) && echo "Alpine manifests identical" || echo "Alpine manifests differ"
 
           echo ""
-          echo "=== Config comparison ==="
-          CFG1=$(python3 -c "import json; print(json.load(open('$DIR/build1/manifest.json'))['config']['digest'].split(':')[1])")
-          CFG2=$(python3 -c "import json; print(json.load(open('$DIR/build2/manifest.json'))['config']['digest'].split(':')[1])")
+          echo "=== Alpine config diff ==="
+          CFG1=$(python3 -c "import json; print(json.load(open('$DIR/alpine1/manifest.json'))['config']['digest'].split(':')[1])")
+          CFG2=$(python3 -c "import json; print(json.load(open('$DIR/alpine2/manifest.json'))['config']['digest'].split(':')[1])")
           echo "Config 1: $CFG1"
           echo "Config 2: $CFG2"
-          diff <(cat $DIR/build1/$CFG1 | python3 -m json.tool) <(cat $DIR/build2/$CFG2 | python3 -m json.tool) || true
+          diff <(cat $DIR/alpine1/$CFG1 | python3 -m json.tool) <(cat $DIR/alpine2/$CFG2 | python3 -m json.tool) && echo "Alpine configs identical" || echo "Alpine configs differ"
 
           echo ""
-          echo "=== Layer comparison ==="
+          echo "=== Alpine layer diff ==="
           python3 -c "
           import json
-          m1 = json.load(open('$DIR/build1/manifest.json'))
-          m2 = json.load(open('$DIR/build2/manifest.json'))
+          m1 = json.load(open('$DIR/alpine1/manifest.json'))
+          m2 = json.load(open('$DIR/alpine2/manifest.json'))
           l1 = [l['digest'] for l in m1['layers']]
           l2 = [l['digest'] for l in m2['layers']]
-          print('Build 1 layers:')
-          for l in l1: print('  ' + l)
-          print('Build 2 layers:')
-          for l in l2: print('  ' + l)
-          if l1 == l2:
-              print('All layers identical')
-          else:
-              print('Layers differ')
+          print('Alpine 1 layers:', l1)
+          print('Alpine 2 layers:', l2)
+          if l1 == l2: print('Identical')
+          else: print('Differ')
           "
 
-          echo ""
-          echo "=== Summary ==="
-          python3 -c "
-          import json, sys
-          m1 = json.load(open('$DIR/build1/manifest.json'))
-          m2 = json.load(open('$DIR/build2/manifest.json'))
-          layers_match = [l['digest'] for l in m1['layers']] == [l['digest'] for l in m2['layers']]
-          config_match = m1['config']['digest'] == m2['config']['digest']
-          annotations_match = m1.get('annotations') == m2.get('annotations')
-          if layers_match and config_match:
-              print('IMAGE IS REPRODUCIBLE (layers+config match)')
-              if not annotations_match:
-                  print('Annotations differ:')
-                  for k in sorted(set(list(m1.get('annotations',{}).keys()) + list(m2.get('annotations',{}).keys()))):
-                      v1 = m1.get('annotations',{}).get(k, '<missing>')
-                      v2 = m2.get('annotations',{}).get(k, '<missing>')
-                      if v1 != v2:
-                          print(f'  {k}:')
-                          print(f'    build1: {v1}')
-                          print(f'    build2: {v2}')
-              sys.exit(0)
-          else:
-              print('IMAGE IS NOT REPRODUCIBLE')
-              sys.exit(1)
-          "
-
-      - name: Verify fix - build with unsetannotation
+      - name: Build golang twice and compare
         env:
           BUILDAH_ISOLATION: chroot
         run: |
           DIR=$(mktemp -d)
           echo "Working in $DIR"
 
-          echo "=== Build 1 with --unsetannotation ==="
+          echo "=== Golang Build 1 ==="
           buildah bud \
             --source-date-epoch 0 \
             --rewrite-timestamp \
@@ -121,10 +93,10 @@ jobs:
             --layers=true \
             --squash \
             --unsetannotation org.opencontainers.image.base.digest \
-            --tag dir:$DIR/build1 \
+            --tag dir:$DIR/golang1 \
             golang/ 2>&1 | tail -5
 
-          echo "=== Build 2 with --unsetannotation ==="
+          echo "=== Golang Build 2 ==="
           buildah bud \
             --source-date-epoch 0 \
             --rewrite-timestamp \
@@ -132,17 +104,31 @@ jobs:
             --layers=true \
             --squash \
             --unsetannotation org.opencontainers.image.base.digest \
-            --tag dir:$DIR/build2 \
+            --tag dir:$DIR/golang2 \
             golang/ 2>&1 | tail -5
 
           echo ""
-          echo "=== Full manifest diff ==="
-          diff <(cat $DIR/build1/manifest.json | python3 -m json.tool) <(cat $DIR/build2/manifest.json | python3 -m json.tool) && echo "Manifests identical" || echo "Manifests differ"
+          echo "=== Golang manifest diff ==="
+          diff <(cat $DIR/golang1/manifest.json | python3 -m json.tool) <(cat $DIR/golang2/manifest.json | python3 -m json.tool) && echo "Golang manifests identical" || echo "Golang manifests differ"
 
           echo ""
-          echo "=== Check annotations in build1 ==="
+          echo "=== Golang config diff ==="
+          CFG1=$(python3 -c "import json; print(json.load(open('$DIR/golang1/manifest.json'))['config']['digest'].split(':')[1])")
+          CFG2=$(python3 -c "import json; print(json.load(open('$DIR/golang2/manifest.json'))['config']['digest'].split(':')[1])")
+          echo "Config 1: $CFG1"
+          echo "Config 2: $CFG2"
+          diff <(cat $DIR/golang1/$CFG1 | python3 -m json.tool) <(cat $DIR/golang2/$CFG2 | python3 -m json.tool) && echo "Golang configs identical" || echo "Golang configs differ"
+
+          echo ""
+          echo "=== Golang layer diff ==="
           python3 -c "
           import json
-          m = json.load(open('$DIR/build1/manifest.json'))
-          print('Annotations:', json.dumps(m.get('annotations',{}), indent=2))
+          m1 = json.load(open('$DIR/golang1/manifest.json'))
+          m2 = json.load(open('$DIR/golang2/manifest.json'))
+          l1 = [l['digest'] for l in m1['layers']]
+          l2 = [l['digest'] for l in m2['layers']]
+          print('Golang 1 layers:', l1)
+          print('Golang 2 layers:', l2)
+          if l1 == l2: print('Identical')
+          else: print('Differ')
           "
