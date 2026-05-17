@@ -23,14 +23,14 @@ jobs:
       - name: Login to private registry
         run: echo "${{ secrets.REGISTRY_PASS }}" | podman login -u "${{ secrets.REGISTRY_USER }}" --password-stdin "${{ secrets.REGISTRY }}"
 
-      - name: Build alpine twice and compare
+      - name: Build golang twice and deep compare
         env:
           BUILDAH_ISOLATION: chroot
         run: |
           DIR=$(mktemp -d)
           echo "Working in $DIR"
 
-          echo "=== Alpine Build 1 ==="
+          echo "=== Build 1 ==="
           buildah bud \
             --source-date-epoch 0 \
             --rewrite-timestamp \
@@ -38,65 +38,10 @@ jobs:
             --layers=true \
             --squash \
             --unsetannotation org.opencontainers.image.base.digest \
-            --tag dir:$DIR/alpine1 \
-            alpine/ 2>&1 | tail -5
-
-          echo "=== Alpine Build 2 ==="
-          buildah bud \
-            --source-date-epoch 0 \
-            --rewrite-timestamp \
-            --omit-history \
-            --layers=true \
-            --squash \
-            --unsetannotation org.opencontainers.image.base.digest \
-            --tag dir:$DIR/alpine2 \
-            alpine/ 2>&1 | tail -5
-
-          echo ""
-          echo "=== Alpine manifest diff ==="
-          diff <(cat $DIR/alpine1/manifest.json | python3 -m json.tool) <(cat $DIR/alpine2/manifest.json | python3 -m json.tool) && echo "Alpine manifests identical" || echo "Alpine manifests differ"
-
-          echo ""
-          echo "=== Alpine config diff ==="
-          CFG1=$(python3 -c "import json; print(json.load(open('$DIR/alpine1/manifest.json'))['config']['digest'].split(':')[1])")
-          CFG2=$(python3 -c "import json; print(json.load(open('$DIR/alpine2/manifest.json'))['config']['digest'].split(':')[1])")
-          echo "Config 1: $CFG1"
-          echo "Config 2: $CFG2"
-          diff <(cat $DIR/alpine1/$CFG1 | python3 -m json.tool) <(cat $DIR/alpine2/$CFG2 | python3 -m json.tool) && echo "Alpine configs identical" || echo "Alpine configs differ"
-
-          echo ""
-          echo "=== Alpine layer diff ==="
-          python3 -c "
-          import json
-          m1 = json.load(open('$DIR/alpine1/manifest.json'))
-          m2 = json.load(open('$DIR/alpine2/manifest.json'))
-          l1 = [l['digest'] for l in m1['layers']]
-          l2 = [l['digest'] for l in m2['layers']]
-          print('Alpine 1 layers:', l1)
-          print('Alpine 2 layers:', l2)
-          if l1 == l2: print('Identical')
-          else: print('Differ')
-          "
-
-      - name: Build golang twice and compare
-        env:
-          BUILDAH_ISOLATION: chroot
-        run: |
-          DIR=$(mktemp -d)
-          echo "Working in $DIR"
-
-          echo "=== Golang Build 1 ==="
-          buildah bud \
-            --source-date-epoch 0 \
-            --rewrite-timestamp \
-            --omit-history \
-            --layers=true \
-            --squash \
-            --unsetannotation org.opencontainers.image.base.digest \
-            --tag dir:$DIR/golang1 \
+            --tag dir:$DIR/build1 \
             golang/ 2>&1 | tail -5
 
-          echo "=== Golang Build 2 ==="
+          echo "=== Build 2 ==="
           buildah bud \
             --source-date-epoch 0 \
             --rewrite-timestamp \
@@ -104,31 +49,74 @@ jobs:
             --layers=true \
             --squash \
             --unsetannotation org.opencontainers.image.base.digest \
-            --tag dir:$DIR/golang2 \
+            --tag dir:$DIR/build2 \
             golang/ 2>&1 | tail -5
 
           echo ""
-          echo "=== Golang manifest diff ==="
-          diff <(cat $DIR/golang1/manifest.json | python3 -m json.tool) <(cat $DIR/golang2/manifest.json | python3 -m json.tool) && echo "Golang manifests identical" || echo "Golang manifests differ"
+          echo "=== Manifest diff ==="
+          diff <(cat $DIR/build1/manifest.json | python3 -m json.tool) <(cat $DIR/build2/manifest.json | python3 -m json.tool) || true
 
           echo ""
-          echo "=== Golang config diff ==="
-          CFG1=$(python3 -c "import json; print(json.load(open('$DIR/golang1/manifest.json'))['config']['digest'].split(':')[1])")
-          CFG2=$(python3 -c "import json; print(json.load(open('$DIR/golang2/manifest.json'))['config']['digest'].split(':')[1])")
-          echo "Config 1: $CFG1"
-          echo "Config 2: $CFG2"
-          diff <(cat $DIR/golang1/$CFG1 | python3 -m json.tool) <(cat $DIR/golang2/$CFG2 | python3 -m json.tool) && echo "Golang configs identical" || echo "Golang configs differ"
+          echo "=== Extracting layers ==="
+          mkdir -p $DIR/l1 $DIR/l2
+          LAYER1=$(python3 -c "import json; print(json.load(open('$DIR/build1/manifest.json'))['layers'][0]['digest'].split(':')[1])")
+          LAYER2=$(python3 -c "import json; print(json.load(open('$DIR/build2/manifest.json'))['layers'][0]['digest'].split(':')[1])")
+          echo "Layer 1: $LAYER1"
+          echo "Layer 2: $LAYER2"
+
+          if file $DIR/build1/$LAYER1 | grep -q gzip; then
+            zcat $DIR/build1/$LAYER1 | tar -C $DIR/l1 -xf -
+            zcat $DIR/build2/$LAYER2 | tar -C $DIR/l2 -xf -
+          else
+            tar -C $DIR/l1 -xf $DIR/build1/$LAYER1
+            tar -C $DIR/l2 -xf $DIR/build2/$LAYER2
+          fi
 
           echo ""
-          echo "=== Golang layer diff ==="
-          python3 -c "
-          import json
-          m1 = json.load(open('$DIR/golang1/manifest.json'))
-          m2 = json.load(open('$DIR/golang2/manifest.json'))
-          l1 = [l['digest'] for l in m1['layers']]
-          l2 = [l['digest'] for l in m2['layers']]
-          print('Golang 1 layers:', l1)
-          print('Golang 2 layers:', l2)
-          if l1 == l2: print('Identical')
-          else: print('Differ')
-          "
+          echo "=== File content diff (sha256sums) ==="
+          diff <(cd $DIR/l1 && find . -type f -exec sha256sum {} \; | sort) <(cd $DIR/l2 && find . -type f -exec sha256sum {} \; | sort) > $DIR/content-diff.txt 2>&1
+          if [ -s $DIR/content-diff.txt ]; then
+            echo "FILES WITH DIFFERENT CONTENT:"
+            head -60 $DIR/content-diff.txt
+            echo ""
+            DIFF_COUNT=$(comm -12 <(grep "^<" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) <(grep "^>" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) | wc -l)
+            ONLY1_COUNT=$(grep "^<" $DIR/content-diff.txt | awk '{print $NF}' | sort -u | wc -l)
+            ONLY2_COUNT=$(grep "^>" $DIR/content-diff.txt | awk '{print $NF}' | sort -u | wc -l)
+            echo "Files with different hashes: $DIFF_COUNT"
+            echo "Files only in build 1: $ONLY1_COUNT"
+            echo "Files only in build 2: $ONLY2_COUNT"
+            echo ""
+            echo "=== Differing files (first 30) ==="
+            comm -12 <(grep "^<" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) <(grep "^>" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) | head -30
+          else
+            echo "File content is identical"
+          fi
+
+          echo ""
+          echo "=== Differing binary analysis ==="
+          for f in $(comm -12 <(grep "^<" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) <(grep "^>" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) | head -20); do
+            if [ -f "$DIR/l1$f" ] && [ -f "$DIR/l2$f" ]; then
+              SIZE1=$(stat -c%s "$DIR/l1$f" 2>/dev/null || echo N/A)
+              SIZE2=$(stat -c%s "$DIR/l2$f" 2>/dev/null || echo N/A)
+              TYPE1=$(file "$DIR/l1$f" 2>/dev/null | sed "s|$DIR/l1||")
+              TYPE2=$(file "$DIR/l2$f" 2>/dev/null | sed "s|$DIR/l2||")
+              if [ "$SIZE1" != "$SIZE2" ] || [ "$TYPE1" != "$TYPE2" ]; then
+                echo "--- $f ---"
+                echo "  Size: $SIZE1 vs $SIZE2"
+                echo "  Type: $TYPE1 vs $TYPE2"
+              fi
+            fi
+          done
+
+          echo ""
+          echo "=== Files only in one build ==="
+          ONLY1=$(grep "^<" $DIR/content-diff.txt | awk '{print $NF}' | sort -u | grep -v -f <(grep "^>" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) | head -20)
+          ONLY2=$(grep "^>" $DIR/content-diff.txt | awk '{print $NF}' | sort -u | grep -v -f <(grep "^<" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) | head -20)
+          if [ -n "$ONLY1" ]; then
+            echo "Only in build 1:"
+            echo "$ONLY1"
+          fi
+          if [ -n "$ONLY2" ]; then
+            echo "Only in build 2:"
+            echo "$ONLY2"
+          fi
