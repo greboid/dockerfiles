@@ -39,4 +39,4 @@ RUN set -eux; \
     mkdir -p $GOPATH/src $GOPATH/bin; \
     chmod -R 777 $GOPATH; \
     go install github.com/google/go-licenses/v2@{{github_tag "google/go-licenses"}}; \
-    rm -rf /root/.cache /root/.config /go/pkg/mod/cache /var/log/apk.log
+    rm -rf /root/.cache /root/.config /go/pkg/mod /go/pkg/sumdb /var/log/apk.log
