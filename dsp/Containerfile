@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/dsp/Containerfile.gotpl
-# BOM: {"github:greboid/dsp":"v1.2.4","image:alpine":"cfc36a2dbe8e9f59f61bf87a016f5360fcadb54262b11a1f5dd120dde070abcf","image:baseroot":"8e92df92dc847052aa247613cfb14f389f85f9806c1266513b1f6f0b1ead3da6","image:golang":"cdc81950c204c55dd2d40b16ddb6cfc9351a9f2e94166d5a7363214a93d7290a"}
+# BOM: {"github:greboid/dsp":"v1.2.4","image:alpine":"cfc36a2dbe8e9f59f61bf87a016f5360fcadb54262b11a1f5dd120dde070abcf","image:baseroot":"8e92df92dc847052aa247613cfb14f389f85f9806c1266513b1f6f0b1ead3da6","image:golang":"faad71f5ef244a5fe4b8740dcbefde3b9a9c9a92b26185792adf9b465bb8b401"}
 
-FROM reg.g5d.dev/golang@sha256:cdc81950c204c55dd2d40b16ddb6cfc9351a9f2e94166d5a7363214a93d7290a AS build
+FROM reg.g5d.dev/golang@sha256:faad71f5ef244a5fe4b8740dcbefde3b9a9c9a92b26185792adf9b465bb8b401 AS build
 ARG TAG="v1.2.4"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/dsp /src
