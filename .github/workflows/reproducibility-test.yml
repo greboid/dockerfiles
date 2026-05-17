@@ -23,51 +23,7 @@ jobs:
       - name: Login to private registry
         run: echo "${{ secrets.REGISTRY_PASS }}" | podman login -u "${{ secrets.REGISTRY_USER }}" --password-stdin "${{ secrets.REGISTRY }}"
 
-      - name: Investigate base image
-        env:
-          BUILDAH_ISOLATION: chroot
-        run: |
-          ALPINE_REF=$(grep '^FROM' golang/Containerfile | head -1 | awk '{print $2}')
-          echo "Base image reference: $ALPINE_REF"
-
-          echo ""
-          echo "=== Pull and inspect round 1 ==="
-          buildah pull $ALPINE_REF 2>&1
-          INSPECT1=$(buildah inspect --type image $ALPINE_REF)
-          FROMDIGEST1=$(echo "$INSPECT1" | python3 -c "import json,sys; print(json.load(sys.stdin)['FromImageDigest'])")
-          FROMID1=$(echo "$INSPECT1" | python3 -c "import json,sys; print(json.load(sys.stdin)['FromImageID'])")
-          FROMNAME1=$(echo "$INSPECT1" | python3 -c "import json,sys; print(json.load(sys.stdin)['FromImage'])")
-          echo "  FromImage:        $FROMNAME1"
-          echo "  FromImageID:      $FROMID1"
-          echo "  FromImageDigest:  $FROMDIGEST1"
-
-          echo ""
-          echo "=== Remove local image ==="
-          buildah rmi $ALPINE_REF 2>/dev/null || true
-
-          echo ""
-          echo "=== Pull and inspect round 2 ==="
-          buildah pull $ALPINE_REF 2>&1
-          INSPECT2=$(buildah inspect --type image $ALPINE_REF)
-          FROMDIGEST2=$(echo "$INSPECT2" | python3 -c "import json,sys; print(json.load(sys.stdin)['FromImageDigest'])")
-          FROMID2=$(echo "$INSPECT2" | python3 -c "import json,sys; print(json.load(sys.stdin)['FromImageID'])")
-          FROMNAME2=$(echo "$INSPECT2" | python3 -c "import json,sys; print(json.load(sys.stdin)['FromImage'])")
-          echo "  FromImage:        $FROMNAME2"
-          echo "  FromImageID:      $FROMID2"
-          echo "  FromImageDigest:  $FROMDIGEST2"
-
-          echo ""
-          echo "=== Comparison ==="
-          echo "  FromImageDigest match: $([ "$FROMDIGEST1" = "$FROMDIGEST2" ] && echo YES || echo NO)"
-          echo "  FromImageID match:     $([ "$FROMID1" = "$FROMID2" ] && echo YES || echo NO)"
-
-          if [ "$FROMDIGEST1" != "$FROMDIGEST2" ]; then
-            echo ""
-            echo "=== Full inspect diff ==="
-            diff <(echo "$INSPECT1" | python3 -m json.tool) <(echo "$INSPECT2" | python3 -m json.tool) || true
-          fi
-
-      - name: Build golang image twice
+      - name: Build golang image twice and compare
         env:
           BUILDAH_ISOLATION: chroot
         run: |
@@ -82,7 +38,7 @@ jobs:
             --layers=true \
             --squash \
             --tag dir:$DIR/build1 \
-            golang/
+            golang/ 2>&1 | tail -5
 
           echo "=== Build 2 ==="
           buildah bud \
@@ -92,7 +48,11 @@ jobs:
             --layers=true \
             --squash \
             --tag dir:$DIR/build2 \
-            golang/
+            golang/ 2>&1 | tail -5
+
+          echo ""
+          echo "=== Full manifest diff ==="
+          diff <(cat $DIR/build1/manifest.json | python3 -m json.tool) <(cat $DIR/build2/manifest.json | python3 -m json.tool) || true
 
           echo ""
           echo "=== Config comparison ==="
@@ -100,7 +60,7 @@ jobs:
           CFG2=$(python3 -c "import json; print(json.load(open('$DIR/build2/manifest.json'))['config']['digest'].split(':')[1])")
           echo "Config 1: $CFG1"
           echo "Config 2: $CFG2"
-          diff <(cat $DIR/build1/$CFG1 | python3 -m json.tool) <(cat $DIR/build2/$CFG2 | python3 -m json.tool) && echo "Configs identical" || echo "Configs differ"
+          diff <(cat $DIR/build1/$CFG1 | python3 -m json.tool) <(cat $DIR/build2/$CFG2 | python3 -m json.tool) || true
 
           echo ""
           echo "=== Layer comparison ==="
@@ -121,10 +81,6 @@ jobs:
           "
 
           echo ""
-          echo "=== Manifest diff ==="
-          diff <(cat $DIR/build1/manifest.json | python3 -m json.tool) <(cat $DIR/build2/manifest.json | python3 -m json.tool) && echo "Manifests identical" || echo "Manifests differ"
-
-          echo ""
           echo "=== Summary ==="
           python3 -c "
           import json, sys
@@ -132,9 +88,10 @@ jobs:
           m2 = json.load(open('$DIR/build2/manifest.json'))
           layers_match = [l['digest'] for l in m1['layers']] == [l['digest'] for l in m2['layers']]
           config_match = m1['config']['digest'] == m2['config']['digest']
+          annotations_match = m1.get('annotations') == m2.get('annotations')
           if layers_match and config_match:
               print('IMAGE IS REPRODUCIBLE (layers+config match)')
-              if m1.get('annotations') != m2.get('annotations'):
+              if not annotations_match:
                   print('Annotations differ:')
                   for k in sorted(set(list(m1.get('annotations',{}).keys()) + list(m2.get('annotations',{}).keys()))):
                       v1 = m1.get('annotations',{}).get(k, '<missing>')
@@ -147,4 +104,45 @@ jobs:
           else:
               print('IMAGE IS NOT REPRODUCIBLE')
               sys.exit(1)
+          "
+
+      - name: Verify fix - build with unsetannotation
+        env:
+          BUILDAH_ISOLATION: chroot
+        run: |
+          DIR=$(mktemp -d)
+          echo "Working in $DIR"
+
+          echo "=== Build 1 with --unsetannotation ==="
+          buildah bud \
+            --source-date-epoch 0 \
+            --rewrite-timestamp \
+            --omit-history \
+            --layers=true \
+            --squash \
+            --unsetannotation org.opencontainers.image.base.digest \
+            --tag dir:$DIR/build1 \
+            golang/ 2>&1 | tail -5
+
+          echo "=== Build 2 with --unsetannotation ==="
+          buildah bud \
+            --source-date-epoch 0 \
+            --rewrite-timestamp \
+            --omit-history \
+            --layers=true \
+            --squash \
+            --unsetannotation org.opencontainers.image.base.digest \
+            --tag dir:$DIR/build2 \
+            golang/ 2>&1 | tail -5
+
+          echo ""
+          echo "=== Full manifest diff ==="
+          diff <(cat $DIR/build1/manifest.json | python3 -m json.tool) <(cat $DIR/build2/manifest.json | python3 -m json.tool) && echo "Manifests identical" || echo "Manifests differ"
+
+          echo ""
+          echo "=== Check annotations in build1 ==="
+          python3 -c "
+          import json
+          m = json.load(open('$DIR/build1/manifest.json'))
+          print('Annotations:', json.dumps(m.get('annotations',{}), indent=2))
           "
