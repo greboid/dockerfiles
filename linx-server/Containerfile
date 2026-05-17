@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/linx-server/Containerfile.gotpl
-# BOM: {"github:csmith/linx-server":"v3.4.1","image:alpine":"cfc36a2dbe8e9f59f61bf87a016f5360fcadb54262b11a1f5dd120dde070abcf","image:base":"1bbe14d3322e3d4b47a8fcb69d295cb672da8207394d0d61c6eb38a503a16254","image:golang":"cdc81950c204c55dd2d40b16ddb6cfc9351a9f2e94166d5a7363214a93d7290a"}
+# BOM: {"github:csmith/linx-server":"v3.4.1","image:alpine":"cfc36a2dbe8e9f59f61bf87a016f5360fcadb54262b11a1f5dd120dde070abcf","image:base":"1bbe14d3322e3d4b47a8fcb69d295cb672da8207394d0d61c6eb38a503a16254","image:golang":"faad71f5ef244a5fe4b8740dcbefde3b9a9c9a92b26185792adf9b465bb8b401"}
 
-FROM reg.g5d.dev/golang@sha256:cdc81950c204c55dd2d40b16ddb6cfc9351a9f2e94166d5a7363214a93d7290a AS build
+FROM reg.g5d.dev/golang@sha256:faad71f5ef244a5fe4b8740dcbefde3b9a9c9a92b26185792adf9b465bb8b401 AS build
 ARG TAG="v3.4.1"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/linx-server /src
