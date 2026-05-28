@@ -1,0 +1,138 @@
+name: Rust Reproducibility Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  rust-reproducibility-test:
+    name: Rust Reproducibility Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+
+      - name: Install buildah from source
+        run: |
+          sudo apt-get install -y libgpgme-dev libseccomp-dev libbtrfs-dev libdevmapper-dev pkg-config
+          git clone --depth 1 --branch v1.43.1 https://github.com/containers/buildah.git /tmp/buildah
+          cd /tmp/buildah
+          make bin/buildah
+          sudo install -m 755 bin/buildah /usr/bin/buildah
+          buildah --version
+
+      - name: Login to private registry
+        run: echo "${{ secrets.REGISTRY_PASS }}" | podman login -u "${{ secrets.REGISTRY_USER }}" --password-stdin "${{ secrets.REGISTRY }}"
+
+      - name: Build rust in a loop to catch non-determinism
+        env:
+          BUILDAH_ISOLATION: chroot
+        run: |
+          set +e
+          DIR=$(mktemp -d)
+          echo "Working in $DIR"
+          BUILDS=10
+          REF_LAYER=""
+          REF_N=""
+
+          for i in $(seq 1 $BUILDS); do
+            echo "=== Build $i/$BUILDS ==="
+            buildah bud \
+              --source-date-epoch 0 \
+              --rewrite-timestamp \
+              --omit-history \
+              --layers=true \
+              --squash \
+              --unsetannotation org.opencontainers.image.base.digest \
+              --tag dir:$DIR/build$i \
+              rust/ 2>&1 | tail -3
+
+            LAYER=$(python3 -c "import json; print(json.load(open('$DIR/build$i/manifest.json'))['layers'][0]['digest'].split(':')[1])")
+            echo "Layer: $LAYER"
+
+            if [ -z "$REF_LAYER" ]; then
+              REF_LAYER=$LAYER
+              REF_N=$i
+              echo "Set as reference"
+            elif [ "$LAYER" != "$REF_LAYER" ]; then
+              echo ""
+              echo "!!! DIFFERENCE DETECTED: build $REF_N vs build $i !!!"
+              DIFF_N=$i
+              break
+            fi
+          done
+
+          if [ -z "$DIFF_N" ]; then
+            echo ""
+            echo "=== All $BUILDS builds produced identical layers ==="
+            echo "Layer digest: $REF_LAYER"
+            exit 0
+          fi
+
+          echo ""
+          echo "=== Differing files ==="
+          mkdir -p $DIR/lref $DIR/ldiff
+          REF_FILE=$DIR/build${REF_N}/${REF_LAYER}
+          DIFF_FILE=$DIR/build${DIFF_N}/${LAYER}
+
+          echo "Extracting ref layer..."
+          tar -C $DIR/lref -xf $REF_FILE 2>&1 || true
+          echo "Extracting diff layer..."
+          tar -C $DIR/ldiff -xf $DIFF_FILE 2>&1 || true
+
+          echo ""
+          echo "=== File content differences ==="
+          diff <(cd $DIR/lref && find . -type f -exec sha256sum {} \; | sort) <(cd $DIR/ldiff && find . -type f -exec sha256sum {} \; | sort) > $DIR/content-diff.txt 2>&1 || true
+          DIFF_FILES=$(comm -12 <(grep "^<" $DIR/content-diff.txt | awk '{print $NF}' | sort -u) <(grep "^>" $DIR/content-diff.txt | awk '{print $NF}' | sort -u))
+          DIFF_COUNT=$(echo "$DIFF_FILES" | grep -c . || true)
+          echo "$DIFF_COUNT differing files:"
+          echo "$DIFF_FILES"
+
+          echo ""
+          echo "=== Directory differences ==="
+          diff <(cd $DIR/lref && find . -type d | sort) <(cd $DIR/ldiff && find . -type d | sort) || true
+
+          echo ""
+          echo "=== Symlink differences ==="
+          diff <(cd $DIR/lref && find . -type l | sort) <(cd $DIR/ldiff && find . -type l | sort) || true
+
+          for f in $DIFF_FILES; do
+            echo ""
+            echo "--- $f ---"
+            SIZE1=$(stat -c%s "$DIR/lref$f" 2>/dev/null || echo N/A)
+            SIZE2=$(stat -c%s "$DIR/ldiff$f" 2>/dev/null || echo N/A)
+            echo "Size: $SIZE1 vs $SIZE2"
+            TYPE1=$(file "$DIR/lref$f" 2>/dev/null || echo N/A)
+            echo "Type: $TYPE1"
+            if command -v readelf > /dev/null 2>&1; then
+              echo "Build ID ref: $(readelf -n "$DIR/lref$f" 2>/dev/null | grep "Build ID" | head -1)"
+              echo "Build ID diff: $(readelf -n "$DIR/ldiff$f" 2>/dev/null | grep "Build ID" | head -1)"
+            fi
+            BYTE_DIFF=$(cmp -l "$DIR/lref$f" "$DIR/ldiff$f" 2>/dev/null | wc -l)
+            FIRST_DIFF=$(cmp -l "$DIR/lref$f" "$DIR/ldiff$f" 2>/dev/null | head -1 | awk '{print $1}')
+            echo "Byte differences: $BYTE_DIFF  First diff at: $FIRST_DIFF"
+            if command -v xxd > /dev/null 2>&1 && [ -n "$FIRST_DIFF" ]; then
+              echo "Context (build $REF_N):"
+              dd if="$DIR/lref$f" bs=1 skip=$((FIRST_DIFF - 16)) count=64 2>/dev/null | xxd | head -6
+              echo "Context (build $DIFF_N):"
+              dd if="$DIR/ldiff$f" bs=1 skip=$((FIRST_DIFF - 16)) count=64 2>/dev/null | xxd | head -6
+            fi
+            if command -v strings > /dev/null 2>&1; then
+              echo "Strings near diff (ref):"
+              strings -t d "$DIR/lref$f" | awk -v pos="$FIRST_DIFF" '$1 > pos-64 && $1 < pos+64' | head -5
+              echo "Strings near diff (diff):"
+              strings -t d "$DIR/ldiff$f" | awk -v pos="$FIRST_DIFF" '$1 > pos-64 && $1 < pos+64' | head -5
+            fi
+          done
+
+          echo ""
+          echo "=== Files only in ref ==="
+          diff <(cd $DIR/lref && find . | sort) <(cd $DIR/ldiff && find . | sort) | grep "^<" || echo "none"
+          echo "=== Files only in diff ==="
+          diff <(cd $DIR/lref && find . | sort) <(cd $DIR/ldiff && find . | sort) | grep "^>" || echo "none"
+
+          echo ""
+          echo "=== Raw tar comparison ==="
+          TAR_DIFF=$(cmp -l "$REF_FILE" "$DIFF_FILE" 2>/dev/null | wc -l)
+          echo "Tar byte differences: $TAR_DIFF"
+
+          exit 1
