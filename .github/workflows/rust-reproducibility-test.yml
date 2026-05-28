@@ -11,6 +11,30 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@master
 
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: 'stable'
+          cache: false
+
+      - name: Get contempt commit SHA
+        id: get-sha
+        run: echo "sha=$(git ls-remote --heads https://github.com/greboid/contempt.git splitupdating | cut -f1)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore contempt from cache
+        uses: actions/cache/restore@v5
+        id: cache
+        with:
+          path: ~/go/bin/contempt
+          key: contempt-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-sha.outputs.sha }}
+
+      - name: Clone and build contempt
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          git clone -b splitupdating https://github.com/greboid/contempt.git /tmp/contempt
+          cd /tmp/contempt
+          go build -o ~/go/bin/contempt ./cmd/contempt
+
       - name: Install buildah from source
         run: |
           sudo apt-get install -y libgpgme-dev libseccomp-dev libbtrfs-dev libdevmapper-dev pkg-config
@@ -26,6 +50,8 @@ jobs:
       - name: Build rust in a loop to catch non-determinism
         env:
           BUILDAH_ISOLATION: chroot
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://github.com/greboid/dockerfiles/blob/master/
         run: |
           set +e
           DIR=$(mktemp -d)
@@ -36,15 +62,17 @@ jobs:
 
           for i in $(seq 1 $BUILDS); do
             echo "=== Build $i/$BUILDS ==="
-            buildah bud \
-              --source-date-epoch 0 \
-              --rewrite-timestamp \
-              --omit-history \
-              --layers=true \
-              --squash \
-              --unsetannotation org.opencontainers.image.base.digest \
-              --tag dir:$DIR/build$i \
-              rust/ 2>&1 | tail -3
+
+            buildah rmi --force ${{ secrets.REGISTRY }}/rust 2>/dev/null || true
+
+            ~/go/bin/contempt \
+              -template Containerfile.gotpl \
+              -output Containerfile \
+              -force-build=1 \
+              -project rust \
+              . . 2>&1 | tail -5
+
+            buildah push ${{ secrets.REGISTRY }}/rust dir:$DIR/build$i 2>&1
 
             LAYER=$(python3 -c "import json; print(json.load(open('$DIR/build$i/manifest.json'))['layers'][0]['digest'].split(':')[1])")
             echo "Layer: $LAYER"
