@@ -70,7 +70,7 @@ jobs:
           buildah push ${{ secrets.REGISTRY }}/rust dir:/tmp/rust-export
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: rust-build-${{ matrix.run }}
           path: /tmp/rust-export/
