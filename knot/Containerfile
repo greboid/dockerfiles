@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/knot/Containerfile.gotpl
-# BOM: {"git:https://tangled.org/tangled.org/core":"v1.14.1-alpha","image:alpine":"7df57775ab85b95030a217e2322117b4a92ce539195fa28bd551b933320e83f9","image:baseroot":"281ef46bd464c496646b971b5047bed5ed95cc219b4e164735265a8d6c005686","image:git":"bebe405b29fedd7b38a59baa0be4fe4a35fde07eead4ab13e5ab3c034c3836f7","image:golang":"ee59f6bb9bbb5e7970c82d1df864af7cdf2adbf9e19d7ac1fe4b76d7fac22715"}
+# BOM: {"git:https://tangled.org/tangled.org/core":"v1.14.1-alpha","image:alpine":"c15d9ba57b88d1fa9e11b2219d5a00e4306372977d7b1c81c2f03a62cae29edd","image:baseroot":"b75e264786a0e09bf5510da3468e01d44fad1c63e614b7b63fafce663446be11","image:git":"c4a38942d8170818da0fc7bf138091d0568fd29dcfd0053df42ce5faf0afa39e","image:golang":"9bc6746df2f1e804a59d4a5f71a7bf8ed258e76d10cacfa6774e963242584b10"}
 
-FROM reg.g5d.dev/golang@sha256:ee59f6bb9bbb5e7970c82d1df864af7cdf2adbf9e19d7ac1fe4b76d7fac22715 AS build
+FROM reg.g5d.dev/golang@sha256:9bc6746df2f1e804a59d4a5f71a7bf8ed258e76d10cacfa6774e963242584b10 AS build
 ARG TAG="v1.14.1-alpha"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://tangled.org/tangled.org/core /src
@@ -9,11 +9,11 @@ WORKDIR /src
 ENV CGO_ENABLED=1
 RUN go build -a -ldflags "-s -w -buildid=" -trimpath -o main ./cmd/knot
 RUN go-licenses save ./... --save_path=/notices --ignore github.com/ipfs/bbloom --ignore github.com/multiformats/go-base36 --ignore gitlab.com/yawning/secp256k1-voi/internal/fiat/secp256k1montgomery
-FROM reg.g5d.dev/alpine@sha256:7df57775ab85b95030a217e2322117b4a92ce539195fa28bd551b933320e83f9 AS prepare
+FROM reg.g5d.dev/alpine@sha256:c15d9ba57b88d1fa9e11b2219d5a00e4306372977d7b1c81c2f03a62cae29edd AS prepare
 COPY --from=build /src/main /rootfs/knot
 COPY --from=build /notices /rootfs/notices
-COPY --from=reg.g5d.dev/git@sha256:bebe405b29fedd7b38a59baa0be4fe4a35fde07eead4ab13e5ab3c034c3836f7 / /rootfs/
-FROM reg.g5d.dev/baseroot@sha256:281ef46bd464c496646b971b5047bed5ed95cc219b4e164735265a8d6c005686
+COPY --from=reg.g5d.dev/git@sha256:c4a38942d8170818da0fc7bf138091d0568fd29dcfd0053df42ce5faf0afa39e / /rootfs/
+FROM reg.g5d.dev/baseroot@sha256:b75e264786a0e09bf5510da3468e01d44fad1c63e614b7b63fafce663446be11
 COPY --from=prepare --chown=65532:65532 /rootfs/ /
 USER 65532:65532
 ENTRYPOINT ["/knot"]
