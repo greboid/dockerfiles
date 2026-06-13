@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/pdsps/Containerfile.gotpl
-# BOM: {"github:csmith/pdsps":"v1.0.0","image:alpine":"7df57775ab85b95030a217e2322117b4a92ce539195fa28bd551b933320e83f9","image:base":"53bb0cbcb81a7955284c1f020e4fe49f7827ae61f3b733c1409e05d1b6d94e97","image:golang":"ee59f6bb9bbb5e7970c82d1df864af7cdf2adbf9e19d7ac1fe4b76d7fac22715"}
+# BOM: {"github:csmith/pdsps":"v1.0.0","image:alpine":"c15d9ba57b88d1fa9e11b2219d5a00e4306372977d7b1c81c2f03a62cae29edd","image:base":"14e6fcf26e280d7b24893ddbbda26be8d5f3e304b625b983f0804a8c1eb9687b","image:golang":"9bc6746df2f1e804a59d4a5f71a7bf8ed258e76d10cacfa6774e963242584b10"}
 
-FROM reg.g5d.dev/golang@sha256:ee59f6bb9bbb5e7970c82d1df864af7cdf2adbf9e19d7ac1fe4b76d7fac22715 AS build
+FROM reg.g5d.dev/golang@sha256:9bc6746df2f1e804a59d4a5f71a7bf8ed258e76d10cacfa6774e963242584b10 AS build
 ARG TAG="v1.0.0"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/pdsps /src
@@ -9,10 +9,10 @@ WORKDIR /src
 ENV CGO_ENABLED=0
 RUN go build -a -ldflags "-extldflags \"-static\" -s -w -buildid=" -trimpath -o main .
 RUN go-licenses save ./... --save_path=/notices
-FROM reg.g5d.dev/alpine@sha256:7df57775ab85b95030a217e2322117b4a92ce539195fa28bd551b933320e83f9 AS prepare
+FROM reg.g5d.dev/alpine@sha256:c15d9ba57b88d1fa9e11b2219d5a00e4306372977d7b1c81c2f03a62cae29edd AS prepare
 COPY --from=build /src/main /rootfs/pdsps
 COPY --from=build /notices /rootfs/notices
-FROM reg.g5d.dev/base@sha256:53bb0cbcb81a7955284c1f020e4fe49f7827ae61f3b733c1409e05d1b6d94e97
+FROM reg.g5d.dev/base@sha256:14e6fcf26e280d7b24893ddbbda26be8d5f3e304b625b983f0804a8c1eb9687b
 COPY --from=prepare --chown=65532:65532 /rootfs/ /
 USER 65532:65532
 EXPOSE 8080
