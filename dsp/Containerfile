@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/dsp/Containerfile.gotpl
-# BOM: {"github:greboid/dsp":"v1.2.4","image:alpine":"7df57775ab85b95030a217e2322117b4a92ce539195fa28bd551b933320e83f9","image:baseroot":"281ef46bd464c496646b971b5047bed5ed95cc219b4e164735265a8d6c005686","image:golang":"ee59f6bb9bbb5e7970c82d1df864af7cdf2adbf9e19d7ac1fe4b76d7fac22715"}
+# BOM: {"github:greboid/dsp":"v1.2.4","image:alpine":"c15d9ba57b88d1fa9e11b2219d5a00e4306372977d7b1c81c2f03a62cae29edd","image:baseroot":"b75e264786a0e09bf5510da3468e01d44fad1c63e614b7b63fafce663446be11","image:golang":"9bc6746df2f1e804a59d4a5f71a7bf8ed258e76d10cacfa6774e963242584b10"}
 
-FROM reg.g5d.dev/golang@sha256:ee59f6bb9bbb5e7970c82d1df864af7cdf2adbf9e19d7ac1fe4b76d7fac22715 AS build
+FROM reg.g5d.dev/golang@sha256:9bc6746df2f1e804a59d4a5f71a7bf8ed258e76d10cacfa6774e963242584b10 AS build
 ARG TAG="v1.2.4"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/greboid/dsp /src
@@ -9,10 +9,10 @@ WORKDIR /src
 ENV CGO_ENABLED=0
 RUN go build -a -ldflags "-extldflags \"-static\" -s -w -buildid=" -trimpath -o main ./cmd
 RUN go-licenses save ./... --save_path=/notices
-FROM reg.g5d.dev/alpine@sha256:7df57775ab85b95030a217e2322117b4a92ce539195fa28bd551b933320e83f9 AS prepare
+FROM reg.g5d.dev/alpine@sha256:c15d9ba57b88d1fa9e11b2219d5a00e4306372977d7b1c81c2f03a62cae29edd AS prepare
 COPY --from=build /src/main /rootfs/dsp
 COPY --from=build /notices /rootfs/notices
-FROM reg.g5d.dev/baseroot@sha256:281ef46bd464c496646b971b5047bed5ed95cc219b4e164735265a8d6c005686
+FROM reg.g5d.dev/baseroot@sha256:b75e264786a0e09bf5510da3468e01d44fad1c63e614b7b63fafce663446be11
 COPY --from=prepare --chown=65532:65532 /rootfs/ /
 USER 65532:65532
 EXPOSE 8080
