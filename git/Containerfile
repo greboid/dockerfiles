@@ -1,39 +1,40 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/git/Containerfile.gotpl
-# BOM: {"apk:binutils":"2.45.1-r0","apk:brotli-libs":"1.2.0-r0","apk:build-base":"0.5-r3","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20260413-r0","apk:curl":"8.19.0-r0","apk:file":"5.46-r2","apk:fortify-headers":"1.1-r5","apk:g++":"15.2.0-r2","apk:gcc":"15.2.0-r2","apk:gmp":"6.3.0-r4","apk:isl25":"0.25-r2","apk:jansson":"2.14.1-r0","apk:libatomic":"15.2.0-r2","apk:libcrypto3":"3.5.6-r0","apk:libcurl":"8.19.0-r0","apk:libgcc":"15.2.0-r2","apk:libgomp":"15.2.0-r2","apk:libidn2":"2.3.8-r0","apk:libmagic":"5.46-r2","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.6-r0","apk:libstdc++":"15.2.0-r2","apk:libstdc++-dev":"15.2.0-r2","apk:libunistring":"1.4.1-r0","apk:make":"4.4.1-r3","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.2-r0","apk:musl":"1.2.5-r23","apk:musl-dev":"1.2.5-r23","apk:nghttp2-libs":"1.69.0-r0","apk:nghttp3":"1.13.1-r0","apk:patch":"2.8-r0","apk:pkgconf":"2.5.1-r0","apk:zlib":"1.3.2-r0","apk:zlib-dev":"1.3.2-r0","apk:zlib-static":"1.3.2-r0","apk:zstd-libs":"1.5.7-r2","github:git/git":"v2.54.0","image:alpine":"7df57775ab85b95030a217e2322117b4a92ce539195fa28bd551b933320e83f9"}
+# BOM: {"apk:binutils":"2.45.1-r1","apk:brotli-libs":"1.2.0-r1","apk:build-base":"0.5-r4","apk:c-ares":"1.34.6-r0","apk:ca-certificates-bundle":"20260611-r0","apk:curl":"8.20.0-r1","apk:file":"5.47-r2","apk:fortify-headers":"3.0.1-r2","apk:g++":"15.2.0-r5","apk:gcc":"15.2.0-r5","apk:gmp":"6.3.0-r4","apk:isl25":"0.25-r2","apk:jansson":"2.15.0-r0","apk:libatomic":"15.2.0-r5","apk:libcrypto3":"3.5.7-r0","apk:libcurl":"8.20.0-r1","apk:libgcc":"15.2.0-r5","apk:libgcc-static":"15.2.0-r5","apk:libgomp":"15.2.0-r5","apk:libidn2":"2.3.8-r0","apk:libmagic":"5.47-r2","apk:libpsl":"0.21.5-r3","apk:libssl3":"3.5.7-r0","apk:libstdc++":"15.2.0-r5","apk:libstdc++-dev":"15.2.0-r5","apk:libunistring":"1.4.2-r0","apk:make":"4.4.1-r4","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.2-r0","apk:musl":"1.2.6-r2","apk:musl-dev":"1.2.6-r2","apk:nghttp2-libs":"1.69.0-r0","apk:nghttp3":"1.13.1-r0","apk:patch":"2.8-r0","apk:pkgconf":"2.5.1-r0","apk:zlib":"1.3.2-r0","apk:zlib-dev":"1.3.2-r0","apk:zlib-static":"1.3.2-r0","apk:zstd-libs":"1.5.7-r2","github:git/git":"v2.54.0","image:alpine":"c15d9ba57b88d1fa9e11b2219d5a00e4306372977d7b1c81c2f03a62cae29edd"}
 
-FROM reg.g5d.dev/alpine@sha256:7df57775ab85b95030a217e2322117b4a92ce539195fa28bd551b933320e83f9 AS git-build
+FROM reg.g5d.dev/alpine@sha256:c15d9ba57b88d1fa9e11b2219d5a00e4306372977d7b1c81c2f03a62cae29edd AS git-build
 RUN set -eux; \
     apk add --no-cache \
-    binutils=2.45.1-r0 \
-    brotli-libs=1.2.0-r0 \
-    build-base=0.5-r3 \
+    binutils=2.45.1-r1 \
+    brotli-libs=1.2.0-r1 \
+    build-base=0.5-r4 \
     c-ares=1.34.6-r0 \
-    ca-certificates-bundle=20260413-r0 \
-    curl=8.19.0-r0 \
-    file=5.46-r2 \
-    fortify-headers=1.1-r5 \
-    g++=15.2.0-r2 \
-    gcc=15.2.0-r2 \
+    ca-certificates-bundle=20260611-r0 \
+    curl=8.20.0-r1 \
+    file=5.47-r2 \
+    fortify-headers=3.0.1-r2 \
+    g++=15.2.0-r5 \
+    gcc=15.2.0-r5 \
     gmp=6.3.0-r4 \
     isl25=0.25-r2 \
-    jansson=2.14.1-r0 \
-    libatomic=15.2.0-r2 \
-    libcrypto3=3.5.6-r0 \
-    libcurl=8.19.0-r0 \
-    libgcc=15.2.0-r2 \
-    libgomp=15.2.0-r2 \
+    jansson=2.15.0-r0 \
+    libatomic=15.2.0-r5 \
+    libcrypto3=3.5.7-r0 \
+    libcurl=8.20.0-r1 \
+    libgcc=15.2.0-r5 \
+    libgcc-static=15.2.0-r5 \
+    libgomp=15.2.0-r5 \
     libidn2=2.3.8-r0 \
-    libmagic=5.46-r2 \
+    libmagic=5.47-r2 \
     libpsl=0.21.5-r3 \
-    libssl3=3.5.6-r0 \
-    libstdc++=15.2.0-r2 \
-    libstdc++-dev=15.2.0-r2 \
-    libunistring=1.4.1-r0 \
-    make=4.4.1-r3 \
+    libssl3=3.5.7-r0 \
+    libstdc++=15.2.0-r5 \
+    libstdc++-dev=15.2.0-r5 \
+    libunistring=1.4.2-r0 \
+    make=4.4.1-r4 \
     mpc1=1.3.1-r1 \
     mpfr4=4.2.2-r0 \
-    musl=1.2.5-r23 \
-    musl-dev=1.2.5-r23 \
+    musl=1.2.6-r2 \
+    musl-dev=1.2.6-r2 \
     nghttp2-libs=1.69.0-r0 \
     patch=2.8-r0 \
     pkgconf=2.5.1-r0 \
