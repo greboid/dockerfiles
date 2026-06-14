@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/golink/Containerfile.gotpl
-# BOM: {"github:tailscale/golink":"v1.0.0","image:alpine":"c15d9ba57b88d1fa9e11b2219d5a00e4306372977d7b1c81c2f03a62cae29edd","image:base":"14e6fcf26e280d7b24893ddbbda26be8d5f3e304b625b983f0804a8c1eb9687b","image:golang":"9bc6746df2f1e804a59d4a5f71a7bf8ed258e76d10cacfa6774e963242584b10"}
+# BOM: {"github:tailscale/golink":"v1.0.0","image:alpine":"15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4","image:base":"14e6fcf26e280d7b24893ddbbda26be8d5f3e304b625b983f0804a8c1eb9687b","image:golang":"eb8bc78bfd4aab73de25eb4ad1e30a3dd0670eded53e4f76008e3e0c96c2d4d2"}
 
-FROM reg.g5d.dev/golang@sha256:9bc6746df2f1e804a59d4a5f71a7bf8ed258e76d10cacfa6774e963242584b10 AS build
+FROM reg.g5d.dev/golang@sha256:eb8bc78bfd4aab73de25eb4ad1e30a3dd0670eded53e4f76008e3e0c96c2d4d2 AS build
 ARG TAG="v1.0.0"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/tailscale/golink /src
@@ -9,7 +9,7 @@ WORKDIR /src
 ENV CGO_ENABLED=0
 RUN go build -a -ldflags "-extldflags \"-static\" -s -w -buildid=" -trimpath -o main ./cmd/golink
 RUN go-licenses save ./... --save_path=/notices --ignore modernc.org/mathutil --ignore github.com/jmespath/go-jmespath
-FROM reg.g5d.dev/alpine@sha256:c15d9ba57b88d1fa9e11b2219d5a00e4306372977d7b1c81c2f03a62cae29edd AS prepare
+FROM reg.g5d.dev/alpine@sha256:15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4 AS prepare
 COPY --from=build /src/main /rootfs/golink
 COPY --from=build /notices /rootfs/notices
 FROM reg.g5d.dev/base@sha256:14e6fcf26e280d7b24893ddbbda26be8d5f3e304b625b983f0804a8c1eb9687b
