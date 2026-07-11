@@ -1,11 +1,11 @@
-diff --git a/src/rewrites.rs b/src/rewrites.rs
-index e128059..dc5b88a 100644
---- a/src/rewrites.rs
-+++ b/src/rewrites.rs
-@@ -26,7 +26,11 @@ pub(crate) fn pre_process<T>(
- 
-     let matched = rewrite_uri_path(uri_path, Some(rewrites))?;
-     let dest = match replace_placeholders(uri_path, &matched.source, &matched.destination) {
+diff --git i/src/rewrites.rs w/src/rewrites.rs
+index b2a6484..1f21bc5 100644
+--- i/src/rewrites.rs
++++ w/src/rewrites.rs
+@@ -39,7 +39,11 @@ pub(crate) fn pre_process<T>(
+         &matched.destination,
+         &matched.replacer,
+     ) {
 -        Ok(dest) => dest,
 +        Ok(dest) => if req.uri().query().is_some() {
 +            dest + "?" + req.uri().query().unwrap()
