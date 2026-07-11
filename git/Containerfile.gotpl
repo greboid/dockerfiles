@@ -1,7 +1,7 @@
 FROM {{image "alpine"}} AS git-build
 RUN set -eux; \
     apk add --no-cache \
-    {{range $key, $value := alpine_packages "build-base" "zlib-dev" "zlib-static" "musl-dev" "curl" -}}
+    {{range $key, $value := alpine_packages "build-base" "zlib-dev" "zlib-static" "musl-dev" "curl" "file-dev" -}}
     {{$key}}={{$value}} \
     {{end}}; \
     TAG="{{github_tag "git/git"}}"; \
