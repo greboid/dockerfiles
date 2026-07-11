@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/knot/Containerfile.gotpl
-# BOM: {"git:https://tangled.org/tangled.org/core":"v1.15.0-alpha","image:alpine":"15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4","image:baseroot":"b75e264786a0e09bf5510da3468e01d44fad1c63e614b7b63fafce663446be11","image:git":"c4a38942d8170818da0fc7bf138091d0568fd29dcfd0053df42ce5faf0afa39e","image:golang":"d214094123f7773daa8fccd8804829c5ffcd76f597a0b64b03cc85dd430e9922"}
+# BOM: {"git:https://tangled.org/tangled.org/core":"v1.15.0-alpha","image:alpine":"15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4","image:baseroot":"b75e264786a0e09bf5510da3468e01d44fad1c63e614b7b63fafce663446be11","image:git":"ac3fcfaa9c09c99e1acb74e643b498faaf3bb439e5ba2464411076b3acc52b86","image:golang":"d214094123f7773daa8fccd8804829c5ffcd76f597a0b64b03cc85dd430e9922"}
 
 FROM reg.g5d.dev/golang@sha256:d214094123f7773daa8fccd8804829c5ffcd76f597a0b64b03cc85dd430e9922 AS build
 ARG TAG="v1.15.0-alpha"
@@ -12,7 +12,7 @@ RUN go-licenses save ./... --save_path=/notices --ignore github.com/ipfs/bbloom 
 FROM reg.g5d.dev/alpine@sha256:15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4 AS prepare
 COPY --from=build /src/main /rootfs/knot
 COPY --from=build /notices /rootfs/notices
-COPY --from=reg.g5d.dev/git@sha256:c4a38942d8170818da0fc7bf138091d0568fd29dcfd0053df42ce5faf0afa39e / /rootfs/
+COPY --from=reg.g5d.dev/git@sha256:ac3fcfaa9c09c99e1acb74e643b498faaf3bb439e5ba2464411076b3acc52b86 / /rootfs/
 FROM reg.g5d.dev/baseroot@sha256:b75e264786a0e09bf5510da3468e01d44fad1c63e614b7b63fafce663446be11
 COPY --from=prepare --chown=65532:65532 /rootfs/ /
 USER 65532:65532
