@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/knotssh/Containerfile.gotpl
-# BOM: {"github:greboid/knotssh":"v0.0.1","image:alpine":"15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4","image:baseroot":"b75e264786a0e09bf5510da3468e01d44fad1c63e614b7b63fafce663446be11","image:git":"ac3fcfaa9c09c99e1acb74e643b498faaf3bb439e5ba2464411076b3acc52b86","image:golang":"d214094123f7773daa8fccd8804829c5ffcd76f597a0b64b03cc85dd430e9922"}
+# BOM: {"github:greboid/knotssh":"v0.0.1","image:alpine":"15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4","image:baseroot":"38432ff4a30fdf23b9ad31f2fa7aae35ea2ac402e697575d718d4bb05e81f001","image:git":"ac3fcfaa9c09c99e1acb74e643b498faaf3bb439e5ba2464411076b3acc52b86","image:golang":"d214094123f7773daa8fccd8804829c5ffcd76f597a0b64b03cc85dd430e9922"}
 
 FROM reg.g5d.dev/golang@sha256:d214094123f7773daa8fccd8804829c5ffcd76f597a0b64b03cc85dd430e9922 AS build
 ARG TAG="v0.0.1"
@@ -15,7 +15,7 @@ COPY --from=build /notices /rootfs/notices
 RUN mkdir -p /rootfs/home/git
 RUN mkdir -p /rootfs/etc/ssh/host_keys
 COPY --from=reg.g5d.dev/git@sha256:ac3fcfaa9c09c99e1acb74e643b498faaf3bb439e5ba2464411076b3acc52b86 / /rootfs/
-FROM reg.g5d.dev/baseroot@sha256:b75e264786a0e09bf5510da3468e01d44fad1c63e614b7b63fafce663446be11
+FROM reg.g5d.dev/baseroot@sha256:38432ff4a30fdf23b9ad31f2fa7aae35ea2ac402e697575d718d4bb05e81f001
 COPY --from=prepare --chown=65532:65532 /rootfs/ /
 USER 65532:65532
 EXPOSE 222
