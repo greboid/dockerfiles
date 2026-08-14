@@ -160,6 +160,18 @@ jobs:
     with:
         PROJECT_NAME: webhooked
 
+  typst:
+    name: Build typst
+    needs:
+        - setup-cache
+        - alpine
+        - base
+        - rust
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: typst
+
   tsp:
     name: Build tsp
     needs:
@@ -254,6 +266,17 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: purser
+
+  postgres-18:
+    name: Build postgres-18
+    needs:
+        - setup-cache
+        - alpine
+        - base
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: postgres-18
 
   postgres-15:
     name: Build postgres-15
