@@ -278,17 +278,6 @@ jobs:
     with:
         PROJECT_NAME: postgres-18
 
-  postgres-15:
-    name: Build postgres-15
-    needs:
-        - setup-cache
-        - alpine
-        - base
-    uses: ./.github/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: postgres-15
-
   pdsps:
     name: Build pdsps
     needs:
