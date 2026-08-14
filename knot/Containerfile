@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/knot/Containerfile.gotpl
-# BOM: {"git:https://tangled.org/tangled.org/core":"v1.16.1-alpha","image:alpine":"15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4","image:baseroot":"38432ff4a30fdf23b9ad31f2fa7aae35ea2ac402e697575d718d4bb05e81f001","image:git":"0888cf47b32298f8bee6904ced3dc223ad88b6929e6cd7bd7c17fb3cae32f5f3","image:golang":"d214094123f7773daa8fccd8804829c5ffcd76f597a0b64b03cc85dd430e9922"}
+# BOM: {"git:https://tangled.org/tangled.org/core":"v1.16.1-alpha","image:alpine":"15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4","image:baseroot":"38432ff4a30fdf23b9ad31f2fa7aae35ea2ac402e697575d718d4bb05e81f001","image:git":"0888cf47b32298f8bee6904ced3dc223ad88b6929e6cd7bd7c17fb3cae32f5f3","image:golang":"b2597cb630c42b1562db22a25ba32490a27d2e304320c93c34f809755ef2645c"}
 
-FROM reg.g5d.dev/golang@sha256:d214094123f7773daa8fccd8804829c5ffcd76f597a0b64b03cc85dd430e9922 AS build
+FROM reg.g5d.dev/golang@sha256:b2597cb630c42b1562db22a25ba32490a27d2e304320c93c34f809755ef2645c AS build
 ARG TAG="v1.16.1-alpha"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://tangled.org/tangled.org/core /src
