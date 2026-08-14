@@ -6,7 +6,7 @@ ARG ENTRYPOINT=39c3dc7046f5f7909179a51e25f2a61158781d57
 
 RUN set -eux; \
     apk add --no-cache \
-        {{range $key, $value := alpine_packages "git" "curl" "gcc" "g++" "make" "readline-dev" "zlib-dev" "linux-headers" "musl-locales" "openssl-dev" "scanelf" "rsync" "bash" "icu-dev" "bison" "flex" "perl" -}}
+        {{range $key, $value := alpine_packages "git" "curl" "gcc" "g++" "make" "readline-dev" "zlib-dev" "linux-headers" "musl-locales" "openssl-dev" "scanelf" "rsync" "bash" "icu" "icu-dev" "bison" "flex" "perl" -}}
         {{$key}}={{$value}} \
         {{end}};
 
@@ -30,10 +30,10 @@ RUN set -eux; \
     make install-world-bin;
 
 RUN set -eux; \
-    DEPS=$(scanelf --needed --nobanner --format '%n#p' --recursive -l /usr/local /usr/local/pgsql/bin /usr/bin/locale \
+    DEPS="$(scanelf --needed --nobanner --format '%n#p' --recursive -l /usr/local /usr/local/pgsql/bin /usr/bin/locale \
     | tr ',' '\n' \
     | sort -u \
-    | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }');\
+    | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }') icu-data";\
     mkdir /rootfs; \
     for DEP in $DEPS; do \
       apk add "${DEP}"; \
