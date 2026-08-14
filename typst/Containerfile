@@ -1,0 +1,15 @@
+# Generated from https://github.com/example/repo/blob/master/typst/Containerfile.gotpl
+# BOM: {"github:typst/typst":"v0.15.1","image:alpine":"15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4","image:base":"56ae51caaae51dd91c393044e0b97d037354f3cb975dfd3ea8255bd36a548708","image:rust":"d4c42e13a5b8a50ab165c1a2c19a8b3f718cfd109b8fd18247c45106e6a85120"}
+
+FROM reg.g5d.dev/rust@sha256:d4c42e13a5b8a50ab165c1a2c19a8b3f718cfd109b8fd18247c45106e6a85120 AS build
+ARG TAG="v0.15.1"
+RUN set -eux; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/typst/typst /src
+WORKDIR /src
+RUN cargo build --release
+FROM reg.g5d.dev/alpine@sha256:15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4 AS prepare
+COPY --from=build /src/target/release/typst /rootfs/typst
+FROM reg.g5d.dev/base@sha256:56ae51caaae51dd91c393044e0b97d037354f3cb975dfd3ea8255bd36a548708
+COPY --from=prepare --chown=65532:65532 /rootfs/ /
+USER 65532:65532
+ENTRYPOINT ["/typst"]

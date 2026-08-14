@@ -1,0 +1,5 @@
+FROM {{image "rust"}} AS build
+{{template "clone" (map "repo" "typst/typst")}}
+RUN cargo build --release
+{{template "prepare" (map "name" "typst" "output" "target/release/typst" "skip_notices" true)}}
+{{template "runtime" (map "name" "typst")}}
