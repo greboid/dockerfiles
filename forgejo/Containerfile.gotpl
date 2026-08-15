@@ -1,0 +1,48 @@
+FROM {{image "golang"}} AS build
+
+RUN set -eux; \
+    apk add --no-cache \
+    {{range $key, $value := alpine_packages "make" "nodejs" "npm" -}}
+    {{$key}}={{$value}} \
+    {{end -}}
+    ;
+
+{{template "clone" (map "url" "https://codeberg.org/forgejo/forgejo" "tag" (git_tag "https://codeberg.org/forgejo/forgejo"))}}
+
+ENV CGO_ENABLED=1
+
+RUN set -eux; \
+    make frontend
+
+RUN set -eux; \
+    make generate-go TAGS="bindata sqlite sqlite_unlock_notify"
+
+RUN set -eux; \
+    go build -a -tags "bindata sqlite sqlite_unlock_notify" -ldflags "-s -w -buildid= -X main.Version=${TAG#v}" -trimpath -o forgejo .
+
+{{template "go-licenses" (map "ignores" (arr "github.com/golang/freetype" "github.com/golang/freetype/raster" "github.com/golang/freetype/truetype" "github.com/mrjones/oauth" "github.com/yohcop/openid-go"))}}
+
+{{template "prepare" (map "name" "forgejo" "output" "forgejo" "volumes" (arr "/data"))}}
+
+COPY --from={{image "git"}} / /rootfs/
+
+RUN set -eux; \
+    apk add --no-cache \
+    {{range $key, $value := alpine_packages "rsync" -}}
+    {{$key}}={{$value}} \
+    {{end -}}
+    ;
+RUN set -eux; \
+    {{ range $key, $value := alpine_packages "busybox" "bash" "libncursesw" "ncurses-terminfo-base" "readline" -}}
+      apk add {{$key}}={{$value}}; \
+      apk info -qL {{$key}} | rsync -aq '--files-from=-' / /rootfs/; \
+    {{ end -}}
+    /bin/busybox --install -s /rootfs/bin; \
+    mkdir -p /rootfs/usr/bin; \
+    ln -sf /bin/busybox /rootfs/usr/bin/env; \
+    apk cache purge
+
+{{template "runtime" (map "name" "forgejo" "runtime_image" "baseroot" "exposes" (arr "3000" "22") "volumes" (arr "/data") "cmd" "[\"web\"]")}}
+
+ENV FORGEJO_WORK_DIR=/data
+ENV HOME=/home/nonroot
