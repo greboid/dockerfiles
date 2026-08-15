@@ -1,0 +1,31 @@
+# Generated from https://github.com/greboid/dockerfiles/blob/master/tailscale/Containerfile.gotpl
+# BOM: {"github:tailscale/tailscale":"v1.102.2","image:alpine":"15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4","image:base":"56ae51caaae51dd91c393044e0b97d037354f3cb975dfd3ea8255bd36a548708","image:golang":"b2597cb630c42b1562db22a25ba32490a27d2e304320c93c34f809755ef2645c"}
+
+FROM reg.g5d.dev/golang@sha256:b2597cb630c42b1562db22a25ba32490a27d2e304320c93c34f809755ef2645c AS build
+ARG TAG="v1.102.2"
+RUN set -eux; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/tailscale/tailscale /src
+WORKDIR /src
+ENV CGO_ENABLED=0
+RUN go build -a -ldflags "-extldflags \"-static\" -s -w -buildid= -X tailscale.com/version.longStamp=${TAG#v} -X tailscale.com/version.shortStamp=${TAG#v}" -trimpath -o tailscaled ./cmd/tailscaled
+ENV CGO_ENABLED=0
+RUN go build -a -ldflags "-extldflags \"-static\" -s -w -buildid= -X tailscale.com/version.longStamp=${TAG#v} -X tailscale.com/version.shortStamp=${TAG#v}" -trimpath -o tailscale ./cmd/tailscale
+ENV CGO_ENABLED=0
+RUN go build -a -ldflags "-extldflags \"-static\" -s -w -buildid=" -trimpath -o containerboot ./cmd/containerboot
+RUN go-licenses save ./... --save_path=/notices --ignore modernc.org/mathutil --ignore github.com/jmespath/go-jmespath --ignore github.com/golang/freetype/raster --ignore github.com/golang/freetype/truetype
+FROM reg.g5d.dev/alpine@sha256:15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4 AS prepare
+COPY --from=build /src/containerboot /rootfs/containerboot
+COPY --from=build /src/tailscaled /rootfs/usr/local/bin/tailscaled
+COPY --from=build /src/tailscale /rootfs/usr/local/bin/tailscale
+COPY --from=build /notices /rootfs/notices
+RUN mkdir -p /rootfs/var/lib/tailscale
+RUN mkdir -p /rootfs/var/run/tailscale
+FROM reg.g5d.dev/base@sha256:56ae51caaae51dd91c393044e0b97d037354f3cb975dfd3ea8255bd36a548708
+COPY --from=prepare --chown=65532:65532 /rootfs/ /
+USER 65532:65532
+VOLUME ["/var/lib/tailscale"]
+VOLUME ["/var/run/tailscale"]
+ENTRYPOINT ["/containerboot"]
+ENV TS_SOCKET=/var/run/tailscale/tailscaled.sock
+ENV TS_STATE_DIR=/var/lib/tailscale
+ENV TS_TAILSCALED_EXTRA_ARGS=--tun=tailscale0,userspace-networking

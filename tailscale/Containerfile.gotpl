@@ -1,0 +1,11 @@
+FROM {{image "golang"}} AS build
+{{template "clone" (map "repo" "tailscale/tailscale")}}
+{{template "build-go" (map "subdir" "./cmd/tailscaled" "output" "tailscaled" "ldflags" ` -X tailscale.com/version.longStamp=${TAG#v} -X tailscale.com/version.shortStamp=${TAG#v}`)}}
+{{template "build-go" (map "subdir" "./cmd/tailscale" "output" "tailscale" "ldflags" ` -X tailscale.com/version.longStamp=${TAG#v} -X tailscale.com/version.shortStamp=${TAG#v}`)}}
+{{template "build-go" (map "subdir" "./cmd/containerboot" "output" "containerboot")}}
+{{template "go-licenses" (map "ignores" (arr "modernc.org/mathutil" "github.com/jmespath/go-jmespath" "github.com/golang/freetype/raster" "github.com/golang/freetype/truetype"))}}
+{{template "prepare" (map "name" "containerboot" "output" "containerboot" "extra_copies" (arr (map "src" "/src/tailscaled" "dst" "/usr/local/bin/tailscaled") (map "src" "/src/tailscale" "dst" "/usr/local/bin/tailscale")) "volumes" (arr "/var/lib/tailscale" "/var/run/tailscale"))}}
+{{template "runtime" (map "name" "containerboot" "volumes" (arr "/var/lib/tailscale" "/var/run/tailscale"))}}
+ENV TS_SOCKET=/var/run/tailscale/tailscaled.sock
+ENV TS_STATE_DIR=/var/lib/tailscale
+ENV TS_TAILSCALED_EXTRA_ARGS=--tun=tailscale0,userspace-networking
