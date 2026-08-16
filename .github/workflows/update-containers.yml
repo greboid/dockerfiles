@@ -126,6 +126,18 @@ jobs:
     with:
         PROJECT_NAME: knot
 
+  forgejo:
+    name: Build forgejo
+    needs:
+        - setup-cache
+        - alpine
+        - baseroot
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: forgejo
+
   dsp:
     name: Build dsp
     needs:
@@ -195,6 +207,18 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: thp
+
+  tailscale:
+    name: Build tailscale
+    needs:
+        - setup-cache
+        - alpine
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: tailscale
 
   sws:
     name: Build sws
@@ -445,6 +469,18 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: githubmirror
+
+  forgejo-runner:
+    name: Build forgejo-runner
+    needs:
+        - setup-cache
+        - alpine
+        - base
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: forgejo-runner
 
   ergo:
     name: Build ergo
