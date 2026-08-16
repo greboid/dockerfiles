@@ -1,0 +1,42 @@
+FROM {{image "golang"}} AS build
+
+RUN set -eux; \
+    apk add --no-cache \
+    {{range $key, $value := alpine_packages "make" -}}
+    {{$key}}={{$value}} \
+    {{end -}}
+    ;
+
+{{template "clone" (map "url" "https://code.forgejo.org/forgejo/runner" "tag" (git_tag "https://code.forgejo.org/forgejo/runner"))}}
+
+ENV CGO_ENABLED=0
+
+RUN set -eux; \
+    make build
+
+{{template "go-licenses" (map "ignores" (arr "modernc.org/mathutil" "github.com/jmespath/go-jmespath"))}}
+
+{{template "prepare" (map "name" "forgejo-runner" "output" "forgejo-runner" "volumes" (arr "/data"))}}
+
+COPY --from={{image "git"}} / /rootfs/
+
+RUN set -eux; \
+    apk add --no-cache \
+    {{range $key, $value := alpine_packages "rsync" -}}
+    {{$key}}={{$value}} \
+    {{end -}}
+    ;
+RUN set -eux; \
+    {{ range $key, $value := alpine_packages "busybox" "bash" "libncursesw" "ncurses-terminfo-base" "readline" -}}
+      apk add {{$key}}={{$value}}; \
+      apk info -qL {{$key}} | rsync -aq '--files-from=-' / /rootfs/; \
+    {{ end -}}
+    /bin/busybox --install -s /rootfs/bin; \
+    mkdir -p /rootfs/usr/bin; \
+    ln -sf /bin/busybox /rootfs/usr/bin/env; \
+    apk cache purge
+
+{{template "runtime" (map "name" "forgejo-runner" "volumes" (arr "/data"))}}
+
+WORKDIR /data
+ENV HOME=/home/nonroot
