@@ -24,19 +24,16 @@ jobs:
         id: cache
         with:
           path: ~/go/bin/orchestrator
-          key: orchestrator-${{ runner.os }}-${{ runner.arch }}-splitupdating
-      - name: Clone and build orchestrator
+          key: orchestrator-${{ runner.os }}-${{ runner.arch }}-latest
+      - name: Install latest orchestrator
         if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          git clone -b splitupdating https://github.com/greboid/contempt.git /tmp/contempt
-          cd /tmp/contempt
-          go build -o ~/go/bin/orchestrator ./cmd/orchestrator
+        run: go install github.com/csmith/contempt/cmd/orchestrator@latest
       - name: Run contempt orchestrator
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
           TEMPLATE: .github/workflows/update-containers.yml.gotpl
           OUTPUT: .github/workflows/update-containers.yml
-        run: orchestrator .
+        run: orchestrator "$PWD"
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v7
         with:

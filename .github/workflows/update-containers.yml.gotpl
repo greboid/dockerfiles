@@ -4,41 +4,29 @@ on:
   schedule:
     - cron: '42 12 * * *'
   push:
-    branches:
-      - master
-    paths:
-      - '*/**'
-      - '!.github/**'
-      - '.github/workflows/update-containers.yml'
-      - '!**/Containerfile'
-      - '!**/Dockerfile'
+    paths-ignore:
+      - '**/Containerfile'
+      - '**/Dockerfile'
+      - '.github/**'
+      - 'README.md'
 name: Update Containers
 concurrency: dockerfiles
 permissions:
   contents: write
-  pull-requests: write
 jobs:
   setup-cache:
     name: Setup cache
     runs-on: ubuntu-latest
-    outputs:
-      contempt-sha: ${{ steps.get-sha.outputs.sha }}
     steps:
-        - name: Get contempt commit SHA
-          id: get-sha
-          run: echo "sha=$(git ls-remote --heads https://github.com/greboid/contempt.git splitupdating | cut -f1)" >> "$GITHUB_OUTPUT"
         - name: Cache contempt
           uses: actions/cache@v6
           id: cache
           with:
               path: ~/go/bin/contempt
-              key: contempt-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-sha.outputs.sha }}
-        - name: Clone and build contempt
+              key: contempt-${{ runner.os }}-${{ runner.arch }}-latest
+        - name: Install latest contempt
           if: steps.cache.outputs.cache-hit != 'true'
-          run: |
-              git clone -b splitupdating https://github.com/greboid/contempt.git /tmp/contempt
-              cd /tmp/contempt
-              go build -o ~/go/bin/contempt ./cmd/contempt
+          run: go install github.com/csmith/contempt/cmd/contempt@latest
   {%- endraw -%}
   {%- for target in targets %}
   {{ target.name }}:
