@@ -1,0 +1,28 @@
+FROM {{image "alpine"}} AS prepare
+
+RUN set -eux; \
+    mkdir -p /rootfs/bin /rootfs/usr/bin /rootfs/etc /rootfs/var/run /rootfs/var/lib/docker; \
+    apk add --no-cache \
+    {{range $key, $value := alpine_packages "rsync" -}}
+    {{$key}}={{$value}} \
+    {{end -}}
+    ;
+
+RUN set -eux; \
+    {{ range $key, $value := alpine_packages "busybox" "busybox-binsh" "docker-engine" "docker-cli" -}}
+      apk add {{$key}}={{$value}}; \
+      apk info -qL {{$key}} | rsync -aq '--files-from=-' / /rootfs/; \
+    {{ end -}}
+    /bin/busybox --install -s /rootfs/bin; \
+    ln -sf /bin/busybox /rootfs/usr/bin/env; \
+    echo "nonroot:x:65532:" > /rootfs/etc/group; \
+    apk cache purge
+
+FROM {{image "baseroot"}}
+
+COPY --from=prepare /rootfs/ /
+
+VOLUME ["/var/lib/docker"]
+EXPOSE 2375 2376
+ENTRYPOINT ["dockerd"]
+CMD ["--host=unix:///var/run/docker.sock", "--group=65532"]
