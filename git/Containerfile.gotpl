@@ -4,8 +4,8 @@ RUN set -eux; \
     {{range $key, $value := alpine_packages "build-base" "openssl-dev" "openssl-libs-static" "zlib-dev" "zlib-static" "musl-dev" "curl" "linux-headers" "rust" "cargo" -}}
     {{$key}}={{$value}} \
     {{end}}; \
-    CTAG='{{regex_url_content "curl-version" "https://api.github.com/repos/curl/curl/releases/latest" "\"tag_name\":\\s*\"curl-([0-9_]+)\""}}'; \
-    CVERSION="$(printf %s "$CTAG" | tr '_' '.')"; \
+    CTAG='{{github_tag "curl/curl" "prefix=curl-" "clean"}}'; \
+    CVERSION="$(printf %s "${CTAG#curl-}" | tr '_' '.')"; \
     curl -sL "https://curl.se/download/curl-${CVERSION}.tar.xz" | tar xJ; \
     cd "curl-${CVERSION}"; \
     ./configure --prefix=/usr/local --disable-shared --enable-static --with-openssl \
