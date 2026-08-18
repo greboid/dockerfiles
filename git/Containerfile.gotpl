@@ -1,23 +1,41 @@
 FROM {{image "alpine"}} AS git-build
 RUN set -eux; \
     apk add --no-cache \
-    {{range $key, $value := alpine_packages "build-base" "zlib-dev" "zlib-static" "musl-dev" "curl" "linux-headers" "rust" "cargo" -}}
+    {{range $key, $value := alpine_packages "build-base" "openssl-dev" "openssl-libs-static" "zlib-dev" "zlib-static" "musl-dev" "curl" "linux-headers" "rust" "cargo" -}}
     {{$key}}={{$value}} \
     {{end}}; \
+    CTAG='{{regex_url_content "curl-version" "https://api.github.com/repos/curl/curl/releases/latest" "\"tag_name\":\\s*\"curl-([0-9_]+)\""}}'; \
+    CVERSION="$(printf %s "$CTAG" | tr '_' '.')"; \
+    curl -sL "https://curl.se/download/curl-${CVERSION}.tar.xz" | tar xJ; \
+    cd "curl-${CVERSION}"; \
+    ./configure --prefix=/usr/local --disable-shared --enable-static --with-openssl \
+        --with-ca-bundle=/etc/ssl/certs/ca-certificates.crt \
+        --without-libidn --without-libidn2 --without-brotli --without-zstd --without-libpsl \
+        --without-nghttp2 --without-librtmp --without-libssh2 --without-gssapi \
+        --disable-ldap --disable-ldaps --disable-manual; \
+    make -j$(nproc) && make install; \
+    cd /; \
     TAG="{{github_tag "git/git"}}"; \
     VERSION="${TAG#v}"; \
     curl -sL "https://mirrors.edge.kernel.org/pub/software/scm/git/git-${VERSION}.tar.gz" | tar xz; \
     cd "git-${VERSION}"; \
-    make NO_CURL=1 NO_EXPAT=1 NO_GETTEXT=1 NO_TCLTK=1 NO_OPENSSL=1 \
+    make NO_EXPAT=1 NO_GETTEXT=1 NO_TCLTK=1 NO_OPENSSL=1 \
          USE_LIBPCRE2= NO_REGEX=NeedStartEnd CFLAGS="-static" \
-         LDFLAGS="-static -lz" -j$(nproc) && \
-    strip git && \
-    mkdir -p /out/usr/bin && \
+         LDFLAGS="-static -lz" CURL_LDFLAGS="$(curl-config --static-libs)" prefix=/usr -j$(nproc) && \
+    strip git git-remote-http && \
+    mkdir -p /out/usr/bin /out/usr/libexec/git-core /out/usr/share/git-core && \
     cp git /out/usr/bin/git && \
     cd /out/usr/bin && \
     ln -s git git-receive-pack && \
     ln -s git git-upload-pack && \
-    ln -s git git-upload-archive
+    ln -s git git-upload-archive && \
+    cd "/git-${VERSION}" && \
+    cp git-remote-http /out/usr/libexec/git-core/ && \
+    cd /out/usr/libexec/git-core && \
+    ln -s git-remote-http git-remote-https && \
+    ln -s git-remote-http git-remote-ftp && \
+    ln -s git-remote-http git-remote-ftps && \
+    cp -r "/git-${VERSION}"/templates/blt /out/usr/share/git-core/templates
 
 FROM scratch
 
