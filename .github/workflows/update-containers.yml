@@ -329,32 +329,6 @@ jobs:
     with:
         PROJECT_NAME: irc-webhook
 
-  knot:
-    name: Build knot
-    needs:
-        - setup-cache
-        - alpine
-        - base
-        - git
-        - golang
-    uses: ./.github/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: knot
-
-  knotssh:
-    name: Build knotssh
-    needs:
-        - setup-cache
-        - alpine
-        - base
-        - git
-        - golang
-    uses: ./.github/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: knotssh
-
   linx-server:
     name: Build linx-server
     needs:
@@ -460,18 +434,6 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: soju
-
-  spindle:
-    name: Build spindle
-    needs:
-        - setup-cache
-        - alpine
-        - base
-        - golang
-    uses: ./.github/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: spindle
 
   sws:
     name: Build sws
