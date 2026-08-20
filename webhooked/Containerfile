@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/webhooked/Containerfile.gotpl
-# BOM: {"github:https://github.com/csmith/webhooked":"v1.1.0","image:alpine":"15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4","image:base":"56ae51caaae51dd91c393044e0b97d037354f3cb975dfd3ea8255bd36a548708","image:golang":"4ef83aacb964b855be13fae180a8530c6145bc0649c92daa90f892b0bb3476ca"}
+# BOM: {"github:https://github.com/csmith/webhooked":"v1.1.0","image:alpine":"15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4","image:base":"56ae51caaae51dd91c393044e0b97d037354f3cb975dfd3ea8255bd36a548708","image:golang":"e43f1a9cade4d1af1921b5666dab975ff2d0767ab93c01ecefdd64e80ce41c83"}
 
-FROM reg.g5d.dev/golang@sha256:4ef83aacb964b855be13fae180a8530c6145bc0649c92daa90f892b0bb3476ca AS build
+FROM reg.g5d.dev/golang@sha256:e43f1a9cade4d1af1921b5666dab975ff2d0767ab93c01ecefdd64e80ce41c83 AS build
 ARG TAG="v1.1.0"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/csmith/webhooked /src
