@@ -1,5 +1,5 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/forgejo-runner/Containerfile.gotpl
-# BOM: {"apk:acl-libs":"2.3.2-r1","apk:bash":"5.3.9-r1","apk:busybox":"1.37.0-r31","apk:busybox-binsh":"1.37.0-r31","apk:libncursesw":"6.6_p20260516-r0","apk:libxxhash":"0.8.3-r1","apk:lz4-libs":"1.10.0-r1","apk:make":"4.4.1-r4","apk:musl":"1.2.6-r2","apk:ncurses-terminfo-base":"6.6_p20260516-r0","apk:popt":"1.19-r4","apk:readline":"8.3.3-r1","apk:rsync":"3.4.3-r1","apk:zlib":"1.3.2-r0","apk:zstd-libs":"1.5.7-r2","git:https://code.forgejo.org/forgejo/runner":"v13.0.0","image:alpine":"15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4","image:base":"56ae51caaae51dd91c393044e0b97d037354f3cb975dfd3ea8255bd36a548708","image:git":"1d7d705dc03c9757b022bca2521ac259b94a69a30819f453ed6f44d4694ec68d","image:golang":"e43f1a9cade4d1af1921b5666dab975ff2d0767ab93c01ecefdd64e80ce41c83"}
+# BOM: {"apk:acl-libs":"2.3.2-r1","apk:bash":"5.3.9-r1","apk:busybox":"1.37.0-r31","apk:busybox-binsh":"1.37.0-r31","apk:libncursesw":"6.6_p20260516-r0","apk:libxxhash":"0.8.3-r1","apk:lz4-libs":"1.10.0-r1","apk:make":"4.4.1-r4","apk:musl":"1.2.6-r2","apk:ncurses-terminfo-base":"6.6_p20260516-r0","apk:popt":"1.19-r4","apk:readline":"8.3.3-r1","apk:rsync":"3.4.3-r1","apk:zlib":"1.3.2-r0","apk:zstd-libs":"1.5.7-r2","git:https://code.forgejo.org/forgejo/runner":"v13.0.0","image:alpine":"15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4","image:base":"56ae51caaae51dd91c393044e0b97d037354f3cb975dfd3ea8255bd36a548708","image:git":"721e51c977b5227018808cda50a480cd6201201d551039e6b7267596f3f63473","image:golang":"e43f1a9cade4d1af1921b5666dab975ff2d0767ab93c01ecefdd64e80ce41c83"}
 
 FROM reg.g5d.dev/golang@sha256:e43f1a9cade4d1af1921b5666dab975ff2d0767ab93c01ecefdd64e80ce41c83 AS build
 
@@ -26,7 +26,7 @@ COPY --from=build /src/forgejo-runner /rootfs/forgejo-runner
 COPY --from=build /notices /rootfs/notices
 RUN mkdir -p /rootfs/data
 
-COPY --from=reg.g5d.dev/git@sha256:1d7d705dc03c9757b022bca2521ac259b94a69a30819f453ed6f44d4694ec68d / /rootfs/
+COPY --from=reg.g5d.dev/git@sha256:721e51c977b5227018808cda50a480cd6201201d551039e6b7267596f3f63473 / /rootfs/
 
 RUN set -eux; \
     apk add --no-cache \
