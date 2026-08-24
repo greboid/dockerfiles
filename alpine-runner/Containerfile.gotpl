@@ -1,0 +1,28 @@
+FROM {{image "golang"}} AS buildah
+
+RUN set -eux; \
+    apk add --no-cache \
+    {{range $key, $value := alpine_packages "make" "bash" "gcc" "musl-dev" "pkgconf" "gpgme-dev" "libassuan-dev" "libgpg-error-dev" "libseccomp-dev" "device-mapper-dev" "btrfs-progs-dev" -}}
+    {{$key}}={{$value}} \
+    {{end -}}
+    ;
+
+{{template "clone" (map "repo" "containers/buildah")}}
+
+ENV CGO_ENABLED=1
+
+RUN set -eux; \
+    make bin/buildah
+
+FROM {{image "alpine"}}
+
+COPY --from=buildah /src/bin/buildah /usr/bin/buildah
+
+RUN set -eux; \
+    apk add --no-cache \
+    {{range $key, $value := alpine_packages "containers-common" "fuse-overlayfs" "gpgme" "libassuan" "libgpg-error" "libseccomp" "device-mapper-libs" "netavark" -}}
+    {{$key}}={{$value}} \
+    {{end -}}
+    ;
+
+COPY storage.conf /etc/containers/storage.conf

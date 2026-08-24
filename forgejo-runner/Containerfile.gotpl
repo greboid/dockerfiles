@@ -1,3 +1,19 @@
+FROM {{image "golang"}} AS buildah
+
+RUN set -eux; \
+    apk add --no-cache \
+    {{range $key, $value := alpine_packages "make" "bash" "gcc" "musl-dev" "pkgconf" "gpgme-dev" "libassuan-dev" "libgpg-error-dev" "libseccomp-dev" "device-mapper-dev" "btrfs-progs-dev" -}}
+    {{$key}}={{$value}} \
+    {{end -}}
+    ;
+
+{{template "clone" (map "repo" "containers/buildah")}}
+
+ENV CGO_ENABLED=1
+
+RUN set -eux; \
+    make bin/buildah
+
 FROM {{image "golang"}} AS build
 
 RUN set -eux; \
@@ -20,6 +36,10 @@ RUN set -eux; \
 
 COPY --from={{image "git"}} / /rootfs/
 
+COPY --from=buildah /src/bin/buildah /rootfs/usr/bin/buildah
+
+COPY storage.conf /rootfs/etc/containers/storage.conf
+
 RUN set -eux; \
     apk add --no-cache \
     {{range $key, $value := alpine_packages "rsync" -}}
@@ -27,7 +47,7 @@ RUN set -eux; \
     {{end -}}
     ;
 RUN set -eux; \
-    {{ range $key, $value := alpine_packages "busybox" "bash" "libncursesw" "ncurses-terminfo-base" "readline" -}}
+    {{ range $key, $value := alpine_packages "busybox" "bash" "libncursesw" "ncurses-terminfo-base" "readline" "fuse-overlayfs" "gpgme" "libassuan" "libgpg-error" "libseccomp" "device-mapper-libs" -}}
       apk add {{$key}}={{$value}}; \
       apk info -qL {{$key}} | rsync -aq '--files-from=-' / /rootfs/; \
     {{ end -}}
