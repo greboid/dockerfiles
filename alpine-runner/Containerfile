@@ -1,0 +1,136 @@
+# Generated from https://github.com/greboid/dockerfiles/blob/master/alpine-runner/Containerfile.gotpl
+# BOM: {"apk:bash":"5.3.9-r1","apk:binutils":"2.45.1-r1","apk:brotli-libs":"1.2.0-r1","apk:btrfs-progs-dev":"6.17.1-r1","apk:btrfs-progs-libs":"6.17.1-r1","apk:busybox":"1.37.0-r31","apk:busybox-binsh":"1.37.0-r31","apk:containers-common":"0.64.2-r0","apk:device-mapper-dev":"2.03.35-r3","apk:device-mapper-event-libs":"2.03.35-r3","apk:device-mapper-libs":"2.03.35-r3","apk:fuse-common":"3.18.2-r0","apk:fuse-overlayfs":"1.16-r0","apk:fuse3":"3.18.2-r0","apk:fuse3-libs":"3.18.2-r0","apk:gcc":"15.2.0-r5","apk:gdbm":"1.26-r0","apk:gmp":"6.3.0-r4","apk:gnupg-dirmngr":"2.4.9-r1","apk:gnupg-gpgconf":"2.4.9-r1","apk:gnupg-keyboxd":"2.4.9-r1","apk:gnutls":"3.8.13-r0","apk:gpg":"2.4.9-r1","apk:gpg-agent":"2.4.9-r1","apk:gpgme":"2.0.1-r1","apk:gpgme-dev":"2.0.1-r1","apk:gpgsm":"2.4.9-r1","apk:isl25":"0.25-r2","apk:jansson":"2.15.0-r0","apk:libassuan":"3.0.2-r0","apk:libassuan-dev":"3.0.2-r0","apk:libatomic":"15.2.0-r5","apk:libbz2":"1.0.8-r6","apk:libcrypto3":"3.5.7-r0","apk:libffi":"3.5.2-r1","apk:libgcc":"15.2.0-r5","apk:libgcc-static":"15.2.0-r5","apk:libgcrypt":"1.12.2-r0","apk:libgomp":"15.2.0-r5","apk:libgpg-error":"1.61-r0","apk:libgpg-error-dev":"1.61-r0","apk:libidn2":"2.3.8-r0","apk:libksba":"1.7.0-r0","apk:libldap":"2.6.14-r0","apk:libncursesw":"6.6_p20260516-r0","apk:libsasl":"2.1.28-r9","apk:libseccomp":"2.6.0-r2","apk:libseccomp-dev":"2.6.0-r2","apk:libssl3":"3.5.7-r0","apk:libstdc++":"15.2.0-r5","apk:libtasn1":"4.21.0-r0","apk:libunistring":"1.4.2-r0","apk:linux-headers":"7.0.0-r1","apk:make":"4.4.1-r4","apk:mpc1":"1.3.1-r1","apk:mpfr4":"4.2.2-r0","apk:musl":"1.2.6-r2","apk:musl-dev":"1.2.6-r2","apk:ncurses-terminfo-base":"6.6_p20260516-r0","apk:netavark":"1.17.2-r0","apk:nettle":"3.10.2-r0","apk:npth":"1.8-r0","apk:p11-kit":"0.26.2-r0","apk:pinentry":"1.3.2-r0","apk:pkgconf":"2.5.1-r0","apk:readline":"8.3.3-r1","apk:sqlite-libs":"3.53.4-r0","apk:zlib":"1.3.2-r0","apk:zstd-libs":"1.5.7-r2","github:https://github.com/containers/buildah":"v1.45.0","image:alpine":"15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4","image:golang":"e43f1a9cade4d1af1921b5666dab975ff2d0767ab93c01ecefdd64e80ce41c83"}
+
+FROM reg.g5d.dev/golang@sha256:e43f1a9cade4d1af1921b5666dab975ff2d0767ab93c01ecefdd64e80ce41c83 AS buildah
+
+RUN set -eux; \
+    apk add --no-cache \
+    bash=5.3.9-r1 \
+    binutils=2.45.1-r1 \
+    brotli-libs=1.2.0-r1 \
+    btrfs-progs-dev=6.17.1-r1 \
+    btrfs-progs-libs=6.17.1-r1 \
+    busybox=1.37.0-r31 \
+    busybox-binsh=1.37.0-r31 \
+    device-mapper-dev=2.03.35-r3 \
+    device-mapper-event-libs=2.03.35-r3 \
+    device-mapper-libs=2.03.35-r3 \
+    gcc=15.2.0-r5 \
+    gdbm=1.26-r0 \
+    gmp=6.3.0-r4 \
+    gnupg-dirmngr=2.4.9-r1 \
+    gnupg-gpgconf=2.4.9-r1 \
+    gnupg-keyboxd=2.4.9-r1 \
+    gnutls=3.8.13-r0 \
+    gpg=2.4.9-r1 \
+    gpg-agent=2.4.9-r1 \
+    gpgme=2.0.1-r1 \
+    gpgme-dev=2.0.1-r1 \
+    gpgsm=2.4.9-r1 \
+    isl25=0.25-r2 \
+    jansson=2.15.0-r0 \
+    libassuan=3.0.2-r0 \
+    libassuan-dev=3.0.2-r0 \
+    libatomic=15.2.0-r5 \
+    libbz2=1.0.8-r6 \
+    libcrypto3=3.5.7-r0 \
+    libffi=3.5.2-r1 \
+    libgcc=15.2.0-r5 \
+    libgcc-static=15.2.0-r5 \
+    libgcrypt=1.12.2-r0 \
+    libgomp=15.2.0-r5 \
+    libgpg-error=1.61-r0 \
+    libgpg-error-dev=1.61-r0 \
+    libidn2=2.3.8-r0 \
+    libksba=1.7.0-r0 \
+    libldap=2.6.14-r0 \
+    libncursesw=6.6_p20260516-r0 \
+    libsasl=2.1.28-r9 \
+    libseccomp=2.6.0-r2 \
+    libseccomp-dev=2.6.0-r2 \
+    libssl3=3.5.7-r0 \
+    libstdc++=15.2.0-r5 \
+    libtasn1=4.21.0-r0 \
+    libunistring=1.4.2-r0 \
+    linux-headers=7.0.0-r1 \
+    make=4.4.1-r4 \
+    mpc1=1.3.1-r1 \
+    mpfr4=4.2.2-r0 \
+    musl=1.2.6-r2 \
+    musl-dev=1.2.6-r2 \
+    ncurses-terminfo-base=6.6_p20260516-r0 \
+    nettle=3.10.2-r0 \
+    npth=1.8-r0 \
+    p11-kit=0.26.2-r0 \
+    pinentry=1.3.2-r0 \
+    pkgconf=2.5.1-r0 \
+    readline=8.3.3-r1 \
+    sqlite-libs=3.53.4-r0 \
+    zlib=1.3.2-r0 \
+    zstd-libs=1.5.7-r2 \
+    ;
+
+ARG TAG="v1.45.0"
+RUN set -eux; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/containers/buildah /src
+WORKDIR /src
+
+ENV CGO_ENABLED=1
+
+RUN set -eux; \
+    make bin/buildah
+
+FROM reg.g5d.dev/alpine@sha256:15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4
+
+COPY --from=buildah /src/bin/buildah /usr/bin/buildah
+
+RUN set -eux; \
+    apk add --no-cache \
+    brotli-libs=1.2.0-r1 \
+    busybox=1.37.0-r31 \
+    busybox-binsh=1.37.0-r31 \
+    containers-common=0.64.2-r0 \
+    device-mapper-libs=2.03.35-r3 \
+    fuse-common=3.18.2-r0 \
+    fuse-overlayfs=1.16-r0 \
+    fuse3=3.18.2-r0 \
+    fuse3-libs=3.18.2-r0 \
+    gdbm=1.26-r0 \
+    gmp=6.3.0-r4 \
+    gnupg-dirmngr=2.4.9-r1 \
+    gnupg-gpgconf=2.4.9-r1 \
+    gnupg-keyboxd=2.4.9-r1 \
+    gnutls=3.8.13-r0 \
+    gpg=2.4.9-r1 \
+    gpg-agent=2.4.9-r1 \
+    gpgme=2.0.1-r1 \
+    gpgsm=2.4.9-r1 \
+    libassuan=3.0.2-r0 \
+    libbz2=1.0.8-r6 \
+    libcrypto3=3.5.7-r0 \
+    libffi=3.5.2-r1 \
+    libgcc=15.2.0-r5 \
+    libgcrypt=1.12.2-r0 \
+    libgpg-error=1.61-r0 \
+    libidn2=2.3.8-r0 \
+    libksba=1.7.0-r0 \
+    libldap=2.6.14-r0 \
+    libncursesw=6.6_p20260516-r0 \
+    libsasl=2.1.28-r9 \
+    libseccomp=2.6.0-r2 \
+    libssl3=3.5.7-r0 \
+    libtasn1=4.21.0-r0 \
+    libunistring=1.4.2-r0 \
+    musl=1.2.6-r2 \
+    ncurses-terminfo-base=6.6_p20260516-r0 \
+    netavark=1.17.2-r0 \
+    nettle=3.10.2-r0 \
+    npth=1.8-r0 \
+    p11-kit=0.26.2-r0 \
+    pinentry=1.3.2-r0 \
+    sqlite-libs=3.53.4-r0 \
+    zlib=1.3.2-r0 \
+    zstd-libs=1.5.7-r2 \
+    ;
+
+COPY storage.conf /etc/containers/storage.conf
