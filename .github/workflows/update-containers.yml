@@ -78,6 +78,17 @@ jobs:
     with:
         PROJECT_NAME: rust
 
+  alpine-runner:
+    name: Build alpine-runner
+    needs:
+        - setup-cache
+        - alpine
+        - golang
+    uses: ./.github/workflows/container-builder.yml
+    secrets: inherit
+    with:
+        PROJECT_NAME: alpine-runner
+
   base:
     name: Build base
     needs:
@@ -87,17 +98,6 @@ jobs:
     secrets: inherit
     with:
         PROJECT_NAME: base
-
-  dind:
-    name: Build dind
-    needs:
-        - setup-cache
-        - alpine
-        - baseroot
-    uses: ./.github/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: dind
 
   centauri:
     name: Build centauri
