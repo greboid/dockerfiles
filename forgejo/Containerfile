@@ -1,7 +1,7 @@
 # Generated from https://github.com/greboid/dockerfiles/blob/master/forgejo/Containerfile.gotpl
-# BOM: {"apk:acl-libs":"2.3.2-r1","apk:ada-libs":"3.3.0-r0","apk:bash":"5.3.9-r1","apk:brotli-libs":"1.2.0-r1","apk:busybox":"1.37.0-r31","apk:busybox-binsh":"1.37.0-r31","apk:c-ares":"1.34.8-r0","apk:ca-certificates":"20260611-r0","apk:icu-data-en":"78.1-r0","apk:icu-libs":"78.1-r0","apk:libcrypto3":"3.5.7-r0","apk:libgcc":"15.2.0-r5","apk:libncursesw":"6.6_p20260516-r0","apk:libssl3":"3.5.7-r0","apk:libstdc++":"15.2.0-r5","apk:libxxhash":"0.8.3-r1","apk:lz4-libs":"1.10.0-r1","apk:make":"4.4.1-r4","apk:musl":"1.2.6-r2","apk:ncurses-terminfo-base":"6.6_p20260516-r0","apk:nghttp2-libs":"1.69.0-r0","apk:nodejs":"24.18.1-r0","apk:npm":"11.12.1-r0","apk:popt":"1.19-r4","apk:readline":"8.3.3-r1","apk:rsync":"3.4.3-r1","apk:simdjson":"4.2.4-r0","apk:simdutf":"9.0.0-r0","apk:sqlite-libs":"3.53.4-r0","apk:zlib":"1.3.2-r0","apk:zstd-libs":"1.5.7-r2","git:https://codeberg.org/forgejo/forgejo":"v16.0.3","image:alpine":"15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4","image:baseroot":"38432ff4a30fdf23b9ad31f2fa7aae35ea2ac402e697575d718d4bb05e81f001","image:git":"721e51c977b5227018808cda50a480cd6201201d551039e6b7267596f3f63473","image:golang":"e43f1a9cade4d1af1921b5666dab975ff2d0767ab93c01ecefdd64e80ce41c83"}
+# BOM: {"apk:acl-libs":"2.3.2-r1","apk:ada-libs":"3.3.0-r0","apk:bash":"5.3.9-r1","apk:brotli-libs":"1.2.0-r1","apk:busybox":"1.37.0-r31","apk:busybox-binsh":"1.37.0-r31","apk:c-ares":"1.34.8-r0","apk:ca-certificates":"20260611-r0","apk:icu-data-en":"78.1-r0","apk:icu-libs":"78.1-r0","apk:libcrypto3":"3.5.8-r0","apk:libgcc":"15.2.0-r5","apk:libncursesw":"6.6_p20260516-r0","apk:libssl3":"3.5.8-r0","apk:libstdc++":"15.2.0-r5","apk:libxxhash":"0.8.3-r1","apk:lz4-libs":"1.10.0-r1","apk:make":"4.4.1-r4","apk:musl":"1.2.6-r2","apk:ncurses-terminfo-base":"6.6_p20260516-r0","apk:nghttp2-libs":"1.69.0-r0","apk:nodejs":"24.18.1-r0","apk:npm":"11.12.1-r0","apk:popt":"1.19-r4","apk:readline":"8.3.3-r1","apk:rsync":"3.4.3-r1","apk:simdjson":"4.2.4-r0","apk:simdutf":"9.0.0-r0","apk:sqlite-libs":"3.53.4-r0","apk:zlib":"1.3.2-r0","apk:zstd-libs":"1.5.7-r2","git:https://codeberg.org/forgejo/forgejo":"v16.0.3","image:alpine":"15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4","image:baseroot":"38432ff4a30fdf23b9ad31f2fa7aae35ea2ac402e697575d718d4bb05e81f001","image:git":"6a2f26acaa15e1b173b8674594c56ad939df5d58daee7ce7073626d4d0e4fbf8","image:golang":"f4990cfacbcead6d481bdee3a5064370cab1822ee152f40cbc78c7e0fc27cb34"}
 
-FROM reg.g5d.dev/golang@sha256:e43f1a9cade4d1af1921b5666dab975ff2d0767ab93c01ecefdd64e80ce41c83 AS build
+FROM reg.g5d.dev/golang@sha256:f4990cfacbcead6d481bdee3a5064370cab1822ee152f40cbc78c7e0fc27cb34 AS build
 
 RUN set -eux; \
     apk add --no-cache \
@@ -13,9 +13,9 @@ RUN set -eux; \
     ca-certificates=20260611-r0 \
     icu-data-en=78.1-r0 \
     icu-libs=78.1-r0 \
-    libcrypto3=3.5.7-r0 \
+    libcrypto3=3.5.8-r0 \
     libgcc=15.2.0-r5 \
-    libssl3=3.5.7-r0 \
+    libssl3=3.5.8-r0 \
     libstdc++=15.2.0-r5 \
     make=4.4.1-r4 \
     musl=1.2.6-r2 \
@@ -52,7 +52,7 @@ COPY --from=build /src/forgejo /rootfs/forgejo
 COPY --from=build /notices /rootfs/notices
 RUN mkdir -p /rootfs/data
 
-COPY --from=reg.g5d.dev/git@sha256:721e51c977b5227018808cda50a480cd6201201d551039e6b7267596f3f63473 / /rootfs/
+COPY --from=reg.g5d.dev/git@sha256:6a2f26acaa15e1b173b8674594c56ad939df5d58daee7ce7073626d4d0e4fbf8 / /rootfs/
 
 RUN set -eux; \
     apk add --no-cache \
