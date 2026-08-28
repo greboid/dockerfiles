@@ -31,8 +31,8 @@ jobs:
       - name: Run contempt orchestrator
         env:
           REGISTRY: ${{ secrets.REGISTRY }}
-          TEMPLATE: .github/workflows/update-containers.yml.gotpl
-          OUTPUT: .github/workflows/update-containers.yml
+          TEMPLATE: .forgejo/workflows/update-containers.yml.gotpl
+          OUTPUT: .forgejo/workflows/update-containers.yml
         run: orchestrator "$PWD"
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v7
@@ -40,6 +40,6 @@ jobs:
             commit_message: "Update container workflow"
             commit_user_name: ${{ secrets.GIT_USERNAME }}
             commit_user_email: ${{ secrets.GIT_EMAIL }}
-            file_pattern: '.github/workflows/update-containers.yml'
+            file_pattern: '.forgejo/workflows/update-containers.yml'
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2.0.1

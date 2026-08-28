@@ -38,7 +38,7 @@ jobs:
         - {{ dep -}}
 {%- endfor -%}
 {% endif %}
-    uses: ./.github/workflows/container-builder.yml
+    uses: ./.forgejo/workflows/container-builder.yml
     secrets: inherit
     with:
         PROJECT_NAME: {{ target.name }}

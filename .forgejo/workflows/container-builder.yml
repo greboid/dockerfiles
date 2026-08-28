@@ -1,0 +1,56 @@
+name: Build Containers
+
+on:
+  workflow_call:
+    inputs:
+      PROJECT_NAME:
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: Build
+    runs-on: alpine
+    steps:
+      - uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: go install github.com/csmith/contempt/cmd/contempt@latest
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "${{ secrets.GIT_USERNAME }}"
+          git config user.email "${{ secrets.GIT_EMAIL }}"
+      - name: Update
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project ${{ inputs.PROJECT_NAME }} . .
+      - name: Run integration tests
+        if: hashFiles(format('{0}/test.sh', inputs.PROJECT_NAME)) != ''
+        run: |
+          chmod +x ${{ inputs.PROJECT_NAME }}/test.sh
+          cd ${{ inputs.PROJECT_NAME }}
+          ./test.sh ${{ secrets.REGISTRY }}/${{ inputs.PROJECT_NAME }}
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "${{ inputs.PROJECT_NAME }}/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "${{ github.actor }}" -p "${{ secrets.CONTEMPT_TOKEN }}" ghcr.io
+          buildah tag ${{ secrets.REGISTRY }}/${{ inputs.PROJECT_NAME }} ghcr.io/${{ github.repository }}/${{ inputs.PROJECT_NAME }}
+          buildah push ghcr.io/${{ github.repository }}/${{ inputs.PROJECT_NAME }}
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
