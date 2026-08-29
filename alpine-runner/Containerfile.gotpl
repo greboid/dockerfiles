@@ -20,7 +20,7 @@ COPY --from=buildah /src/bin/buildah /usr/bin/buildah
 
 RUN set -eux; \
     apk add --no-cache \
-    {{range $key, $value := alpine_packages "containers-common" "fuse-overlayfs" "gpgme" "libassuan" "libgpg-error" "libseccomp" "device-mapper-libs" "netavark" "git" -}}
+    {{range $key, $value := alpine_packages "containers-common" "fuse-overlayfs" "gpgme" "libassuan" "libgpg-error" "libseccomp" "device-mapper-libs" "netavark" "git" "curl" "wget" "openssl" -}}
     {{$key}}={{$value}} \
     {{end -}}
     ;
