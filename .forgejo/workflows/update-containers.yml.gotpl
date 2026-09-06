@@ -14,8 +14,65 @@ jobs:
         - {{ dep -}}
 {%- endfor -%}
 {% endif %}
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: {{ target.name }}
-{% endfor %}
+    runs-on: alpine
+    env:
+      PROJECT_NAME: {{ target.name }}{% raw %}
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
+{% endraw %}{% endfor %}

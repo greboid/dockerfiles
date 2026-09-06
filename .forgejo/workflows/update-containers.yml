@@ -8,65 +8,464 @@ concurrency: dockerfiles
 jobs:
   alpine:
     name: Build alpine
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: alpine
+    runs-on: alpine
+    env:
+      PROJECT_NAME: alpine
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   baseroot:
     name: Build baseroot
     needs:
         - alpine
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: baseroot
+    runs-on: alpine
+    env:
+      PROJECT_NAME: baseroot
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   git:
     name: Build git
     needs:
         - alpine
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: git
+    runs-on: alpine
+    env:
+      PROJECT_NAME: git
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   golang:
     name: Build golang
     needs:
         - alpine
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: golang
+    runs-on: alpine
+    env:
+      PROJECT_NAME: golang
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   rust:
     name: Build rust
     needs:
         - alpine
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: rust
+    runs-on: alpine
+    env:
+      PROJECT_NAME: rust
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   alpine-runner:
     name: Build alpine-runner
     needs:
         - alpine
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: alpine-runner
+    runs-on: alpine
+    env:
+      PROJECT_NAME: alpine-runner
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   base:
     name: Build base
     needs:
         - baseroot
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: base
+    runs-on: alpine
+    env:
+      PROJECT_NAME: base
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   centauri:
     name: Build centauri
@@ -74,10 +473,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: centauri
+    runs-on: alpine
+    env:
+      PROJECT_NAME: centauri
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   centauri-docker-confd:
     name: Build centauri-docker-confd
@@ -85,10 +541,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: centauri-docker-confd
+    runs-on: alpine
+    env:
+      PROJECT_NAME: centauri-docker-confd
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   cocoon:
     name: Build cocoon
@@ -96,10 +609,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: cocoon
+    runs-on: alpine
+    env:
+      PROJECT_NAME: cocoon
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   dockercleanup:
     name: Build dockercleanup
@@ -107,10 +677,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: dockercleanup
+    runs-on: alpine
+    env:
+      PROJECT_NAME: dockercleanup
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   dsp:
     name: Build dsp
@@ -118,10 +745,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: dsp
+    runs-on: alpine
+    env:
+      PROJECT_NAME: dsp
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   ergo:
     name: Build ergo
@@ -129,10 +813,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: ergo
+    runs-on: alpine
+    env:
+      PROJECT_NAME: ergo
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   forgejo:
     name: Build forgejo
@@ -141,10 +882,67 @@ jobs:
         - base
         - git
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: forgejo
+    runs-on: alpine
+    env:
+      PROJECT_NAME: forgejo
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   forgejo-runner:
     name: Build forgejo-runner
@@ -153,10 +951,67 @@ jobs:
         - base
         - git
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: forgejo-runner
+    runs-on: alpine
+    env:
+      PROJECT_NAME: forgejo-runner
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   githubmirror:
     name: Build githubmirror
@@ -164,10 +1019,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: githubmirror
+    runs-on: alpine
+    env:
+      PROJECT_NAME: githubmirror
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   golink:
     name: Build golink
@@ -175,10 +1087,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: golink
+    runs-on: alpine
+    env:
+      PROJECT_NAME: golink
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   goplum:
     name: Build goplum
@@ -186,10 +1155,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: goplum
+    runs-on: alpine
+    env:
+      PROJECT_NAME: goplum
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   httpredirect:
     name: Build httpredirect
@@ -197,10 +1223,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: httpredirect
+    runs-on: alpine
+    env:
+      PROJECT_NAME: httpredirect
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   identd:
     name: Build identd
@@ -208,10 +1291,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: identd
+    runs-on: alpine
+    env:
+      PROJECT_NAME: identd
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   irc-bot:
     name: Build irc-bot
@@ -219,10 +1359,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: irc-bot
+    runs-on: alpine
+    env:
+      PROJECT_NAME: irc-bot
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   irc-distribution:
     name: Build irc-distribution
@@ -230,10 +1427,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: irc-distribution
+    runs-on: alpine
+    env:
+      PROJECT_NAME: irc-distribution
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   irc-github:
     name: Build irc-github
@@ -241,10 +1495,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: irc-github
+    runs-on: alpine
+    env:
+      PROJECT_NAME: irc-github
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   irc-goplum:
     name: Build irc-goplum
@@ -252,10 +1563,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: irc-goplum
+    runs-on: alpine
+    env:
+      PROJECT_NAME: irc-goplum
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   irc-notifier:
     name: Build irc-notifier
@@ -263,10 +1631,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: irc-notifier
+    runs-on: alpine
+    env:
+      PROJECT_NAME: irc-notifier
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   irc-webhook:
     name: Build irc-webhook
@@ -274,10 +1699,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: irc-webhook
+    runs-on: alpine
+    env:
+      PROJECT_NAME: irc-webhook
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   linx-server:
     name: Build linx-server
@@ -285,10 +1767,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: linx-server
+    runs-on: alpine
+    env:
+      PROJECT_NAME: linx-server
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   miniflux:
     name: Build miniflux
@@ -296,10 +1835,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: miniflux
+    runs-on: alpine
+    env:
+      PROJECT_NAME: miniflux
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   pdsps:
     name: Build pdsps
@@ -307,20 +1903,134 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: pdsps
+    runs-on: alpine
+    env:
+      PROJECT_NAME: pdsps
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   postgres-18:
     name: Build postgres-18
     needs:
         - alpine
         - base
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: postgres-18
+    runs-on: alpine
+    env:
+      PROJECT_NAME: postgres-18
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   purser:
     name: Build purser
@@ -328,10 +2038,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: purser
+    runs-on: alpine
+    env:
+      PROJECT_NAME: purser
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   puzzles:
     name: Build puzzles
@@ -339,20 +2106,134 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: puzzles
+    runs-on: alpine
+    env:
+      PROJECT_NAME: puzzles
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   redis:
     name: Build redis
     needs:
         - alpine
         - base
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: redis
+    runs-on: alpine
+    env:
+      PROJECT_NAME: redis
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   registryauth:
     name: Build registryauth
@@ -360,10 +2241,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: registryauth
+    runs-on: alpine
+    env:
+      PROJECT_NAME: registryauth
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   soju:
     name: Build soju
@@ -371,10 +2309,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: soju
+    runs-on: alpine
+    env:
+      PROJECT_NAME: soju
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   sws:
     name: Build sws
@@ -382,10 +2377,67 @@ jobs:
         - alpine
         - base
         - rust
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: sws
+    runs-on: alpine
+    env:
+      PROJECT_NAME: sws
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   tailscale:
     name: Build tailscale
@@ -393,10 +2445,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: tailscale
+    runs-on: alpine
+    env:
+      PROJECT_NAME: tailscale
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   thp:
     name: Build thp
@@ -404,10 +2513,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: thp
+    runs-on: alpine
+    env:
+      PROJECT_NAME: thp
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   tsp:
     name: Build tsp
@@ -415,10 +2581,67 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: tsp
+    runs-on: alpine
+    env:
+      PROJECT_NAME: tsp
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
   webhooked:
     name: Build webhooked
@@ -426,8 +2649,65 @@ jobs:
         - alpine
         - base
         - golang
-    uses: ./.forgejo/workflows/container-builder.yml
-    secrets: inherit
-    with:
-        PROJECT_NAME: webhooked
+    runs-on: alpine
+    env:
+      PROJECT_NAME: webhooked
+      REGISTRY: ${{ secrets.REGISTRY }}
+      GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+      CONTEMPT_TOKEN: ${{ secrets.CONTEMPT_TOKEN }}
+      REPOSITORY: ${{ github.repository }}
+      ACTOR: ${{ github.actor }}
+    steps:
+      - name: Checkout source
+        uses: actions/toolkit/git-checkout@master
+        with:
+          fetch-depth: '0'
+      - name: Setup Go
+        uses: actions/toolkit/go-setup@master
+      - name: Install latest contempt
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Login to private registry
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: ${{ secrets.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASS }}
+      - name: Configure Git
+        run: |
+          git config user.name "$GIT_USERNAME"
+          git config user.email "$GIT_EMAIL"
+      - name: Update
+        env:
+          SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
+        run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
+      - name: Check for tests
+        id: check_tests
+        run: |
+          if [ -f "$PROJECT_NAME/test.sh" ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run integration tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: |
+          chmod +x "$PROJECT_NAME/test.sh"
+          cd "$PROJECT_NAME"
+          ./test.sh "$REGISTRY/$PROJECT_NAME"
+      - name: Check mirror
+        id: check_mirror
+        run: |
+          if [ -f "$PROJECT_NAME/MIRROR" ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Mirror the image
+        if: steps.check_mirror.outputs.files_exists == 'true'
+        run: |
+          buildah login -u "$ACTOR" -p "$CONTEMPT_TOKEN" ghcr.io
+          buildah tag "$REGISTRY/$PROJECT_NAME" "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+          buildah push "ghcr.io/$REPOSITORY/$PROJECT_NAME"
+      - name: Push changes
+        run: |
+          for i in 1 2 3 4 5; do git push origin HEAD:master && break; sleep 5; done
 
