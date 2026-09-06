@@ -3,7 +3,12 @@ FROM {{registry}}/alpine AS verify
 ARG ARCHIVE_URL="{{alpine_url}}"
 ARG ARCHIVE_SUM="{{alpine_checksum}}"
 
-RUN apk add --no-cache curl
+RUN set -eux; \
+    apk add --no-cache \
+        {{range $key, $value := alpine_packages "curl" -}}
+        {{$key}}={{$value}} \
+        {{end -}}
+    ;
 {{template "download-archive" (map "filename" "fs.tar.gz" "dest" "/fs" "mkdir" "true" "tar_flags" (arr "-z"))}}
 RUN echo "[advice]" > /fs/etc/gitconfig && echo "    detachedHead = false" >> /fs/etc/gitconfig
 
