@@ -8,6 +8,7 @@ on:
       - '**/Dockerfile'
       - 'README.md'
 name: Update Workflow
+enable-openid-connect: true
 jobs:
   update-workflow:
     runs-on: alpine
@@ -16,8 +17,6 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/toolkit/git-checkout@master
-        with:
-          token: ${{ secrets.CONTEMPT_TOKEN }}
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
         with:
@@ -44,6 +43,8 @@ jobs:
             push: 'false'
       - name: Push changes
         uses: actions/toolkit/git-try-push@master
+        with:
+          audience: u:1:5759a8a9-9323-4319-9847-028d8698373f
   update-containers:
     name: Update Containers
     needs:
