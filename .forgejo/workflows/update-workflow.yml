@@ -21,7 +21,6 @@ jobs:
         uses: actions/toolkit/go-setup@master
         with:
           go-version: 'stable'
-          cache: false
       - name: Install latest orchestrator
         run: |
           go install github.com/csmith/contempt/cmd/orchestrator@latest
