@@ -39,6 +39,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -55,6 +56,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -113,6 +115,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -129,6 +132,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -187,6 +191,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -203,6 +208,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -261,6 +267,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -277,6 +284,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -335,6 +343,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -351,6 +360,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -410,6 +420,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -426,6 +437,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -484,6 +496,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -500,6 +513,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -560,6 +574,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -576,6 +591,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -636,6 +652,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -652,6 +669,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -712,6 +730,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -728,6 +747,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -788,6 +808,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -804,6 +825,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -864,6 +886,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -880,6 +903,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -940,6 +964,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -956,6 +981,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -1017,6 +1043,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -1033,6 +1060,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -1094,6 +1122,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -1110,6 +1139,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -1170,6 +1200,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -1186,6 +1217,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -1246,6 +1278,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -1262,6 +1295,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -1322,6 +1356,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -1338,6 +1373,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -1398,6 +1434,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -1414,6 +1451,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -1474,6 +1512,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -1490,6 +1529,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -1550,6 +1590,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -1566,6 +1607,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -1626,6 +1668,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -1642,6 +1685,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -1702,6 +1746,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -1718,6 +1763,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -1778,6 +1824,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -1794,6 +1841,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -1854,6 +1902,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -1870,6 +1919,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -1930,6 +1980,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -1946,6 +1997,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -2006,6 +2058,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -2022,6 +2075,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -2082,6 +2136,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -2098,6 +2153,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -2158,6 +2214,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -2174,6 +2231,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -2233,6 +2291,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -2249,6 +2308,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -2309,6 +2369,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -2325,6 +2386,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -2385,6 +2447,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -2401,6 +2464,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -2460,6 +2524,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -2476,6 +2541,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -2536,6 +2602,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -2552,6 +2619,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -2612,6 +2680,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -2628,6 +2697,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -2688,6 +2758,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -2704,6 +2775,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -2764,6 +2836,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -2780,6 +2853,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -2840,6 +2914,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -2856,6 +2931,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -2916,6 +2992,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -2932,6 +3009,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
@@ -2992,6 +3070,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
       - name: Configure Git
         run: |
+          command -v git >/dev/null 2>&1 || apk add --no-cache git
           git config user.name "$GIT_USERNAME"
           git config user.email "$GIT_EMAIL"
       - name: Update
@@ -3008,6 +3087,7 @@ jobs:
       - name: Run integration tests
         if: steps.check_tests.outputs.has_tests == 'true'
         run: |
+          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
           chmod +x "$PROJECT_NAME/test.sh"
           cd "$PROJECT_NAME"
           ./test.sh "$REGISTRY/$PROJECT_NAME"
