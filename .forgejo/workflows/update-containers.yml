@@ -3,18 +3,13 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '42 12 * * *'
-  push:
-    paths-ignore:
-      - '**/Containerfile'
-      - '**/Dockerfile'
-      - '.github/**'
-      - 'README.md'
+  workflow_call:
 name: Update Containers
 concurrency: dockerfiles
 jobs:
   setup-cache:
     name: Setup cache
-    runs-on: ubuntu-latest
+    runs-on: alpine
     steps:
         - name: Cache contempt
           uses: actions/cache@v6

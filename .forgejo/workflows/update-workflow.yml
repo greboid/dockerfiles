@@ -3,12 +3,16 @@ on:
   push:
     branches:
       - master
-    paths:
+    paths-ignore:
       - '**/Containerfile'
+      - '**/Dockerfile'
+      - 'README.md'
 name: Update Workflow
 jobs:
   update-workflow:
-    runs-on: ubuntu-latest
+    runs-on: alpine
+    outputs:
+      changes: ${{ steps.commit.outputs.changes_detected }}
     steps:
       - name: Checkout source
         uses: actions/checkout@master
@@ -35,6 +39,7 @@ jobs:
           OUTPUT: .forgejo/workflows/update-containers.yml
         run: orchestrator "$PWD"
       - name: Commit changes
+        id: commit
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
             commit_message: "Update container workflow"
@@ -43,3 +48,10 @@ jobs:
             file_pattern: '.forgejo/workflows/update-containers.yml'
       - name: Push changes
         uses: cutlerydrawer/action-git-try-push@v2.0.1
+  update-containers:
+    name: Update Containers
+    needs:
+      - update-workflow
+    if: needs.update-workflow.outputs.changes != 'true'
+    uses: ./.forgejo/workflows/update-containers.yml
+    secrets: inherit
