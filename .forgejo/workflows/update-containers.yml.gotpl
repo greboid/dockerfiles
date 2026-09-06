@@ -48,6 +48,7 @@ jobs:
           git config user.email "$GIT_EMAIL"
       - name: Update
         env:
+          BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
       - name: Check for tests
