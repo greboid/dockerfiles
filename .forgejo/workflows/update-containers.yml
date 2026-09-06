@@ -24,6 +24,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -90,6 +92,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -156,6 +160,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -222,6 +228,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -288,6 +296,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -355,6 +365,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -421,6 +433,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -489,6 +503,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -557,6 +573,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -625,6 +643,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -693,6 +713,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -761,6 +783,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -829,6 +853,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -898,6 +924,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -967,6 +995,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -1035,6 +1065,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -1103,6 +1135,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -1171,6 +1205,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -1239,6 +1275,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -1307,6 +1345,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -1375,6 +1415,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -1443,6 +1485,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -1511,6 +1555,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -1579,6 +1625,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -1647,6 +1695,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -1715,6 +1765,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -1783,6 +1835,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -1851,6 +1905,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -1919,6 +1975,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -1986,6 +2044,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -2054,6 +2114,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -2122,6 +2184,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -2189,6 +2253,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -2257,6 +2323,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -2325,6 +2393,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -2393,6 +2463,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -2461,6 +2533,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -2529,6 +2603,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -2597,6 +2673,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
@@ -2665,6 +2743,8 @@ jobs:
           fetch-depth: '0'
       - name: Setup Go
         uses: actions/toolkit/go-setup@master
+        with:
+          go-version: 'stable'
       - name: Install latest contempt
         run: |
           go install github.com/csmith/contempt/cmd/contempt@latest
