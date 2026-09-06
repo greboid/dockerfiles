@@ -1,7 +1,7 @@
-# Generated from https://github.com/greboid/dockerfiles/blob/master/soju/Containerfile.gotpl
-# BOM: {"github:https://github.com/emersion/soju":"v0.10.1","image:alpine":"15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4","image:base":"56ae51caaae51dd91c393044e0b97d037354f3cb975dfd3ea8255bd36a548708","image:golang":"f4990cfacbcead6d481bdee3a5064370cab1822ee152f40cbc78c7e0fc27cb34"}
+# Generated from https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/soju/Containerfile.gotpl
+# BOM: {"github:https://github.com/emersion/soju":"v0.10.1","image:alpine":"bef6ca6d88fa79631f173880bfee39cfb24e4e673d8c85c06a37bd4652474eff","image:base":"dfbedece42dcd38cf8444d0e8807064ebd1522d0998cad0c2be4841825c6662c","image:golang":"996bdc58facee4fb9bfc56f3bf80ccfe97928a23bb3d80e1ec346af7ff1836d4"}
 
-FROM reg.g5d.dev/golang@sha256:f4990cfacbcead6d481bdee3a5064370cab1822ee152f40cbc78c7e0fc27cb34 AS build
+FROM reg.g5d.dev/golang@sha256:996bdc58facee4fb9bfc56f3bf80ccfe97928a23bb3d80e1ec346af7ff1836d4 AS build
 ARG TAG="v0.10.1"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/emersion/soju /src
@@ -11,12 +11,12 @@ RUN go build -a -ldflags "-extldflags \"-static\" -s -w -buildid=" -trimpath -ta
 ENV CGO_ENABLED=0
 RUN go build -a -ldflags "-extldflags \"-static\" -s -w -buildid=" -trimpath -tags moderncsqlite -o sojuctl ./cmd/sojuctl
 RUN GOFLAGS="-tags=moderncsqlite" go-licenses save ./... --save_path=/notices --ignore codeberg.org/emersion/soju --ignore modernc.org/mathutil --ignore git.sr.ht/~sircmpwn/go-bare
-FROM reg.g5d.dev/alpine@sha256:15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4 AS prepare
+FROM reg.g5d.dev/alpine@sha256:bef6ca6d88fa79631f173880bfee39cfb24e4e673d8c85c06a37bd4652474eff AS prepare
 COPY --from=build /src/soju /rootfs/soju
 COPY --from=build /src/sojuctl /rootfs/sojuctl
 COPY --from=build /notices /rootfs/notices
 RUN mkdir -p /rootfs/data
-FROM reg.g5d.dev/base@sha256:56ae51caaae51dd91c393044e0b97d037354f3cb975dfd3ea8255bd36a548708
+FROM reg.g5d.dev/base@sha256:dfbedece42dcd38cf8444d0e8807064ebd1522d0998cad0c2be4841825c6662c
 COPY --from=prepare --chown=65532:65532 /rootfs/ /
 USER 65532:65532
 VOLUME ["/data"]
