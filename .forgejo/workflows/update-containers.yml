@@ -47,19 +47,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -123,19 +110,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -199,19 +173,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -275,19 +236,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -351,19 +299,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -428,19 +363,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -504,19 +426,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -582,19 +491,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -660,19 +556,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -738,19 +621,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -816,19 +686,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -894,19 +751,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -972,19 +816,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -1051,19 +882,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -1130,19 +948,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -1208,19 +1013,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -1286,19 +1078,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -1364,19 +1143,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -1442,19 +1208,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -1520,19 +1273,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -1598,19 +1338,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -1676,19 +1403,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -1754,19 +1468,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -1832,19 +1533,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -1910,19 +1598,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -1988,19 +1663,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -2066,19 +1728,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -2144,19 +1793,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -2222,19 +1858,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -2299,19 +1922,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -2377,19 +1987,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -2455,19 +2052,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -2532,19 +2116,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -2610,19 +2181,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -2688,19 +2246,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -2766,19 +2311,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -2844,19 +2376,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -2922,19 +2441,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -3000,19 +2506,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
@@ -3078,19 +2571,6 @@ jobs:
           BUILDAH_ISOLATION: chroot
           SOURCE_LINK: https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/
         run: contempt -template Containerfile.gotpl -output Containerfile --commit --build --push --project "$PROJECT_NAME" . .
-      - name: Check for tests
-        id: check_tests
-        run: |
-          if [ -f "$PROJECT_NAME/test.sh" ]; then
-            echo "has_tests=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run integration tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: |
-          command -v podman >/dev/null 2>&1 || apk add --no-cache podman
-          chmod +x "$PROJECT_NAME/test.sh"
-          cd "$PROJECT_NAME"
-          ./test.sh "$REGISTRY/$PROJECT_NAME"
       - name: Check mirror
         id: check_mirror
         run: |
