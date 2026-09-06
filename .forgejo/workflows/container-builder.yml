@@ -17,7 +17,9 @@ jobs:
           fetch-depth: '0'
       - uses: actions/toolkit/go-setup@master
       - name: Install latest contempt
-        run: go install github.com/csmith/contempt/cmd/contempt@latest
+        run: |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
       - name: Login to private registry
         uses: actions/toolkit/docker-login@master
         with:

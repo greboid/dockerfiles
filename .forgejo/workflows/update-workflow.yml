@@ -24,8 +24,9 @@ jobs:
           go-version: 'stable'
           cache: false
       - name: Install latest orchestrator
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: go install github.com/csmith/contempt/cmd/orchestrator@latest
+        run: |
+          go install github.com/csmith/contempt/cmd/orchestrator@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
       - name: Run contempt orchestrator
         env:
           REGISTRY: ${{ secrets.REGISTRY }}

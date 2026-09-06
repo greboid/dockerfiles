@@ -1,4 +1,3 @@
-
 on:
   workflow_dispatch:
   schedule:
@@ -7,25 +6,8 @@ on:
 name: Update Containers
 concurrency: dockerfiles
 jobs:
-  setup-cache:
-    name: Setup cache
-    runs-on: alpine
-    steps:
-        - name: Cache contempt
-          uses: actions/cache@v6
-          id: cache
-          with:
-              path: ~/go/bin/contempt
-              key: contempt-${{ runner.os }}-${{ runner.arch }}-latest
-        - name: Install latest contempt
-          if: steps.cache.outputs.cache-hit != 'true'
-          run: go install github.com/csmith/contempt/cmd/contempt@latest
-  
   alpine:
     name: Build alpine
-    needs:
-        - setup-cache
-
     uses: ./.forgejo/workflows/container-builder.yml
     secrets: inherit
     with:
@@ -34,7 +16,6 @@ jobs:
   baseroot:
     name: Build baseroot
     needs:
-        - setup-cache
         - alpine
     uses: ./.forgejo/workflows/container-builder.yml
     secrets: inherit
@@ -44,7 +25,6 @@ jobs:
   git:
     name: Build git
     needs:
-        - setup-cache
         - alpine
     uses: ./.forgejo/workflows/container-builder.yml
     secrets: inherit
@@ -54,7 +34,6 @@ jobs:
   golang:
     name: Build golang
     needs:
-        - setup-cache
         - alpine
     uses: ./.forgejo/workflows/container-builder.yml
     secrets: inherit
@@ -64,7 +43,6 @@ jobs:
   rust:
     name: Build rust
     needs:
-        - setup-cache
         - alpine
     uses: ./.forgejo/workflows/container-builder.yml
     secrets: inherit
@@ -74,7 +52,6 @@ jobs:
   alpine-runner:
     name: Build alpine-runner
     needs:
-        - setup-cache
         - alpine
         - golang
     uses: ./.forgejo/workflows/container-builder.yml
@@ -85,7 +62,6 @@ jobs:
   base:
     name: Build base
     needs:
-        - setup-cache
         - baseroot
     uses: ./.forgejo/workflows/container-builder.yml
     secrets: inherit
@@ -95,7 +71,6 @@ jobs:
   centauri:
     name: Build centauri
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -107,7 +82,6 @@ jobs:
   centauri-docker-confd:
     name: Build centauri-docker-confd
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -119,7 +93,6 @@ jobs:
   cocoon:
     name: Build cocoon
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -131,7 +104,6 @@ jobs:
   dockercleanup:
     name: Build dockercleanup
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -143,7 +115,6 @@ jobs:
   dsp:
     name: Build dsp
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -155,7 +126,6 @@ jobs:
   ergo:
     name: Build ergo
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -167,7 +137,6 @@ jobs:
   forgejo:
     name: Build forgejo
     needs:
-        - setup-cache
         - alpine
         - base
         - git
@@ -180,7 +149,6 @@ jobs:
   forgejo-runner:
     name: Build forgejo-runner
     needs:
-        - setup-cache
         - alpine
         - base
         - git
@@ -193,7 +161,6 @@ jobs:
   githubmirror:
     name: Build githubmirror
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -205,7 +172,6 @@ jobs:
   golink:
     name: Build golink
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -217,7 +183,6 @@ jobs:
   goplum:
     name: Build goplum
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -229,7 +194,6 @@ jobs:
   httpredirect:
     name: Build httpredirect
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -241,7 +205,6 @@ jobs:
   identd:
     name: Build identd
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -253,7 +216,6 @@ jobs:
   irc-bot:
     name: Build irc-bot
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -265,7 +227,6 @@ jobs:
   irc-distribution:
     name: Build irc-distribution
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -277,7 +238,6 @@ jobs:
   irc-github:
     name: Build irc-github
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -289,7 +249,6 @@ jobs:
   irc-goplum:
     name: Build irc-goplum
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -301,7 +260,6 @@ jobs:
   irc-notifier:
     name: Build irc-notifier
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -313,7 +271,6 @@ jobs:
   irc-webhook:
     name: Build irc-webhook
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -325,7 +282,6 @@ jobs:
   linx-server:
     name: Build linx-server
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -337,7 +293,6 @@ jobs:
   miniflux:
     name: Build miniflux
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -349,7 +304,6 @@ jobs:
   pdsps:
     name: Build pdsps
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -361,7 +315,6 @@ jobs:
   postgres-18:
     name: Build postgres-18
     needs:
-        - setup-cache
         - alpine
         - base
     uses: ./.forgejo/workflows/container-builder.yml
@@ -372,7 +325,6 @@ jobs:
   purser:
     name: Build purser
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -384,7 +336,6 @@ jobs:
   puzzles:
     name: Build puzzles
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -396,7 +347,6 @@ jobs:
   redis:
     name: Build redis
     needs:
-        - setup-cache
         - alpine
         - base
     uses: ./.forgejo/workflows/container-builder.yml
@@ -407,7 +357,6 @@ jobs:
   registryauth:
     name: Build registryauth
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -419,7 +368,6 @@ jobs:
   soju:
     name: Build soju
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -431,7 +379,6 @@ jobs:
   sws:
     name: Build sws
     needs:
-        - setup-cache
         - alpine
         - base
         - rust
@@ -443,7 +390,6 @@ jobs:
   tailscale:
     name: Build tailscale
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -455,7 +401,6 @@ jobs:
   thp:
     name: Build thp
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -467,7 +412,6 @@ jobs:
   tsp:
     name: Build tsp
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
@@ -479,7 +423,6 @@ jobs:
   webhooked:
     name: Build webhooked
     needs:
-        - setup-cache
         - alpine
         - base
         - golang
