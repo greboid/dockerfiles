@@ -1,7 +1,7 @@
-# Generated from https://github.com/greboid/dockerfiles/blob/master/cocoon/Containerfile.gotpl
-# BOM: {"github:https://github.com/haileyok/cocoon":"v0.11.1","image:alpine":"15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4","image:base":"56ae51caaae51dd91c393044e0b97d037354f3cb975dfd3ea8255bd36a548708","image:golang":"f4990cfacbcead6d481bdee3a5064370cab1822ee152f40cbc78c7e0fc27cb34"}
+# Generated from https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/cocoon/Containerfile.gotpl
+# BOM: {"github:https://github.com/haileyok/cocoon":"v0.11.1","image:alpine":"bef6ca6d88fa79631f173880bfee39cfb24e4e673d8c85c06a37bd4652474eff","image:base":"dfbedece42dcd38cf8444d0e8807064ebd1522d0998cad0c2be4841825c6662c","image:golang":"996bdc58facee4fb9bfc56f3bf80ccfe97928a23bb3d80e1ec346af7ff1836d4"}
 
-FROM reg.g5d.dev/golang@sha256:f4990cfacbcead6d481bdee3a5064370cab1822ee152f40cbc78c7e0fc27cb34 AS build
+FROM reg.g5d.dev/golang@sha256:996bdc58facee4fb9bfc56f3bf80ccfe97928a23bb3d80e1ec346af7ff1836d4 AS build
 ARG TAG="v0.11.1"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/haileyok/cocoon /src
@@ -9,10 +9,10 @@ WORKDIR /src
 ENV CGO_ENABLED=0
 RUN go build -a -ldflags "-extldflags \"-static\" -s -w -buildid= -X main.Version=$TAG" -trimpath -o main ./cmd/cocoon
 RUN go-licenses save ./... --save_path=/notices --ignore github.com/ipfs/bbloom --ignore github.com/multiformats/go-base36 --ignore github.com/jmespath/go-jmespath --ignore gitlab.com/yawning/secp256k1-voi/internal/fiat/secp256k1montgomery
-FROM reg.g5d.dev/alpine@sha256:15aa8bf3c1b95bb86b563c5b42f17198a5f792d659de8760791a0b2e3b8aacd4 AS prepare
+FROM reg.g5d.dev/alpine@sha256:bef6ca6d88fa79631f173880bfee39cfb24e4e673d8c85c06a37bd4652474eff AS prepare
 COPY --from=build /src/main /rootfs/cocoon
 COPY --from=build /notices /rootfs/notices
-FROM reg.g5d.dev/base@sha256:56ae51caaae51dd91c393044e0b97d037354f3cb975dfd3ea8255bd36a548708
+FROM reg.g5d.dev/base@sha256:dfbedece42dcd38cf8444d0e8807064ebd1522d0998cad0c2be4841825c6662c
 COPY --from=prepare --chown=65532:65532 /rootfs/ /
 USER 65532:65532
 EXPOSE 8080
