@@ -1,7 +1,8 @@
 FROM {{image "alpine"}} AS git-build
+ARG TAG="{{github_tag "git/git"}}"
 RUN set -eux; \
     apk add --no-cache \
-    {{range $key, $value := alpine_packages "build-base" "openssl-dev" "openssl-libs-static" "zlib-dev" "zlib-static" "musl-dev" "curl" "linux-headers" "rust" "cargo" -}}
+    {{range $key, $value := alpine_packages "build-base" "openssl-dev" "openssl-libs-static" "zlib-dev" "zlib-static" "musl-dev" "curl" "linux-headers" "rust" "cargo" "git" -}}
     {{$key}}={{$value}} \
     {{end}}; \
     CTAG='{{github_tag "curl/curl" "prefix=curl-" "clean"}}'; \
@@ -15,10 +16,8 @@ RUN set -eux; \
         --disable-ldap --disable-ldaps --disable-manual; \
     make -j$(nproc) && make install; \
     cd /; \
-    TAG="{{github_tag "git/git"}}"; \
-    VERSION="${TAG#v}"; \
-    curl -sL "https://mirrors.edge.kernel.org/pub/software/scm/git/git-${VERSION}.tar.gz" | tar xz; \
-    cd "git-${VERSION}"; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/git/git /git; \
+    cd /git; \
     make NO_EXPAT=1 NO_GETTEXT=1 NO_TCLTK=1 NO_OPENSSL=1 \
          USE_LIBPCRE2= NO_REGEX=NeedStartEnd CFLAGS="-static" \
          LDFLAGS="-static -lz" CURL_LDFLAGS="$(curl-config --static-libs)" prefix=/usr -j$(nproc) && \
@@ -29,13 +28,13 @@ RUN set -eux; \
     ln -s git git-receive-pack && \
     ln -s git git-upload-pack && \
     ln -s git git-upload-archive && \
-    cd "/git-${VERSION}" && \
+    cd /git && \
     cp git-remote-http /out/usr/libexec/git-core/ && \
     cd /out/usr/libexec/git-core && \
     ln -s git-remote-http git-remote-https && \
     ln -s git-remote-http git-remote-ftp && \
     ln -s git-remote-http git-remote-ftps && \
-    cp -r "/git-${VERSION}"/templates/blt /out/usr/share/git-core/templates
+    cp -r /git/templates/blt /out/usr/share/git-core/templates
 
 FROM scratch
 
