@@ -1,8 +1,8 @@
 # Generated from https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/cocoon/Containerfile.gotpl
-# BOM: {"github:https://github.com/haileyok/cocoon":"v0.11.2","image:alpine":"bef6ca6d88fa79631f173880bfee39cfb24e4e673d8c85c06a37bd4652474eff","image:base":"dfbedece42dcd38cf8444d0e8807064ebd1522d0998cad0c2be4841825c6662c","image:golang":"996bdc58facee4fb9bfc56f3bf80ccfe97928a23bb3d80e1ec346af7ff1836d4"}
+# BOM: {"github:https://github.com/haileyok/cocoon":"v0.11.3","image:alpine":"bef6ca6d88fa79631f173880bfee39cfb24e4e673d8c85c06a37bd4652474eff","image:base":"dfbedece42dcd38cf8444d0e8807064ebd1522d0998cad0c2be4841825c6662c","image:golang":"996bdc58facee4fb9bfc56f3bf80ccfe97928a23bb3d80e1ec346af7ff1836d4"}
 
 FROM reg.g5d.dev/golang@sha256:996bdc58facee4fb9bfc56f3bf80ccfe97928a23bb3d80e1ec346af7ff1836d4 AS build
-ARG TAG="v0.11.2"
+ARG TAG="v0.11.3"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/haileyok/cocoon /src
 WORKDIR /src
