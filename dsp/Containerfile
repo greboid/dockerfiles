@@ -1,5 +1,5 @@
 # Generated from https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/dsp/Containerfile.gotpl
-# BOM: {"github:https://github.com/greboid/dsp":"v1.2.6","image:alpine":"bef6ca6d88fa79631f173880bfee39cfb24e4e673d8c85c06a37bd4652474eff","image:baseroot":"6f2577656ab9ff637e5470728459f5d1d687ffbaf491adf9843125784a043564","image:golang":"996bdc58facee4fb9bfc56f3bf80ccfe97928a23bb3d80e1ec346af7ff1836d4"}
+# BOM: {"github:https://github.com/greboid/dsp":"v1.2.6","image:alpine":"bef6ca6d88fa79631f173880bfee39cfb24e4e673d8c85c06a37bd4652474eff","image:baseroot":"e0ab5a14bb55ccb70c7aaa8eaf0c8034edf5fd7fe43664a6fe05e1512d7f43e4","image:golang":"996bdc58facee4fb9bfc56f3bf80ccfe97928a23bb3d80e1ec346af7ff1836d4"}
 
 FROM reg.g5d.dev/golang@sha256:996bdc58facee4fb9bfc56f3bf80ccfe97928a23bb3d80e1ec346af7ff1836d4 AS build
 ARG TAG="v1.2.6"
@@ -12,7 +12,7 @@ RUN go-licenses save ./... --save_path=/notices
 FROM reg.g5d.dev/alpine@sha256:bef6ca6d88fa79631f173880bfee39cfb24e4e673d8c85c06a37bd4652474eff AS prepare
 COPY --from=build /src/main /rootfs/dsp
 COPY --from=build /notices /rootfs/notices
-FROM reg.g5d.dev/baseroot@sha256:6f2577656ab9ff637e5470728459f5d1d687ffbaf491adf9843125784a043564
+FROM reg.g5d.dev/baseroot@sha256:e0ab5a14bb55ccb70c7aaa8eaf0c8034edf5fd7fe43664a6fe05e1512d7f43e4
 COPY --from=prepare --chown=65532:65532 /rootfs/ /
 USER 65532:65532
 EXPOSE 8080
