@@ -1,5 +1,5 @@
 # Generated from https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/sws/Containerfile.gotpl
-# BOM: {"github:https://github.com/static-web-server/static-web-server":"v2.44.0","image:alpine":"bef6ca6d88fa79631f173880bfee39cfb24e4e673d8c85c06a37bd4652474eff","image:base":"dfbedece42dcd38cf8444d0e8807064ebd1522d0998cad0c2be4841825c6662c","image:rust":"deaea242df9c0d810f35febb22717bdb0b7387d1a138efd699f44532d35c6b24"}
+# BOM: {"github:https://github.com/static-web-server/static-web-server":"v2.44.0","image:alpine":"bef6ca6d88fa79631f173880bfee39cfb24e4e673d8c85c06a37bd4652474eff","image:base":"69ea62c1b6a565f8b64c339a6cc61e706e10974dd8999994ef7ee7579b2ab2b3","image:rust":"deaea242df9c0d810f35febb22717bdb0b7387d1a138efd699f44532d35c6b24"}
 
 FROM reg.g5d.dev/rust@sha256:deaea242df9c0d810f35febb22717bdb0b7387d1a138efd699f44532d35c6b24 AS build
 ARG TAG="v2.44.0"
@@ -11,7 +11,7 @@ RUN git apply /keepqueriesonrewrites.diff
 RUN cargo build --release
 FROM reg.g5d.dev/alpine@sha256:bef6ca6d88fa79631f173880bfee39cfb24e4e673d8c85c06a37bd4652474eff AS prepare
 COPY --from=build /src/target/release/static-web-server /rootfs/sws
-FROM reg.g5d.dev/base@sha256:dfbedece42dcd38cf8444d0e8807064ebd1522d0998cad0c2be4841825c6662c
+FROM reg.g5d.dev/base@sha256:69ea62c1b6a565f8b64c339a6cc61e706e10974dd8999994ef7ee7579b2ab2b3
 COPY --from=prepare --chown=65532:65532 /rootfs/ /
 USER 65532:65532
 ENTRYPOINT ["/sws"]
