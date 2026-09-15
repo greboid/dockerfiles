@@ -1,6 +1,6 @@
 # Generated from https://git.mouse-lake.ts.net/greboid/dockerfiles/blob/master/base/Containerfile.gotpl
-# BOM: {"image:baseroot":"6f2577656ab9ff637e5470728459f5d1d687ffbaf491adf9843125784a043564"}
+# BOM: {"image:baseroot":"e0ab5a14bb55ccb70c7aaa8eaf0c8034edf5fd7fe43664a6fe05e1512d7f43e4"}
 
-FROM reg.g5d.dev/baseroot@sha256:6f2577656ab9ff637e5470728459f5d1d687ffbaf491adf9843125784a043564 AS build
+FROM reg.g5d.dev/baseroot@sha256:e0ab5a14bb55ccb70c7aaa8eaf0c8034edf5fd7fe43664a6fe05e1512d7f43e4 AS build
 
 USER nonroot
