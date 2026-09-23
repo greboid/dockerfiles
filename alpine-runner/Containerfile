@@ -70,7 +70,7 @@ RUN set -eux; \
     zstd-libs=1.5.7-r2 \
     ;
 
-ARG TAG="v1.45.0"
+ARG TAG="v1.45.1"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://github.com/containers/buildah /src
 WORKDIR /src
