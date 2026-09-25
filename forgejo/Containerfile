@@ -29,7 +29,7 @@ RUN set -eux; \
     zstd-libs=1.5.7-r2 \
     ;
 
-ARG TAG="v16.0.4"
+ARG TAG="v16.0.5"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://codeberg.org/forgejo/forgejo /src
 WORKDIR /src
