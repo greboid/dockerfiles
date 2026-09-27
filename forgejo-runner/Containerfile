@@ -88,7 +88,7 @@ RUN set -eux; \
     musl=1.2.6-r2 \
     ;
 
-ARG TAG="v13.1.0"
+ARG TAG="v13.2.0"
 RUN set -eux; \
     git clone --depth=1 -b $TAG --single-branch https://code.forgejo.org/forgejo/runner /src
 WORKDIR /src
