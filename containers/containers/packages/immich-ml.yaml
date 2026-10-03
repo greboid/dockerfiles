@@ -6,7 +6,7 @@
 package:
   name: immich-ml
   version: 3.2.4
-  epoch: 0
+  epoch: 1
   description: Immich machine-learning server (CPU)
   target-architecture:
     - x86_64
@@ -39,7 +39,7 @@ environment:
       - ca-certificates
       - git=2.54.0-r0
       - alpine-release=3.24.2-r0
-      - python3=3.14.7-r1
+      - python3=3.14.8-r0
       - python3-dev=3.14.7-r1
       - py3-pip=26.1.2-r0
       - py3-numpy=2.4.6-r0
