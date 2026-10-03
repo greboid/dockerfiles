@@ -1,54 +1,51 @@
-# Dockerfiles from the ground up
+# forgejo sync monorepo
+#
+# This repository is a view-only monorepo: an automatically generated snapshot
+# of the [`containers`](https://git.mouse-lake.ts.net/containers) and
+# [`packages`](https://git.mouse-lake.ts.net/packages) Forgejo organisations.
+#
+# It is generated output. Do not open pull requests or file issues here, and
+# do not commit directly: every change belongs in the organisation
+# repositories and will appear here on the next sync.
 
-This started with a fork of [csmith/dockerfiles](https://github.com/csmith/dockerfiles), but eventually 
-the templating code was moved out of the repo into [contempt](https://github.com/csmith/contempt).
+## Layout
 
-This is now just a collection of dockerfiles I use in my infrastructure.
+Each organisation repository is snapshotted at the tip of its default branch:
 
-## What? Why?
+```
+containers/<repo>/...   # one repository per container image (apko builds)
+packages/<repo>/...     # one repository per package (melange builds)
+```
 
-This is a collection of Dockerfiles for various software projects I want to run, built from the ground up.
+The full source of each repository is present and browsable, but the
+monorepo keeps no per-repository history: each sync squashes the current
+state of every repository into a single commit.
 
-Most projects have either official docker images or third-party contributions, but they're always a bit
-hit-or-miss on how they work, what base images are used, etc. Third-party images often lag behind releases
-or just die off without warning, too. Building everything out from scratch ensures the images are standard,
-and can follow upstream updates as quickly or slowly as required.
+## Sync
 
-I'm using these production services, but won't vouch for their stability or usability for anyone else's 
-purposes. Feel free to use them, and report any issues you do find, but at your own risk!
+`.forgejo/workflows/sync.yml` runs `sync.sh` hourly on a Forgejo Actions
+runner. The script:
 
-## Structure
+1. enumerates the repositories in each organisation via the Forgejo API,
+2. shallow-fetches the default branch of every one of them,
+3. assembles the tree with `git read-tree --prefix=<org>/<repo>/`,
+4. commits and pushes a single `Sync:` commit — only if the tree changed.
 
-Each image has its own folder, containing:
+Repositories added to an organisation appear after the next sync;
+repositories deleted (or emptied) disappear from it.
 
-* `Dockerfile` - the actual dockerfile the latest version should be built from
-* `Dockerfile.gotpl` - a template file for generating the Dockerfile
+## Running it manually
 
-The template files using go's [text/template syntax](https://pkg.go.dev/text/template), with functions
-defined to retrieve the latest images, releases, packages, etc.
+```
+FORGEJO_TOKEN=... ./sync.sh      # or keep a token in the PAT file (gitignored)
+```
 
-Dockerfiles are updated using [contempt](https://github.com/csmith/contempt).  This can also be used
-to commit, build and push any changes.
+The script is safe to re-run: it only pushes when the snapshot differs, and
+retries cleanly if the branch moved underneath it.
 
-## Images
+## History
 
-All images are available at `reg.g5d.dev/<name>`. Only the latest tag is built.
-
-Each images aims for the following:
-
-**Reproducible** - if the same Dockerfile is rebuilt at any time on any machine it will produce the same
-image. This is nice to have, but it is quite challenging and makes little difference in day-to-day
-operations. (It also requires the use of a tool like `buildah` that can set layer timestamps; `docker build`
-cannot make reproducible images.)
-
-**Non-root** - the entrypoint for the image is invoked as a non-root user. Base images are marked as N/A.
-Other images probably drop root later either via a script or as part of the process itself, but it's
-preferable for it to happen in the image.
-
-**Minimal** - the image contains only the bare essentials required. No leftovers, nothing irrelevant,
-no bloat. For base images this definition is a bit hazy as they'll contain things that might be used
-in downstream images. For applications this generally means they're statically compiled and run in the
-"base" image.
-
-This isn't always possible, some images do require root, its not always possible to make them fully
-reproducible and some images are quite bloated but do try as closely as possible.
+This repository previously held the original hand-written Dockerfiles for
+every image. That content was retired in favour of the per-repository
+organisations and removed from this branch; it remains in the git history
+before the "Convert to view-only monorepo" commit.

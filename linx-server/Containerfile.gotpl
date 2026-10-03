@@ -1,6 +1,0 @@
-FROM {{image "golang"}} AS build
-{{template "clone" (map "repo" "csmith/linx-server")}}
-{{template "build-go" (map)}}
-{{template "go-licenses" (map)}}
-{{template "prepare" (map "name" "linx-server" "volumes" (arr "/data/files" "/data/meta"))}}
-{{template "runtime" (map "name" "linx-server" "exposes" (arr "8080") "volumes" (arr "/data/files" "/data/meta") "args" (arr "-bind=0.0.0.0:8080" "-filespath=/data/files/" "-metapath=/data/meta/") "cmd" `["-sitename=linx", "-allowhotlink"]`)}}

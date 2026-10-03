@@ -1,6 +1,0 @@
-FROM {{image "golang"}} AS build
-{{template "clone" (map "repo" "ergochat/ergo")}}
-{{template "build-go" (map)}}
-{{template "go-licenses" (map)}}
-{{template "prepare" (map "name" "ergo" "extra_copies" (arr (map "src" "/src/languages" "dst" "/ircd-bin/languages")))}}
-{{template "runtime" (map "name" "ergo" "cmd" `["run", "--conf", "/ircd/ircd.yaml"]`)}}

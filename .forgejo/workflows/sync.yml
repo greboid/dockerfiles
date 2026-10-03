@@ -1,0 +1,31 @@
+name: sync
+
+# Rebuilds the read-only monorepo view of the containers and packages
+# organisations. This repository is generated output; the workflow is its
+# only legitimate writer.
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: alpine
+    steps:
+      - name: Checkout
+        uses: actions/toolkit/git-checkout@master
+
+      - name: Install sync tooling
+        run: |
+          set -eu
+          apk add --no-cache git bash curl jq
+
+      - name: Sync the monorepo view
+        env:
+          FORGEJO_TOKEN: ${{ secrets.SYNC_TOKEN }}
+        run: ./sync.sh

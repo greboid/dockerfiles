@@ -1,5 +1,0 @@
-FROM {{image "rust"}} AS build
-{{template "clone" (map "repo" "static-web-server/static-web-server" "patches" (arr "keepqueriesonrewrites.diff"))}}
-RUN cargo build --release
-{{template "prepare" (map "name" "sws" "output" "target/release/static-web-server" "skip_notices" true)}}
-{{template "runtime" (map "name" "sws")}}

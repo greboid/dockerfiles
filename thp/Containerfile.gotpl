@@ -1,6 +1,0 @@
-FROM {{image "golang"}} AS build
-{{template "clone" (map "repo" "greboid/thp")}}
-{{template "build-go" (map)}}
-{{template "go-licenses" (map)}}
-{{template "prepare" (map "name" "thp" "volumes" (arr "/config"))}}
-{{template "runtime" (map "name" "thp" "volumes" (arr "/config") "args" (arr "--tailscale-config-dir=/config"))}}

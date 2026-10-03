@@ -1,6 +1,0 @@
-FROM {{image "golang"}} AS build
-{{template "clone" (map "repo" "greboid/puzzles")}}
-{{template "build-go" (map)}}
-{{template "go-licenses" (map)}}
-{{template "prepare" (map "name" "puzzles" "extra_copies" (arr (map "src" "/src/wordlists" "dst" "/app/wordlists")))}}
-{{template "runtime" (map "name" "puzzles" "exposes" (arr "8080"))}}

@@ -1,4 +1,0 @@
-{{- define "build-go" -}}
-ENV CGO_ENABLED={{if .cgo}}1{{else}}0{{end}}
-RUN go build -a -ldflags "{{if not .cgo}}-extldflags \"-static\" {{end}}-s -w -buildid={{or .ldflags ""}}" -trimpath{{range .tags}} -tags {{.}}{{end}} -o {{or .output "main"}} {{or .subdir "."}}
-{{- end -}}

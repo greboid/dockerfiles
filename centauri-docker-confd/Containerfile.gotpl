@@ -1,6 +1,0 @@
-FROM {{image "golang"}} AS build
-{{template "clone" (map "repo" "csmith/centauri-docker-confd")}}
-{{template "build-go" (map)}}
-{{template "go-licenses" (map)}}
-{{template "prepare" (map "name" "centauri-docker-confd")}}
-{{template "runtime" (map "name" "centauri-docker-confd")}}

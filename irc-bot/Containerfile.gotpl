@@ -1,6 +1,0 @@
-FROM {{image "golang"}} AS build
-{{template "clone" (map "repo" "greboid/irc-bot")}}
-{{template "build-go" (map "subdir" "./cmd/bot")}}
-{{template "go-licenses" (map)}}
-{{template "prepare" (map "name" "irc-bot")}}
-{{template "runtime" (map "name" "irc-bot" "exposes" (arr "8080"))}}

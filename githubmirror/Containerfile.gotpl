@@ -1,6 +1,0 @@
-FROM {{image "golang"}} AS build
-{{template "clone" (map "repo" "greboid/githubmirror")}}
-{{template "build-go" (map)}}
-{{template "go-licenses" (map)}}
-{{template "prepare" (map "name" "githubmirror")}}
-{{template "runtime" (map "name" "githubmirror" "exposes" (arr "8080"))}}

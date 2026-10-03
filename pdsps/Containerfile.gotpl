@@ -1,6 +1,0 @@
-FROM {{image "golang"}} AS build
-{{template "clone" (map "repo" "csmith/pdsps")}}
-{{template "build-go" (map)}}
-{{template "go-licenses" (map)}}
-{{template "prepare" (map "name" "pdsps")}}
-{{template "runtime" (map "name" "pdsps" "exposes" (arr "8080"))}}
