@@ -1,0 +1,100 @@
+# Source-built replacement for containers/linx-server (upstream v3.4.1).
+package:
+  name: linx-server
+  version: 3.4.1
+  epoch: 0
+  description: Self-hosted file-sharing service with expiry and hotlink control
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE.txt
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r0
+      - alpine-release=3.24.2-r0
+  environment:
+    CGO_ENABLED: "0"
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 612867dfb85af85aff08af17e8611e011c363e86
+      repository: https://github.com/csmith/linx-server
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./
+      output: linx-server
+      strip: -s -w
+      ldflags: -extldflags "-static" -buildid=
+  - name: Preserve legacy entrypoint, data directories and license notices
+    runs: |
+      ln -s usr/bin/linx-server "${{targets.destdir}}/linx-server"
+      # Legacy VOLUMEs: uploaded files and their metadata.
+      install -d -m 0755 "${{targets.destdir}}/data/files"
+      install -d -m 0755 "${{targets.destdir}}/data/meta"
+      # Save outside the workspace first: with save_path inside the scanned
+      # module tree, go-licenses re-discovers its own output and recurses
+      # until paths exceed the length limit.
+      go-licenses save ./... --save_path=/tmp/linx-notices
+      cp -a /tmp/linx-notices "${{targets.destdir}}/notices"
+      # The fork keeps the upstream module path andreimarcu/linx-server.
+      test -s "${{targets.destdir}}/notices/github.com/andreimarcu/linx-server/LICENSE.txt"
+      install -Dm644 LICENSE.txt "${{targets.destdir}}/usr/share/licenses/linx-server/LICENSE.txt"
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - alpine-release=3.24.2-r0
+        - busybox
+        - curl
+  pipeline:
+    - name: Packaged files
+      runs: |
+        test -x /usr/bin/linx-server
+        test -L /linx-server
+        test -d /data/files
+        test -d /data/meta
+        test -s /notices/github.com/andreimarcu/linx-server/LICENSE.txt
+        test -s /usr/share/licenses/linx-server/LICENSE.txt
+    - name: Serves its index from local storage
+      runs: |
+        # Fully offline: loopback bind, local storage, embedded templates.
+        mkdir -p /tmp/linx-files /tmp/linx-meta
+        /linx-server -bind=127.0.0.1:8080 -filespath=/tmp/linx-files/ \
+          -metapath=/tmp/linx-meta/ -sitename=linx -allowhotlink \
+          >/tmp/linx-server.log 2>&1 &
+        pid=$!
+        sleep 1
+        code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/ || true)
+        test "$code" = 200
+        kill "$pid"
+
+update:
+  enabled: true
+  # No GitHub releases; tags are the version signal.
+  github:
+    identifier: csmith/linx-server
+    strip-prefix: v
+    use-tag: true

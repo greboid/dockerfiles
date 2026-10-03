@@ -1,0 +1,36 @@
+# Health checker: loads a config file (-config / CONFIG, default
+# goplum.conf in the working directory), runs scheduled checks, sends
+# alerts, and serves a gRPC API on 0.0.0.0:7586 (API_PORT overrides).
+# Tombstone state defaults to /tmp/goplum.tomb (TOMBSTONE overrides);
+# point it at a writable mount to persist state across restarts. The
+# legacy image's EXPOSE 8080 was vestigial (the API is gRPC on 7586).
+archs:
+  - x86_64
+
+contents:
+  repositories:
+    - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+  packages:
+    - ca-certificates-bundle=20260909-r0
+    - tzdata=2026d-r0
+    - os-release=3.24.2-r0
+    - goplum=1.1.0-r0
+
+accounts:
+  run-as: 65532:65532
+  users:
+    - username: nonroot
+      uid: 65532
+      gid: 65532
+      homedir: /home/nonroot
+  groups:
+    - groupname: nonroot
+      gid: 65532
+      members:
+        - nonroot
+
+environment:
+  SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+
+entrypoint:
+  command: /goplum

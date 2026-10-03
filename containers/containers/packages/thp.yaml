@@ -1,0 +1,90 @@
+# Source-built replacement for containers/thp (upstream v1.2.2).
+package:
+  name: thp
+  version: 1.2.3
+  epoch: 0
+  description: Tailscale HTTP proxy forwarding tailnet requests to an upstream
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENCE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r0
+      - alpine-release=3.24.2-r0
+  environment:
+    CGO_ENABLED: "0"
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 9ba8c3d61e709f0f5333028b52ecd18d8d1903ce
+      repository: https://github.com/greboid/thp
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./
+      output: thp
+      strip: -s -w
+      ldflags: -extldflags "-static" -buildid=
+      # jsonv2 matches the legacy build's GOEXPERIMENT.
+      experiments: jsonv2
+  - name: Preserve legacy entrypoint, config directory and license notices
+    runs: |
+      ln -s usr/bin/thp "${{targets.destdir}}/thp"
+      # Legacy default --tailscale-config-dir=config resolves to /config.
+      install -d -m 0755 "${{targets.destdir}}/config"
+      go-licenses save ./... --save_path="${{targets.destdir}}/notices"
+      test -s "${{targets.destdir}}/notices/github.com/greboid/thp/LICENCE"
+      install -Dm644 LICENCE "${{targets.destdir}}/usr/share/licenses/thp/LICENCE"
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - alpine-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - name: Packaged files
+      runs: |
+        test -x /usr/bin/thp
+        test -L /thp
+        test -d /config
+        test -s /notices/github.com/greboid/thp/LICENCE
+        test -s /usr/share/licenses/thp/LICENCE
+    - name: Refuses to start without an upstream
+      runs: |
+        # Fails before the tailscale client starts; no network is touched.
+        if /thp >/tmp/thp.log 2>&1; then
+          echo "expected missing-upstream failure" >&2
+          exit 1
+        fi
+        grep -q "Upstream host cannot be blank" /tmp/thp.log
+
+update:
+  enabled: true
+  # Tags lead the GitHub releases here; the tag is the version signal.
+  github:
+    identifier: greboid/thp
+    strip-prefix: v
+    use-tag: true

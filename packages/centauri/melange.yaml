@@ -1,0 +1,74 @@
+package:
+  name: centauri
+  version: 2.9.0
+  epoch: 2
+  description: TLS front proxy with automatic certificates via lego
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENCE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r2
+      - os-release=3.24.2-r0
+
+vars:
+  runtime-dirs: /data
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: dbdb1f9ce5be35139041af19d0842adfd2b6b55a
+      repository: https://github.com/csmith/centauri
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd/centauri
+      output: centauri
+      static: "true"
+      tags: lego_httpreq
+  - uses: dirs
+    with:
+      dirs: ${{vars.runtime-dirs}}
+  - uses: go/licenses
+    with:
+      ignore-extra: github.com/go-acme/tencentclouddnspod/v20210323 github.com/go-acme/tencentedgdeone/v20220901 github.com/nrdcg/oci-go-sdk/common/v1065 github.com/nrdcg/oci-go-sdk/common/v1065/auth github.com/nrdcg/oci-go-sdk/common/v1065/utils github.com/nrdcg/oci-go-sdk/dns/v1065
+      module: github.com/csmith/centauri
+      license: LICENCE
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/centauri
+        files: /notices/github.com/csmith/centauri/LICENCE /usr/share/licenses/centauri/LICENCE
+        dirs: ${{vars.runtime-dirs}}
+update:
+  enabled: true
+  github:
+    identifier: csmith/centauri
+    strip-prefix: v

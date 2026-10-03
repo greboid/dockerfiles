@@ -1,0 +1,77 @@
+package:
+  name: forgejo-runner
+  version: 13.2.0
+  epoch: 2
+  description: Forgejo Actions runner
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: GPL-3.0-or-later
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r2
+      - os-release=3.24.2-r0
+      - make=4.4.1-r4
+  environment:
+    # The runner builds through its own Makefile, not go/build, so the
+    # pipeline's CGO default does not apply here.
+    CGO_ENABLED: "0"
+
+vars:
+  runtime-dirs: /data /usr/share/forgejo-runner
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: df6b843fb929bb04b933b09c6bf208774d42480b
+      repository: https://code.forgejo.org/forgejo/runner
+      tag: v${{package.version}}
+  - name: Build the runner
+    runs: PACKAGE_VERSION="${{package.version}}" DESTDIR="${{targets.destdir}}" ./01-build-the-runner.sh
+  - uses: dirs
+    with:
+      dirs: ${{vars.runtime-dirs}}
+  - name: Write the private storage configuration
+    runs: DESTDIR="${{targets.destdir}}" ./02-write-the-storage-conf.sh
+  - uses: go/licenses
+    with:
+      module: code.forgejo.org/forgejo/runner/v13
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/forgejo-runner
+        files: /usr/share/forgejo-runner/storage.conf /notices/code.forgejo.org/forgejo/runner/v13/LICENSE /usr/share/licenses/forgejo-runner/LICENSE
+        dirs: ${{vars.runtime-dirs}}
+    - uses: test/version
+update:
+  enabled: true
+  forgejo:
+    instance: https://code.forgejo.org
+    identifier: forgejo/runner
+    strip-prefix: v

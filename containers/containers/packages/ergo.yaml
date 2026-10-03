@@ -1,0 +1,91 @@
+# Ergo: source-built IRC server and translations from the release archive.
+# Go 1.26 matches upstream go.mod. Keep the legacy /ergo command and
+# /ircd-bin/languages path so existing mounted configurations still work.
+package:
+  name: ergo
+  version: 2.19.1
+  epoch: 0
+  description: Modern IRC server written in Go
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - alpine-release=3.24.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 63c743a70644f0f19109508ade8580bf37f7d23d
+      repository: https://github.com/ergochat/ergo
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./
+      output: ergo
+      strip: -s -w
+      ldflags: -buildid=
+  - runs: |
+      ln -s usr/bin/ergo "${{targets.destdir}}/ergo"
+      mkdir -p "${{targets.destdir}}/ircd-bin"
+      cp -R languages "${{targets.destdir}}/ircd-bin/languages"
+      install -Dm644 LICENSE "${{targets.destdir}}/usr/share/licenses/ergo/LICENSE"
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - alpine-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - name: Packaged files
+      runs: |
+        test -x /usr/bin/ergo
+        test -L /ergo
+        test -s /usr/share/licenses/ergo/LICENSE
+        # Bundled language assets for mounted configurations.
+        test -d /ircd-bin/languages
+        test -n "$(find /ircd-bin/languages -type f)"
+    - name: Reports its version
+      runs: |
+        /ergo --version 2>&1 | grep -q "ergo-${{package.version}}"
+    - name: Boots from a generated default configuration
+      runs: |
+        mkdir /tmp/ircd && cd /tmp/ircd
+        /ergo defaultconfig > ircd.yaml
+        test -s ircd.yaml
+        grep -q 'network' ircd.yaml
+        /ergo mkcerts --conf ircd.yaml >/dev/null
+        test -s fullchain.pem && test -s privkey.pem
+        # Bundled translations live at /ircd-bin/languages (legacy path).
+        ln -s /ircd-bin/languages languages
+        # --smoke starts the server, verifies it, and exits (nonzero on failure).
+        /ergo run --conf ircd.yaml --smoke >/tmp/ergo-run.log 2>&1
+        grep -q 'Server running' /tmp/ergo-run.log
+
+update:
+  enabled: true
+  github:
+    identifier: ergochat/ergo
+    strip-prefix: v

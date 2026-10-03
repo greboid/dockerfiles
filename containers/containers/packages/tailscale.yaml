@@ -1,0 +1,105 @@
+# Source-built replacement for containers/tailscale (upstream v1.102.5).
+package:
+  name: tailscale
+  version: 1.102.5
+  epoch: 0
+  description: Tailscale daemon, CLI and container entrypoint (userspace networking)
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: BSD-3-Clause
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r0
+      - alpine-release=3.24.2-r0
+  environment:
+    CGO_ENABLED: "0"
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 5fb2a81b065b0a0bbbfc67ab20a0d9c6a1108115
+      repository: https://github.com/tailscale/tailscale
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd/tailscaled
+      output: tailscaled
+      strip: -s -w
+      ldflags: -extldflags "-static" -buildid= -X tailscale.com/version.longStamp=${{package.version}} -X tailscale.com/version.shortStamp=${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd/tailscale
+      output: tailscale
+      strip: -s -w
+      ldflags: -extldflags "-static" -buildid= -X tailscale.com/version.longStamp=${{package.version}} -X tailscale.com/version.shortStamp=${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd/containerboot
+      output: containerboot
+      strip: -s -w
+      ldflags: -extldflags "-static" -buildid=
+  - name: Preserve legacy entrypoint, state directories and license notices
+    runs: |
+      # Legacy paths: CLI and daemon under /usr/local/bin, containerboot at /.
+      install -d -m 0755 "${{targets.destdir}}/usr/local/bin"
+      mv "${{targets.destdir}}/usr/bin/tailscaled" "${{targets.destdir}}/usr/local/bin/tailscaled"
+      mv "${{targets.destdir}}/usr/bin/tailscale" "${{targets.destdir}}/usr/local/bin/tailscale"
+      mv "${{targets.destdir}}/usr/bin/containerboot" "${{targets.destdir}}/containerboot"
+      # Legacy VOLUME: tailscaled state. The socket directory under
+      # /var/run is created by containerboot at startup (melange's tempdir
+      # linter rightly rejects packaging var/run content).
+      install -d -m 0755 "${{targets.destdir}}/var/lib/tailscale"
+      go-licenses save ./cmd/tailscaled ./cmd/tailscale ./cmd/containerboot \
+        --save_path="${{targets.destdir}}/notices" \
+        --ignore modernc.org/mathutil \
+        --ignore github.com/jmespath/go-jmespath \
+        --ignore github.com/golang/freetype/raster \
+        --ignore github.com/golang/freetype/truetype
+      test -s "${{targets.destdir}}/notices/tailscale.com/LICENSE"
+      install -Dm644 LICENSE "${{targets.destdir}}/usr/share/licenses/tailscale/LICENSE"
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - alpine-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - name: Packaged files
+      runs: |
+        test -x /usr/local/bin/tailscaled
+        test -x /usr/local/bin/tailscale
+        test -x /containerboot
+        test -d /var/lib/tailscale
+        test -s /notices/tailscale.com/LICENSE
+        test -s /usr/share/licenses/tailscale/LICENSE
+    - name: Reports the packaged release version
+      runs: |
+        /usr/local/bin/tailscale version | grep -q "${{package.version}}"
+
+update:
+  enabled: true
+  github:
+    identifier: tailscale/tailscale
+    strip-prefix: v

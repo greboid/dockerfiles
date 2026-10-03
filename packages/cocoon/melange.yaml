@@ -1,0 +1,69 @@
+package:
+  name: cocoon
+  version: 0.11.3
+  epoch: 2
+  description: An atproto PDS (Bluesky) server
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r2
+      - os-release=3.24.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 8ad8f2d6ece455f220afec48395452090e3258e9
+      repository: https://github.com/haileyok/cocoon
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd/cocoon
+      output: cocoon
+      static: "true"
+      ldflags: -X main.Version=v${{package.version}}
+  - uses: go/licenses
+    with:
+      ignore-extra: github.com/ipfs/bbloom github.com/multiformats/go-base36 gitlab.com/yawning/secp256k1-voi/internal/fiat/secp256k1montgomery
+      module: github.com/haileyok/cocoon
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/cocoon
+        files: /notices/github.com/haileyok/cocoon/LICENSE /usr/share/licenses/cocoon/LICENSE
+    - uses: test/version
+      with:
+        pattern: v${{package.version}}
+update:
+  enabled: true
+  github:
+    identifier: haileyok/cocoon
+    strip-prefix: v

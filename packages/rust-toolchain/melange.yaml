@@ -1,0 +1,81 @@
+package:
+  name: rust-toolchain
+  version: 1.98.1
+  epoch: 0
+  description: Rust 1.98.1 minimal musl toolchain with rustup 1.29.1
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      license: MIT OR Apache-2.0
+  checks:
+    disabled:
+      - worldwrite
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - gcc=15.2.0-r5
+      - musl-dev=1.2.6-r2
+      - libgcc=15.2.0-r5
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - os-release=3.24.2-r0
+      - busybox=1.37.0-r31
+      - ca-certificates-bundle=20260909-r0
+      - tar=1.35-r5
+      - xz
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://static.rust-lang.org/rustup/archive/1.29.1/x86_64-unknown-linux-musl/rustup-init
+      expected-sha256: 331228566cc931f32cd684f9bebc5956a5e5d7394c8d5de595f196a658ab98e6
+      extract: false
+  - uses: fetch
+    with:
+      uri: https://static.rust-lang.org/dist/channel-rust-${{package.version}}.toml
+      expected-sha256: a7c8774a5fd8441c997d94c029776cbc5eb111e9d72ab5d256fa69866644347e
+      extract: false
+  - uses: fetch
+    with:
+      uri: https://static.rust-lang.org/dist/2026-09-03/cargo-${{package.version}}-x86_64-unknown-linux-musl.tar.xz
+      expected-sha256: 2bced641e198f9c4e7b129770de65cb052f2486a8f58d577792ea57c66c91b1c
+      extract: false
+  - uses: fetch
+    with:
+      uri: https://static.rust-lang.org/dist/2026-09-03/rustc-${{package.version}}-x86_64-unknown-linux-musl.tar.xz
+      expected-sha256: dea916164b47437402d8041cbba90c1ff9ce859948b1ece8e36b08100ff92063
+      extract: false
+  - uses: fetch
+    with:
+      uri: https://static.rust-lang.org/dist/2026-09-03/rust-std-${{package.version}}-x86_64-unknown-linux-musl.tar.xz
+      expected-sha256: bd9f35880de21dab0e387e84009c00001ae7836a4ba565cb16823f13f75f325f
+      extract: false
+  - name: Install the pinned minimal profile using only verified local inputs
+    runs: PACKAGE_VERSION="${{package.version}}" DESTDIR="${{targets.destdir}}" ./01-install-the-pinned-minimal-profile.sh
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+        - git=2.54.0-r0
+    environment:
+      RUSTUP_HOME: /usr/local/rustup
+      CARGO_HOME: /usr/local/cargo
+      PATH: /usr/local/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+update:
+  enabled: true
+  manual: true
+  github:
+    identifier: rust-lang/rust

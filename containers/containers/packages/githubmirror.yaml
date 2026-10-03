@@ -1,0 +1,82 @@
+# Source-built replacement for containers/githubmirror (upstream v1.0.3).
+package:
+  name: githubmirror
+  version: 1.0.3
+  epoch: 0
+  description: Mirrors GitHub repositories over HTTPS for cloning
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r0
+      - alpine-release=3.24.2-r0
+  environment:
+    CGO_ENABLED: "0"
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 883dbce8e28db5c6608b28dad2a5ac1b36515a09
+      repository: https://github.com/greboid/githubmirror
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./
+      output: githubmirror
+      strip: -s -w
+      ldflags: -extldflags "-static" -buildid=
+  - name: Preserve legacy entrypoint and license notices
+    runs: |
+      ln -s usr/bin/githubmirror "${{targets.destdir}}/githubmirror"
+      go-licenses save ./... --save_path="${{targets.destdir}}/notices"
+      test -s "${{targets.destdir}}/notices/github.com/greboid/githubmirror/LICENSE"
+      install -Dm644 LICENSE "${{targets.destdir}}/usr/share/licenses/githubmirror/LICENSE"
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - alpine-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - name: Packaged files
+      runs: |
+        test -x /usr/bin/githubmirror
+        test -L /githubmirror
+        test -s /notices/github.com/greboid/githubmirror/LICENSE
+        test -s /usr/share/licenses/githubmirror/LICENSE
+    - name: Prints usage when unconfigured
+      runs: |
+        # Missing AUTHTOKEN prints usage and exits cleanly; nothing is
+        # contacted.
+        /githubmirror >/tmp/githubmirror.log 2>&1
+        test $? -eq 0
+        grep -q "authtoken" /tmp/githubmirror.log
+
+update:
+  enabled: true
+  github:
+    identifier: greboid/githubmirror
+    strip-prefix: v

@@ -1,0 +1,70 @@
+package:
+  name: buildah
+  version: 1.45.1
+  epoch: 1
+  description: Tool for building OCI container images (source-built v1.45.1)
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: Apache-2.0
+  dependencies:
+    runtime:
+      - containers-common=0.64.2-r0
+      - fuse-overlayfs=1.16-r0
+      - fuse3=3.18.3-r0
+      - netavark=1.17.2-r0
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - os-release=3.24.2-r0
+      - ca-certificates-bundle=20260909-r0
+      - go=1.27.1-r1
+      - bash=5.3.9-r1
+      - binutils=2.45.1-r1
+      - make=4.4.1-r4
+      - pkgconf=2.5.1-r0
+      - btrfs-progs-dev=6.17.1-r1
+      - device-mapper-dev=2.03.35-r3
+      - libseccomp-dev=2.6.0-r2
+      - gpgme-dev=2.0.1-r1
+  environment:
+    CGO_ENABLED: "1"
+    GOTELEMETRY: "off"
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: c8ac1936bb2e956c1d8790eba1bb3829a1241369
+      repository: https://github.com/containers/buildah
+      tag: v${{package.version}}
+  - name: Build bin/buildah with the pinned /usr/local/go toolchain
+    runs: DESTDIR="${{targets.destdir}}" ./01-build-bin-buildah-with-the-pinned.sh
+  - uses: license/install
+test:
+  environment:
+    contents:
+      keyring:
+        - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      packages:
+        - busybox=1.37.0-r31
+        - os-release=3.24.2-r0
+        - ca-certificates-bundle=20260909-r0
+        - alpine-baselayout
+update:
+  enabled: true
+  github:
+    identifier: containers/buildah
+    strip-prefix: v

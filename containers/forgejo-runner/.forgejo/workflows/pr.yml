@@ -1,0 +1,27 @@
+name: build-pr
+on:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: alpine
+    env:
+      ORG_REPO: https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    steps:
+      - name: Checkout
+        uses: actions/toolkit/git-checkout@master
+
+      - name: Trust the org repository and install apko
+        # See build.yml; the index key is committed under keys/.
+        run: |
+          set -eu
+          cp keys/packages@*.rsa.pub /etc/apk/keys/
+          echo "$ORG_REPO" >> /etc/apk/repositories
+          apk update
+          apk add --no-cache apko
+          apko version
+
+      - name: Build
+        # Build without pushing: proves apko.yaml resolves against the
+        # org repository and produces a loadable image.
+        run: apko build apko.yaml "forgejo-runner:pr" image.tar

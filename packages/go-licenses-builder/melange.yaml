@@ -1,0 +1,65 @@
+package:
+  name: go-licenses-builder
+  version: 2.0.1
+  epoch: 1
+  description: Legacy builder's Go license collector and toolchain-aware launcher
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: Apache-2.0
+  dependencies:
+    runtime:
+      - go=1.27.1-r1
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - os-release=3.24.2-r0
+      - ca-certificates-bundle=20260909-r0
+      - git=2.54.0-r0
+      - go=1.27.1-r1
+  environment:
+    PATH: /go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    GOPATH: /go
+    GOTOOLCHAIN: local
+    GOTELEMETRY: "off"
+    GOAMD64: v1
+    GOFLAGS: -buildvcs=false
+    SOURCE_DATE_EPOCH: "0"
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 3e084b0caf710f7bfead967567539214f598c0a2
+      repository: https://github.com/google/go-licenses
+      tag: v${{package.version}}
+  - name: Build with the same Go toolchain used by consumers
+    runs: DESTDIR="${{targets.destdir}}" ./01-build-with-the-same-go-toolchain.sh
+  - uses: license/install
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+    environment:
+      PATH: /go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      GOPATH: /go
+      GOTOOLCHAIN: local
+      GOTELEMETRY: "off"
+      GOFLAGS: -buildvcs=false
+update:
+  enabled: true
+  github:
+    identifier: google/go-licenses
+    strip-prefix: v

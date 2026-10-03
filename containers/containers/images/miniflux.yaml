@@ -1,0 +1,47 @@
+# Miniflux image: the published miniflux package + runtime essentials.
+#
+# Consumes miniflux=<version>-r0 from the Forgejo Alpine repository
+# v3.24/main (appended per-run by the image-release workflow).
+#
+# Runtime contract:
+#   - DATABASE_URL is required (external Postgres), e.g.
+#     postgres://miniflux:secret@postgres/miniflux?sslmode=disable
+#   - listens on LISTEN_ADDR (default 0.0.0.0:8080); health endpoint
+#     /healthcheck
+#   - first admin: `docker exec <c> miniflux -create-admin` (interactive)
+#   - runs as non-root 65532:65532; nothing else in the rootfs
+
+archs:
+  - x86_64
+
+contents:
+  repositories:
+    - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+  packages:
+    # Exact pins; the transitive resolution is fixed by apko's lockfile.
+    # os-release provides /etc/os-release (there is no busybox or
+    # alpine-baselayout here to provide it); /etc/group comes from the
+    # accounts block above.
+    - ca-certificates-bundle=20260909-r0
+    - tzdata=2026d-r0
+    - os-release=3.24.2-r0
+    - miniflux=2.3.3-r0
+
+accounts:
+  run-as: 65532:65532
+  users:
+    # apko writes /etc/passwd with this entry at build time.
+    - username: nonroot
+      uid: 65532
+  groups:
+    # apko writes /etc/group with this entry at build time.
+    - groupname: nonroot
+      gid: 65532
+      members:
+        - nonroot
+
+environment:
+  LISTEN_ADDR: 0.0.0.0:8080
+
+entrypoint:
+  command: /usr/bin/miniflux

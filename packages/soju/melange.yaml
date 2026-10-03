@@ -1,0 +1,82 @@
+package:
+  name: soju
+  version: 0.10.1
+  epoch: 2
+  description: IRC bouncer with a companion administrative client
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r2
+      - os-release=3.24.2-r0
+  environment:
+    GOFLAGS: -tags=moderncsqlite
+
+vars:
+  runtime-dirs: /data
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: ca81b9905e24aadd6a346a5ae72ae7e9d14db568
+      repository: https://github.com/emersion/soju
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd/soju
+      output: soju
+      static: "true"
+      tags: moderncsqlite
+  - uses: go/build
+    with:
+      packages: ./cmd/sojuctl
+      output: sojuctl
+      static: "true"
+      tags: moderncsqlite
+  - uses: dirs
+    with:
+      dirs: ${{vars.runtime-dirs}}
+  - uses: go/licenses
+    with:
+      ignore-extra: codeberg.org/emersion/soju git.sr.ht/~sircmpwn/go-bare
+      checks: codeberg.org/emersion/go-scfg/LICENSE github.com/cespare/xxhash/v2/LICENSE.txt
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/soju /usr/bin/sojuctl
+        files: /notices/codeberg.org/emersion/go-scfg/LICENSE /usr/share/licenses/soju/LICENSE
+        dirs: ${{vars.runtime-dirs}}
+update:
+  enabled: true
+  github:
+    identifier: emersion/soju
+    strip-prefix: v
+    use-tag: true

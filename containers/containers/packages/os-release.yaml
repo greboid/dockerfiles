@@ -1,0 +1,59 @@
+# os-release: base OS identification shared by all our images.
+#
+# Images built here resolve base packages from Alpine, so the file
+# identifies as Alpine truthfully. Bump the version (and the file's
+# VERSION_ID) when the Alpine branch is bumped. This exists because the
+# images skip alpine-baselayout deliberately — apko warns when
+# /etc/os-release is missing from the final rootfs, and runtime tooling
+# reads this file to identify the base.
+
+package:
+  name: os-release
+  version: 3.24.2
+  epoch: 0
+  description: /etc/os-release identification file for container images
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: os-release.license
+      license: MIT
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+    packages:
+      # alpine-release provides /etc/os-release in the build environment
+      # (melange reads it; this recipe cannot depend on its own output).
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - alpine-release=3.24.2-r0
+
+pipeline:
+  - name: Write /etc/os-release
+    runs: |
+      mkdir -p "${{targets.destdir}}/etc"
+      printf '%s\n' \
+        'NAME="Alpine Linux"' \
+        'ID=alpine' \
+        'VERSION_ID=3.24.2' \
+        'PRETTY_NAME="Alpine Linux v3.24"' \
+        'HOME_URL="https://alpinelinux.org/"' \
+        'BUG_REPORT_URL="https://gitlab.alpinelinux.org/alpine/aports/-/issues"' \
+        > "${{targets.destdir}}/etc/os-release"
+      chmod 0644 "${{targets.destdir}}/etc/os-release"
+  - name: Smoke-check the payload
+    runs: |
+      test -s "${{targets.destdir}}/etc/os-release"
+      grep -q '^ID=alpine$' "${{targets.destdir}}/etc/os-release"
+
+update:
+  enabled: false
+  # The version tracks the pinned Alpine branch and must move in lockstep
+  # with the alpine-release pins in every recipe and image definition,
+  # so branch bumps (version and VERSION_ID together) are made by hand.
+  exclude-reason: must move in lockstep with the alpine-release pins across all recipes

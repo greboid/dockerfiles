@@ -1,0 +1,73 @@
+package:
+  name: tsp
+  version: 1.2.0
+  epoch: 1
+  description: Tailscale TCP proxy forwarding tailnet connections to an upstream
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENCE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - os-release=3.24.2-r0
+
+vars:
+  runtime-dirs: /config /home/nonroot/.config
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 4b635a016398c783aa8ae0d130b609fb99dd711c
+      repository: https://github.com/csmith/tsp
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./
+      output: tsp
+      static: "true"
+      experiments: jsonv2
+  - uses: dirs
+    with:
+      dirs: ${{vars.runtime-dirs}}
+  - uses: go/licenses
+    with:
+      save: "false"
+      license: LICENCE
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/tsp
+        files: /usr/share/licenses/tsp/LICENCE
+        dirs: ${{vars.runtime-dirs}}
+update:
+  enabled: true
+  github:
+    identifier: csmith/tsp
+    strip-prefix: v
+    use-tag: true

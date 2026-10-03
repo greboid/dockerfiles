@@ -1,0 +1,86 @@
+# Source-built replacement for containers/cocoon (upstream v0.11.3).
+package:
+  name: cocoon
+  version: 0.12
+  epoch: 0
+  description: An atproto PDS (Bluesky) server
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r0
+      - alpine-release=3.24.2-r0
+  environment:
+    CGO_ENABLED: "0"
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: d37351253bf30cb2d28d5515f4af6ff6069b1292
+      repository: https://github.com/haileyok/cocoon
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd/cocoon
+      output: cocoon
+      strip: -s -w
+      # main.Version carries the v-prefixed tag in the legacy build.
+      ldflags: -extldflags "-static" -buildid= -X main.Version=v${{package.version}}
+  - name: Preserve legacy entrypoint and license notices
+    runs: |
+      ln -s usr/bin/cocoon "${{targets.destdir}}/cocoon"
+      go-licenses save ./... --save_path="${{targets.destdir}}/notices" \
+        --ignore github.com/ipfs/bbloom \
+        --ignore github.com/multiformats/go-base36 \
+        --ignore github.com/jmespath/go-jmespath \
+        --ignore gitlab.com/yawning/secp256k1-voi/internal/fiat/secp256k1montgomery
+      test -s "${{targets.destdir}}/notices/github.com/haileyok/cocoon/LICENSE"
+      install -Dm644 LICENSE "${{targets.destdir}}/usr/share/licenses/cocoon/LICENSE"
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - alpine-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - name: Packaged files
+      runs: |
+        test -x /usr/bin/cocoon
+        test -L /cocoon
+        test -s /notices/github.com/haileyok/cocoon/LICENSE
+        test -s /usr/share/licenses/cocoon/LICENSE
+    - name: Reports the packaged release version
+      runs: |
+        /cocoon --version 2>&1 | grep -q "v${{package.version}}"
+      # Deliberately no run probe: a PDS startup is a network-facing service
+      # (and its sqlite driver is a cgo stub under CGO_ENABLED=0, so real
+      # deployments need postgres). Version and layout checks stay offline.
+
+update:
+  enabled: true
+  github:
+    identifier: haileyok/cocoon
+    strip-prefix: v

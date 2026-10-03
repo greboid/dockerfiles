@@ -1,0 +1,51 @@
+package:
+  name: go-licenses
+  version: 1.6.0
+  epoch: 2
+  description: Collect license notices for Go packages and their dependencies
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: Apache-2.0
+  dependencies:
+    runtime:
+      - go
+      - ca-certificates-bundle
+      - busybox-binsh
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - os-release=3.24.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 5348b744d0983d85713295ea08a20cca1654a45e
+      repository: https://github.com/google/go-licenses
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./
+      output: go-licenses
+  - runs: DESTDIR="${{targets.destdir}}" ./01-script.sh
+  - uses: license/install
+update:
+  enabled: true
+  shared: true
+  github:
+    identifier: google/go-licenses
+    strip-prefix: v
+    tag-filter-prefix: v1.

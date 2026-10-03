@@ -1,0 +1,27 @@
+name: Install the package's license file
+
+inputs:
+  license:
+    description: |
+      Path to the license file to install. When empty, a license file is
+      looked up in the source root among LICENSE, LICENSE.md, LICENCE,
+      LICENCE.md, COPYING and COPYING.md.
+    default: ''
+
+pipeline:
+  - runs: |
+      lic="${{inputs.license}}"
+      if [ -z "$lic" ]; then
+        for candidate in LICENSE LICENSE.md LICENCE LICENCE.md COPYING COPYING.md; do
+          if [ -f "$candidate" ]; then
+            lic="$candidate"
+            break
+          fi
+        done
+      fi
+      if [ -z "$lic" ] || [ ! -f "$lic" ]; then
+        echo "license/install: no license file found" >&2
+        exit 1
+      fi
+      install -Dm 0644 "$lic" \
+        "${{targets.destdir}}/usr/share/licenses/${{package.name}}/$(basename "$lic")"

@@ -1,0 +1,96 @@
+# Source-built replacement for containers/centauri (upstream v2.9.0).
+package:
+  name: centauri
+  version: 2.9.0
+  epoch: 0
+  description: TLS front proxy with automatic certificates via lego
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENCE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r0
+      - alpine-release=3.24.2-r0
+  environment:
+    CGO_ENABLED: "0"
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: dbdb1f9ce5be35139041af19d0842adfd2b6b55a
+      repository: https://github.com/csmith/centauri
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd/centauri
+      output: centauri
+      strip: -s -w
+      ldflags: -extldflags "-static" -buildid=
+      # lego_httpreq matches the legacy build: it pulls in lego's HTTP request
+      # providers (whose transitive licenses dominate the ignore list below).
+      tags: lego_httpreq
+  - name: Preserve legacy entrypoint, data directory and license notices
+    runs: |
+      ln -s usr/bin/centauri "${{targets.destdir}}/centauri"
+      # Legacy VOLUME /data: user.pem and the certificate store live here.
+      install -d -m 0755 "${{targets.destdir}}/data"
+      go-licenses save ./... --save_path="${{targets.destdir}}/notices" \
+        --ignore github.com/go-acme/tencentclouddnspod/v20210323 \
+        --ignore github.com/go-acme/tencentedgdeone/v20220901 \
+        --ignore github.com/nrdcg/oci-go-sdk/common/v1065 \
+        --ignore github.com/nrdcg/oci-go-sdk/common/v1065/auth \
+        --ignore github.com/nrdcg/oci-go-sdk/common/v1065/utils \
+        --ignore github.com/nrdcg/oci-go-sdk/dns/v1065
+      test -s "${{targets.destdir}}/notices/github.com/csmith/centauri/LICENCE"
+      install -Dm644 LICENCE "${{targets.destdir}}/usr/share/licenses/centauri/LICENCE"
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - alpine-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - name: Packaged files
+      runs: |
+        test -x /usr/bin/centauri
+        test -L /centauri
+        test -d /data
+        test -s /notices/github.com/csmith/centauri/LICENCE
+        test -s /usr/share/licenses/centauri/LICENCE
+    - name: Validates configurations
+      runs: |
+        printf 'route test.example.internal\n\tupstream 127.0.0.1:9999\n' > /tmp/good.conf
+        /centauri -config /tmp/good.conf -validate
+        printf 'not a centauri config\n' > /tmp/bad.conf
+        ! /centauri -config /tmp/bad.conf -validate
+      # Deliberately no boot probe: centauri's certificate path reaches out
+      # to ACME infrastructure (even the selfsigned provider performs ARI
+      # updates), which a test guest must not do.
+
+update:
+  enabled: true
+  github:
+    identifier: csmith/centauri
+    strip-prefix: v

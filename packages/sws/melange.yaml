@@ -1,0 +1,69 @@
+package:
+  name: sws
+  version: 2.44.0
+  epoch: 1
+  description: Static web server (static-web-server) with query-preserving rewrites
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE-MIT
+      license: Apache-2.0 OR MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - os-release=3.24.2-r0
+      - rust=1.96.1-r0
+      - cargo=1.96.1-r0
+      - build-base=0.5-r4
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 27aa3450b6bf70bd1fa553b2197b53032affcba1
+      repository: https://github.com/static-web-server/static-web-server
+      tag: v${{package.version}}
+  - uses: patch
+    with:
+      patches: patches/keepqueriesonrewrites.diff
+  - uses: cargo/build
+    with:
+      output: static-web-server
+      auditable: "false"
+  - uses: go/licenses
+    with:
+      save: "false"
+      license: LICENSE-APACHE LICENSE-MIT
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+        - curl
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/static-web-server
+        files: /usr/share/licenses/sws/LICENSE-APACHE /usr/share/licenses/sws/LICENSE-MIT
+update:
+  enabled: true
+  github:
+    identifier: static-web-server/static-web-server
+    strip-prefix: v

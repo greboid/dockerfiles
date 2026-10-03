@@ -1,0 +1,66 @@
+package:
+  name: goplum
+  version: 1.1.0
+  epoch: 2
+  description: Configurable health checker with a gRPC API
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENCE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r2
+      - os-release=3.24.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: febfeccb616686b27d829c16288d3d4ffef36c9d
+      repository: https://github.com/csmith/goplum
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd/goplum
+      output: goplum
+      static: "true"
+  - uses: go/licenses
+    with:
+      checks: chameth.com/goplum/LICENCE github.com/csmith/envflag/v2/LICENCE
+      license: LICENCE
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+        - openssl
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/goplum
+        files: /notices/chameth.com/goplum/LICENCE /notices/github.com/csmith/envflag/v2/LICENCE /usr/share/licenses/goplum/LICENCE
+update:
+  enabled: true
+  github:
+    identifier: csmith/goplum
+    strip-prefix: v

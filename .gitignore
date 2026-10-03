@@ -1,7 +1,0 @@
-# Local secrets and caches - never commit these.
-/PAT
-/forgejo.rsa*
-/keys/
-/dist/
-/tooling/
-/melange-cache/

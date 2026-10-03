@@ -1,0 +1,74 @@
+package:
+  name: thp
+  version: 1.2.2
+  epoch: 2
+  description: Tailscale HTTP proxy forwarding tailnet requests to an upstream
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENCE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r2
+      - os-release=3.24.2-r0
+
+vars:
+  runtime-dirs: /config
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 3a0d611949b677068d3edbd75550bf31b2ded353
+      repository: https://github.com/greboid/thp
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./
+      output: thp
+      static: "true"
+      experiments: jsonv2
+  - uses: dirs
+    with:
+      dirs: ${{vars.runtime-dirs}}
+  - uses: go/licenses
+    with:
+      module: github.com/greboid/thp
+      license: LICENCE
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/thp
+        files: /notices/github.com/greboid/thp/LICENCE /usr/share/licenses/thp/LICENCE
+        dirs: ${{vars.runtime-dirs}}
+update:
+  enabled: true
+  github:
+    identifier: greboid/thp
+    strip-prefix: v
+    use-tag: true

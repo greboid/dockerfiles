@@ -1,0 +1,87 @@
+package:
+  name: forgejo
+  version: 16.0.5
+  epoch: 2
+  description: Forgejo self-hosted software forge (Gitea fork)
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r2
+      - os-release=3.24.2-r0
+      - make=4.4.1-r4
+      - nodejs=24.18.1-r0
+      - npm=11.12.1-r0
+      - build-base=0.5-r4
+  environment:
+    CGO_ENABLED: "1"
+
+vars:
+  runtime-dirs: /data
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 8d24b7d52df327118cd776cf461d34e52e0ec1ce
+      repository: https://codeberg.org/forgejo/forgejo
+      tag: v${{package.version}}
+  - name: Build the frontend assets
+    runs: ./01-build-the-frontend-assets.sh
+  - name: Generate embedded Go assets
+    runs: ./02-generate-embedded-go-assets.sh
+  - uses: go/build
+    with:
+      packages: ./
+      output: forgejo
+      ldflags: -X main.Version=${{package.version}}
+      tags: bindata,sqlite,sqlite_unlock_notify
+  - uses: dirs
+    with:
+      dirs: ${{vars.runtime-dirs}}
+  - uses: go/licenses
+    with:
+      ignore-extra: github.com/golang/freetype github.com/golang/freetype/raster github.com/golang/freetype/truetype github.com/mrjones/oauth github.com/yohcop/openid-go
+      module: forgejo.org
+  - name: Prune the vendored frontend notice trees
+    runs: DESTDIR="${{targets.destdir}}" ./03-prune-vendored-notices.sh
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/forgejo
+        files: /notices/forgejo.org/LICENSE /usr/share/licenses/forgejo/LICENSE
+        dirs: ${{vars.runtime-dirs}}
+    - uses: test/version
+update:
+  enabled: true
+  forgejo:
+    instance: https://codeberg.org
+    identifier: forgejo/forgejo
+    strip-prefix: v

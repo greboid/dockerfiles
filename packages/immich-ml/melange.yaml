@@ -1,0 +1,93 @@
+package:
+  name: immich-ml
+  version: 3.2.0
+  epoch: 1
+  description: Immich machine-learning server (CPU)
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: AGPL-3.0-only
+  dependencies:
+    runtime:
+      - python3=3.14.8-r0
+      - py3-onnxruntime=1.24.4-r1
+      - py3-opencv=4.12.0-r7
+      - py3-numpy=2.4.6-r0
+      - py3-shapely=2.1.2-r1
+      - py3-watchfiles=1.1.1-r1
+      - py3-websockets=16.0-r1
+      - mimalloc2=2.2.7-r0
+      - protobuf=31.1-r1
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - os-release=3.24.2-r0
+      - python3=3.14.8-r0
+      - python3-dev=3.14.8-r0
+      - py3-pip=26.1.2-r0
+      - py3-numpy=2.4.6-r0
+      - py3-numpy-dev=2.4.6-r0
+      - py3-onnxruntime=1.24.4-r1
+      - py3-opencv=4.12.0-r7
+      - py3-shapely=2.1.2-r1
+      - py3-watchfiles=1.1.1-r1
+      - py3-websockets=16.0-r1
+      - uv=0.11.19-r0
+      - abseil-cpp-dev=20250814.1-r0
+      - protobuf-dev=31.1-r1
+      - cmake=4.2.3-r0
+      - build-base=0.5-r4
+      - linux-headers=7.0.0-r1
+      - make=4.4.1-r4
+      - pkgconf=2.5.1-r0
+      - g++=15.2.0-r5
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 1b6098c9dbfffe978bec2d414606ed7a4c8e019a
+      repository: https://github.com/immich-app/immich
+      tag: v${{package.version}}
+  - name: Create the virtualenv over the system ML stack
+    runs: ./01-create-the-virtualenv-over-the.sh
+  - name: Install the frozen Python dependencies
+    runs: ./02-install-the-frozen-python.sh
+  - name: Stage the venv, service and healthcheck
+    runs: DESTDIR="${{targets.destdir}}" ./03-stage-the-venv-service-and.sh
+  - uses: go/licenses
+    with:
+      save: "false"
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+        - curl
+  pipeline:
+    - uses: test/paths
+      with:
+        files: /opt/venv/bin/python /usr/src/healthcheck.py /usr/share/licenses/immich-ml/LICENSE
+        dirs: /usr/src/immich_ml
+    - name: Boots the ML server and answers its ping
+      runs: ./test-02-boots-the-ml-server-and-answers-its.sh
+update:
+  enabled: true
+  github:
+    identifier: immich-app/immich
+    strip-prefix: v

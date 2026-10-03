@@ -1,0 +1,165 @@
+name: build-package
+
+# The one pipeline every packages/<name> repo runs, reused via
+# workflow_call: a repo's own .forgejo/workflows/build.yml is a thin stub
+# that calls this file and nothing else:
+#
+#   jobs:
+#     ci:
+#       uses: packages/common/.forgejo/workflows/build-package.yml@main
+#       secrets: inherit
+#
+# The caller job must stay bare - `uses:`, `secrets:` and nothing else.
+# A runs-on on a `uses:` job is not valid reusable-workflow syntax and
+# makes Forgejo block the run with "workflow was not executed due to an
+# error that blocked the execution attempt", dispatching nothing; the
+# called job below carries the runs-on. secrets: inherit forwards the
+# org secrets this workflow reads.
+#
+# Inside a called workflow github.repository is the caller's: package
+# name and origin URL derive per repo. Every run builds, tests, publishes
+# and verifies. There is deliberately no step-level gating: Forgejo
+# 16.0.5 evaluates if: conditions on steps inside a called workflow as
+# false - a push-to-main run came out all green with publish and verify
+# silently skipped - so gating must not live there.
+#
+# The build tooling is itself org-packaged: melange is installed with apk
+# from the organisation's Alpine repository - the same signed repository
+# the build publishes to, seeded once by packages/common's bootstrap
+# workflow - alongside bubblewrap and openssl from Alpine. The same
+# repository also resolves the recipe's org-package dependencies, so a
+# package builds against exactly what the rest of the organisation runs.
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: alpine
+    env:
+      ORG_REPO: https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    steps:
+      - name: Checkout package repo
+        uses: actions/toolkit/git-checkout@master
+
+      - name: Fetch the org pipelines
+        # Only git-checkout, fetch and patch are embedded in melange, and
+        # the embedded go/build predates the org's recipes. The org's set
+        # is owned by this repo; cloned here and handed to melange with
+        # --pipeline-dirs, which is searched before the embedded set.
+        run: |
+          set -eu
+          git clone -q --depth 1 "$GITHUB_SERVER_URL/packages/common.git" /tmp/common
+          cp -r /tmp/common/pipelines .
+
+      - name: Install build prerequisites
+        # bubblewrap is melange's build and test guest runner; openssl
+        # derives the signing key's public half and hashes the repository
+        # key into its signature name.
+        run: apk add --no-cache bubblewrap openssl
+
+      - name: Trust the org repository
+        # The Forgejo registry re-signs the APKINDEX with its own key,
+        # whose public half lives at the org-level key endpoint. Both apk
+        # (tools 3) and melange match an index signature to a key by FILE
+        # NAME: the signature embeds <owner>@<sha256(DER)>.rsa.pub, and
+        # only a keyring entry under exactly that name is consulted -
+        # key content under any other name is ignored, yielding
+        # "UNTRUSTED signature". Install the key under that name for the
+        # host's /etc/apk/keys, and hand the same file to melange's
+        # --keyring-append for its own view of the repository.
+        run: |
+          set -eu
+          curl -fsSL --retry 3 -o key.rsa.pub "${ORG_REPO%/*/*}/key"
+          hash=$(openssl pkey -pubin -in key.rsa.pub -outform DER 2>/dev/null | sha256sum | cut -d' ' -f1)
+          mv key.rsa.pub "packages@${hash}.rsa.pub"
+          cp "packages@${hash}.rsa.pub" "/etc/apk/keys/packages@${hash}.rsa.pub"
+          printf '%s\n' \
+            "--keyring-append $PWD/packages@${hash}.rsa.pub" \
+            "--repository-append $ORG_REPO" >> org-repo.args
+          echo "$ORG_REPO" >> /etc/apk/repositories
+          apk update
+          echo "trusting index key packages@$hash"
+
+      - name: Install melange from the org repository
+        run: |
+          set -eu
+          apk add --no-cache melange
+          melange version
+
+      - name: Write signing key
+        env:
+          APK_SIGNING_KEY: ${{ secrets.APK_SIGNING_KEY }}
+        run: |
+          set -eu
+          mkdir -p keys
+          if [ -n "$APK_SIGNING_KEY" ]; then
+            printf '%s\n' "$APK_SIGNING_KEY" > keys/packages.rsa
+          else
+            melange keygen keys/packages.rsa   # throwaway: only reachable when the org secret is unavailable
+          fi
+          openssl rsa -in keys/packages.rsa -pubout -out keys/packages.rsa.pub 2>/dev/null
+          head -1 keys/packages.rsa.pub | grep -q 'BEGIN PUBLIC KEY'
+
+      - name: Build package
+        run: |
+          set -eu
+          export SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)
+          melange build melange.yaml \
+            --arch x86_64 \
+            --pipeline-dirs "$PWD/pipelines" \
+            --namespace packages \
+            --git-repo-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
+            --signing-key keys/packages.rsa \
+            --keyring-append "$PWD/keys/packages.rsa.pub" \
+            $(cat org-repo.args) \
+            --out-dir dist
+
+      - name: Test package
+        run: |
+          set -eu
+          melange test melange.yaml \
+            --arch x86_64 \
+            --pipeline-dirs "$PWD/pipelines" \
+            --source-dir . \
+            --keyring-append "$PWD/keys/packages.rsa.pub" \
+            --repository-append "$PWD/dist" \
+            $(cat org-repo.args)
+
+      - name: Publish package
+        # Unconditional: gating with a step-level if: is silently false in
+        # called workflows on Forgejo 16.0.5. The registry rejects
+        # re-uploading an existing package version with 409 Conflict, so
+        # delete the previously published version first; 404 simply means
+        # nothing was published yet (first build, or a renamed package).
+        env:
+          RELEASE_PACKAGE_TOKEN: ${{ secrets.RELEASE_PACKAGE_TOKEN }}
+        run: |
+          set -eu
+          for apk in dist/x86_64/*.apk; do
+            name=$(basename "$apk")
+            echo "deleting previous: $name"
+            code=$(curl -s -o /dev/null -w '%{http_code}' --retry 3 \
+              --user "greboid:$RELEASE_PACKAGE_TOKEN" \
+              -X DELETE "$ORG_REPO/x86_64/$name") || code=000
+            case "$code" in
+              200|201|204|404) ;;
+              *) echo "unexpected delete status $code for $name" >&2; exit 1 ;;
+            esac
+            echo "publishing: $apk"
+            curl -fsS --retry 3 \
+              --user "greboid:$RELEASE_PACKAGE_TOKEN" \
+              -F "file=@$apk" \
+              -X PUT \
+              "$ORG_REPO"
+          done
+
+      - name: Verify round trip
+        run: |
+          set -eu
+          for apk in dist/x86_64/*.apk; do
+            name=$(basename "$apk")
+            curl -fsSL --retry 3 -o /tmp/roundtrip.apk "$ORG_REPO/x86_64/$name"
+            test "$(sha256sum /tmp/roundtrip.apk | cut -d' ' -f1)" = "$(sha256sum "$apk" | cut -d' ' -f1)"
+            echo "published $name"
+          done

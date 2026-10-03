@@ -1,0 +1,65 @@
+package:
+  name: centauri-docker-confd
+  version: 1.6.2
+  epoch: 2
+  description: Generates centauri route configuration from Docker containers
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENCE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r2
+      - os-release=3.24.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 0872c04d0711e718cfbaf20998f56ac4628db086
+      repository: https://github.com/csmith/centauri-docker-confd
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./
+      output: centauri-docker-confd
+      static: "true"
+  - uses: go/licenses
+    with:
+      module: github.com/csmith/centauri-docker-confd
+      license: LICENCE
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/centauri-docker-confd
+        files: /notices/github.com/csmith/centauri-docker-confd/LICENCE /usr/share/licenses/centauri-docker-confd/LICENCE
+update:
+  enabled: true
+  github:
+    identifier: csmith/centauri-docker-confd
+    strip-prefix: v

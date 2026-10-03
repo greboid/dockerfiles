@@ -1,0 +1,94 @@
+package:
+  name: melange
+  version: 0.61.1
+  epoch: 1
+  description: APK package builder (source-built v0.61.1, org patch set)
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: Apache-2.0
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates-bundle=20260909-r0
+      - os-release=3.24.2-r0
+      - go=1.27.1-r1
+      - git=2.54.0-r0
+  environment:
+    CGO_ENABLED: "0"
+    GOTELEMETRY: "off"
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: d062cf25ce373bf8045d79b9897878ab207d8d36
+      repository: https://github.com/chainguard-dev/melange
+      tag: v${{package.version}}
+  - uses: patch
+    with:
+      patches: |
+        patches/001-pkginfo-header.patch
+        patches/002-slsa-identities.patch
+        patches/003-sbom-canonical-package.patch
+        patches/004-sbom-document-identity.patch
+        patches/005-sbom-upstream-source-license.patch
+        patches/006-bwrap-guest-modes.patch
+        patches/007-forgejo-update-monitor.patch
+  # melange resolves its build guests through chainguard.dev/apko as pinned
+  # by its go.mod, so the apko patch series never reaches it: check out
+  # exactly that tag, apply the forgejo index patch (byte-identical with the
+  # apko package's patches/007), and replace the module with that tree.
+  # Keep tag/expected-commit in lockstep with the chainguard.dev/apko pin
+  # in the melange source's go.mod; depbot bumps them.
+  - name: Check out the apko tag pinned by melange's go.mod
+    uses: git-checkout
+    with:
+      repository: https://github.com/chainguard-dev/apko
+      tag: v1.4.3
+      expected-commit: 59da166d5b46bb374a4062b18827c748e11f624c
+      destination: apko-lib
+  - uses: patch
+    working-directory: apko-lib
+    with:
+      patches: ../patches/apko/007-index-head-405-fallback.patch
+  # A disk replace skips module verification, so go.sum stays untouched.
+  # The melange runner resets PATH, and go=1.27.1-r1 is the local
+  # source-built toolchain installed at the legacy /usr/local/go layout
+  # (Alpine v3.24 ships only go 1.26.8, older than the go 1.27.0 that
+  # melange's go.mod requires): put that tree on PATH and GOROOT explicitly.
+  - name: Replace the apko module with the patched tree
+    runs: |
+      export PATH="/usr/local/go/bin:$PATH" GOROOT=/usr/local/go
+      go mod edit -replace "chainguard.dev/apko=$PWD/apko-lib"
+  - name: Build melange with the pinned /usr/local/go toolchain
+    runs: |
+      export PATH="/usr/local/go/bin:$PATH" GOROOT=/usr/local/go
+      go build -trimpath -o melange .
+      install -Dm755 melange "${{targets.destdir}}/usr/bin/melange"
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+update:
+  enabled: true
+  github:
+    identifier: chainguard-dev/melange
+    strip-prefix: v

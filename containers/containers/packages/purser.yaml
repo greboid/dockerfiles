@@ -1,0 +1,104 @@
+# Source-built replacement for containers/purser (upstream v1.2.0).
+package:
+  name: purser
+  version: 1.2.0
+  epoch: 0
+  description: Periodic vulnerability reports for the local Docker containers
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENCE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r0
+      - alpine-release=3.24.2-r0
+  environment:
+    CGO_ENABLED: "0"
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: dbd4500ecbe92891ce3e933fc1b78a8fb4acd0cf
+      repository: https://github.com/csmith/purser
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./
+      output: purser
+      strip: -s -w
+      ldflags: -extldflags "-static" -buildid=
+      # jsonv2 matches the legacy build's GOEXPERIMENT.
+      experiments: jsonv2
+  - name: Preserve legacy entrypoint, data directories and license notices
+    runs: |
+      ln -s usr/bin/purser "${{targets.destdir}}/purser"
+      # Legacy VOLUMEs: trivy vulnerability cache and rendered reports.
+      install -d -m 0755 "${{targets.destdir}}/data/cache"
+      install -d -m 0755 "${{targets.destdir}}/data/output"
+      # GOEXPERIMENT must be set here too: the main module imports
+      # encoding/json/v2, and go-licenses' internal `go list` otherwise
+      # fails with "build constraints exclude all Go files".
+      GOEXPERIMENT=jsonv2 go-licenses save ./... \
+        --save_path="${{targets.destdir}}/notices" \
+        --ignore github.com/xi2/xz \
+        --ignore modernc.org/mathutil \
+        --ignore github.com/cyberphone/json-canonicalization/go/src/webpki.org/jsoncanonicalizer \
+        --ignore github.com/in-toto/in-toto-golang/in_toto \
+        --ignore github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/common \
+        --ignore github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/v0.1 \
+        --ignore github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/v0.2 \
+        --ignore github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/v1 \
+        --ignore github.com/in-toto/attestation/go/v1
+      test -s "${{targets.destdir}}/notices/github.com/csmith/purser/LICENCE"
+      install -Dm644 LICENCE "${{targets.destdir}}/usr/share/licenses/purser/LICENCE"
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - alpine-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - name: Packaged files
+      runs: |
+        test -x /usr/bin/purser
+        test -L /purser
+        test -d /data/cache
+        test -d /data/output
+        test -s /notices/github.com/csmith/purser/LICENCE
+        test -s /usr/share/licenses/purser/LICENCE
+    - name: Fails without a Docker daemon
+      runs: |
+        # The initial scan lists containers first, so it fails before any
+        # vulnerability database is downloaded.
+        if /purser >/tmp/purser.log 2>&1; then
+          echo "expected missing-daemon failure" >&2
+          exit 1
+        fi
+        grep -q "Failed to scan containers" /tmp/purser.log
+
+update:
+  enabled: true
+  github:
+    identifier: csmith/purser
+    strip-prefix: v

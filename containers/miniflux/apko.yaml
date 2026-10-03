@@ -1,0 +1,32 @@
+archs:
+  - x86_64
+
+contents:
+  keyring:
+    - keys/packages@f3acd02d7d98309c4ae1d1bf92e58fe2673383ee9b816cb8b0ef8a5eac56c6bc.rsa.pub
+    - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+  repositories:
+    - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+    - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+  packages:
+    - ca-certificates-bundle=20260909-r0
+    - tzdata=2026d-r0
+    - os-release=3.24.2-r0
+    - miniflux=2.3.3-r2
+
+accounts:
+  run-as: 65532:65532
+  users:
+    - username: nonroot
+      uid: 65532
+  groups:
+    - groupname: nonroot
+      gid: 65532
+      members:
+        - nonroot
+
+environment:
+  LISTEN_ADDR: 0.0.0.0:8080
+
+entrypoint:
+  command: /usr/bin/miniflux

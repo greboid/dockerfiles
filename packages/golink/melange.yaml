@@ -1,0 +1,71 @@
+package:
+  name: golink
+  version: 1.0.0
+  epoch: 3
+  description: A private shortlink service for your tailnet
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: BSD-3-Clause
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r2
+      - os-release=3.24.2-r0
+
+vars:
+  runtime-dirs: /home/nonroot
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: d55b2a3302777d7f9943863644d4c84ecacb31b7
+      repository: https://github.com/tailscale/golink
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd/golink
+      output: golink
+      static: "true"
+  - uses: dirs
+    with:
+      dirs: ${{vars.runtime-dirs}}
+  - uses: go/licenses
+    with:
+      module: github.com/tailscale/golink
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/golink
+        files: /notices/github.com/tailscale/golink/LICENSE /usr/share/licenses/golink/LICENSE
+update:
+  enabled: true
+  github:
+    identifier: tailscale/golink
+    strip-prefix: v
+    use-tag: true

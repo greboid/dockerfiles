@@ -1,0 +1,449 @@
+--- a/pkg/apk/apk/cache.go
++++ b/pkg/apk/apk/cache.go
+@@ -232,6 +232,29 @@
+ 		// HEAD shouldn't have a body. Make sure we close it so we can reuse the connection.
+ 		defer resp.Body.Close()
+ 
++		// Some servers do not implement HEAD and answer 405/501 (e.g. Forgejo
++		// Alpine package endpoints). Storing that failure response would pin a
++		// dead etag-probe result in the cache, so discover the etag with one
++		// authenticated GET instead (same method-safe semantics as the plain
++		// GETs this transport already issues; the body is discarded unread —
++		// content is fetched, bounded and cached by the normal get path).
++		if resp.StatusCode == http.StatusMethodNotAllowed || resp.StatusCode == http.StatusNotImplemented {
++			getReq := request.Clone(request.Context())
++			getReq.Method = http.MethodGet
++			getResp, err := t.wrapped.Do(getReq) //#nosec G704 -- transport wrapper executes caller-provided request
++			if err != nil {
++				return nil, err
++			}
++			defer getResp.Body.Close()
++			if getResp.StatusCode != http.StatusOK {
++				return nil, fmt.Errorf("unexpected status code %d", getResp.StatusCode)
++			}
++			metadata := *getResp
++			metadata.Body = http.NoBody
++			t.cache.store(cacheFile, &metadata)
++			return &metadata, nil
++		}
++
+ 		t.cache.store(cacheFile, resp)
+ 
+ 		return resp, nil
+--- a/pkg/apk/apk/index.go
++++ b/pkg/apk/apk/index.go
+@@ -106,10 +106,6 @@
+ 		}
+ 		defer resp.Body.Close()
+ 
+-		if resp.StatusCode != http.StatusOK {
+-			return nil, fmt.Errorf("unexpected status code %d", resp.StatusCode)
+-		}
+-
+ 		fetchAndParse := func(etag string) (NamedIndex, error) {
+ 			b, err := fetchRepositoryIndex(ctx, u, etag, opts)
+ 			if err != nil {
+@@ -122,6 +118,21 @@
+ 			return NewNamedRepositoryWithIndex(repoName, repoRef.WithIndex(idx)), nil
+ 		}
+ 
++		// Some HTTP servers do not implement HEAD for their package
++		// endpoints and answer 405 (Method Not Allowed) or 501 (Not
++		// Implemented) instead; Forgejo Alpine repositories behave this way.
++		// The HEAD is only an etag probe, not a requirement: fall back to the
++		// ordinary GET path, which adds the same authentication and still
++		// verifies the index signature and enforces the decompressed-size
++		// bound. Every other non-200 status remains a hard error.
++		if code := resp.StatusCode; code != http.StatusOK {
++			if code != http.StatusMethodNotAllowed && code != http.StatusNotImplemented {
++				return nil, fmt.Errorf("unexpected status code %d", code)
++			}
++			apkometrics.RecordIndexCacheAccess(apkometrics.CacheResultBypass)
++			return fetchAndParse("")
++		}
++
+ 		etag, ok := etagFromResponse(resp)
+ 		if !ok {
+ 			// If there's no etag, we can't cache it, so just return the result.
+--- a/pkg/apk/apk/index_head405_test.go
++++ b/pkg/apk/apk/index_head405_test.go
+@@ -0,0 +1,379 @@
++package apk
++
++import (
++	"archive/tar"
++	"bytes"
++	"compress/gzip"
++	"crypto"
++	"crypto/rand"
++	"crypto/rsa"
++	"crypto/sha256"
++	"crypto/x509"
++	"encoding/pem"
++	"fmt"
++	"io"
++	"net/http"
++	"net/http/httptest"
++	"os"
++	"path/filepath"
++	"strings"
++	"sync/atomic"
++	"testing"
++
++	"chainguard.dev/apko/pkg/apk/auth"
++	"chainguard.dev/apko/pkg/apk/signature"
++)
++
++// head405Server is a Forgejo-shaped Alpine endpoint: HEAD on the index is not
++// implemented (405 Method Not Allowed, allow: GET, DELETE — exactly what
++// https://git.mouse-lake.ts.net/api/packages/containers/alpine/gate5/...
++// serves), while GET returns the index body. Request counts are recorded so
++// tests can assert which methods actually reached the wire.
++type head405Server struct {
++	srv       *httptest.Server
++	head      atomic.Int64
++	get       atomic.Int64
++	status    int // status served for HEAD
++	getStatus int // status served for GET (default 200)
++	body      []byte
++	etag      string // optional ETag served on GET
++	user      string // optional basic auth required on GET
++	pass      string
++}
++
++func newHead405Server(t *testing.T, status int, body []byte) *head405Server {
++	t.Helper()
++	h := &head405Server{status: status, getStatus: http.StatusOK, body: body}
++	mux := http.NewServeMux()
++	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
++		if r.Method == http.MethodHead {
++			h.head.Add(1)
++			w.Header().Set("Allow", "GET, DELETE")
++			w.WriteHeader(h.status)
++			return
++		}
++		if r.Method != http.MethodGet {
++			w.WriteHeader(http.StatusMethodNotAllowed)
++			return
++		}
++		h.get.Add(1)
++		if h.getStatus != http.StatusOK {
++			w.WriteHeader(h.getStatus)
++			return
++		}
++		if h.user != "" {
++			u, p, ok := r.BasicAuth()
++			if !ok || u != h.user || p != h.pass {
++				w.WriteHeader(http.StatusUnauthorized)
++				return
++			}
++		}
++		if h.etag != "" {
++			w.Header().Set("Etag", h.etag)
++		}
++		_, _ = w.Write(h.body)
++	})
++	h.srv = httptest.NewServer(mux)
++	t.Cleanup(h.srv.Close)
++	return h
++}
++
++func testIndexBody(t *testing.T) []byte {
++	t.Helper()
++	idx := &APKIndex{Description: "head-405-fallback-test"}
++	idx.Packages = append(idx.Packages, &Package{
++		Name:     "gate5-fixture",
++		Version:  "0.0.1-r0",
++		Arch:     "x86_64",
++		Checksum: []byte("01234567890123456789"),
++	})
++	archive, err := ArchiveFromIndex(idx)
++	if err != nil {
++		t.Fatal(err)
++	}
++	b, err := io.ReadAll(archive)
++	if err != nil {
++		t.Fatal(err)
++	}
++	return b
++}
++
++// TestIndexHead405FallsBackToGET pins the Forgejo compatibility behavior of
++// the index path: when the etag-probe HEAD is answered 405 or 501, the index
++// is still fetched via the ordinary GET path (same auth, same signature
++// verification, same size bounds). Any other non-200 status must keep failing.
++func TestIndexHead405FallsBackToGET(t *testing.T) {
++	for _, status := range []int{http.StatusMethodNotAllowed, http.StatusNotImplemented} {
++		t.Run(fmt.Sprintf("HEAD-%d", status), func(t *testing.T) {
++			h := newHead405Server(t, status, testIndexBody(t))
++
++			indexes, err := GetRepositoryIndexes(t.Context(), []string{h.srv.URL}, nil, "x86_64",
++				WithIgnoreSignatures(true), WithHTTPClient(h.srv.Client()))
++			if err != nil {
++				t.Fatalf("expected HEAD %d to fall back to GET, got error: %v", status, err)
++			}
++			if len(indexes) != 1 {
++				t.Fatalf("got %d indexes, want 1", len(indexes))
++			}
++			pkgs := indexes[0].Packages()
++			if len(pkgs) != 1 || pkgs[0].Name != "gate5-fixture" {
++				t.Errorf("unexpected packages: %+v", pkgs)
++			}
++			if got := h.head.Load(); got != 1 {
++				t.Errorf("HEAD request count = %d, want 1", got)
++			}
++			if got := h.get.Load(); got != 1 {
++				t.Errorf("GET request count = %d, want 1", got)
++			}
++		})
++	}
++}
++
++func TestIndexHeadOtherStatusesStillFail(t *testing.T) {
++	for _, status := range []int{http.StatusNotFound, http.StatusForbidden, http.StatusInternalServerError} {
++		t.Run(fmt.Sprintf("HEAD-%d", status), func(t *testing.T) {
++			h := newHead405Server(t, status, testIndexBody(t))
++
++			_, err := GetRepositoryIndexes(t.Context(), []string{h.srv.URL}, nil, "x86_64",
++				WithIgnoreSignatures(true), WithHTTPClient(h.srv.Client()))
++			if err == nil {
++				t.Fatalf("HEAD %d must remain a hard error", status)
++			}
++			if !strings.Contains(err.Error(), fmt.Sprintf("unexpected status code %d", status)) {
++				t.Errorf("error = %v, want unexpected status code %d", err, status)
++			}
++		})
++	}
++}
++
++// TestIndexHead405FallbackPreservesAuth proves the fallback GET carries the
++// configured authenticator's credentials, and that missing credentials still
++// fail (the fallback must not become an auth bypass).
++func TestIndexHead405FallbackPreservesAuth(t *testing.T) {
++	h := newHead405Server(t, http.StatusMethodNotAllowed, testIndexBody(t))
++	h.user, h.pass = "user", "pass"
++	host := strings.TrimPrefix(h.srv.URL, "http://")
++
++	t.Run("authenticated", func(t *testing.T) {
++		indexes, err := GetRepositoryIndexes(t.Context(), []string{h.srv.URL}, nil, "x86_64",
++			WithIgnoreSignatures(true),
++			WithHTTPClient(h.srv.Client()),
++			WithIndexAuthenticator(auth.StaticAuth(host, "user", "pass")))
++		if err != nil {
++			t.Fatalf("authenticated fallback GET failed: %v", err)
++		}
++		if len(indexes) != 1 {
++			t.Fatalf("got %d indexes, want 1", len(indexes))
++		}
++	})
++
++	t.Run("wrong-credentials-still-fail", func(t *testing.T) {
++		_, err := GetRepositoryIndexes(t.Context(), []string{h.srv.URL}, nil, "x86_64",
++			WithIgnoreSignatures(true),
++			WithHTTPClient(h.srv.Client()),
++			WithIndexAuthenticator(auth.StaticAuth(host, "user", "wrong")))
++		if err == nil {
++			t.Fatal("fallback GET with wrong credentials must not succeed")
++		}
++		if !strings.Contains(err.Error(), "unexpected status code 401") {
++			t.Errorf("error = %v, want unexpected status code 401", err)
++		}
++	})
++}
++
++// signedIndexBody builds a real RSA256-signed APKINDEX archive: first gzip
++// member carries the .SIGN.RSA256.<keyName> tar member, second carries the
++// index (this is the layout parseRepositoryIndex expects, with the signature
++// covering the raw second-member bytes).
++func signedIndexBody(t *testing.T, keyName string) (body, publicKey []byte) {
++	t.Helper()
++	key, err := rsa.GenerateKey(rand.Reader, 2048)
++	if err != nil {
++		t.Fatal(err)
++	}
++
++	indexBytes := testIndexBody(t)
++	digest := sha256.Sum256(indexBytes)
++
++	keyPath := filepath.Join(t.TempDir(), "signing.rsa")
++	privPEM := pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(key)})
++	if err := os.WriteFile(keyPath, privPEM, 0o600); err != nil {
++		t.Fatal(err)
++	}
++	sig, err := signature.RSASignDigest(digest[:], crypto.SHA256, keyPath, "")
++	if err != nil {
++		t.Fatal(err)
++	}
++
++	var sigTar bytes.Buffer
++	tw := tar.NewWriter(&sigTar)
++	hdr := &tar.Header{Name: fmt.Sprintf(".SIGN.RSA256.%s", keyName), Mode: 0o644, Size: int64(len(sig))}
++	if err := tw.WriteHeader(hdr); err != nil {
++		t.Fatal(err)
++	}
++	if _, err := tw.Write(sig); err != nil {
++		t.Fatal(err)
++	}
++	// apk-tools writes the signature tar member WITHOUT the two end-of-archive
++	// blocks, so the concatenated stream continues seamlessly into the index
++	// member (see the real Alpine APKINDEX layout). Flush pads the entry but
++	// must not be followed by Close.
++	if err := tw.Flush(); err != nil {
++		t.Fatal(err)
++	}
++	var sigMember bytes.Buffer
++	gw := gzip.NewWriter(&sigMember)
++	if _, err := gw.Write(sigTar.Bytes()); err != nil {
++		t.Fatal(err)
++	}
++	if err := gw.Close(); err != nil {
++		t.Fatal(err)
++	}
++
++	pub, err := x509.MarshalPKIXPublicKey(&key.PublicKey)
++	if err != nil {
++		t.Fatal(err)
++	}
++	pubPEM := pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: pub})
++
++	return append(sigMember.Bytes(), indexBytes...), pubPEM
++}
++
++// TestIndexHead405FallbackSignatures pins that the fallback GET does not
++// weaken trust: signed content verifies (positive), unsigned content and wrong
++// keys are rejected exactly as on the HEAD-supported path (negative).
++func TestIndexHead405FallbackSignatures(t *testing.T) {
++	keyName := "gate5-test.rsa.pub"
++
++	t.Run("signed-index-verifies", func(t *testing.T) {
++		body, pub := signedIndexBody(t, keyName)
++		h := newHead405Server(t, http.StatusMethodNotAllowed, body)
++
++		indexes, err := GetRepositoryIndexes(t.Context(), []string{h.srv.URL},
++			map[string][]byte{keyName: pub}, "x86_64",
++			WithHTTPClient(h.srv.Client()))
++		if err != nil {
++			t.Fatalf("signed index rejected on HEAD-405 fallback: %v", err)
++		}
++		if len(indexes) != 1 || len(indexes[0].Packages()) != 1 {
++			t.Fatalf("unexpected indexes: %+v", indexes)
++		}
++	})
++
++	t.Run("unsigned-index-still-rejected", func(t *testing.T) {
++		h := newHead405Server(t, http.StatusMethodNotAllowed, testIndexBody(t))
++		if _, err := GetRepositoryIndexes(t.Context(), []string{h.srv.URL},
++			map[string][]byte{keyName: []byte("irrelevant")}, "x86_64",
++			WithHTTPClient(h.srv.Client())); err == nil {
++			t.Fatal("unsigned index must be rejected on the fallback path")
++		}
++	})
++
++	t.Run("wrong-key-still-rejected", func(t *testing.T) {
++		body, _ := signedIndexBody(t, keyName)
++		other, err := rsa.GenerateKey(rand.Reader, 2048)
++		if err != nil {
++			t.Fatal(err)
++		}
++		pubOther, err := x509.MarshalPKIXPublicKey(&other.PublicKey)
++		if err != nil {
++			t.Fatal(err)
++		}
++		h := newHead405Server(t, http.StatusMethodNotAllowed, body)
++		if _, err := GetRepositoryIndexes(t.Context(), []string{h.srv.URL},
++			map[string][]byte{keyName: pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: pubOther})},
++			"x86_64", WithHTTPClient(h.srv.Client())); err == nil {
++			t.Fatal("index signed by the wrong key must be rejected on the fallback path")
++		}
++	})
++}
++
++// TestCacheHead405FallsBackToGETAndCaches covers the cache transport HEAD
++// path: the 405 failure response must not be cached as if it were the etag
++// probe result; instead one authenticated GET discovers the etag, the
++// content-addressed disk cache engages, and no further HEAD reaches the wire
++// on subsequent fetches.
++func TestCacheHead405FallsBackToGETAndCaches(t *testing.T) {
++	h := newHead405Server(t, http.StatusMethodNotAllowed, testIndexBody(t))
++	h.etag = `"gate5-v1"`
++	h.user, h.pass = "user", "pass"
++	host := strings.TrimPrefix(h.srv.URL, "http://")
++
++	c := &cache{dir: t.TempDir(), shared: NewCache(true)}
++	client := c.client(h.srv.Client(), true)
++
++	fetch := func() {
++		t.Helper()
++		indexes, err := GetRepositoryIndexes(t.Context(), []string{h.srv.URL}, nil, "x86_64",
++			WithIgnoreSignatures(true),
++			WithHTTPClient(client),
++			WithIndexAuthenticator(auth.StaticAuth(host, "user", "pass")))
++		if err != nil {
++			t.Fatalf("HEAD-405 cache path failed: %v", err)
++		}
++		if len(indexes) != 1 {
++			t.Fatalf("got %d indexes, want 1", len(indexes))
++		}
++	}
++
++	fetch()
++	fetch()
++
++	if got := h.head.Load(); got != 1 {
++		t.Errorf("HEAD request count after two fetches = %d, want 1 (the 405 must be answered once, then cached as HEAD-unsupported)", got)
++	}
++	// One GET for the etag discovery, one GET for the actual index download;
++	// the second fetch must be served entirely from cache.
++	if got := h.get.Load(); got != 2 {
++		t.Errorf("GET request count after two fetches = %d, want 2", got)
++	}
++}
++
++// TestCacheHead405WithoutEtagStillWorks covers HEAD-405 servers that serve no
++// ETag at all: the fetch must succeed via GET (twice), and the cached
++// HEAD-unsupported state must prevent repeated 405 round trips.
++func TestCacheHead405WithoutEtagStillWorks(t *testing.T) {
++	h := newHead405Server(t, http.StatusMethodNotAllowed, testIndexBody(t))
++
++	c := &cache{dir: t.TempDir(), shared: NewCache(true)}
++	client := c.client(h.srv.Client(), true)
++
++	for i := range 2 {
++		if _, err := GetRepositoryIndexes(t.Context(), []string{h.srv.URL}, nil, "x86_64",
++			WithIgnoreSignatures(true), WithHTTPClient(client)); err != nil {
++			t.Fatalf("fetch %d failed: %v", i+1, err)
++		}
++	}
++
++	if got := h.head.Load(); got != 1 {
++		t.Errorf("HEAD request count after two fetches = %d, want 1", got)
++	}
++	// Fetch 1: one GET for etag discovery (discarded body) and one passthrough
++	// GET for the content. Fetch 2: only the content GET — the etag-discovery
++	// result (HEAD-unsupported, no etag) is cached, so no second discovery GET
++	// and no repeated 405 HEAD round trip.
++	if got := h.get.Load(); got != 3 {
++		t.Errorf("GET request count after two fetches = %d, want 3", got)
++	}
++}
++
++// TestCacheHead405FailureResponseNotCached pins that a fallback GET which
++// itself fails propagates the error instead of caching a bogus success: the
++// index fetch fails, and failure semantics are identical to the
++// HEAD-supported path.
++func TestCacheHead405FailureResponseNotCached(t *testing.T) {
++	h := newHead405Server(t, http.StatusMethodNotAllowed, testIndexBody(t))
++	h.getStatus = http.StatusNotFound // the content is gone
++
++	c := &cache{dir: t.TempDir(), shared: NewCache(true)}
++	client := c.client(h.srv.Client(), true)
++
++	_, err := GetRepositoryIndexes(t.Context(), []string{h.srv.URL}, nil, "x86_64",
++		WithIgnoreSignatures(true), WithHTTPClient(client))
++	if err == nil {
++		t.Fatal("HEAD 405 with failing GET must surface the GET failure")
++	}
++	if !strings.Contains(err.Error(), "unexpected status code 404") {
++		t.Errorf("error = %v, want the GET 404 to be reported", err)
++	}
++}

@@ -1,0 +1,66 @@
+package:
+  name: puzzles
+  version: 1.0.3
+  epoch: 2
+  description: Word and image puzzle helper web service
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r2
+      - os-release=3.24.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 168a71c2d612327414a752d6292b5ab13db6ee57
+      repository: https://github.com/greboid/puzzles
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./
+      output: puzzles
+      static: "true"
+  - name: Install the wordlists
+    runs: DESTDIR="${{targets.destdir}}" ./01-install-the-wordlists.sh
+  - uses: go/licenses
+    with:
+      checks: github.com/greboid/puzzles/LICENSE github.com/csmith/envflag/LICENCE github.com/csmith/kowalski/v5/LICENCE
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+        - curl
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/puzzles
+        files: /app/wordlists/combined.wl /app/wordlists/urbandictionary.wl /notices/github.com/greboid/puzzles/LICENSE /notices/github.com/csmith/kowalski/v5/LICENCE /usr/share/licenses/puzzles/LICENSE
+update:
+  enabled: true
+  github:
+    identifier: greboid/puzzles
+    strip-prefix: v

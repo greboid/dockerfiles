@@ -1,0 +1,109 @@
+--- a/pkg/build/oci/image.go
++++ b/pkg/build/oci/image.go
+@@ -51,8 +51,10 @@
+ 		return nil, err
+ 	}
+ 
+-	// Compute comment
+-	comment := "This is an apko single-layer image"
++	// Compute comment. The default is deliberately empty: an unannotated
++	// image must not carry tool branding. An explicit title+vendor
++	// annotation pair still produces a descriptive comment.
++	comment := ""
+ 	if len(layers) > 1 {
+ 		comment = ""
+ 	}
+@@ -80,9 +82,12 @@
+ 		add := mutate.Addendum{
+ 			Layer: layer,
+ 			History: v1.History{
+-				Author:    "apko",
++				// Author/CreatedBy are left empty: layer history attribution
++				// is optional and upstream branding does not belong in our
++				// images (containers repository plan.md).
++				Author:    "",
+ 				Comment:   comment,
+-				CreatedBy: "apko",
++				CreatedBy: "",
+ 				Created:   v1.Time{Time: created}, // TODO: Consider per-layer creation time?
+ 			},
+ 		}
+@@ -126,7 +131,7 @@
+ 	}
+ 
+ 	cfg = cfg.DeepCopy()
+-	cfg.Author = "github.com/chainguard-dev/apko"
++	cfg.Author = "Greboid"
+ 	platform := arch.ToOCIPlatform()
+ 	cfg.Architecture = platform.Architecture
+ 	cfg.Variant = platform.Variant
+--- a/pkg/build/oci/image_test.go
++++ b/pkg/build/oci/image_test.go
+@@ -46,12 +46,12 @@
+ 			Environment: map[string]string{},
+ 		},
+ 		want: &v1.ConfigFile{
+-			Author: "github.com/chainguard-dev/apko",
++			Author: "Greboid",
+ 			History: []v1.History{{
+ 				Created:   v1now,
+-				Author:    "apko",
+-				CreatedBy: "apko",
+-				Comment:   "This is an apko single-layer image",
++				Author:    "",
++				CreatedBy: "",
++				Comment:   "",
+ 			}},
+ 			Created: v1now,
+ 			OS:      "linux",
+@@ -74,12 +74,12 @@
+ 			},
+ 		},
+ 		want: &v1.ConfigFile{
+-			Author: "github.com/chainguard-dev/apko",
++			Author: "Greboid",
+ 			History: []v1.History{{
+ 				Created:   v1now,
+-				Author:    "apko",
+-				CreatedBy: "apko",
+-				Comment:   "This is an apko single-layer image",
++				Author:    "",
++				CreatedBy: "",
++				Comment:   "",
+ 			}},
+ 			Created: v1now,
+ 			OS:      "linux",
+@@ -104,12 +104,12 @@
+ 			},
+ 		},
+ 		want: &v1.ConfigFile{
+-			Author: "github.com/chainguard-dev/apko",
++			Author: "Greboid",
+ 			History: []v1.History{{
+ 				Created:   v1now,
+-				Author:    "apko",
+-				CreatedBy: "apko",
+-				Comment:   "This is an apko single-layer image",
++				Author:    "",
++				CreatedBy: "",
++				Comment:   "",
+ 			}},
+ 			Created: v1now,
+ 			OS:      "linux",
+@@ -134,12 +134,12 @@
+ 			},
+ 		},
+ 		want: &v1.ConfigFile{
+-			Author: "github.com/chainguard-dev/apko",
++			Author: "Greboid",
+ 			History: []v1.History{{
+ 				Created:   v1now,
+-				Author:    "apko",
+-				CreatedBy: "apko",
+-				Comment:   "This is an apko single-layer image",
++				Author:    "",
++				CreatedBy: "",
++				Comment:   "",
+ 			}},
+ 			Created: v1now,
+ 			OS:      "linux",

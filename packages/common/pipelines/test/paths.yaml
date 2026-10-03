@@ -1,0 +1,51 @@
+name: Check paths in the installed package
+
+inputs:
+  executables:
+    description: |
+      Paths that must exist and be executable, space-separated.
+    default: ''
+
+  files:
+    description: |
+      Paths that must exist as regular files, space-separated.
+    default: ''
+
+  dirs:
+    description: |
+      Paths that must exist as directories, space-separated.
+    default: ''
+
+  nonempty-dirs:
+    description: |
+      Paths that must exist as directories with at least one entry,
+      space-separated.
+    default: ''
+
+  symlinks:
+    description: |
+      Paths that must exist as symbolic links, space-separated.
+    default: ''
+
+pipeline:
+  - runs: |
+      fail=0
+      for p in ${{inputs.executables}}; do
+        [ -x "$p" ] || { echo "test/paths: missing executable: $p" >&2; fail=1; }
+      done
+      for p in ${{inputs.files}}; do
+        [ -f "$p" ] || { echo "test/paths: missing file: $p" >&2; fail=1; }
+      done
+      for p in ${{inputs.dirs}}; do
+        [ -d "$p" ] || { echo "test/paths: missing directory: $p" >&2; fail=1; }
+      done
+      for p in ${{inputs.nonempty-dirs}}; do
+        if [ ! -d "$p" ] || [ -z "$(ls -A "$p" 2>/dev/null)" ]; then
+          echo "test/paths: empty or missing directory: $p" >&2
+          fail=1
+        fi
+      done
+      for p in ${{inputs.symlinks}}; do
+        [ -L "$p" ] || { echo "test/paths: missing symlink: $p" >&2; fail=1; }
+      done
+      exit $fail

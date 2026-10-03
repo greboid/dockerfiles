@@ -1,0 +1,171 @@
+--- a/pkg/sbom/generator/spdx/spdx.go
++++ b/pkg/sbom/generator/spdx/spdx.go
+@@ -33,6 +33,7 @@
+ 
+ 	"chainguard.dev/apko/pkg/apk/apk"
+ 	apkfs "chainguard.dev/apko/pkg/apk/fs"
++	"chainguard.dev/apko/pkg/sbom/canonical"
+ 	"chainguard.dev/apko/pkg/sbom/generator"
+ 	"chainguard.dev/apko/pkg/sbom/options"
+ )
+@@ -107,12 +108,11 @@
+ 			Created: opts.ImageInfo.SourceDateEpoch.Format(time.RFC3339),
+ 			Creators: []string{
+ 				fmt.Sprintf("Tool: apko (%s)", version.GetVersionInfo().GitVersion),
+-				"Organization: Chainguard, Inc",
++				"Organization: Greboid",
+ 			},
+ 			LicenseListVersion: "3.27",
+ 		},
+ 		DataLicense:    "CC0-1.0",
+-		Namespace:      "https://spdx.org/spdxdocs/apko/",
+ 		Packages:       []Package{},
+ 		Relationships:  []Relationship{},
+ 		LicensingInfos: []LicensingInfo{},
+@@ -173,6 +173,15 @@
+ 	}
+ 	doc.Packages = dedupedPackages
+ 
++	// The document identity: SHA-256 of the RFC 8785 canonical JSON of the
++	// document minus documentNamespace, computed after every other field is
++	// finalised (containers repository plan.md, SBOM namespaces).
++	namespace, err := canonical.StructNamespace(*doc, canonical.NamespaceImages)
++	if err != nil {
++		return fmt.Errorf("computing deterministic SPDX namespace: %w", err)
++	}
++	doc.Namespace = namespace
++
+ 	if err := renderDoc(doc, path); err != nil {
+ 		return fmt.Errorf("rendering document: %w", err)
+ 	}
+@@ -576,12 +585,11 @@
+ 			Created: opts.ImageInfo.SourceDateEpoch.Format(time.RFC3339),
+ 			Creators: []string{
+ 				fmt.Sprintf("Tool: apko (%s)", version.GetVersionInfo().GitVersion),
+-				"Organization: Chainguard, Inc",
++				"Organization: Greboid",
+ 			},
+ 			LicenseListVersion: "3.27",
+ 		},
+ 		DataLicense:   "CC0-1.0",
+-		Namespace:     "https://spdx.org/spdxdocs/apko/",
+ 		Packages:      []Package{},
+ 		Relationships: []Relationship{},
+ 	}
+@@ -658,6 +666,14 @@
+ 		addSourcePackage(opts.ImageInfo.VCSUrl, doc, &indexPackage, opts)
+ 	}
+ 
++	// Same deterministic identity scheme as per-architecture documents,
++	// under the shared images namespace prefix.
++	namespace, err := canonical.StructNamespace(*doc, canonical.NamespaceImages)
++	if err != nil {
++		return fmt.Errorf("computing deterministic SPDX namespace: %w", err)
++	}
++	doc.Namespace = namespace
++
+ 	if err := renderDoc(doc, path); err != nil {
+ 		return fmt.Errorf("rendering document: %w", err)
+ 	}
+--- a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/both-describes-methods.spdx.json
++++ b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/both-describes-methods.spdx.json
+@@ -6,12 +6,12 @@
+     "created": "0001-01-01T00:00:00Z",
+     "creators": [
+       "Tool: apko (devel)",
+-      "Organization: Chainguard, Inc"
++      "Organization: Greboid"
+     ],
+     "licenseListVersion": "3.27"
+   },
+   "dataLicense": "CC0-1.0",
+-  "documentNamespace": "https://spdx.org/spdxdocs/apko/",
++  "documentNamespace": "https://g5d.dev/containers/sbom/spdx/images/43dd90b84481fcd493b0de33e54490ebe45880836c83e9e4bbb7ae8cdf9b4cd7",
+   "documentDescribes": [
+     "SPDXRef-Package-ImageLayer-"
+   ],
+--- a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/custom-license.spdx.json
++++ b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/custom-license.spdx.json
+@@ -6,12 +6,12 @@
+     "created": "0001-01-01T00:00:00Z",
+     "creators": [
+       "Tool: apko (devel)",
+-      "Organization: Chainguard, Inc"
++      "Organization: Greboid"
+     ],
+     "licenseListVersion": "3.27"
+   },
+   "dataLicense": "CC0-1.0",
+-  "documentNamespace": "https://spdx.org/spdxdocs/apko/",
++  "documentNamespace": "https://g5d.dev/containers/sbom/spdx/images/0838509ced7b556db9c1ab420e83ad7c1f29e9bc003da1ba39cb2f83897b5bfe",
+   "documentDescribes": [
+     "SPDXRef-Package-ImageLayer-"
+   ],
+--- a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/describes-relationship.spdx.json
++++ b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/describes-relationship.spdx.json
+@@ -6,12 +6,12 @@
+     "created": "0001-01-01T00:00:00Z",
+     "creators": [
+       "Tool: apko (devel)",
+-      "Organization: Chainguard, Inc"
++      "Organization: Greboid"
+     ],
+     "licenseListVersion": "3.27"
+   },
+   "dataLicense": "CC0-1.0",
+-  "documentNamespace": "https://spdx.org/spdxdocs/apko/",
++  "documentNamespace": "https://g5d.dev/containers/sbom/spdx/images/d86bf353e59f80fd99a096b61b436765775053ad53b1b5f64a72daa26321ed93",
+   "documentDescribes": [
+     "SPDXRef-Package-ImageLayer-"
+   ],
+--- a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/no-supplier.spdx.json
++++ b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/no-supplier.spdx.json
+@@ -6,12 +6,12 @@
+     "created": "0001-01-01T00:00:00Z",
+     "creators": [
+       "Tool: apko (devel)",
+-      "Organization: Chainguard, Inc"
++      "Organization: Greboid"
+     ],
+     "licenseListVersion": "3.27"
+   },
+   "dataLicense": "CC0-1.0",
+-  "documentNamespace": "https://spdx.org/spdxdocs/apko/",
++  "documentNamespace": "https://g5d.dev/containers/sbom/spdx/images/6c6c024b7bd195b138f74eebd6ca4bb3d2f35e56e1a51add0ad6154025240b74",
+   "documentDescribes": [
+     "SPDXRef-Package-ImageLayer-"
+   ],
+--- a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/package-deduplicating.spdx.json
++++ b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/package-deduplicating.spdx.json
+@@ -6,12 +6,12 @@
+     "created": "0001-01-01T00:00:00Z",
+     "creators": [
+       "Tool: apko (devel)",
+-      "Organization: Chainguard, Inc"
++      "Organization: Greboid"
+     ],
+     "licenseListVersion": "3.27"
+   },
+   "dataLicense": "CC0-1.0",
+-  "documentNamespace": "https://spdx.org/spdxdocs/apko/",
++  "documentNamespace": "https://g5d.dev/containers/sbom/spdx/images/d98ecd6b63ebaf4310b37bc8e7590abbfbf6e4f899878e2d203e325e986d541c",
+   "documentDescribes": [
+     "SPDXRef-Package-ImageLayer-"
+   ],
+--- a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/unbound-package-dedupe.spdx.json
++++ b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/unbound-package-dedupe.spdx.json
+@@ -6,12 +6,12 @@
+     "created": "0001-01-01T00:00:00Z",
+     "creators": [
+       "Tool: apko (devel)",
+-      "Organization: Chainguard, Inc"
++      "Organization: Greboid"
+     ],
+     "licenseListVersion": "3.27"
+   },
+   "dataLicense": "CC0-1.0",
+-  "documentNamespace": "https://spdx.org/spdxdocs/apko/",
++  "documentNamespace": "https://g5d.dev/containers/sbom/spdx/images/b08b3418448007346700b35d6d06bf9369682c07571710a4a5fca4c65c8bd1de",
+   "documentDescribes": [
+     "SPDXRef-Package-ImageLayer-"
+   ],

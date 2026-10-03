@@ -1,0 +1,83 @@
+package:
+  name: go
+  version: 1.27.1
+  epoch: 1
+  description: Source-built Go toolchain at the legacy /usr/local/go path
+  options:
+    no-depends: true
+    no-provides: true
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: BSD-3-Clause
+  dependencies:
+    runtime:
+      - busybox=1.37.0-r31
+      - busybox-binsh=1.37.0-r31
+      - ca-certificates-bundle=20260909-r0
+      - binutils=2.45.1-r1
+      - gcc=15.2.0-r5
+      - git=2.54.0-r0
+      - libgcc-static=15.2.0-r5
+      - musl=1.2.6-r2
+      - musl-dev=1.2.6-r2
+      - patch=2.8-r0
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates-bundle=20260909-r0
+      - bash=5.3.9-r1
+      - binutils=2.45.1-r1
+      - os-release=3.24.2-r0
+      - gcc=15.2.0-r5
+      - musl-dev=1.2.6-r2
+      - go=1.26.8-r0
+  environment:
+    SOURCE_DATE_EPOCH: "0"
+    GOTELEMETRY: "off"
+    GOAMD64: v1
+    GOFLAGS: -buildvcs=false
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://golang.org/dl/go${{package.version}}.src.tar.gz
+      expected-sha256: 4e408abae126d916b6164627193f2c54f0e3ca1312d693b86db45f862ab238b1
+  - name: Bootstrap the pinned source toolchain
+    runs: ./01-bootstrap-the-pinned-source.sh
+  - name: Install the legacy toolchain and writable GOPATH
+    runs: DESTDIR="${{targets.destdir}}" ./02-install-the-legacy-toolchain-and.sh
+  - name: Install the license
+    runs: install -Dm644 LICENSE "${{targets.destdir}}/usr/share/licenses/${{package.name}}/LICENSE"
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+    environment:
+      PATH: /go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      GOPATH: /go
+      GOTOOLCHAIN: local
+      GOTELEMETRY: "off"
+      GOAMD64: v1
+      GOFLAGS: -buildvcs=false
+update:
+  enabled: true
+  shared: true
+  github:
+    identifier: golang/go
+    use-tag: true
+    strip-prefix: go

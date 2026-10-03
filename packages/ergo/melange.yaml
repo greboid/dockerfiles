@@ -1,0 +1,66 @@
+package:
+  name: ergo
+  version: 2.19.1
+  epoch: 3
+  description: Modern IRC server written in Go
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - os-release=3.24.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 63c743a70644f0f19109508ade8580bf37f7d23d
+      repository: https://github.com/ergochat/ergo
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./
+      output: ergo
+  - runs: DESTDIR="${{targets.destdir}}" ./01-stage-the-language-assets-and.sh
+  - uses: license/install
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/ergo
+        files: /usr/share/licenses/ergo/LICENSE
+        dirs: /ircd-bin/languages
+        nonempty-dirs: /ircd-bin/languages
+    - uses: test/version
+      with:
+        pattern: ergo-${{package.version}}
+update:
+  enabled: true
+  github:
+    identifier: ergochat/ergo
+    strip-prefix: v

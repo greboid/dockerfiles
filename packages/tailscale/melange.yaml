@@ -1,0 +1,88 @@
+package:
+  name: tailscale
+  version: 1.102.5
+  epoch: 2
+  description: Tailscale daemon, CLI and container entrypoint (userspace networking)
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: BSD-3-Clause
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r2
+      - os-release=3.24.2-r0
+
+vars:
+  runtime-dirs: /var/lib/tailscale
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 5fb2a81b065b0a0bbbfc67ab20a0d9c6a1108115
+      repository: https://github.com/tailscale/tailscale
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd/tailscaled
+      output: tailscaled
+      static: "true"
+      ldflags: -X tailscale.com/version.longStamp=${{package.version}} -X tailscale.com/version.shortStamp=${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd/tailscale
+      output: tailscale
+      static: "true"
+      ldflags: -X tailscale.com/version.longStamp=${{package.version}} -X tailscale.com/version.shortStamp=${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd/containerboot
+      output: containerboot
+      static: "true"
+  - uses: dirs
+    with:
+      dirs: ${{vars.runtime-dirs}}
+  - uses: go/licenses
+    with:
+      packages: ./cmd/tailscaled ./cmd/tailscale ./cmd/containerboot
+      ignore-extra: github.com/golang/freetype/raster github.com/golang/freetype/truetype
+      module: tailscale.com
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/tailscaled /usr/bin/tailscale /usr/bin/containerboot
+        files: /notices/tailscale.com/LICENSE /usr/share/licenses/tailscale/LICENSE
+        dirs: ${{vars.runtime-dirs}}
+    - uses: test/version
+      with:
+        flag: version
+update:
+  enabled: true
+  github:
+    identifier: tailscale/tailscale
+    strip-prefix: v

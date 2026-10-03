@@ -1,0 +1,128 @@
+# Reusable Docker build-stage toolchain; do not replace with Alpine's bootstrap Go.
+package:
+  name: golang-builder
+  version: 1.27.1
+  epoch: 0
+  description: Source-built Go toolchain at the legacy /usr/local/go path
+  # Preserve upstream source/testdata, including foreign-OS ELF fixtures.
+  # Those are not runnable tools or dependencies: enumerate real runtime
+  # dependencies below rather than advertising/scanning fixture libraries.
+  options:
+    no-depends: true
+    no-provides: true
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: BSD-3-Clause
+  dependencies:
+    runtime:
+      - busybox=1.37.0-r31
+      - busybox-binsh=1.37.0-r31
+      - ca-certificates-bundle=20260909-r0
+      - binutils=2.45.1-r1
+      - gcc=15.2.0-r5
+      - git=2.54.0-r0
+      - libgcc-static=15.2.0-r5
+      - musl=1.2.6-r2
+      - musl-dev=1.2.6-r2
+      - patch=2.8-r0
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - alpine-release=3.24.2-r0
+      - ca-certificates-bundle=20260909-r0
+      - bash=5.3.9-r1
+      - binutils=2.45.1-r1
+      - gcc=15.2.0-r5
+      - musl-dev=1.2.6-r2
+      - go=1.26.8-r0
+  environment:
+    SOURCE_DATE_EPOCH: "0"
+    GOTELEMETRY: "off"
+    GOAMD64: v1
+    GOFLAGS: -buildvcs=false
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://golang.org/dl/go${{package.version}}.src.tar.gz
+      expected-sha256: 4e408abae126d916b6164627193f2c54f0e3ca1312d693b86db45f862ab238b1
+  - name: Bootstrap the pinned source toolchain
+    runs: |
+      bootstrap="$(go env GOROOT)"
+      (cd src && GOROOT_BOOTSTRAP="$bootstrap" GOROOT_FINAL=/usr/local/go GOHOSTOS=linux GOHOSTARCH=amd64 ./make.bash)
+      GOROOT="$PWD" ./bin/go install std
+  - name: Install the legacy toolchain and writable GOPATH
+    runs: |
+      dest="${{targets.destdir}}"
+      mkdir -p "$dest/usr/local/go"
+      # Copy only the distribution payload, never the workspace's melange-out,
+      # downloaded archive or build caches (the output directory is nested here).
+      cp -a bin pkg src lib VERSION go.env LICENSE PATENTS "$dest/usr/local/go/"
+      cp -a ./*.md "$dest/usr/local/go/"
+      rm -rf "$dest/usr/local/go/pkg/"*/cmd \
+        "$dest/usr/local/go/pkg/bootstrap" "$dest/usr/local/go/pkg/obj" \
+        "$dest/usr/local/go/pkg/tool/"*/api "$dest/usr/local/go/pkg/tool/"*/go_bootstrap \
+        "$dest/usr/local/go/test" "$dest/usr/local/go/api" "$dest/usr/local/go/doc" \
+        "$dest/usr/local/go/misc" "$dest/usr/local/go/src/cmd"
+      install -d -m 0777 "$dest/go" "$dest/go/src" "$dest/go/bin"
+      install -Dm644 LICENSE "$dest/usr/share/licenses/golang-builder/LICENSE"
+      # Inherited from the legacy Alpine image, including its shell defaults.
+      mkdir -p "$dest/etc"
+      printf '[advice]\n    detachedHead = false\n' > "$dest/etc/gitconfig"
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - alpine-release=3.24.2-r0
+    environment:
+      PATH: /go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      GOPATH: /go
+      GOTOOLCHAIN: local
+      GOTELEMETRY: "off"
+      GOAMD64: v1
+      GOFLAGS: -buildvcs=false
+  pipeline:
+    - name: Toolchain layout and pure-Go/cgo compilation
+      runs: |
+        export PATH="/go/bin:/usr/local/go/bin:$PATH"
+        test "$(go version)" = 'go version go1.27.1 linux/amd64'
+        test "$(go env GOROOT)" = /usr/local/go
+        test -s /usr/local/go/src/fmt/print.go
+        test -s /usr/local/go/LICENSE
+        test -s /usr/share/licenses/golang-builder/LICENSE
+        test ! -e /usr/local/go/src/cmd
+        test "$(stat -c %a /go)" = 777
+        test "$(stat -c %a /go/bin)" = 777
+        test "$(stat -c %a /go/src)" = 777
+        mkdir -p /tmp/go-smoke
+        cd /tmp/go-smoke
+        go mod init example.com/smoke
+        printf 'package main\nimport "fmt"\nfunc main(){fmt.Println("pure-go-ok")}\n' > main.go
+        CGO_ENABLED=0 go build -o pure .
+        test "$(./pure)" = pure-go-ok
+        printf 'package main\n/* int answer(void) { return 42; } */\nimport "C"\nimport "fmt"\nfunc main(){fmt.Println(C.answer())}\n' > main.go
+        CGO_ENABLED=1 go build -o cgo .
+        test "$(./cgo)" = 42
+
+update:
+  enabled: true
+  # buildah and go-licenses-builder pin this toolchain exactly.
+  shared: true
+  github:
+    identifier: golang/go
+    use-tag: true
+    strip-prefix: go

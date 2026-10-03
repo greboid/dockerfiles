@@ -1,0 +1,85 @@
+# Legacy overlay-over-fuse storage configuration for the alpine-runner CI
+# image (the file the legacy Containerfile COPY'd to
+# /etc/containers/storage.conf).
+#
+# containers-common owns /etc/containers/storage.conf, so shipping there
+# would conflict with it; like forgejo-runner, the file lives at a private
+# path and the image selects it via CONTAINERS_STORAGE_CONF, which every
+# buildah/container process in the image inherits.
+package:
+  name: alpine-runner
+  version: 1.0.0
+  epoch: 0
+  description: Legacy overlay-over-fuse containers storage configuration
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: os-release.license
+      license: MIT
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - alpine-release=3.24.2-r0
+
+pipeline:
+  - name: Write the private overlay-over-fuse storage configuration
+    runs: |
+      install -d -m 0755 "${{targets.destdir}}/usr/share/alpine-runner"
+      # Verbatim legacy storage.conf (containers/alpine-runner/storage.conf):
+      # overlay driver with fuse-overlayfs as the unprivileged mount program.
+      printf '%s\n' \
+        '[storage]' \
+        'driver = "overlay"' \
+        '' \
+        '[storage.options.overlay]' \
+        'mount_program = "/usr/bin/fuse-overlayfs"' \
+        > "${{targets.destdir}}/usr/share/alpine-runner/storage.conf"
+      chmod 0644 "${{targets.destdir}}/usr/share/alpine-runner/storage.conf"
+  - name: Restore the legacy root passwd/group entries
+    runs: |
+      # The legacy minirootfs parent had root in /etc/passwd; buildah
+      # resolves the current user through it ("unknown userid 0" without
+      # this). apko's accounts gizmo appends its declared users to these
+      # package-provided files (nonroot 65532 comes from the image).
+      install -d -m 0755 "${{targets.destdir}}/etc"
+      printf '%s\n' 'root:x:0:0:root:/root:/bin/sh' > "${{targets.destdir}}/etc/passwd"
+      printf '%s\n' 'root:x:0:' > "${{targets.destdir}}/etc/group"
+  - name: Smoke-check the payload
+    runs: |
+      test -s "${{targets.destdir}}/usr/share/alpine-runner/storage.conf"
+      grep -q '^driver = "overlay"$' "${{targets.destdir}}/usr/share/alpine-runner/storage.conf"
+      grep -q '^mount_program = "/usr/bin/fuse-overlayfs"$' "${{targets.destdir}}/usr/share/alpine-runner/storage.conf"
+      grep -q '^root:x:0:0:root:/root:/bin/sh$' "${{targets.destdir}}/etc/passwd"
+
+test:
+  environment:
+    contents:
+      keyring:
+        - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - busybox=1.37.0-r31
+        - alpine-release=3.24.2-r0
+  pipeline:
+    - name: Configuration is private and verbatim
+      runs: |
+        test -s /usr/share/alpine-runner/storage.conf
+        grep -q '^mount_program = "/usr/bin/fuse-overlayfs"$' /usr/share/alpine-runner/storage.conf
+        # containers-common owns the default path; this package must never
+        # fight it for /etc/containers/storage.conf.
+        test ! -e /etc/containers/storage.conf
+
+update:
+  enabled: false
+  # Internal CI-image configuration with no upstream; the version is
+  # this repository's own and only moves when the recipe content does.
+  exclude-reason: no upstream to track; version is internal to this repository

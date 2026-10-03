@@ -1,0 +1,106 @@
+name: bootstrap
+
+on:
+  workflow_dispatch:
+
+env:
+  ORG_REPO: https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+  DAG: os-release go melange apko
+
+jobs:
+  bootstrap:
+    runs-on: alpine
+    steps:
+      - name: Checkout common
+        uses: actions/toolkit/git-checkout@master
+
+      - name: Install build prerequisites
+        run: |
+          apk add --no-cache go bubblewrap openssl
+          export GOTOOLCHAIN=auto
+          go install chainguard.dev/melange@latest
+          install -Dm755 "$(go env GOPATH)/bin/melange" /usr/local/bin/melange
+          melange version
+
+      - name: Write signing key
+        env:
+          APK_SIGNING_KEY: ${{ secrets.APK_SIGNING_KEY }}
+        run: |
+          set -eu
+          mkdir -p keys
+          printf '%s\n' "$APK_SIGNING_KEY" > keys/packages.rsa
+          openssl rsa -in keys/packages.rsa -pubout -out keys/packages.rsa.pub 2>/dev/null
+          head -1 keys/packages.rsa.pub | grep -q 'BEGIN PUBLIC KEY'
+
+      - name: Build and test, in DAG order
+        env:
+          RELEASE_PACKAGE_TOKEN: ${{ secrets.RELEASE_PACKAGE_TOKEN }}
+        run: |
+          set -eu
+          for tool in $DAG; do
+            echo "== $tool: clone =="
+            git clone --depth 1 "$GITHUB_SERVER_URL/packages/$tool.git" "src/$tool" 2>/dev/null \
+              || git clone --depth 1 \
+                   "https://greboid:$RELEASE_PACKAGE_TOKEN@${GITHUB_SERVER_URL#https://}/packages/$tool.git" \
+                   "src/$tool"
+            export SOURCE_DATE_EPOCH=$(git -C "src/$tool" log -1 --format=%ct)
+            for attempt in 1 2 3; do
+              echo "== $tool: build (attempt $attempt) =="
+              if melange build "src/$tool/melange.yaml" \
+                  --arch x86_64 \
+                  --namespace packages \
+                  --git-repo-url "$GITHUB_SERVER_URL/packages/$tool" \
+                  --signing-key keys/packages.rsa \
+                  --keyring-append "$PWD/keys/packages.rsa.pub" \
+                  --repository-append "$PWD/dist" \
+                  --out-dir dist; then
+                break
+              fi
+              if [ "$attempt" = 3 ]; then
+                echo "$tool failed to build three times" >&2
+                exit 1
+              fi
+              sleep 10
+            done
+            echo "== $tool: test =="
+            melange test "src/$tool/melange.yaml" \
+              --arch x86_64 \
+              --source-dir "src/$tool" \
+              --keyring-append "$PWD/keys/packages.rsa.pub" \
+              --repository-append "$PWD/dist"
+          done
+          ls dist/x86_64/
+
+      - name: Publish the packages
+        env:
+          RELEASE_PACKAGE_TOKEN: ${{ secrets.RELEASE_PACKAGE_TOKEN }}
+        run: |
+          set -eu
+          for apk in dist/x86_64/*.apk; do
+            echo "publishing: $apk"
+            curl -fsS --retry 3 \
+              --user "greboid:$RELEASE_PACKAGE_TOKEN" \
+              -F "file=@$apk" \
+              -X PUT \
+              "$ORG_REPO"
+          done
+
+      - name: Verify round trip
+        run: |
+          set -eu
+          mkdir -p tmp
+          curl -fsSL --retry 3 -o tmp/APKINDEX.tar.gz "$ORG_REPO/x86_64/APKINDEX.tar.gz"
+          index=$(tar -zxf tmp/APKINDEX.tar.gz -O APKINDEX)
+          for tool in $DAG; do
+            printf '%s\n' "$index" \
+              | awk -F: -v pkg="$tool" '$1 == "P" && $2 == pkg { found = 1 } END { exit !found }'
+            echo "$tool is in the index"
+          done
+          # run the published melange, unpacked fresh from the repository
+          version=$(printf '%s\n' "$index" \
+            | awk -F: '$1 == "P" { pkg = $2 } $1 == "V" && pkg == "melange" { print $2 }' \
+            | sort -V | tail -n 1)
+          curl -fsSL --retry 3 -o tmp/melange.apk "$ORG_REPO/x86_64/melange-$version.apk"
+          tar -xzf tmp/melange.apk -C tmp usr/bin/melange
+          "$PWD/tmp/usr/bin/melange" version
+          echo "bootstrap complete: melange $version is live"

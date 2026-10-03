@@ -1,0 +1,108 @@
+# Source-built replacement for containers/soju (upstream v0.10.1).
+package:
+  name: soju
+  version: 0.10.1
+  epoch: 0
+  description: IRC bouncer with a companion administrative client
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r0
+      - alpine-release=3.24.2-r0
+  environment:
+    CGO_ENABLED: "0"
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: ca81b9905e24aadd6a346a5ae72ae7e9d14db568
+      repository: https://github.com/emersion/soju
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd/soju
+      output: soju
+      strip: -s -w
+      ldflags: -extldflags "-static" -buildid=
+      # moderncsqlite selects the pure-Go SQLite driver (CGO_ENABLED=0).
+      tags: moderncsqlite
+  - uses: go/build
+    with:
+      packages: ./cmd/sojuctl
+      output: sojuctl
+      strip: -s -w
+      ldflags: -extldflags "-static" -buildid=
+      tags: moderncsqlite
+  - name: Preserve legacy entrypoint, data directory and license notices
+    runs: |
+      ln -s usr/bin/soju "${{targets.destdir}}/soju"
+      ln -s usr/bin/sojuctl "${{targets.destdir}}/sojuctl"
+      # Legacy VOLUME: the SQLite database and logs live here when the
+      # operator's config points at it.
+      install -d -m 0755 "${{targets.destdir}}/data"
+      GOFLAGS="-tags=moderncsqlite" go-licenses save ./... \
+        --save_path="${{targets.destdir}}/notices" \
+        --ignore codeberg.org/emersion/soju \
+        --ignore modernc.org/mathutil \
+        --ignore git.sr.ht/~sircmpwn/go-bare
+      # soju's own module is ignored (go-licenses cannot classify it).
+      test -s "${{targets.destdir}}/notices/codeberg.org/emersion/go-scfg/LICENSE"
+      test -s "${{targets.destdir}}/notices/github.com/cespare/xxhash/v2/LICENSE.txt"
+      install -Dm644 LICENSE "${{targets.destdir}}/usr/share/licenses/soju/LICENSE"
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - alpine-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - name: Packaged files
+      runs: |
+        test -x /usr/bin/soju
+        test -L /soju
+        test -x /usr/bin/sojuctl
+        test -L /sojuctl
+        test -d /data
+        test -s /notices/codeberg.org/emersion/go-scfg/LICENSE
+        test -s /usr/share/licenses/soju/LICENSE
+    - name: Refuses to start without a configuration file
+      runs: |
+        # A missing -config file aborts before any listener or IRC network
+        # is touched.
+        if /soju -config /nonexistent.cfg >/tmp/soju.log 2>&1; then
+          echo "expected missing-config failure" >&2
+          exit 1
+        fi
+        grep -q "failed to load config file" /tmp/soju.log
+
+update:
+  enabled: true
+  # Releases lag far behind on GitHub; tags are the version signal.
+  github:
+    identifier: emersion/soju
+    strip-prefix: v
+    use-tag: true

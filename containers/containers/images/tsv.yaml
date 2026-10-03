@@ -1,0 +1,46 @@
+# Bridges tailnet traffic to a WireGuard peer. Requires WG_PRIVATE_KEY,
+# WG_PUBLIC_KEY and WG_ENDPOINT (plus the tsnet settings); tsnet state
+# lives in /config — mount a writable directory there (the image passes
+# --tailscale-config-dir=/config).
+archs:
+  - x86_64
+
+contents:
+  repositories:
+    - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+  packages:
+    - ca-certificates-bundle=20260909-r0
+    - tzdata=2026d-r0
+    - os-release=3.24.2-r0
+    - tsv=1.2.0-r0
+
+accounts:
+  run-as: 65532:65532
+  users:
+    - username: nonroot
+      uid: 65532
+      gid: 65532
+      homedir: /home/nonroot
+  groups:
+    - groupname: nonroot
+      gid: 65532
+      members:
+        - nonroot
+
+# The legacy image chowns /config to the runtime user; apko only fixes up
+# home directories, so do it here (mirrors the packaged directory).
+paths:
+  - path: /config
+    type: directory
+    permissions: 0o755
+    uid: 65532
+    gid: 65532
+    recursive: true
+
+environment:
+  SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+
+entrypoint:
+  command: /tsv
+
+cmd: --tailscale-config-dir=/config

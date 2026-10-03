@@ -1,0 +1,100 @@
+# Deliberately separate from go-licenses v1: existing application builds use v1.
+package:
+  name: go-licenses-builder
+  version: 2.0.1
+  epoch: 0
+  description: Legacy builder's Go license collector and toolchain-aware launcher
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: Apache-2.0
+  dependencies:
+    runtime:
+      - golang-builder=1.27.1-r0
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - alpine-release=3.24.2-r0
+      - ca-certificates-bundle=20260909-r0
+      - git=2.54.0-r0
+      - golang-builder=1.27.1-r0
+  environment:
+    PATH: /go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    GOPATH: /go
+    GOTOOLCHAIN: local
+    GOTELEMETRY: "off"
+    GOAMD64: v1
+    GOFLAGS: -buildvcs=false
+    SOURCE_DATE_EPOCH: "0"
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 3e084b0caf710f7bfead967567539214f598c0a2
+      repository: https://github.com/google/go-licenses
+      tag: v${{package.version}}
+  - name: Build with the same Go toolchain used by consumers
+    runs: |
+      # Melange's runner sets its own PATH; select the legacy toolchain here.
+      export PATH="/go/bin:/usr/local/go/bin:$PATH"
+      mkdir -p "${{targets.destdir}}/go/bin"
+      go build -trimpath -ldflags='-s -w -buildid=' -o "${{targets.destdir}}/go/bin/go-licenses.bin" ./
+      cat > "${{targets.destdir}}/go/bin/go-licenses" <<'EOF'
+      #!/bin/sh
+      # Resolve the consumer's selected toolchain, not the collector's baked-in
+      # GOROOT: otherwise downloaded toolchain stdlib is treated as third-party.
+      exec env GOROOT="$(go env GOROOT)" "$GOPATH/bin/go-licenses.bin" "$@"
+      EOF
+      chmod 0755 "${{targets.destdir}}/go/bin/go-licenses"
+      # Match the shared GOPATH directory permissions owned by golang-builder.
+      chmod 0777 "${{targets.destdir}}/go" "${{targets.destdir}}/go/bin"
+      install -Dm644 LICENSE "${{targets.destdir}}/usr/share/licenses/go-licenses-builder/LICENSE"
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - alpine-release=3.24.2-r0
+    environment:
+      PATH: /go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      GOPATH: /go
+      GOTOOLCHAIN: local
+      GOTELEMETRY: "off"
+      GOFLAGS: -buildvcs=false
+  pipeline:
+    - name: Launcher recognizes stdlib under installed and relocated toolchains
+      runs: |
+        export PATH="/go/bin:/usr/local/go/bin:$PATH"
+        test -x /go/bin/go-licenses.bin
+        test -s /usr/share/licenses/go-licenses-builder/LICENSE
+        mkdir -p /tmp/license-smoke
+        cd /tmp/license-smoke
+        go mod init example.com/license-smoke
+        printf 'package main\nimport "fmt"\nfunc main(){fmt.Println("ok")}\n' > main.go
+        cp /usr/local/go/LICENSE LICENSE
+        go-licenses report . > /tmp/licenses.csv
+        test "$(wc -l < /tmp/licenses.csv)" -eq 1
+        grep '^example.com/license-smoke,.*BSD-3-Clause$' /tmp/licenses.csv
+        # Exercise a different stdlib source prefix without network/toolchain downloads.
+        mkdir -p /tmp/alternate-go
+        for item in /usr/local/go/*; do ln -s "$item" /tmp/alternate-go/; done
+        GOROOT=/tmp/alternate-go go-licenses report . > /tmp/alternate-licenses.csv
+        cmp /tmp/licenses.csv /tmp/alternate-licenses.csv
+
+update:
+  enabled: true
+  github:
+    identifier: google/go-licenses
+    strip-prefix: v

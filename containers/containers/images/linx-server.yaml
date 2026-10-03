@@ -1,0 +1,54 @@
+# Self-hosted file-sharing service. The entrypoint binds 0.0.0.0:8080 with
+# storage at /data/files and metadata at /data/meta (both must be writable
+# by 65532); the default arguments set the site name and allow hotlinking —
+# override `cmd` to change them. Extra tuning (maxsize, siteurl, basicauth,
+# TLS) is available via additional flags.
+archs:
+  - x86_64
+
+contents:
+  repositories:
+    - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+  packages:
+    - ca-certificates-bundle=20260909-r0
+    - tzdata=2026d-r0
+    - os-release=3.24.2-r0
+    - linx-server=3.4.1-r0
+
+accounts:
+  run-as: 65532:65532
+  users:
+    - username: nonroot
+      uid: 65532
+      gid: 65532
+      homedir: /home/nonroot
+  groups:
+    - groupname: nonroot
+      gid: 65532
+      members:
+        - nonroot
+
+# The legacy image chowns the storage directories to the runtime user;
+# apko only fixes up home directories, so do it here (mirrors the packaged
+# directories).
+paths:
+  - path: /data/files
+    type: directory
+    permissions: 0o755
+    uid: 65532
+    gid: 65532
+    recursive: true
+  - path: /data/meta
+    type: directory
+    permissions: 0o755
+    uid: 65532
+    gid: 65532
+    recursive: true
+
+environment:
+  SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+
+entrypoint:
+  command: /linx-server -bind=0.0.0.0:8080 -filespath=/data/files/ -metapath=/data/meta/
+
+cmd: -sitename=linx -allowhotlink

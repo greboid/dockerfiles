@@ -1,0 +1,66 @@
+package:
+  name: pdsps
+  version: 1.0.0
+  epoch: 2
+  description: Answering atproto age-assurance states in front of a PDS
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENCE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r2
+      - os-release=3.24.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 4afcf07f101cb4f524e702b3fb1be42549b323cb
+      repository: https://github.com/csmith/pdsps
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./
+      output: pdsps
+      static: "true"
+  - uses: go/licenses
+    with:
+      module: chameth.com/pdsps
+      license: LICENCE
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/pdsps
+        files: /notices/chameth.com/pdsps/LICENCE /usr/share/licenses/pdsps/LICENCE
+update:
+  enabled: true
+  github:
+    identifier: csmith/pdsps
+    strip-prefix: v
+    use-tag: true

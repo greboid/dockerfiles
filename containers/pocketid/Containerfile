@@ -1,0 +1,41 @@
+FROM git.mouse-lake.ts.net/containers/golang:20260908-alpine3.24 AS build
+
+RUN set -eux; \
+    apk add --no-cache \
+    npm=11.12.1-r0 \
+    nodejs=24.18.1-r0 \
+    ;
+
+ARG TAG="v2.16.0"
+RUN set -eux; \
+    git clone --depth=1 -b $TAG --single-branch https://github.com/pocket-id/pocket-id /src
+WORKDIR /src
+
+RUN set -eux; \
+    npm install --global pnpm@11.20.0; \
+    pnpm --filter pocket-id-frontend install --frozen-lockfile; \
+    BUILD_OUTPUT_PATH=dist pnpm --filter pocket-id-frontend run build; \
+    mkdir -p backend/frontend; \
+    cp -a frontend/dist backend/frontend/dist
+
+WORKDIR /src/backend
+ENV CGO_ENABLED=0
+RUN set -eux; \
+    VERSION="$(cat /src/.version)"; \
+    go build -a -ldflags "-extldflags \"-static\" -s -w -buildid= -X github.com/pocket-id/pocket-id/backend/internal/common.Version=${VERSION}" -trimpath -o /src/pocket-id ./cmd; \
+    cp /src/LICENSE /src/backend/LICENSE; \
+    go-licenses save ./... --save_path=/notices --ignore go.opentelemetry.io/otel/exporters/jaeger/internal/third_party/thrift/lib/go/thrift
+
+FROM git.mouse-lake.ts.net/containers/alpine:20260908-alpine3.24 AS prepare
+COPY --from=build /src/pocket-id /rootfs/pocket-id
+COPY --from=build /notices /rootfs/notices
+RUN mkdir -p /rootfs/app/data
+
+FROM git.mouse-lake.ts.net/containers/base:20260908-alpine3.24
+COPY --from=prepare --chown=65532:65532 /rootfs/ /
+USER 65532:65532
+WORKDIR /app
+EXPOSE 1411
+VOLUME ["/app/data"]
+ENV APP_ENV=production
+ENTRYPOINT ["/pocket-id"]

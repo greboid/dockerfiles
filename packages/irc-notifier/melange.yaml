@@ -1,0 +1,64 @@
+package:
+  name: irc-notifier
+  version: 1.0.6
+  epoch: 2
+  description: irc-bot plugin relaying Igloo push notifications to IRC
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r2
+      - os-release=3.24.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: dc5ba7a94a528a598de303378dbca9f53844ad3e
+      repository: https://github.com/greboid/irc-notifier
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd/notifier
+      output: irc-notifier
+      static: "true"
+  - uses: go/licenses
+    with:
+      module: irc-notifier/cmd/notifier
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/irc-notifier
+        files: /notices/irc-notifier/cmd/notifier/LICENSE /usr/share/licenses/irc-notifier/LICENSE
+update:
+  enabled: true
+  github:
+    identifier: greboid/irc-notifier
+    strip-prefix: v

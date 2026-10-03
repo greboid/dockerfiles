@@ -1,0 +1,67 @@
+package:
+  name: apko
+  version: 1.4.4
+  epoch: 1
+  description: Builds OCI images from apk packages (source-built v1.4.4, org patch set)
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: Apache-2.0
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - os-release=3.24.2-r0
+      - ca-certificates-bundle=20260909-r0
+      - go=1.27.1-r1
+      - git=2.54.0-r0
+  environment:
+    CGO_ENABLED: "0"
+    GOTELEMETRY: "off"
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 7e72102a642f1ce74cbca37ef85f8b925d02a11b
+      repository: https://github.com/chainguard-dev/apko
+      tag: v${{package.version}}
+  - uses: patch
+    with:
+      patches: |
+        patches/001-image-attribution.patch
+        patches/002-etc-apko-config.patch
+        patches/003-accounts-gecos.patch
+        patches/004-sbom-canonical-package.patch
+        patches/005-sbom-g5d-identity.patch
+        patches/006-cli-test-policy-and-goldens.patch
+        patches/007-index-head-405-fallback.patch
+  - name: Build apko with the pinned /usr/local/go toolchain
+    runs: DESTDIR="${{targets.destdir}}" ./02-build-apko-with-the-pinned.sh
+  - name: Install the license                                                                                                                                                    
+    runs: install -Dm644 LICENSE "${{targets.destdir}}/usr/share/licenses/${{package.name}}/LICENSE"
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+update:
+  enabled: true
+  github:
+    identifier: chainguard-dev/apko
+    strip-prefix: v

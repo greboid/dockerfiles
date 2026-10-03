@@ -1,0 +1,100 @@
+# Reusable root build stage. Preserve Docker CMD (not ENTRYPOINT), so callers
+# can replace /bin/sh with arbitrary build commands. See rust-toolchain.yaml
+# for the explicitly checksum-pinned upstream-binary compatibility exception.
+archs:
+  - x86_64
+contents:
+  repositories:
+    - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+    - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+  packages:
+    - os-release=3.24.2-r0
+    - rust-toolchain=1.98.1-r0
+    - alpine-keys=2.6-r0
+    - apk-tools=3.0.8-r0
+    - bash=5.3.9-r1
+    - binutils=2.45.1-r1
+    - brotli-libs=1.2.0-r1
+    - busybox=1.37.0-r31
+    - busybox-binsh=1.37.0-r31
+    - c-ares=1.34.8-r0
+    - ca-certificates-bundle=20260909-r0
+    - curl=8.22.0-r0
+    - gcc=15.2.0-r5
+    - gdbm=1.26-r0
+    - git=2.54.0-r0
+    - gmp=6.3.0-r4
+    - gnupg-dirmngr=2.4.9-r1
+    - gnupg-gpgconf=2.4.9-r1
+    - gnupg-keyboxd=2.4.9-r1
+    - gnutls=3.8.13-r0
+    - gpg=2.4.9-r1
+    - gpg-agent=2.4.9-r1
+    - isl25=0.25-r2
+    - jansson=2.15.0-r0
+    - libassuan=3.0.2-r0
+    - libatomic=15.2.0-r5
+    - libbz2=1.0.8-r6
+    - libcrypto3=3.5.9-r0
+    - libcurl=8.22.0-r0
+    - libexpat=2.8.5-r0
+    - libffi=3.5.2-r1
+    - libgcc=15.2.0-r5
+    - libgcc-static=15.2.0-r5
+    - libgcrypt=1.12.2-r0
+    - libgomp=15.2.0-r5
+    - libgpg-error=1.61-r0
+    - libidn2=2.3.8-r0
+    - libksba=1.7.0-r0
+    - libldap=2.6.15-r0
+    - libncursesw=6.6_p20260516-r0
+    - libpsl=0.21.5-r3
+    - libsasl=2.1.28-r9
+    - libssl3=3.5.9-r0
+    - libstdc++=15.2.0-r5
+    - libtasn1=4.21.0-r0
+    - libunistring=1.4.2-r0
+    - make=4.4.1-r4
+    - mpc1=1.3.1-r1
+    - mpfr4=4.2.2-r0
+    - musl=1.2.6-r2
+    - musl-dev=1.2.6-r2
+    - musl-utils=1.2.6-r2
+    - ncurses-terminfo-base=6.6_p20260516-r0
+    - nettle=3.10.2-r0
+    - nghttp2-libs=1.69.0-r0
+    - npth=1.8-r0
+    - p11-kit=0.26.2-r0
+    - patch=2.8-r0
+    - pcre2=10.48-r0
+    - pinentry=1.3.2-r0
+    - readline=8.3.3-r1
+    - scanelf=1.3.9-r1
+    - sqlite-libs=3.53.4-r0
+    - zlib=1.3.2-r0
+    - zstd-libs=1.5.7-r2
+accounts:
+  # Legacy default root (run-as 0); the repository-standard nonroot 65532
+  # is declared so /etc/passwd and /etc/group are generated, and build
+  # stages may drop to nonroot and write its home, as in the other images.
+  run-as: 0
+  users:
+    - username: nonroot
+      uid: 65532
+      gid: 65532
+      homedir: /home/nonroot
+  groups:
+    - groupname: nonroot
+      gid: 65532
+      members:
+        - nonroot
+
+# Legacy PATH used a semicolon, which is NOT a POSIX PATH separator: it
+# hid cargo/bin and the first inherited PATH entry. Correct it explicitly.
+environment:
+  LANG: en_US.UTF-8
+  RUSTUP_HOME: /usr/local/rustup
+  CARGO_HOME: /usr/local/cargo
+  RUST_VERSION: "1.98.1"
+  PATH: /usr/local/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+cmd: /bin/sh

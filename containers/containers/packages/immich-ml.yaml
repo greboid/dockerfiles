@@ -1,0 +1,139 @@
+# Source-built replacement for containers/immich-ml (upstream v3.2.0).
+# Python venv over Alpine's ML stack: onnxruntime, opencv, numpy, shapely,
+# watchfiles and websockets come from pinned Alpine packages
+# (--system-site-packages), everything else installs from the frozen
+# uv.lock export with onnx/ml-dtypes compiled from source.
+package:
+  name: immich-ml
+  version: 3.2.4
+  epoch: 0
+  description: Immich machine-learning server (CPU)
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: AGPL-3.0-only
+  dependencies:
+    runtime:
+      - python3=3.14.7-r1
+      - py3-onnxruntime=1.24.4-r1
+      - py3-opencv=4.12.0-r7
+      - py3-numpy=2.4.6-r0
+      - py3-shapely=2.1.2-r1
+      - py3-watchfiles=1.1.1-r1
+      - py3-websockets=16.0-r1
+      - mimalloc2=2.2.7-r0
+      - protobuf=31.1-r1
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - alpine-release=3.24.2-r0
+      - python3=3.14.7-r1
+      - python3-dev=3.14.7-r1
+      - py3-pip=26.1.2-r0
+      - py3-numpy=2.4.6-r0
+      - py3-numpy-dev=2.4.6-r0
+      - py3-onnxruntime=1.24.4-r1
+      - py3-opencv=4.12.0-r7
+      - py3-shapely=2.1.2-r1
+      - py3-watchfiles=1.1.1-r1
+      - py3-websockets=16.0-r1
+      - uv=0.11.19-r0
+      - abseil-cpp-dev=20250814.1-r0
+      - protobuf-dev=31.1-r1
+      - cmake=4.2.3-r0
+      - build-base=0.5-r4
+      - linux-headers=7.0.0-r1
+      - make=4.4.1-r4
+      - pkgconf=2.5.1-r0
+      - g++=15.2.0-r5
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: db355f79d910bbfc6378117ed10868493c97b922
+      repository: https://github.com/immich-app/immich
+      tag: v${{package.version}}
+  - name: Create the virtualenv over the system ML stack
+    runs: |
+      cd machine-learning
+      python3 -m venv --system-site-packages /opt/venv
+  - name: Install the frozen Python dependencies
+    runs: |
+      cd machine-learning
+      # The six heavyweight deps are Alpine packages (system site); the rest
+      # of the lock export installs into the venv, with onnx and ml-dtypes
+      # built from source against the system protobuf/numpy.
+      uv export --frozen --no-dev --extra cpu --no-emit-project --no-hashes \
+        --format requirements-txt -o /tmp/all-reqs.txt
+      grep -vE '^(onnxruntime|opencv-python|opencv-python-headless|numpy|shapely|watchfiles|websockets)==' \
+        /tmp/all-reqs.txt > /tmp/reqs.txt
+      /opt/venv/bin/pip install --no-cache-dir -r /tmp/reqs.txt \
+        --no-binary onnx --no-binary ml-dtypes
+  - name: Stage the venv, service and healthcheck
+    runs: |
+      mkdir -p "${{targets.destdir}}/opt" "${{targets.destdir}}/usr/src"
+      cp -a /opt/venv "${{targets.destdir}}/opt/venv"
+      cp -a machine-learning/immich_ml "${{targets.destdir}}/usr/src/immich_ml"
+      cp -a machine-learning/scripts/healthcheck.py "${{targets.destdir}}/usr/src/healthcheck.py"
+  - name: Install the license
+    runs: |
+      install -Dm644 LICENSE \
+        "${{targets.destdir}}/usr/share/licenses/immich-ml/LICENSE"
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      packages:
+        - alpine-release=3.24.2-r0
+        - busybox
+        - curl
+  pipeline:
+    - name: Packaged files
+      runs: |
+        test -f /opt/venv/bin/python
+        test -d /usr/src/immich_ml
+        test -f /usr/src/healthcheck.py
+        test -s /usr/share/licenses/immich-ml/LICENSE
+    - name: Boots the ML server and answers its health endpoint
+      runs: |
+        # Offline: /ping is served before any model is loaded, and the cache
+        # folder stays empty.
+        mkdir -p /tmp/mlcache
+        env \
+          PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONPATH=/usr/src \
+          PATH=/opt/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+          DEVICE=cpu MACHINE_LEARNING_CACHE_FOLDER=/tmp/mlcache \
+          TRANSFORMERS_CACHE=/tmp/mlcache HF_HOME=/tmp/mlcache/hf-cache \
+          MACHINE_LEARNING_MODEL_ARENA=false \
+          LD_PRELOAD=/usr/lib/libmimalloc.so.2 HOME=/home/nonroot \
+          /opt/venv/bin/python -m immich_ml >/tmp/imml.log 2>&1 &
+        pid=$!
+        ok=""
+        for _ in $(seq 1 30); do
+          code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3003/ping || true)
+          [ "$code" = 200 ] && { ok=yes; break; }
+          sleep 1
+        done
+        kill "$pid" 2>/dev/null || true
+        [ "$ok" = yes ] || { cat /tmp/imml.log; exit 1; }
+
+update:
+  enabled: true
+  github:
+    identifier: immich-app/immich
+    strip-prefix: v

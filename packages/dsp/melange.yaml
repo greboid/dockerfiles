@@ -1,0 +1,65 @@
+package:
+  name: dsp
+  version: 1.2.6
+  epoch: 2
+  description: Filtering proxy in front of the Docker socket
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r2
+      - os-release=3.24.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 4b09bec387dd247f9c98b071539217834eb21811
+      repository: https://github.com/greboid/dsp
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd
+      output: dsp
+      static: "true"
+  - uses: go/licenses
+    with:
+      module: github.com/greboid/dsp
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/dsp
+        files: /notices/github.com/greboid/dsp/LICENSE /usr/share/licenses/dsp/LICENSE
+update:
+  enabled: true
+  github:
+    identifier: greboid/dsp
+    strip-prefix: v
+    use-tag: true

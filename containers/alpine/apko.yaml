@@ -1,0 +1,34 @@
+archs:
+  - x86_64
+
+contents:
+  keyring:
+    - keys/packages@f3acd02d7d98309c4ae1d1bf92e58fe2673383ee9b816cb8b0ef8a5eac56c6bc.rsa.pub
+    - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+  repositories:
+    - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+    - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+  packages:
+    - alpine-baselayout=3.7.2-r1
+    - alpine-keys=2.6-r0
+    - apk-tools=3.0.8-r0
+    - busybox=1.37.0-r31
+    - busybox-binsh=1.37.0-r31
+    - musl=1.2.6-r2
+    - musl-utils=1.2.6-r2
+    - ca-certificates-bundle=20260909-r0
+    - tzdata=2026d-r0
+    - os-release=3.24.2-r0
+
+accounts:
+  run-as: 0
+
+environment:
+  LANG: en_US.UTF-8
+  SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+
+cmd: /bin/sh
+
+annotations:
+  org.opencontainers.image.title: alpine
+  org.opencontainers.image.vendor: Greboid

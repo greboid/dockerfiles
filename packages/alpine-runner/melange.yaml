@@ -1,0 +1,43 @@
+package:
+  name: alpine-runner
+  version: 1.0.0
+  epoch: 0
+  description: Legacy overlay-over-fuse containers storage configuration
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: os-release.license
+      license: MIT
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - os-release=3.24.2-r0
+
+pipeline:
+  - name: Write the private overlay-over-fuse storage configuration
+    runs: DESTDIR="${{targets.destdir}}" ./01-write-the-private-overlay-over-fuse.sh
+  - name: Restore the legacy root passwd/group entries
+    runs: DESTDIR="${{targets.destdir}}" ./02-restore-the-legacy-root-passwd.sh
+  - name: Smoke-check the payload
+    runs: DESTDIR="${{targets.destdir}}" ./03-smoke-check-the-payload.sh
+test:
+  environment:
+    contents:
+      keyring:
+        - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - busybox=1.37.0-r31
+        - os-release=3.24.2-r0
+update:
+  enabled: false
+  exclude-reason: no upstream to track; version is internal to this repository

@@ -1,0 +1,59 @@
+name: build
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+enable-openid-connect: true
+
+concurrency:
+  group: build
+
+jobs:
+  build:
+    runs-on: alpine
+    env:
+      ORG_REPO: https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    steps:
+      - name: Checkout
+        uses: actions/toolkit/git-checkout@master
+
+      - name: Trust the org repository and install apko
+        # The committed key is named for the signature the registry
+        # embeds (<owner>@<sha256(DER)>.rsa.pub): apk and apko match an
+        # index signature to a key by file name only. The same key and
+        # repository serve the host's apk, so the build tool itself is
+        # just another org package - the same patched apko that
+        # published the packages this image pins.
+        run: |
+          set -eu
+          cp keys/packages@*.rsa.pub /etc/apk/keys/
+          echo "$ORG_REPO" >> /etc/apk/repositories
+          apk update
+          apk add --no-cache apko
+          apko version
+
+      - name: Login to the Forgejo container registry
+        # The job token cannot write packages (Forgejo rejects uploads
+        # with a reqPackageAccess 401); the organisation-wide
+        # RELEASE_PACKAGE_TOKEN can. Exports DOCKER_CONFIG, which apko's
+        # registry client reads.
+        uses: actions/toolkit/docker-login@master
+        with:
+          registry: git.mouse-lake.ts.net
+          username: greboid
+          password: ${{ secrets.RELEASE_PACKAGE_TOKEN }}
+      - name: Compute tags
+        run: |
+          version_tag="$(date -u +%Y.%m.%d | sed 's/\.0/./g')-alpine3.24"
+          {
+            echo "IMAGE_TAG=git.mouse-lake.ts.net/containers/irc-webhook:${version_tag}"
+            echo "IMAGE_LATEST=git.mouse-lake.ts.net/containers/irc-webhook:latest"
+          } >> "$GITHUB_ENV"
+
+      - name: Build and publish
+        # apko builds from apko.yaml straight from the org repository and
+        # pushes the index and per-arch images to both tags. Tags are
+        # overwritten on every build; there is no immutability guard.
+        run: apko publish apko.yaml "$IMAGE_TAG" "$IMAGE_LATEST"

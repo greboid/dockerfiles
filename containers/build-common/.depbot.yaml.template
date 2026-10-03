@@ -1,0 +1,8 @@
+# Copy to .depbot.yaml in each image repo — see build-common README.
+# min_age_days: 0 org-wide (migration-plan decision 7). Image repos no
+# longer carry versioned dependencies: the app version is tracked by
+# depbot in the packages org, so only the inert apk entry remains.
+min_age_days: 0
+
+automerge:
+  - ecosystems: [apk]

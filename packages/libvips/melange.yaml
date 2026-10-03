@@ -1,0 +1,92 @@
+package:
+  name: libvips
+  version: 8.18.6
+  epoch: 1
+  description: Fast image processing library with low memory needs
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: LGPL-2.1-or-later
+  dependencies:
+    runtime:
+      - cgif
+      - libheif
+      - libheif-jpeg
+      - libheif-openjpeg
+      - libjpeg-turbo
+      - libpng
+      - libwebp
+      - tiff
+      - lcms2
+      - libexif
+      - glib
+      - highway
+      - zlib
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - os-release=3.24.2-r0
+      - build-base=0.5-r4
+      - meson=1.11.1-r0
+      - samurai=1.2-r8
+      - python3=3.14.8-r0
+      - pkgconf=2.5.1-r0
+      - cgif-dev=0.5.4-r0
+      - expat-dev=2.8.5-r0
+      - glib-dev=2.88.1-r1
+      - highway-dev=1.3.0-r0
+      - lcms2-dev=2.19-r0
+      - libexif-dev=0.6.26-r0
+      - libheif-dev=1.23.4-r0
+      - libjpeg-turbo-dev=3.1.3-r0
+      - libpng-dev=1.6.59-r0
+      - libwebp-dev=1.6.0-r0
+      - tiff-dev=4.7.1-r0
+      - zlib-dev=1.3.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 426af3f44246fce9cfa8dd51a353aa4dfd48c553
+      repository: https://github.com/libvips/libvips
+      tag: v${{package.version}}
+  - uses: meson/configure
+    with:
+      output-dir: build
+      opts: --auto-features=disabled -Dmodules=disabled -Dcplusplus=true -Dnsgif=true -Dcgif=enabled -Dheif=enabled -Djpeg=enabled -Dpng=enabled -Dtiff=enabled -Dwebp=enabled -Dlcms=enabled -Dexif=enabled -Dzlib=enabled -Dhighway=enabled -Ddocs=false -Dexamples=false -Dintrospection=disabled -Dvapi=false
+  - uses: meson/compile
+    with:
+      output-dir: build
+  - uses: meson/install
+    with:
+      output-dir: build
+  - name: Move the vips headers into place and drop the .la files
+    runs: DESTDIR="${{targets.destdir}}" ./01-move-the-vips-headers-into-place.sh
+  - uses: license/install
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+update:
+  enabled: true
+  shared: true
+  github:
+    identifier: libvips/libvips
+    strip-prefix: v

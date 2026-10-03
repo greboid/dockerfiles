@@ -1,0 +1,25 @@
+name: build
+
+# Thin stub: the real pipeline lives in packages/common. APK_SIGNING_KEY
+# and RELEASE_PACKAGE_TOKEN are organisational secrets, forwarded to the
+# called workflow with secrets: inherit.
+#
+# The caller job stays bare - `uses:` and `secrets:`, nothing else. No
+# runs-on here: runs-on on a `uses:` job is invalid reusable-workflow
+# syntax, and Forgejo blocks such runs server-side ("workflow was not
+# executed due to an error that blocked the execution attempt") without
+# dispatching anything. The runs-on lives on the job inside the called
+# workflow.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  ci:
+    uses: packages/common/.forgejo/workflows/build-package.yml@main
+    secrets: inherit
+
+# Retriggered after the org repository key trust fix in packages/common.

@@ -1,0 +1,101 @@
+package:
+  name: immich
+  version: 3.2.0
+  epoch: 2
+  description: Self-hosted photo and video management (server + embedded web)
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: AGPL-3.0-only
+  dependencies:
+    runtime:
+      - nodejs=24.18.1-r0
+      - jellyfin-ffmpeg=7.1.3_p5-r0
+      - perl=5.42.2-r1
+      - coreutils=9.11-r0
+      - coreutils-env=9.11-r0
+      - icu-data-full=78.1-r0
+      - libvips=8.18.6-r1
+      - libheif-jpeg=1.23.4-r0
+      - libheif-openjpeg=1.23.4-r0
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - os-release=3.24.2-r0
+      - bash=5.3.9-r1
+      - nodejs=24.18.1-r0
+      - npm=11.12.1-r0
+      - curl=8.22.0-r0
+      - libvips=8.18.6-r1
+      - cgif-dev=0.5.4-r0
+      - expat-dev=2.8.5-r0
+      - glib-dev=2.88.1-r1
+      - highway-dev=1.3.0-r0
+      - lcms2-dev=2.19-r0
+      - libexif-dev=0.6.26-r0
+      - libheif-dev=1.23.4-r0
+      - libjpeg-turbo-dev=3.1.3-r0
+      - libpng-dev=1.6.59-r0
+      - libwebp-dev=1.6.0-r0
+      - tiff-dev=4.7.1-r0
+      - zlib-dev=1.3.2-r0
+      - build-base=0.5-r4
+      - make=4.4.1-r4
+      - pkgconf=2.5.1-r0
+      - python3=3.14.8-r0
+      - tzdata=2026d-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 1b6098c9dbfffe978bec2d414606ed7a4c8e019a
+      repository: https://github.com/immich-app/immich
+      tag: v${{package.version}}
+  - name: Install node dependencies
+    runs: ./01-install-node-dependencies.sh
+  - name: Build workspace packages
+    runs: ./02-build-workspace-packages.sh
+  - name: Deploy the server and source-build sharp
+    runs: ./03-deploy-the-server-and-source-build.sh
+  - name: Fetch the reverse-geocoding datasets
+    runs: ./04-fetch-the-reverse-geocoding-datasets.sh
+  - name: Stage the package
+    runs: DESTDIR="${{targets.destdir}}" ./05-stage-the-package.sh
+  - uses: go/licenses
+    with:
+      save: "false"
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+        - curl
+        - libheif-tools=1.23.4-r0
+        - libheif-x265=1.23.4-r0
+  pipeline:
+    - uses: test/paths
+      with:
+        files: /usr/src/app/server/dist/main.js /usr/src/app/geodata/cities500.txt /usr/share/licenses/immich/LICENSE
+        dirs: /usr/src/app/server/node_modules/sharp /usr/src/app/www
+        symlinks: /usr/bin/ffmpeg /usr/bin/ffprobe
+update:
+  enabled: true
+  github:
+    identifier: immich-app/immich
+    strip-prefix: v

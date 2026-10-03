@@ -1,0 +1,378 @@
+# Source-built replacement for containers/postgres-18 (upstream 18.6).
+package:
+  name: postgres-18
+  version: 18.6
+  epoch: 1
+  description: PostgreSQL 18 database server
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: COPYRIGHT
+      license: PostgreSQL
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+      - icu-data
+      - icu-libs
+      - libcrypto3
+      - libssl3
+      - zlib
+      - lz4-libs
+      - readline
+      - ncurses-libs
+      - libuuid
+      - musl-locales
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - alpine-release=3.24.2-r0
+      - build-base=0.5-r4
+      - make=4.4.1-r4
+      - linux-headers=7.0.0-r1
+      - bison=3.8.2-r3
+      - flex=2.6.4-r8
+      - icu-dev=78.1-r0
+      - openssl-dev=3.5.9-r0
+      - readline-dev=8.3.3-r1
+      - util-linux-dev=2.42.3-r1
+      - zlib-dev=1.3.2-r0
+      - perl=5.42.2-r1
+
+pipeline:
+  - uses: fetch
+    with:
+      # PostgreSQL publishes release tarballs with checksums; the official
+      # artifact is pinned here (the git mirror would pin by commit).
+      uri: https://ftp.postgresql.org/pub/source/v${{package.version}}/postgresql-${{package.version}}.tar.bz2
+      expected-sha256: 555610c24d53e4316da5b7d3fc25c279d96856d5e0e23ee308c328c5fa881d9f
+      strip-components: 1
+  - name: Build and install PostgreSQL
+    runs: |
+      ./configure \
+        --with-system-tzdata=/usr/share/zoneinfo \
+        --with-ssl=openssl \
+        --with-uuid=e2fs
+      make -j"$(nproc)" world-bin
+      make install-world-bin
+  - name: Stage the installation
+    runs: |
+      mkdir -p "${{targets.destdir}}/usr/local"
+      cp -a /usr/local/pgsql "${{targets.destdir}}/usr/local/pgsql"
+      # Legacy VOLUME: the cluster lives here; entry.sh initializes it.
+      mkdir -p "${{targets.destdir}}/var/lib/postgresql/data"
+      chmod 750 "${{targets.destdir}}/var/lib/postgresql/data"
+      # Local sockets default to /tmp.
+      install -d -m 1777 "${{targets.destdir}}/tmp"
+      install -Dm644 COPYRIGHT \
+        "${{targets.destdir}}/usr/share/licenses/postgres-18/COPYRIGHT"
+  - name: Preserve the legacy entrypoint script
+    runs: |
+      # Verbatim from the legacy image (tabs widened to spaces; heredoc
+      # terminators therefore sit at column 0 of the script).
+      install -d -m 0755 "${{targets.destdir}}/usr/local/bin"
+      cat > "${{targets.destdir}}/usr/local/bin/entry.sh" <<'ENTRY_EOF'
+      #!/usr/bin/env bash
+      set -Eeuo pipefail
+
+      # --------------------------------------------------------------------------
+      # helpers
+      # --------------------------------------------------------------------------
+
+      is_root() { [[ $(id -u) == 0 ]]; }
+
+      # --------------------------------------------------------------------------
+      # setup steps
+      # --------------------------------------------------------------------------
+
+      # create the directories postgres needs; tolerate chmod/chown failures the
+      # same way upstream does (weird volume setups may still work)
+      create_directories() {
+          mkdir -p "$PGDATA"
+          chmod 700 "$PGDATA" || :
+          mkdir -p /var/run/postgresql || :
+          chmod 775 /var/run/postgresql || :
+          if [[ -n "${POSTGRES_INITDB_WALDIR:-}" ]]; then
+              mkdir -p "$POSTGRES_INITDB_WALDIR"
+              chmod 700 "$POSTGRES_INITDB_WALDIR"
+          fi
+          if is_root; then
+              # allow the container to be started with `--user`
+              find "$PGDATA" \! -user postgres -exec chown postgres '{}' +
+              find /var/run/postgresql \! -user postgres -exec chown postgres '{}' +
+              if [[ -n "${POSTGRES_INITDB_WALDIR:-}" ]]; then
+                  find "$POSTGRES_INITDB_WALDIR" \! -user postgres -exec chown postgres '{}' +
+              fi
+          fi
+      }
+
+      # when started as root, re-exec this script as the postgres user and return
+      # to the top (whatever privilege-drop tool the host provides)
+      demote_and_reexec() {
+          if command -v su-exec >/dev/null 2>&1; then
+              exec su-exec postgres "$@"
+          elif command -v gosu >/dev/null 2>&1; then
+              exec gosu postgres "$@"
+          elif command -v setpriv >/dev/null 2>&1; then
+              exec setpriv --reuid=postgres --regid=postgres --init-groups "$@"
+          elif command -v runuser >/dev/null 2>&1; then
+              exec runuser -u postgres -- "$@"
+          else
+              echo >&2 "error: started as root but found no su-exec/gosu/setpriv/runuser to drop privileges"
+              exit 1
+          fi
+      }
+
+      # refuse to init a cluster we could not secure; warn on misconfigurations
+      check_minimum_env() {
+          if [[ ${#POSTGRES_PASSWORD} -ge 100 ]]; then
+              cat >&2 <<-'EOWARN'
+
+                  WARNING: The supplied POSTGRES_PASSWORD is 100+ characters.
+
+                    This will not work if used via PGPASSWORD with "psql".
+
+              EOWARN
+          fi
+          if [[ -z "$POSTGRES_PASSWORD" && "$POSTGRES_HOST_AUTH_METHOD" != 'trust' ]]; then
+              cat >&2 <<-'EOE'
+                  Error: Database is uninitialized and superuser password is not specified.
+                         You must specify POSTGRES_PASSWORD to a non-empty value for the
+                         superuser. For example, "-e POSTGRES_PASSWORD=password" on "docker run".
+
+                         You may also use "POSTGRES_HOST_AUTH_METHOD=trust" to allow all
+                         connections without a password. This is *not* recommended.
+              EOE
+              exit 1
+          fi
+          if [[ "$POSTGRES_HOST_AUTH_METHOD" == 'trust' ]]; then
+              echo >&2 'WARNING: POSTGRES_HOST_AUTH_METHOD=trust allows unauthenticated access; not recommended.'
+          fi
+      }
+
+      # run initdb on an empty PGDATA, creating the POSTGRES_USER superuser with
+      # POSTGRES_PASSWORD; extra arguments flow to initdb
+      initialize_cluster() {
+          # hand the password to initdb via a file instead of the command line
+          local pwfile
+          pwfile="$(mktemp)"
+          trap 'rm -f "$pwfile"' RETURN
+          printf '%s\n' "$POSTGRES_PASSWORD" > "$pwfile"
+
+          local init_args=( --username="$POSTGRES_USER" --pwfile="$pwfile" )
+          if [[ -n "${POSTGRES_INITDB_WALDIR:-}" ]]; then
+              init_args+=( --waldir "$POSTGRES_INITDB_WALDIR" )
+          fi
+          local user_args=()
+          if [[ -n "${POSTGRES_INITDB_ARGS:-}" ]]; then
+              # evaluated so users may pass quoted multi-word options
+              eval "user_args=( $POSTGRES_INITDB_ARGS )"
+          fi
+
+          initdb "${init_args[@]}" "${user_args[@]}" "$@"
+      }
+
+      # append the "host" auth line to pg_hba.conf; arguments (minus a leading
+      # `postgres`) are passed to `postgres -C` to learn the configured password
+      # encryption so the auth method matches it
+      append_hba_host_line() {
+          if [[ "${1:-}" == 'postgres' ]]; then
+              shift
+          fi
+          local auth_method
+          auth_method="$(postgres -C password_encryption "$@")"
+          : "${POSTGRES_HOST_AUTH_METHOD:=$auth_method}"
+          {
+              echo
+              if [[ "$POSTGRES_HOST_AUTH_METHOD" == 'trust' ]]; then
+                  echo '# warning trust is enabled for all connections'
+              fi
+              echo "host all all all $POSTGRES_HOST_AUTH_METHOD"
+          } >> "$PGDATA/pg_hba.conf"
+      }
+
+      # start a socket-only server so setup can talk to the cluster with psql;
+      # arguments (minus a leading `postgres`) are forwarded to the server
+      temp_server_start() {
+          if [[ "${1:-}" == 'postgres' ]]; then
+              shift
+          fi
+          local server_args=( "$@" -c listen_addresses= -p "${PGPORT:-5432}" )
+          local opts
+          printf -v opts '%q ' "${server_args[@]}"
+          PGUSER="${PGUSER:-$POSTGRES_USER}" pg_ctl -D "$PGDATA" -o "$opts" -w start
+      }
+
+      temp_server_stop() {
+          PGUSER="${PGUSER:-postgres}" pg_ctl -D "$PGDATA" -m fast -w stop
+      }
+
+      # run psql against the temporary socket-only server; TCP env vars are
+      # cleared because the temporary server does not listen on TCP
+      docker_process_sql() {
+          local psql_args=( -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --no-password --no-psqlrc )
+          if [[ -n "${POSTGRES_DB:-}" ]]; then
+              psql_args+=( --dbname "$POSTGRES_DB" )
+          fi
+          PGHOST= PGHOSTADDR= psql "${psql_args[@]}" "$@"
+      }
+
+      # create POSTGRES_DB unless it already exists
+      create_initial_database() {
+          local exists
+          exists="$(
+              POSTGRES_DB= docker_process_sql --dbname postgres --set db="$POSTGRES_DB" --tuples-only <<-'EOSQL'
+                  SELECT 1 FROM pg_database WHERE datname = :'db' ;
+              EOSQL
+          )"
+          if [[ -z "$exists" ]]; then
+              POSTGRES_DB= docker_process_sql --dbname postgres <<-'EOSQL'
+                  CREATE DATABASE :"db" ;
+              EOSQL
+              echo
+          fi
+      }
+
+      # load the POSTGRES_* environment and detect an already-initialized cluster
+      setup_env() {
+          POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-}"
+          POSTGRES_USER="${POSTGRES_USER:-postgres}"
+          POSTGRES_DB="${POSTGRES_DB:-$POSTGRES_USER}"
+          : "${POSTGRES_HOST_AUTH_METHOD:=}"
+
+          DATABASE_ALREADY_EXISTS=''
+          if [[ -s "$PGDATA/PG_VERSION" ]]; then
+              DATABASE_ALREADY_EXISTS='true'
+          fi
+      }
+
+      # --------------------------------------------------------------------------
+      # main
+      # --------------------------------------------------------------------------
+
+      # true when the arguments contain an option that makes postgres exit instead
+      # of serving (-C is deliberately excluded: it always needs a config file)
+      wants_help() {
+          local arg
+          for arg in "$@"; do
+              case "$arg" in
+                  -'?'|--help|--describe-config|-V|--version) return 0 ;;
+              esac
+          done
+          return 1
+      }
+
+      main() {
+          # empty invocation still means "run the server"
+          if (( $# == 0 )); then
+              set -- postgres
+          fi
+
+          # a leading flag implies the postgres server
+          if [[ "${1:0:1}" == '-' ]]; then
+              set -- postgres "$@"
+          fi
+
+          if [[ "$1" == 'postgres' ]] && ! wants_help "$@"; then
+              setup_env
+              create_directories
+              if is_root; then
+                  # restart as the unprivileged postgres user
+                  demote_and_reexec "$BASH_SOURCE" "$@"
+              fi
+
+              # only initialize on an empty data directory
+              if [[ -z "$DATABASE_ALREADY_EXISTS" ]]; then
+                  check_minimum_env
+
+                  initialize_cluster
+                  append_hba_host_line "$@"
+
+                  # socket auth may still require a password when initdb was
+                  # told to use e.g. --auth-local=md5; harmless otherwise
+                  export PGPASSWORD="${PGPASSWORD:-$POSTGRES_PASSWORD}"
+                  temp_server_start "$@"
+
+                  create_initial_database
+
+                  temp_server_stop
+                  unset PGPASSWORD
+
+                  echo
+                  echo 'PostgreSQL init process complete; ready for start up.'
+                  echo
+              else
+                  echo
+                  echo 'PostgreSQL Database directory appears to contain a database; Skipping initialization'
+                  echo
+              fi
+          fi
+
+          exec "$@"
+      }
+
+      main "$@"
+      ENTRY_EOF
+      chmod 755 "${{targets.destdir}}/usr/local/bin/entry.sh"
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - alpine-release=3.24.2-r0
+        - busybox
+        - icu-data
+        - icu-libs
+        - libcrypto3
+        - libssl3
+        - zlib
+        - lz4-libs
+        - readline
+        - ncurses-libs
+        - libuuid
+  pipeline:
+    - name: Packaged files
+      runs: |
+        test -x /usr/local/pgsql/bin/postgres
+        test -x /usr/local/pgsql/bin/psql
+        test -x /usr/local/bin/entry.sh
+        test -d /var/lib/postgresql/data
+        test -s /usr/share/licenses/postgres-18/COPYRIGHT
+    - name: Initializes a cluster and serves queries
+      runs: |
+        # postgres refuses to run as root: drop to the guest's build user.
+        # Socket-only, under /tmp/pgtest so nothing outside is touched.
+        mkdir -p /tmp/pgtest && chown build:build /tmp/pgtest
+        cat > /tmp/pgtest/check.sql <<'SQL'
+        SELECT version();
+        SQL
+        chown build:build /tmp/pgtest/check.sql
+        su build -s /bin/sh -c 'export PATH=/usr/local/pgsql/bin:$PATH; \
+          initdb -D /tmp/pgtest/data -A trust --no-locale \
+            -c unix_socket_directories=/tmp/pgtest'
+        su build -s /bin/sh -c 'export PATH=/usr/local/pgsql/bin:$PATH; \
+          pg_ctl -D /tmp/pgtest/data -w -o "-c unix_socket_directories=/tmp/pgtest" start'
+        su build -s /bin/sh -c '/usr/local/pgsql/bin/psql -h /tmp/pgtest -d postgres \
+          -f /tmp/pgtest/check.sql' | grep -q 18.6
+        su build -s /bin/sh -c '/usr/local/pgsql/bin/pg_ctl -D /tmp/pgtest/data -m fast -w stop'
+
+update:
+  enabled: true
+  # release-monitoring.org project PostgreSQL~current, sourced from
+  # ftp.postgresql.org; stay on the 18 stream this recipe is named for.
+  release-monitor:
+    identifier: 5601
+    version-filter-prefix: "18."

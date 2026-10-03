@@ -1,0 +1,65 @@
+package:
+  name: irc-github
+  version: 4.0.3
+  epoch: 2
+  description: irc-bot plugin announcing GitHub events in IRC channels
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r2
+      - os-release=3.24.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: a7b40d0e02f64cf69af3ab11bf08da2efbe72de1
+      repository: https://github.com/greboid/irc-github
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd/github
+      output: irc-github
+      static: "true"
+  - uses: go/licenses
+    with:
+      module: github.com/greboid/irc-github/v4/cmd/github
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/irc-github
+        files: /notices/github.com/greboid/irc-github/v4/cmd/github/LICENSE /usr/share/licenses/irc-github/LICENSE
+update:
+  enabled: true
+  github:
+    identifier: greboid/irc-github
+    strip-prefix: v
+    use-tag: true

@@ -1,0 +1,130 @@
+# Source-built libvips for immich's sharp: alpine 3.24 ships vips 8.18.2,
+# but sharp 0.35.x requires >= 8.18.3 at compile time and a libheif WITH
+# the HEVC codecs to decode iPhone HEIC. Pinned fresh upstream release
+# with exactly the loaders immich's pipeline needs; heif (HEIC + AVIF via
+# alpine's libde265/dav1d plugins) is linked straight into libvips.so — no
+# dlopen'd vips modules to chase at runtime. Installs under /usr so
+# pkgconf finds it without PKG_CONFIG_PATH; headers ship in the main
+# package because sharp's build compiles against them.
+package:
+  name: libvips
+  version: 8.18.7
+  epoch: 0
+  description: Fast image processing library with low memory needs
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: LGPL-2.1-or-later
+  dependencies:
+    runtime:
+      - cgif
+      - libheif
+      - libheif-jpeg
+      - libheif-openjpeg
+      - libjpeg-turbo
+      - libpng
+      - libwebp
+      - tiff
+      - lcms2
+      - libexif
+      - glib
+      - highway
+      - zlib
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - alpine-release=3.24.2-r0
+      - build-base=0.5-r4
+      - meson=1.11.1-r0
+      - samurai=1.2-r8
+      - python3=3.14.7-r1
+      - pkgconf=2.5.1-r0
+      - cgif-dev=0.5.4-r0
+      - expat-dev=2.8.5-r0
+      - glib-dev=2.88.1-r1
+      - highway-dev=1.3.0-r0
+      - lcms2-dev=2.19-r0
+      - libexif-dev=0.6.26-r0
+      - libheif-dev=1.23.4-r0
+      - libjpeg-turbo-dev=3.1.3-r0
+      - libpng-dev=1.6.59-r0
+      - libwebp-dev=1.6.0-r0
+      - tiff-dev=4.7.1-r0
+      - zlib-dev=1.3.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 24ad4d042940e6bf99a68871ba886ca8847c9c82
+      repository: https://github.com/libvips/libvips
+      tag: v${{package.version}}
+  - name: Build and install libvips
+    runs: |
+      # Auto-features disabled: only the loaders immich needs, with heif
+      # (HEIC/AVIF) linked in. Everything else stays off so the runtime
+      # dependency set stays enumerable. DESTDIR stages only libvips' own
+      # files into the package.
+      meson setup build . --prefix=/usr \
+        --auto-features=disabled -Dmodules=disabled -Dcplusplus=true -Dnsgif=true \
+        -Dcgif=enabled -Dheif=enabled -Djpeg=enabled -Dpng=enabled \
+        -Dtiff=enabled -Dwebp=enabled -Dlcms=enabled -Dexif=enabled -Dzlib=enabled \
+        -Dhighway=enabled -Ddocs=false -Dexamples=false -Dintrospection=disabled -Dvapi=false
+      meson compile -C build
+      DESTDIR="${{targets.destdir}}" meson install -C build
+      # sharp's <vips/vips8> needs the headers in the vips/ namespace, but
+      # meson installs them flat (with version.h under vips/). Move the
+      # flat headers in; drop the two internal headers whose names collide
+      # with musl-dev (nothing in the public include chain uses them — the
+      # legacy dodged this via the isolated /usr/local prefix).
+      mkdir -p "${{targets.destdir}}/usr/include/vips"
+      find "${{targets.destdir}}/usr/include" -maxdepth 1 -name '*.h' \
+        -exec mv {} "${{targets.destdir}}/usr/include/vips/" \;
+      if [ -f "${{targets.destdir}}/usr/include/vips8" ]; then
+        mv "${{targets.destdir}}/usr/include/vips8" \
+           "${{targets.destdir}}/usr/include/vips/vips8"
+      fi
+      rm -f "${{targets.destdir}}/usr/include/memory.h" \
+            "${{targets.destdir}}/usr/include/semaphore.h"
+      install -Dm644 LICENSE \
+        "${{targets.destdir}}/usr/share/licenses/libvips/LICENSE"
+      find "${{targets.destdir}}" -name "*.la" -delete
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      packages:
+        - alpine-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - name: Version and loader registration
+      runs: |
+        # grep -q (not >/dev/null) would exit on first match and SIGPIPE the
+        # still-writing vips -l: steps run with pipefail, so that surfaces as
+        # exit status 141. See the melange test notes in MIGRATION.md.
+        test -x /usr/bin/vips
+        /usr/bin/vips --version | grep "${{package.version}}" >/dev/null
+        vips -l | grep heifload >/dev/null
+        vips -l | grep jpegsave >/dev/null
+
+update:
+  enabled: true
+  # Shared library; immich pins it exactly and builds against it.
+  shared: true
+  github:
+    identifier: libvips/libvips
+    strip-prefix: v

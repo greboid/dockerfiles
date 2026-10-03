@@ -1,0 +1,32 @@
+package:
+  name: os-release
+  version: 3.24.2
+  epoch: 0
+  description: /etc/os-release identification file for container images
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: os-release.license
+      license: MIT
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+
+pipeline:
+  - name: Write /etc/os-release
+    runs: install -Dm 0644 os-release "${{targets.destdir}}/etc/os-release"
+  - name: Smoke-check the payload
+    runs: |
+      test -s "${{targets.destdir}}/etc/os-release"
+update:
+  enabled: false
+  exclude-reason: must move in lockstep with the os-release pins across all recipes

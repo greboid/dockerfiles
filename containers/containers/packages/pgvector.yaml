@@ -1,0 +1,96 @@
+# Source-built replacement for the legacy image's bundled pgvector
+# (upstream v0.8.6), built against the postgres-18 package. Combined into
+# the container by images/postgres-18.yaml.
+package:
+  name: pgvector
+  version: 0.8.6
+  epoch: 0
+  description: Open-source vector similarity search for PostgreSQL
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: PostgreSQL
+  dependencies:
+    runtime:
+      - postgres-18=18.6-r0
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - alpine-release=3.24.2-r0
+      - build-base=0.5-r4
+      # Build-time provider of pg_config (installed into the guest).
+      - postgres-18=18.6-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 8ee86c96f0fd72390f890aa8a336fda6d3ab4c6c
+      repository: https://github.com/pgvector/pgvector
+      tag: v${{package.version}}
+  - name: Build and install pgvector
+    runs: |
+      # OPTFLAGS="" drops upstream's -march=native so the package runs on
+      # any host. PGXS honors DESTDIR, so the extension stages into this
+      # package's own tree alongside the server's /usr/local/pgsql layout.
+      make -j"$(nproc)" OPTFLAGS="" PG_CONFIG=/usr/local/pgsql/bin/pg_config
+      make install OPTFLAGS="" PG_CONFIG=/usr/local/pgsql/bin/pg_config \
+        DESTDIR="${{targets.destdir}}"
+  - name: Install the license
+    runs: |
+      install -Dm644 LICENSE \
+        "${{targets.destdir}}/usr/share/licenses/pgvector/LICENSE"
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - alpine-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - name: Packaged files
+      runs: |
+        test -f /usr/local/pgsql/lib/vector.so
+        test -f /usr/local/pgsql/share/extension/vector.control
+        test -d /usr/local/pgsql/include/server/extension/vector
+        test -s /usr/share/licenses/pgvector/LICENSE
+    - name: Loads into a running cluster
+      runs: |
+        # postgres-18 arrives as this package's runtime dependency; postgres
+        # refuses to run as root, so drop to the guest's build user.
+        # Socket-only, under /tmp/pgtest so nothing outside is touched.
+        mkdir -p /tmp/pgtest && chown build:build /tmp/pgtest
+        cat > /tmp/pgtest/check.sql <<'SQL'
+        CREATE EXTENSION vector;
+        SELECT extversion FROM pg_extension WHERE extname = 'vector';
+        SQL
+        chown build:build /tmp/pgtest/check.sql
+        su build -s /bin/sh -c 'export PATH=/usr/local/pgsql/bin:$PATH; \
+          initdb -D /tmp/pgtest/data -A trust --no-locale \
+            -c unix_socket_directories=/tmp/pgtest'
+        su build -s /bin/sh -c 'export PATH=/usr/local/pgsql/bin:$PATH; \
+          pg_ctl -D /tmp/pgtest/data -w -o "-c unix_socket_directories=/tmp/pgtest" start'
+        su build -s /bin/sh -c '/usr/local/pgsql/bin/psql -h /tmp/pgtest -d postgres \
+          -f /tmp/pgtest/check.sql' | grep -q 0.8.6
+        su build -s /bin/sh -c '/usr/local/pgsql/bin/pg_ctl -D /tmp/pgtest/data -m fast -w stop'
+
+update:
+  enabled: true
+  # No GitHub releases; tags are the version signal.
+  github:
+    identifier: pgvector/pgvector
+    strip-prefix: v
+    use-tag: true

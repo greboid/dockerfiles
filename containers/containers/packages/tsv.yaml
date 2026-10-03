@@ -1,0 +1,86 @@
+# Source-built replacement for containers/tsv (upstream v1.2.0).
+package:
+  name: tsv
+  version: 1.2.0
+  epoch: 0
+  description: Tailscale VPN node bridging tailnet traffic to WireGuard
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENCE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r0
+      - alpine-release=3.24.2-r0
+  environment:
+    CGO_ENABLED: "0"
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 8c1b2ac9a2e83ef9e7769d2e16df4446e9125259
+      repository: https://github.com/csmith/tsv
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./
+      output: tsv
+      strip: -s -w
+      ldflags: -extldflags "-static" -buildid=
+  - name: Preserve legacy entrypoint, config directory and license notices
+    runs: |
+      ln -s usr/bin/tsv "${{targets.destdir}}/tsv"
+      install -d -m 0755 "${{targets.destdir}}/config"
+      go-licenses save ./... --save_path="${{targets.destdir}}/notices"
+      test -s "${{targets.destdir}}/notices/github.com/csmith/tsv/LICENCE"
+      install -Dm644 LICENCE "${{targets.destdir}}/usr/share/licenses/tsv/LICENCE"
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - alpine-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - name: Packaged files
+      runs: |
+        test -x /usr/bin/tsv
+        test -L /tsv
+        test -d /config
+        test -s /notices/github.com/csmith/tsv/LICENCE
+        test -s /usr/share/licenses/tsv/LICENCE
+    - name: Refuses to start without WireGuard configuration
+      runs: |
+        # Flag validation fails before any tailnet or WireGuard contact.
+        if /tsv --tailscale-config-dir=/config >/tmp/tsv.log 2>&1; then
+          echo "expected missing-configuration failure" >&2
+          exit 1
+        fi
+        grep -q "Flag validation failed" /tmp/tsv.log
+        grep -q "\-\-wg-private-key is required" /tmp/tsv.log
+
+update:
+  enabled: true
+  github:
+    identifier: csmith/tsv
+    strip-prefix: v

@@ -1,0 +1,64 @@
+package:
+  name: dockercleanup
+  version: 1.0.0
+  epoch: 2
+  description: Periodically prunes stopped containers and unused images via the Docker API
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.26.8-r0
+      - go-licenses=1.6.0-r2
+      - os-release=3.24.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 1ec067af55569b89c82f3bb4c6a2bb0c5e47bb1b
+      repository: https://github.com/greboid/dockercleanup
+      tag: v1.0
+  - uses: go/build
+    with:
+      packages: ./
+      output: dockercleanup
+      static: "true"
+  - uses: go/licenses
+    with:
+      checks: github.com/greboid/dockercleanup/LICENSE github.com/csmith/envflag/v2/LICENCE github.com/docker/docker/LICENSE
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/dockercleanup
+        files: /notices/github.com/greboid/dockercleanup/LICENSE /notices/github.com/docker/docker/LICENSE /usr/share/licenses/dockercleanup/LICENSE
+update:
+  enabled: true
+  github:
+    identifier: greboid/dockercleanup
+    strip-prefix: v
