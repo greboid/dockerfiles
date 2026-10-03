@@ -62,7 +62,7 @@ contents:
     - musl-utils=1.2.6-r2
     - ncurses-terminfo-base=6.6_p20260516-r0
     - nettle=3.10.2-r0
-    - nghttp2-libs=1.69.0-r0
+    - nghttp2-libs=1.70.0-r0
     - npth=1.8-r0
     - p11-kit=0.26.2-r0
     - patch=2.8-r0
