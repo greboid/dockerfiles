@@ -9,7 +9,7 @@
 package:
   name: libvips
   version: 8.18.7
-  epoch: 0
+  epoch: 1
   description: Fast image processing library with low memory needs
   target-architecture:
     - x86_64
@@ -49,7 +49,7 @@ environment:
       - build-base=0.5-r4
       - meson=1.11.1-r0
       - samurai=1.2-r8
-      - python3=3.14.7-r1
+      - python3=3.14.8-r0
       - pkgconf=2.5.1-r0
       - cgif-dev=0.5.4-r0
       - expat-dev=2.8.5-r0
