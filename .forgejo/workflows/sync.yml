@@ -6,7 +6,7 @@ name: sync
 
 on:
   schedule:
-    - cron: '17 * * * *'
+    - cron: '* * * * *'
   workflow_dispatch:
 
 concurrency:

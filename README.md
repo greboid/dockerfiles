@@ -1,12 +1,13 @@
-# forgejo sync monorepo
-#
-# This repository is a view-only monorepo: an automatically generated snapshot
-# of the [`containers`](https://git.mouse-lake.ts.net/containers) and
-# [`packages`](https://git.mouse-lake.ts.net/packages) Forgejo organisations.
-#
-# It is generated output. Do not open pull requests or file issues here, and
-# do not commit directly: every change belongs in the organisation
-# repositories and will appear here on the next sync.
+# dockerfiles — view-only monorepo
+
+This repository is a view-only monorepo: an automatically generated snapshot
+of the [`containers`](https://git.mouse-lake.ts.net/containers) and
+[`packages`](https://git.mouse-lake.ts.net/packages) Forgejo organisations.
+
+It is generated output. Do not open pull requests or file issues here, and
+do not commit directly: every change belongs in the organisation
+repositories and will appear here on the next sync. Dependency automation
+is disabled for the same reason (`.depbot.yaml`).
 
 ## Layout
 
