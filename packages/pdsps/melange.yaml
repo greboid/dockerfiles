@@ -58,6 +58,13 @@ test:
       with:
         executables: /usr/bin/pdsps
         files: /notices/chameth.com/pdsps/LICENCE /usr/share/licenses/pdsps/LICENCE
+    - name: Refuses to start without an upstream
+      runs: |
+        if /usr/bin/pdsps >/tmp/pdsps.log 2>&1; then
+          echo "expected missing-upstream failure" >&2
+          exit 1
+        fi
+        grep -q "upstream is required" /tmp/pdsps.log
 update:
   enabled: true
   github:

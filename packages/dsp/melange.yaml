@@ -57,6 +57,11 @@ test:
       with:
         executables: /usr/bin/dsp
         files: /notices/github.com/greboid/dsp/LICENSE /usr/share/licenses/dsp/LICENSE
+    - name: Exits cleanly when the Docker socket is missing
+      runs: |
+        /usr/bin/dsp >/tmp/dsp.log 2>&1
+        test $? -eq 0
+        grep -q "socket does not exist" /tmp/dsp.log
 update:
   enabled: true
   github:

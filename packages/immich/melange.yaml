@@ -94,6 +94,20 @@ test:
         files: /usr/src/app/server/dist/main.js /usr/src/app/geodata/cities500.txt /usr/share/licenses/immich/LICENSE
         dirs: /usr/src/app/server/node_modules/sharp /usr/src/app/www
         symlinks: /usr/bin/ffmpeg /usr/bin/ffprobe
+    - name: Decodes HEIC through the source-built sharp
+      runs: |
+        ffmpeg -loglevel error -f lavfi -i color=c=black:s=64x64 -frames:v 1 -y /tmp/smoke.png
+        heif-enc -q 60 -o /tmp/smoke.heic /tmp/smoke.png
+        node -e 'require("/usr/src/app/server/node_modules/sharp")("/tmp/smoke.heic").resize(32).jpeg().toBuffer().then((b) => { if (b.length === 0) { throw new Error("empty jpeg"); } console.log("HEIC smoke test ok"); });' | grep -q "HEIC smoke test ok"
+    - name: Transcodes with nice and the tonemapx filter
+      runs: |
+        # Immich hardcodes fluent-ffmpeg niceness 10 (nice must resolve) and
+        # HDR thumbnails require jellyfin's tonemapx filter — the two
+        # runtime quirks that motivated the legacy image's tooling.
+        nice -n 10 true
+        ffmpeg -loglevel error -f lavfi -i testsrc2=s=256x144:r=5 -t 1 -pix_fmt p010le -c:v libx265 -x265-params lossless=1 -color_primaries bt2020 -color_trc smpte2084 -colorspace bt2020nc -y /tmp/smoke-hdr.mp4
+        ffmpeg -loglevel error -i /tmp/smoke-hdr.mp4 -vf 'tonemapx=tonemap=hable:desat=0:p=bt709:t=bt709:m=bt709:r=pc:peak=100:format=yuv420p' -frames:v 1 -y /tmp/smoke-tonemap.jpg
+        test -s /tmp/smoke-tonemap.jpg
 update:
   enabled: true
   github:

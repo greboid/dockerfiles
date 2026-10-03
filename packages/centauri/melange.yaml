@@ -67,6 +67,12 @@ test:
         executables: /usr/bin/centauri
         files: /notices/github.com/csmith/centauri/LICENCE /usr/share/licenses/centauri/LICENCE
         dirs: ${{vars.runtime-dirs}}
+    - name: Validates configurations
+      runs: |
+        printf 'route test.example.internal\n\tupstream 127.0.0.1:9999\n' > /tmp/good.conf
+        /usr/bin/centauri -config /tmp/good.conf -validate
+        printf 'not a centauri config\n' > /tmp/bad.conf
+        ! /usr/bin/centauri -config /tmp/bad.conf -validate
 update:
   enabled: true
   github:

@@ -22,10 +22,12 @@ environment:
       - os-release=3.24.2-r0
 
 pipeline:
-  - name: Write the private overlay-over-fuse storage configuration
-    runs: DESTDIR="${{targets.destdir}}" ./01-write-the-private-overlay-over-fuse.sh
+  - name: Install the private overlay-over-fuse storage configuration
+    runs: install -Dm644 storage.conf "${{targets.destdir}}/usr/share/alpine-runner/storage.conf"
   - name: Restore the legacy root passwd/group entries
-    runs: DESTDIR="${{targets.destdir}}" ./02-restore-the-legacy-root-passwd.sh
+    runs: |
+      install -Dm644 passwd "${{targets.destdir}}/etc/passwd"
+      install -Dm644 group "${{targets.destdir}}/etc/group"
   - name: Smoke-check the payload
     runs: DESTDIR="${{targets.destdir}}" ./03-smoke-check-the-payload.sh
 test:
@@ -38,6 +40,12 @@ test:
       packages:
         - busybox=1.37.0-r31
         - os-release=3.24.2-r0
+  pipeline:
+    - name: Storage configuration is private and pins fuse-overlayfs
+      runs: |
+        test -s /usr/share/alpine-runner/storage.conf
+        grep -q '^mount_program = "/usr/bin/fuse-overlayfs"$' /usr/share/alpine-runner/storage.conf
+        test ! -e /etc/containers/storage.conf
 update:
   enabled: false
   exclude-reason: no upstream to track; version is internal to this repository

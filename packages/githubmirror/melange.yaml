@@ -57,6 +57,11 @@ test:
       with:
         executables: /usr/bin/githubmirror
         files: /notices/github.com/greboid/githubmirror/LICENSE /usr/share/licenses/githubmirror/LICENSE
+    - name: Prints usage when unconfigured
+      runs: |
+        /usr/bin/githubmirror >/tmp/githubmirror.log 2>&1
+        test $? -eq 0
+        grep -q "authtoken" /tmp/githubmirror.log
 update:
   enabled: true
   github:

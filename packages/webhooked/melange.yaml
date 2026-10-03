@@ -57,6 +57,12 @@ test:
       with:
         executables: /usr/bin/webhooked
         files: /notices/github.com/csmith/webhooked/LICENCE /notices/github.com/google/go-github/v72/github/LICENSE /usr/share/licenses/webhooked/LICENCE
+    - name: Prints usage and exits cleanly when unconfigured
+      runs: |
+        out=$(/usr/bin/webhooked 2>&1)
+        code=$?
+        test "$code" = 0
+        echo "$out" | grep -q "Usage of /usr/bin/webhooked:"
 update:
   enabled: true
   github:

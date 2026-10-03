@@ -56,11 +56,12 @@ pipeline:
     with:
       dirs: ${{vars.runtime-dirs}}
   - name: Install the config
-    runs: DESTDIR="${{targets.destdir}}" ./01-install-the-config.sh
+    runs: |
+      install -Dm755 src/redis-server "${{targets.destdir}}/usr/bin/redis"
+      install -Dm644 redis-minimal.conf "${{targets.destdir}}/redis.conf"
   - uses: license/install
     with:
       license: LICENSE.txt
-  # Strips the staged redis-server like the old build step did (full strip).
   - uses: strip
     with:
       opts: -s

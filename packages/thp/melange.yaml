@@ -66,6 +66,13 @@ test:
         executables: /usr/bin/thp
         files: /notices/github.com/greboid/thp/LICENCE /usr/share/licenses/thp/LICENCE
         dirs: ${{vars.runtime-dirs}}
+    - name: Refuses to start without an upstream
+      runs: |
+        if /usr/bin/thp >/tmp/thp.log 2>&1; then
+          echo "expected missing-upstream failure" >&2
+          exit 1
+        fi
+        grep -q "Upstream host cannot be blank" /tmp/thp.log
 update:
   enabled: true
   github:

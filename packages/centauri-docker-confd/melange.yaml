@@ -58,6 +58,13 @@ test:
       with:
         executables: /usr/bin/centauri-docker-confd
         files: /notices/github.com/csmith/centauri-docker-confd/LICENCE /usr/share/licenses/centauri-docker-confd/LICENCE
+    - name: Fails loudly without a Docker daemon
+      runs: |
+        if /usr/bin/centauri-docker-confd >/tmp/confd.log 2>&1; then
+          echo "expected failure without a Docker daemon" >&2
+          exit 1
+        fi
+        grep -qiE "docker|containuum|failed" /tmp/confd.log
 update:
   enabled: true
   github:

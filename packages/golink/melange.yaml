@@ -63,6 +63,9 @@ test:
       with:
         executables: /usr/bin/golink
         files: /notices/github.com/tailscale/golink/LICENSE /usr/share/licenses/golink/LICENSE
+    - name: Binary executes without serving
+      runs: |
+        /usr/bin/golink -h 2>&1 | grep -q dev-listen
 update:
   enabled: true
   github:

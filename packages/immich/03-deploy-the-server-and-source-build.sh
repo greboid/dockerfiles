@@ -29,5 +29,4 @@ find /home/build/out/server/node_modules -type d \( \
   -path '*/prebuilds/darwin-*' -o -path '*/prebuilds/win32-*' -o \
   -path '*bare-fs*/prebuilds' -o -path '*bare-path*/prebuilds' -o \
   -path '*bare-url*/prebuilds' \) -exec rm -rf {} +
-# Non-dist assets the server reads at runtime, if present.
 if [ -d server/resources ]; then cp -a server/resources /home/build/out/server/; fi

@@ -74,6 +74,13 @@ test:
         executables: /usr/bin/soju /usr/bin/sojuctl
         files: /notices/codeberg.org/emersion/go-scfg/LICENSE /usr/share/licenses/soju/LICENSE
         dirs: ${{vars.runtime-dirs}}
+    - name: Refuses to start without a config file
+      runs: |
+        if /usr/bin/soju -config /nonexistent.cfg >/tmp/soju.log 2>&1; then
+          echo "expected missing-config failure" >&2
+          exit 1
+        fi
+        grep -q "failed to load config file" /tmp/soju.log
 update:
   enabled: true
   github:

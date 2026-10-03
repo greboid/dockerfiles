@@ -60,6 +60,14 @@ test:
       packages:
         - os-release=3.24.2-r0
         - busybox
+  pipeline:
+    - name: Reports the packaged version
+      runs: |
+        apko version | grep -q 'GitVersion: *v1\.4\.4'
+        apko version | grep -q 'GitCommit: *7e72102a642f1ce74cbca37ef85f8b925d02a11b'
+    - name: Wires up the build command
+      runs: |
+        apko build --help > /dev/null
 update:
   enabled: true
   github:

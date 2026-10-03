@@ -69,6 +69,13 @@ test:
         executables: /usr/bin/purser
         files: /notices/github.com/csmith/purser/LICENCE /usr/share/licenses/purser/LICENCE
         dirs: ${{vars.runtime-dirs}}
+    - name: Fails without a Docker daemon
+      runs: |
+        if /usr/bin/purser >/tmp/purser.log 2>&1; then
+          echo "expected missing-daemon failure" >&2
+          exit 1
+        fi
+        grep -q "Failed to scan containers" /tmp/purser.log
 update:
   enabled: true
   github:

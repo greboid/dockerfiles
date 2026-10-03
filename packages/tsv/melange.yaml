@@ -65,6 +65,14 @@ test:
         executables: /usr/bin/tsv
         files: /notices/github.com/csmith/tsv/LICENCE /usr/share/licenses/tsv/LICENCE
         dirs: ${{vars.runtime-dirs}}
+    - name: Refuses to start without WireGuard config
+      runs: |
+        if /usr/bin/tsv --tailscale-config-dir=/config >/tmp/tsv.log 2>&1; then
+          echo "expected missing-configuration failure" >&2
+          exit 1
+        fi
+        grep -q "Flag validation failed" /tmp/tsv.log
+        grep -q "\-\-wg-private-key is required" /tmp/tsv.log
 update:
   enabled: true
   github:

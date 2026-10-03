@@ -57,6 +57,14 @@ test:
       with:
         executables: /usr/bin/dockercleanup
         files: /notices/github.com/greboid/dockercleanup/LICENSE /notices/github.com/docker/docker/LICENSE /usr/share/licenses/dockercleanup/LICENSE
+    - name: Fails loudly without a Docker daemon
+      runs: |
+        set +e
+        out=$(DOCKER_HOST=tcp://127.0.0.1:9 /usr/bin/dockercleanup 2>&1)
+        code=$?
+        set -e
+        test "$code" = 1
+        echo "$out" | grep -q "unable to clean perform cleanup"
 update:
   enabled: true
   github:
