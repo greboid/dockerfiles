@@ -39,7 +39,9 @@ pipeline:
     with:
       packages: ./
       output: ergo
-  - runs: DESTDIR="${{targets.destdir}}" ./01-stage-the-language-assets-and.sh
+  - runs: |
+      mkdir -p "${{targets.destdir}}/ircd-bin"
+      cp -R languages "${{targets.destdir}}/ircd-bin/languages"
   - uses: license/install
 test:
   environment:

@@ -1,5 +1,4 @@
 #!/bin/sh
-set -eu
-GOROOT="${GOROOT:-$(go env GOROOT)}"
-export GOROOT
-exec /usr/libexec/go-licenses "$@"
+# Resolve the consumer's selected toolchain, not the collector's baked-in
+# GOROOT: otherwise downloaded toolchain stdlib is treated as third-party.
+exec env GOROOT="$(go env GOROOT)" /usr/libexec/go-licenses "$@"

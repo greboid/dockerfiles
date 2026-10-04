@@ -73,7 +73,18 @@ pipeline:
     with:
       output-dir: build
   - name: Move the vips headers into place and drop the .la files
-    runs: DESTDIR="${{targets.destdir}}" ./01-move-the-vips-headers-into-place.sh
+    runs: |
+      DESTDIR="${{targets.destdir}}"
+      mkdir -p "${DESTDIR}/usr/include/vips"
+      find "${DESTDIR}/usr/include" -maxdepth 1 -name '*.h' \
+        -exec mv {} "${DESTDIR}/usr/include/vips/" \;
+      if [ -f "${DESTDIR}/usr/include/vips8" ]; then
+        mv "${DESTDIR}/usr/include/vips8" \
+           "${DESTDIR}/usr/include/vips/vips8"
+      fi
+      rm -f "${DESTDIR}/usr/include/memory.h" \
+            "${DESTDIR}/usr/include/semaphore.h"
+      find "${DESTDIR}" -name "*.la" -delete
   - uses: license/install
 test:
   environment:
@@ -87,9 +98,6 @@ test:
   pipeline:
     - name: Version and loader registration
       runs: |
-        # grep -q (not >/dev/null) would exit on first match and SIGPIPE the
-        # still-writing vips -l: steps run with pipefail, so that surfaces as
-        # exit status 141. See the melange test notes in MIGRATION.md.
         test -x /usr/bin/vips
         /usr/bin/vips --version | grep "${PACKAGE_VERSION}" >/dev/null
         vips -l | grep heifload >/dev/null
