@@ -26,15 +26,11 @@ environment:
       - busybox=1.37.0-r31
       - ca-certificates
       - git=2.54.0-r0
-      # go 1.27+ is org-only; upstream Alpine 3.24 ships no go package
       - go=1.27.1-r1
       - nodejs=24.18.1-r0
       - pnpm=11.20.0-r0
       - os-release=3.24.2-r0
   environment:
-    # The org go package installs the toolchain at the legacy /usr/local/go
-    # path with a writable GOPATH at /go; melange pins its own default PATH,
-    # so the build step below extends PATH itself.
     GOPATH: /go
     GOTOOLCHAIN: local
 
@@ -45,9 +41,6 @@ pipeline:
       repository: https://github.com/stonith404/pocket-id
       tag: v${{package.version}}
   - name: Build the SvelteKit frontend into the backend's embed directory
-    # pnpm 11.20.0 matches the repo's packageManager pin exactly. The
-    # vite build defaults to ../backend/frontend/dist, which the backend
-    # embeds with go:embed all:dist/*.
     runs: |
       pnpm --filter pocket-id-frontend install --frozen-lockfile
       pnpm --filter pocket-id-frontend run build

@@ -36,7 +36,10 @@ pipeline:
       repository: https://github.com/pgvector/pgvector
       tag: v${{package.version}}
   - name: Build and install pgvector
-    runs: DESTDIR="${{targets.destdir}}" ./01-build-and-install-pgvector.sh
+    runs: |
+      make -j"$(nproc)" OPTFLAGS="" PG_CONFIG=/usr/bin/pg_config
+      make install OPTFLAGS="" PG_CONFIG=/usr/bin/pg_config \
+        DESTDIR="${{targets.destdir}}"
   - uses: license/install
 test:
   environment:

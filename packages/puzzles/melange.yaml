@@ -41,7 +41,9 @@ pipeline:
       output: puzzles
       static: "true"
   - name: Install the wordlists
-    runs: DESTDIR="${{targets.destdir}}" ./01-install-the-wordlists.sh
+    runs: |
+      install -d -m 0755 "${{targets.destdir}}/app/wordlists"
+      install -m 0644 wordlists/*.wl "${{targets.destdir}}/app/wordlists/"
   - uses: go/licenses
     with:
       checks: github.com/greboid/puzzles/LICENSE github.com/csmith/envflag/LICENCE github.com/csmith/kowalski/v5/LICENCE
