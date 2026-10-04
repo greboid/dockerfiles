@@ -46,9 +46,9 @@ pipeline:
       repository: https://codeberg.org/forgejo/forgejo
       tag: v${{package.version}}
   - name: Build the frontend assets
-    runs: ./01-build-the-frontend-assets.sh
+    runs: make frontend
   - name: Generate embedded Go assets
-    runs: ./02-generate-embedded-go-assets.sh
+    runs: make generate-go TAGS="bindata sqlite sqlite_unlock_notify"
   - uses: go/build
     with:
       packages: ./
@@ -63,7 +63,11 @@ pipeline:
       ignore-extra: github.com/golang/freetype github.com/golang/freetype/raster github.com/golang/freetype/truetype github.com/mrjones/oauth github.com/yohcop/openid-go
       module: forgejo.org
   - name: Prune the vendored frontend notice trees
-    runs: DESTDIR="${{targets.destdir}}" ./03-prune-vendored-notices.sh
+    runs: |
+      DESTDIR="${{targets.destdir}}" \
+        rm -rf "${DESTDIR}/notices/forgejo.org/node_modules" \
+               "${DESTDIR}/notices/forgejo.org/public" \
+               "${DESTDIR}/notices/forgejo.org/forgejo"
 test:
   environment:
     contents:

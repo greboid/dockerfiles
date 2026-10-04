@@ -31,8 +31,6 @@ environment:
       - os-release=3.24.2-r0
       - make=4.4.1-r4
   environment:
-    # The runner builds through its own Makefile, not go/build, so the
-    # pipeline's CGO default does not apply here.
     CGO_ENABLED: "0"
 
 vars:
@@ -45,12 +43,14 @@ pipeline:
       repository: https://code.forgejo.org/forgejo/runner
       tag: v${{package.version}}
   - name: Build the runner
-    runs: PACKAGE_VERSION="${{package.version}}" DESTDIR="${{targets.destdir}}" ./01-build-the-runner.sh
+    runs: |
+      make build VERSION="${{package.version}}"
+      install -Dm755 forgejo-runner "${{targets.destdir}}/usr/bin/forgejo-runner"
   - uses: dirs
     with:
       dirs: ${{vars.runtime-dirs}}
-  - name: Write the private storage configuration
-    runs: DESTDIR="${{targets.destdir}}" ./02-write-the-storage-conf.sh
+  - name: Install the private storage configuration
+    runs: install -Dm644 storage.conf "${{targets.destdir}}/usr/share/forgejo-runner/storage.conf"
   - uses: go/licenses
     with:
       module: code.forgejo.org/forgejo/runner/v13
