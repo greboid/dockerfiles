@@ -68,11 +68,49 @@ pipeline:
     with:
       filters: "@immich/sdk @immich/plugin-sdk immich immich-web"
   - name: Deploy the server and source-build sharp
-    runs: ./01-deploy-the-server-and-source-build.sh
+    runs: |
+      pnpm --filter immich --prod --no-optional deploy /home/build/out/server
+      find out/server/node_modules -name binding.gyp -path '*sharp*' \
+        -exec sed -i 's/-flto=auto//' {} +
+      cd out/server/node_modules/sharp
+      npx node-gyp configure --directory=src
+      sed -i 's/ -flto=4 -ffat-lto-objects//' src/build/*.mk
+      npx node-gyp build --directory=src
+      cd /home/build
+      find /home/build/out/server/node_modules -name '*.glibc.node' -delete
+      find /home/build/out/server/node_modules -type d \( \
+        -path '*/prebuilds/android-*' -o -path '*/prebuilds/ios-*' -o \
+        -path '*/prebuilds/darwin-*' -o -path '*/prebuilds/win32-*' -o \
+        -path '*bare-fs*/prebuilds' -o -path '*bare-path*/prebuilds' -o \
+        -path '*bare-url*/prebuilds' \) -exec rm -rf {} +
+      if [ -d server/resources ]; then cp -a server/resources /home/build/out/server/; fi
   - name: Fetch the reverse-geocoding datasets
-    runs: ./02-fetch-the-reverse-geocoding-datasets.sh
+    runs: |
+      mkdir -p geodata && cd geodata
+      curl -sfLo cities500.zip https://download.geonames.org/export/dump/cities500.zip
+      echo "a99f1423b13c52d51e281d27fa924c2b11f05a57a96467ff7b8ea437e0b21b38  cities500.zip" | sha256sum -c -
+      curl -sfLo admin1CodesASCII.txt https://download.geonames.org/export/dump/admin1CodesASCII.txt
+      echo "1da92a6323a5fec3176f3f743bf4cf4040fd56a876da55e46fbca23c863aa60a  admin1CodesASCII.txt" | sha256sum -c -
+      curl -sfLo admin2Codes.txt https://download.geonames.org/export/dump/admin2Codes.txt
+      echo "63a82be925b8704abae683a89e32f40b22f618a93efc4e676e912873f8a3be20  admin2Codes.txt" | sha256sum -c -
+      curl -sfLo countryInfo.txt https://download.geonames.org/export/dump/countryInfo.txt
+      echo "93bafc525813f22e4711ff9ed6d626343094ce48c26388dc7c49189b3d7d5512  countryInfo.txt" | sha256sum -c -
+      curl -sfLo ne_10m_admin_0_countries.geojson https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_0_countries.geojson
+      echo "239eec57ac17f100a11e2536cffc56752c318b50ae765b0918ff7aab4ce8f255  ne_10m_admin_0_countries.geojson" | sha256sum -c -
+      unzip -o cities500.zip
+      rm cities500.zip
+      chmod 444 *
+      date -u -d "@${SOURCE_DATE_EPOCH:-0}" +"%Y-%m-%dT%H:%M:%S+00:00" \
+        | tr -d "\n" > geodata-date.txt
   - name: Stage the package
-    runs: DESTDIR="${{targets.destdir}}" ./03-stage-the-package.sh
+    runs: |
+      mkdir -p "${{targets.destdir}}/usr/src/app" "${{targets.destdir}}/usr/bin"
+      cp -a /home/build/out/server "${{targets.destdir}}/usr/src/app/server"
+      cp -a web/build "${{targets.destdir}}/usr/src/app/www"
+      cp -a geodata "${{targets.destdir}}/usr/src/app/geodata"
+      install -d -m 0755 "${{targets.destdir}}/usr/src/app/upload"
+      ln -sf ../lib/jellyfin-ffmpeg/ffmpeg "${{targets.destdir}}/usr/bin/ffmpeg"
+      ln -sf ../lib/jellyfin-ffmpeg/ffprobe "${{targets.destdir}}/usr/bin/ffprobe"
   - uses: go/licenses
     with:
       save: "false"
