@@ -1,0 +1,88 @@
+package:
+  name: pocket-id
+  version: 2.17.0
+  epoch: 0
+  description: Simple OIDC provider that lets users authenticate with passkeys
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: BSD-2-Clause
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      # go 1.27+ is org-only; upstream Alpine 3.24 ships no go package
+      - go=1.27.1-r1
+      - nodejs=24.18.1-r0
+      - pnpm=11.20.0-r0
+      - os-release=3.24.2-r0
+  environment:
+    # The org go package installs the toolchain at the legacy /usr/local/go
+    # path with a writable GOPATH at /go; melange pins its own default PATH,
+    # so the build step below extends PATH itself.
+    GOPATH: /go
+    GOTOOLCHAIN: local
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 1abc0186fcbf0a31b51d90adb24f9b4c9cea1be6
+      repository: https://github.com/stonith404/pocket-id
+      tag: v${{package.version}}
+  - name: Build the SvelteKit frontend into the backend's embed directory
+    # pnpm 11.20.0 matches the repo's packageManager pin exactly. The
+    # vite build defaults to ../backend/frontend/dist, which the backend
+    # embeds with go:embed all:dist/*.
+    runs: |
+      pnpm --filter pocket-id-frontend install --frozen-lockfile
+      pnpm --filter pocket-id-frontend run build
+      test -d backend/frontend/dist
+  - name: Build the backend binary with the frontend embedded
+    runs: |
+      cd backend
+      export PATH="/usr/local/go/bin:/go/bin:$PATH"
+      export CGO_ENABLED=0 GOTELEMETRY=off GOMODCACHE="$PWD/go-package-cache"
+      go build -trimpath \
+        -ldflags "-X github.com/pocket-id/pocket-id/backend/internal/common.Version=${{package.version}}" \
+        -o "${{targets.destdir}}/usr/bin/pocket-id" \
+        ./cmd
+  - uses: license/install
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/pocket-id
+        files: /usr/share/licenses/pocket-id/LICENSE
+    - uses: test/version
+      with:
+        executable: /usr/bin/pocket-id
+        flag: version
+
+update:
+  enabled: true
+  github:
+    identifier: stonith404/pocket-id
+    strip-prefix: v
