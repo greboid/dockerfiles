@@ -47,8 +47,10 @@ pipeline:
         patches/005-sbom-g5d-identity.patch
         patches/006-cli-test-policy-and-goldens.patch
         patches/007-index-head-405-fallback.patch
-  - name: Build apko with the pinned /usr/local/go toolchain
-    runs: DESTDIR="${{targets.destdir}}" ./02-build-apko-with-the-pinned.sh
+  - uses: go/build
+    with:
+      packages: .
+      output: apko
   - name: Install the license                                                                                                                                                    
     runs: install -Dm644 LICENSE "${{targets.destdir}}/usr/share/licenses/${{package.name}}/LICENSE"
 

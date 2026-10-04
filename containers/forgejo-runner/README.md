@@ -1,6 +1,7 @@
 Container image `git.mouse-lake.ts.net/containers/forgejo-runner` — built with apko
 from the `packages` organisation's Alpine repository: the image installs the
-org's `forgejo-runner` package at an exact pinned version plus `buildah`, `git`, `fuse-overlayfs` and `gnupg`; `CONTAINERS_STORAGE_CONF` points at the runner package's private storage.conf, so the binary,
+org's `forgejo-runner` package at an exact pinned version plus `buildah`, `git`, `fuse-overlayfs` and `gnupg`; `CONTAINERS_STORAGE_CONF` points at the `fuse-overlay-storage-conf`
+package's storage.conf, so the binary,
 license notices and version bumps live in `packages/forgejo-runner`
 (upstream: https://code.forgejo.org/forgejo/runner).
 

@@ -47,8 +47,10 @@ pipeline:
       expected-commit: c8ac1936bb2e956c1d8790eba1bb3829a1241369
       repository: https://github.com/containers/buildah
       tag: v${{package.version}}
-  - name: Build bin/buildah with the pinned /usr/local/go toolchain
-    runs: DESTDIR="${{targets.destdir}}" ./01-build-bin-buildah-with-the-pinned.sh
+  - name: Build bin/buildah with the pinned Go toolchain
+    runs: |
+      make bin/buildah
+      install -Dm755 bin/buildah "${{targets.destdir}}/usr/bin/buildah"
   - uses: license/install
 test:
   environment:

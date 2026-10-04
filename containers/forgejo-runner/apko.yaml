@@ -15,6 +15,7 @@ contents:
     - os-release=3.24.2-r0
     - forgejo-runner=13.2.0-r2
     - buildah=1.45.1-r1
+    - fuse-overlay-storage-conf=1.0.0-r0
     - git=2.54.0-r0
     - fuse-overlayfs=1.16-r0
     - gnupg=2.4.9-r1
@@ -43,7 +44,7 @@ paths:
 environment:
   SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
   HOME: /home/nonroot
-  CONTAINERS_STORAGE_CONF: /usr/share/forgejo-runner/storage.conf
+  CONTAINERS_STORAGE_CONF: /usr/share/fuse-overlay-storage-conf/storage.conf
 
 work-dir: /data
 
