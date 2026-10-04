@@ -1,8 +1,8 @@
 package:
-  name: alpine-runner
+  name: fuse-overlay-storage-conf
   version: 1.0.0
   epoch: 0
-  description: Legacy overlay-over-fuse containers storage configuration
+  description: containers-storage configuration pinning the fuse-overlayfs mount program
   target-architecture:
     - x86_64
   copyright:
@@ -22,14 +22,13 @@ environment:
       - os-release=3.24.2-r0
 
 pipeline:
-  - name: Install the private overlay-over-fuse storage configuration
-    runs: install -Dm644 storage.conf "${{targets.destdir}}/usr/share/alpine-runner/storage.conf"
-  - name: Restore the legacy root passwd/group entries
-    runs: |
-      install -Dm644 passwd "${{targets.destdir}}/etc/passwd"
-      install -Dm644 group "${{targets.destdir}}/etc/group"
+  - name: Install the fuse-overlayfs storage configuration
+    runs: install -Dm644 storage.conf "${{targets.destdir}}/usr/share/fuse-overlay-storage-conf/storage.conf"
   - name: Smoke-check the payload
-    runs: DESTDIR="${{targets.destdir}}" ./03-smoke-check-the-payload.sh
+    runs: |
+      test -s "${{targets.destdir}}/usr/share/fuse-overlay-storage-conf/storage.conf"
+      grep -q '^driver = "overlay"$' "${{targets.destdir}}/usr/share/fuse-overlay-storage-conf/storage.conf"
+      grep -q '^mount_program = "/usr/bin/fuse-overlayfs"$' "${{targets.destdir}}/usr/share/fuse-overlay-storage-conf/storage.conf"
 test:
   environment:
     contents:
@@ -43,8 +42,8 @@ test:
   pipeline:
     - name: Storage configuration is private and pins fuse-overlayfs
       runs: |
-        test -s /usr/share/alpine-runner/storage.conf
-        grep -q '^mount_program = "/usr/bin/fuse-overlayfs"$' /usr/share/alpine-runner/storage.conf
+        test -s /usr/share/fuse-overlay-storage-conf/storage.conf
+        grep -q '^mount_program = "/usr/bin/fuse-overlayfs"$' /usr/share/fuse-overlay-storage-conf/storage.conf
         test ! -e /etc/containers/storage.conf
 update:
   enabled: false

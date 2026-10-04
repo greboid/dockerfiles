@@ -96,7 +96,6 @@ jobs:
               | awk -F: -v pkg="$tool" '$1 == "P" && $2 == pkg { found = 1 } END { exit !found }'
             echo "$tool is in the index"
           done
-          # run the published melange, unpacked fresh from the repository
           version=$(printf '%s\n' "$index" \
             | awk -F: '$1 == "P" { pkg = $2 } $1 == "V" && pkg == "melange" { print $2 }' \
             | sort -V | tail -n 1)

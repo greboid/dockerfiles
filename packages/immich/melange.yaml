@@ -63,16 +63,16 @@ pipeline:
       expected-commit: 1b6098c9dbfffe978bec2d414606ed7a4c8e019a
       repository: https://github.com/immich-app/immich
       tag: v${{package.version}}
-  - name: Install node dependencies
-    runs: ./01-install-node-dependencies.sh
-  - name: Build workspace packages
-    runs: ./02-build-workspace-packages.sh
+  - uses: pnpm/install
+  - uses: pnpm/build
+    with:
+      filters: "@immich/sdk @immich/plugin-sdk immich immich-web"
   - name: Deploy the server and source-build sharp
-    runs: ./03-deploy-the-server-and-source-build.sh
+    runs: ./01-deploy-the-server-and-source-build.sh
   - name: Fetch the reverse-geocoding datasets
-    runs: ./04-fetch-the-reverse-geocoding-datasets.sh
+    runs: ./02-fetch-the-reverse-geocoding-datasets.sh
   - name: Stage the package
-    runs: DESTDIR="${{targets.destdir}}" ./05-stage-the-package.sh
+    runs: DESTDIR="${{targets.destdir}}" ./03-stage-the-package.sh
   - uses: go/licenses
     with:
       save: "false"

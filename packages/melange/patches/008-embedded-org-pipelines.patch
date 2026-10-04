@@ -1,0 +1,659 @@
+diff --git c/pkg/build/pipelines/autoconf/configure.yaml i/pkg/build/pipelines/autoconf/configure.yaml
+index 0339793..bfea15b 100644
+--- c/pkg/build/pipelines/autoconf/configure.yaml
++++ i/pkg/build/pipelines/autoconf/configure.yaml
+@@ -31,8 +31,7 @@ pipeline:
+   - runs: |
+       cd ${{inputs.dir}}
+ 
+-      # Attempt to generate configuration if one does not exist
+-      if [[ ! -f ./configure && -f ./configure.ac ]]; then
++      if [ ! -f ./configure ] && [ -f ./configure.ac ]; then
+           autoreconf -vfi
+       fi
+ 
+diff --git c/pkg/build/pipelines/cargo/build.yaml i/pkg/build/pipelines/cargo/build.yaml
+index 09df015..74266a5 100644
+--- c/pkg/build/pipelines/cargo/build.yaml
++++ i/pkg/build/pipelines/cargo/build.yaml
+@@ -4,7 +4,7 @@ needs:
+   packages:
+     - build-base
+     - busybox
+-    - cargo-auditable
++    - cargo
+     - rust
+ 
+ inputs:
+@@ -44,6 +44,14 @@ inputs:
+       Directory where binaries will be installed
+     default: bin
+ 
++  auditable:
++    description: |
++      Build with `cargo auditable` to embed an audit of the dependency tree
++      in the binary. Requires the cargo-auditable package in the build
++      environment; fails with a clear message when it is missing. Set to
++      "false" for a plain cargo build.
++    default: 'false'
++
+   output-dir:
+     description: |
+       Directory where the binaris will be placed after building. Defaults to target/release
+@@ -55,21 +63,26 @@ inputs:
+ 
+ pipeline:
+   - runs: |
+-      # Installation directory should always be bin as we are producing a binary
+       INSTALL_PATH="${{targets.contextdir}}/${{inputs.prefix}}/${{inputs.install-dir}}"
+       OUTPUT_PATH="${{inputs.output-dir}}"
+ 
+-      # Enter target package directory
+       cd "${{inputs.modroot}}"
+ 
+       jobs_flag=""
+-      if [[ ! -z "${{inputs.jobs}}" ]]; then
++      if [ -n "${{inputs.jobs}}" ]; then
+         jobs_flag="--jobs ${{inputs.jobs}}"
+       fi
+ 
+-      # Build and install package(s)
+-      RUSTFLAGS="${{inputs.rustflags}}" cargo auditable build --target-dir target ${{inputs.opts}} $jobs_flag
+-      if [[ ! -z "${{inputs.output}}" ]]; then
++      if [ "${{inputs.auditable}}" = "true" ]; then
++        if ! command -v cargo-auditable >/dev/null 2>&1; then
++          echo "cargo/build: auditable=true requires the cargo-auditable package in the build environment" >&2
++          exit 1
++        fi
++        RUSTFLAGS="${{inputs.rustflags}}" cargo auditable build --target-dir target ${{inputs.opts}} $jobs_flag
++      else
++        RUSTFLAGS="${{inputs.rustflags}}" cargo build --target-dir target ${{inputs.opts}} $jobs_flag
++      fi
++      if [ -n "${{inputs.output}}" ]; then
+         install -Dm755 "${OUTPUT_PATH}/${{inputs.output}}" "${INSTALL_PATH}/${{inputs.output}}"
+       else
+         install -Dm755 "${OUTPUT_PATH}"/* -t "${INSTALL_PATH}"
+diff --git c/pkg/build/pipelines/dirs.yaml i/pkg/build/pipelines/dirs.yaml
+new file mode 100644
+index 0000000..5ff8091
+--- /dev/null
++++ i/pkg/build/pipelines/dirs.yaml
+@@ -0,0 +1,22 @@
++name: Create directories in the package destination
++
++inputs:
++  dirs:
++    description: |
++      Directories to create, space- or newline-separated, relative to the
++      root of the package (a leading slash is ignored).
++    required: true
++
++  mode:
++    description: |
++      Mode to apply to the created directories.
++    default: '0755'
++
++pipeline:
++  - runs: |
++      mkdir -p "${{targets.destdir}}"
++      for dir in ${{inputs.dirs}}; do
++        while [ "${dir#/}" != "$dir" ]; do dir="${dir#/}"; done
++        [ -n "$dir" ] || continue
++        install -d -m "${{inputs.mode}}" "${{targets.destdir}}/$dir"
++      done
+diff --git c/pkg/build/pipelines/go/build.yaml i/pkg/build/pipelines/go/build.yaml
+index 24ae09c..2e613e1 100644
+--- c/pkg/build/pipelines/go/build.yaml
++++ i/pkg/build/pipelines/go/build.yaml
+@@ -1,156 +1,65 @@
+-name: Run a build using the go compiler
++name: Build go code
+ 
+ needs:
+   packages:
+-    - ${{inputs.go-package}}
+-    - build-base
+     - busybox
+-    - ca-certificates-bundle
++    - go
+ 
+ inputs:
+-  go-package:
+-    description: |
+-      The go package to install
+-    default: go
+-
+   packages:
+     description: |
+-      List of space-separated packages to compile. Files can also be specified.
+-      This value is passed as an argument to go build. All paths are relative
+-      to inputs.modroot.
+-    required: true
+-
+-  tags:
+-    description: |
+-      A comma-separated list of build tags to append to the go compiler
+-
+-  toolchaintags:
+-    description: |
+-      A comma-separated list of default toolchain go build tags
+-    default: "netgo,osusergo"
++      Go package patterns to build.
++    default: ./
+ 
+   output:
+     description: |
+-      Filename to use when writing the binary. The final install location inside
+-      the apk will be in prefix / install-dir / output
++      Name of the output binary, installed to prefix / install-dir / output.
+     required: true
+ 
+-  vendor:
+-    description: |
+-      If true, the go mod command will also update the vendor directory
+-    default: "false"
+-
+-  modroot:
+-    default: "."
+-    required: false
+-    description: |
+-      Top directory of the go module, this is where go.mod lives. Before buiding
+-      the go pipeline wil cd into this directory.
+-
+   prefix:
+     description: |
+-      Prefix to relocate binaries
++      Installation prefix. Defaults to usr.
+     default: usr
+ 
+-  ldflags:
+-    description:
+-      List of [pattern=]arg to append to the go compiler with -ldflags
+-
+-  strip:
+-    description:
+-      Set of strip ldflags passed to the go compiler
+-    # Note symbols tables are useful for cryptography audits and govulncheck
+-    default: "-w"
+-
+   install-dir:
+     description: |
+-      Directory where binaries will be installed
++      Directory under prefix where the binary is installed. Defaults to bin.
+     default: bin
+ 
+-  deps:
++  static:
+     description: |
+-      space separated list of go modules to update before building. example: github.com/foo/bar@v1.2.3
++      Build a statically linked binary (CGO_ENABLED=0). Defaults to true.
++    default: 'true'
++
++  tags:
++    description: |
++      Build tags to pass to the go build command.
++    default: ''
++
++  ldflags:
++    description: |
++      Linker flags to pass to the go build command.
++    default: ''
+ 
+   experiments:
+     description: |
+-      A comma-separated list of Golang experiment names (ex: loopvar) to use
+-      when building the binary.
+-    default: ""
+-
+-  extra-args:
+-    description: |
+-      A space-separated list of extra arguments to pass to the go build command.
+-    default: ""
+-
+-  amd64:
+-    description: |
+-      GOAMD64 microarchitecture level to use
+-    default: "v2"
+-
+-  arm64:
+-    description: |
+-      GOARM64 microarchitecture level to use
+-    default: "v8.0"
+-
+-  buildmode:
+-    description: |
+-      The -buildmode flag value. See "go help buildmode" for more information.
+-    default: "default"
+-
+-  tidy:
+-    description: |
+-      If true, "go mod tidy" will run before the build
+-    default: "false"
+-
+-  ignore-untracked-files:
+-    description: |
+-      If true, we will provide a gitignore that ignore all untracked files.
+-    default: "true"
++      Comma-separated GOEXPERIMENT values to enable.
++    default: ''
+ 
+ pipeline:
+   - runs: |
+-
+-      # We sometimes have stray files in our build environment
+-      # That we don't neccesarily want surfaced in the build version
+-      if [ "${{inputs.ignore-untracked-files}}" = "true" ]; then
+-        mkdir -p ~/.config/git/
+-        echo '**' > ~/.config/git/ignore
++      export GOTELEMETRY=off
++      export GOMODCACHE="$PWD/go-package-cache"
++      if [ -n "${{inputs.experiments}}" ]; then
++        export GOEXPERIMENT="${{inputs.experiments}}"
+       fi
+-
+-      cd "${{inputs.modroot}}"
+-
+-      # check if modroot is set correctly by checking go.mod file exist
+-      if [ ! -e go.mod ]; then
+-        echo "go.mod not found in ${{inputs.modroot}}"
+-        exit 1
+-      fi
+-
+-      "${{inputs.tidy}}" && go mod tidy
+-
+-      LDFLAGS="${{inputs.strip}} ${{inputs.ldflags}}"
+-
+-      BASE_PATH="${{inputs.prefix}}/${{inputs.install-dir}}/${{inputs.output}}"
+-
+-      # Take advantage of melange's buid cache for downloaded modules
+-      export GOMODCACHE=/var/cache/melange/gomodcache
+-
+-      # Install any specified dependencies
+-      if [ -n "${{inputs.deps}}" ]; then
+-        for dep in ${{inputs.deps}}; do
+-          go get $dep
+-        done
+-        go mod tidy
+-        # If vendor is specified, update the vendor directory
+-        "${{inputs.vendor}}" && go mod vendor
+-      fi
+-
+-      # Install go mod overlay if it exists.
+-      [ -e /home/build/go.mod.local ] && cp /home/build/go.mod.local go.mod
+-      [ -e /home/build/go.sum.local ] && cp /home/build/go.sum.local go.sum
+-
+-      GOAMD64="${{inputs.amd64}}" GOARM64="${{inputs.arm64}}" GOEXPERIMENT="${{inputs.experiments}}" go build -o "${{targets.contextdir}}"/${BASE_PATH} -tags "${{inputs.toolchaintags}},${{inputs.tags}}" -ldflags "${LDFLAGS}" -trimpath -buildmode ${{inputs.buildmode}} ${{inputs.extra-args}} ${{inputs.packages}}
+-
+-      # Clean up the gitignore file we created to avoid interfering with subsequent builds
+-      if [ "${{inputs.ignore-untracked-files}}" = "true" ]; then
+-        rm -f ~/.config/git/ignore
++      if [ "${{inputs.static}}" = "true" ]; then
++        export CGO_ENABLED=0
++      else
++        export CGO_ENABLED=1
+       fi
++      go build -trimpath \
++        -ldflags "${{inputs.ldflags}}" \
++        -tags "${{inputs.tags}}" \
++        -o "${{targets.destdir}}/${{inputs.prefix}}/${{inputs.install-dir}}/${{inputs.output}}" \
++        ${{inputs.packages}}
+diff --git c/pkg/build/pipelines/go/licenses.yaml i/pkg/build/pipelines/go/licenses.yaml
+new file mode 100644
+index 0000000..e06e73a
+--- /dev/null
++++ i/pkg/build/pipelines/go/licenses.yaml
+@@ -0,0 +1,134 @@
++name: Install and check go module licenses
++
++inputs:
++  module:
++    description: |
++      Go module path of the built project, used as the notices directory
++      name (notices/<module>/<license>).
++    default: ''
++
++  license:
++    description: |
++      Path(s) to the module's license file(s), space-separated; each is
++      installed under usr/share/licenses/<package.name>/ (and, when a
++      module is named, notices/<module>/). When empty, a license file is
++      looked up in the source root among LICENSE, LICENSE.md, LICENCE,
++      LICENCE.md, COPYING and COPYING.md.
++    default: ''
++
++  packages:
++    description: |
++      Go package patterns handed to go-licenses for checks and saves.
++    default: ./
++
++  checks:
++    description: |
++      Space-separated module/license-file pairs naming the dependency
++      licenses the package must ship: each is resolved from the go module
++      cache the build populated (go-package-cache in the workspace, the
++      same cache go/build uses) and installed as notices/<module>/<file>.
++      Example: "github.com/docker/docker/LICENSE". The special value
++      "true" instead runs go-licenses check over the packages, failing on
++      unknown or forbidden dependency licenses.
++    default: 'false'
++
++  ignore-extra:
++    description: |
++      Tolerate go-licenses check failures (for dependency trees with
++      licenses outside the org's allowlist).
++    default: 'false'
++
++  save:
++    description: |
++      Save the transitive dependency license texts under
++      usr/share/licenses/<package.name>/third-party.
++    default: 'false'
++
++pipeline:
++  - runs: |
++      lic="${{inputs.license}}"
++      if [ -z "$lic" ]; then
++        for candidate in LICENSE LICENSE.md LICENCE LICENCE.md COPYING COPYING.md; do
++          if [ -f "$candidate" ]; then
++            lic="$candidate"
++            break
++          fi
++        done
++      fi
++
++      for f in $lic; do
++        if [ ! -f "$f" ]; then
++          echo "go/licenses: no license file found: $f" >&2
++          exit 1
++        fi
++        install -Dm 0644 "$f" \
++          "${{targets.destdir}}/usr/share/licenses/${{package.name}}/$(basename "$f")"
++        if [ -n "${{inputs.module}}" ]; then
++          install -Dm 0644 "$f" \
++            "${{targets.destdir}}/notices/${{inputs.module}}/$(basename "$f")"
++        fi
++      done
++
++      if [ "${{inputs.checks}}" = "true" ]; then
++        if ! command -v go-licenses >/dev/null 2>&1; then
++          echo "go/licenses: checks=true requires the go-licenses package in the build environment" >&2
++          exit 1
++        fi
++        if ! go-licenses check "${{inputs.packages}}"; then
++          if [ "${{inputs.ignore-extra}}" != "true" ]; then
++            exit 1
++          fi
++          echo "go/licenses: check failed but ignore-extra is set; continuing"
++        fi
++      elif [ -n "${{inputs.checks}}" ] && [ "${{inputs.checks}}" != "false" ]; then
++        modcache="$PWD/go-package-cache"
++        mainmod=""
++        if command -v go >/dev/null 2>&1; then
++          mainmod=$(GOMODCACHE="$modcache" GOTELEMETRY=off go list -m 2>/dev/null || true)
++        fi
++        find_module_license() {
++          _cur="$1"
++          while [ -n "$_cur" ]; do
++            _enc=$(printf '%s' "$_cur" | awk '{ r = "";
++              for (i = 1; i <= length($0); i++) {
++                c = substr($0, i, 1)
++                if (c >= "A" && c <= "Z") r = r "!" tolower(c); else r = r c
++              }
++              print r }')
++            for _f in "$modcache/$_enc@"*/"$2"; do
++              if [ -f "$_f" ]; then
++                printf '%s\n' "$_f"
++                return 0
++              fi
++            done
++            case "$_cur" in */*) _cur="${_cur%/*}" ;; *) _cur="" ;; esac
++          done
++          return 1
++        }
++        for pair in ${{inputs.checks}}; do
++          mod="${pair%/*}"
++          licfile="${pair##*/}"
++          if [ -z "$mod" ] || [ "$mod" = "$pair" ]; then
++            echo "go/licenses: checks entry is not module/license-file: $pair" >&2
++            exit 1
++          fi
++          found=""
++          if [ -n "$mainmod" ] && [ "$mod" = "$mainmod" ] && [ -f "$licfile" ]; then
++            found="$licfile"
++          elif ! found=$(find_module_license "$mod" "$licfile"); then
++            echo "go/licenses: no $licfile for module $mod in the go module cache" >&2
++            exit 1
++          fi
++          install -Dm 0644 "$found" \
++            "${{targets.destdir}}/notices/$mod/$licfile"
++        done
++      fi
++
++      if [ "${{inputs.save}}" = "true" ]; then
++        if ! command -v go-licenses >/dev/null 2>&1; then
++          echo "go/licenses: save=true requires the go-licenses package in the build environment" >&2
++          exit 1
++        fi
++        go-licenses save "${{inputs.packages}}" \
++          --save_path "${{targets.destdir}}/usr/share/licenses/${{package.name}}/third-party"
++      fi
+diff --git c/pkg/build/pipelines/license/install.yaml i/pkg/build/pipelines/license/install.yaml
+new file mode 100644
+index 0000000..40d720a
+--- /dev/null
++++ i/pkg/build/pipelines/license/install.yaml
+@@ -0,0 +1,27 @@
++name: Install the package's license file
++
++inputs:
++  license:
++    description: |
++      Path to the license file to install. When empty, a license file is
++      looked up in the source root among LICENSE, LICENSE.md, LICENCE,
++      LICENCE.md, COPYING and COPYING.md.
++    default: ''
++
++pipeline:
++  - runs: |
++      lic="${{inputs.license}}"
++      if [ -z "$lic" ]; then
++        for candidate in LICENSE LICENSE.md LICENCE LICENCE.md COPYING COPYING.md; do
++          if [ -f "$candidate" ]; then
++            lic="$candidate"
++            break
++          fi
++        done
++      fi
++      if [ -z "$lic" ] || [ ! -f "$lic" ]; then
++        echo "license/install: no license file found" >&2
++        exit 1
++      fi
++      install -Dm 0644 "$lic" \
++        "${{targets.destdir}}/usr/share/licenses/${{package.name}}/$(basename "$lic")"
+diff --git c/pkg/build/pipelines/pnpm/build.yaml i/pkg/build/pipelines/pnpm/build.yaml
+new file mode 100644
+index 0000000..23eb44e
+--- /dev/null
++++ i/pkg/build/pipelines/pnpm/build.yaml
+@@ -0,0 +1,22 @@
++name: Build packages of a pnpm workspace.
++
++inputs:
++  working-directory:
++    description: |
++      Directory containing the workspace's root package.json. Defaults to
++      the workspace root. Requires pnpm (installed by pnpm/install).
++    default: "."
++
++  filters:
++    description: |
++      Space-separated pnpm --filter selectors, built sequentially in the
++      order listed so that inter-package build dependencies are
++      respected, e.g. "@immich/sdk immich immich-web".
++    required: true
++
++pipeline:
++  - runs: |
++      cd ${{inputs.working-directory}}
++      for f in ${{inputs.filters}}; do
++        pnpm --filter "$f" build
++      done
+diff --git c/pkg/build/pipelines/pnpm/install.yaml i/pkg/build/pipelines/pnpm/install.yaml
+new file mode 100644
+index 0000000..ec2b6f3
+--- /dev/null
++++ i/pkg/build/pipelines/pnpm/install.yaml
+@@ -0,0 +1,26 @@
++name: Install the dependencies of a pnpm workspace.
++
++needs:
++  packages:
++    - busybox
++    - nodejs
++    - npm
++
++inputs:
++  working-directory:
++    description: |
++      Directory containing the workspace's root package.json, whose
++      packageManager field pins the pnpm version. Defaults to the
++      workspace root.
++    default: "."
++
++pipeline:
++  - runs: |
++      # corepack isn't packaged for alpine; install it from npm. It reads
++      # the pnpm version pinned in package.json's packageManager field
++      # (e.g. pnpm@11.22.0).
++      cd ${{inputs.working-directory}}
++      npm rm -g corepack >/dev/null 2>&1 || true
++      npm install -g corepack
++      corepack enable
++      pnpm install --frozen-lockfile
+diff --git c/pkg/build/pipelines/strip.yaml i/pkg/build/pipelines/strip.yaml
+index efb4b3c..5c28f6b 100644
+--- c/pkg/build/pipelines/strip.yaml
++++ i/pkg/build/pipelines/strip.yaml
+@@ -3,7 +3,7 @@ name: Strip binaries
+ needs:
+   packages:
+     - binutils
+-    - scanelf
++    - pax-utils
+ 
+ inputs:
+   opts:
+@@ -14,7 +14,6 @@ inputs:
+ pipeline:
+   - working-directory: ${{targets.contextdir}}
+     runs: |
+-      # strip does not support stripping files for non-native platforms
+       case "${{build.arch}}" in
+         x86_64)  native_mach="EM_X86_64" ;;
+         aarch64) native_mach="EM_AARCH64" ;;
+@@ -27,7 +26,6 @@ pipeline:
+         [ "$osabi" != "STANDALONE" ] || continue
+         [ "$mach" = "$native_mach" ] || continue
+ 
+-        # scanelf may have picked up a temp file so verify that file still exists
+         [ -e "$filename" ] || continue
+         strip ${{inputs.opts}} "${filename}"
+       done
+diff --git c/pkg/build/pipelines/test/paths.yaml i/pkg/build/pipelines/test/paths.yaml
+new file mode 100644
+index 0000000..ee00795
+--- /dev/null
++++ i/pkg/build/pipelines/test/paths.yaml
+@@ -0,0 +1,51 @@
++name: Check paths in the installed package
++
++inputs:
++  executables:
++    description: |
++      Paths that must exist and be executable, space-separated.
++    default: ''
++
++  files:
++    description: |
++      Paths that must exist as regular files, space-separated.
++    default: ''
++
++  dirs:
++    description: |
++      Paths that must exist as directories, space-separated.
++    default: ''
++
++  nonempty-dirs:
++    description: |
++      Paths that must exist as directories with at least one entry,
++      space-separated.
++    default: ''
++
++  symlinks:
++    description: |
++      Paths that must exist as symbolic links, space-separated.
++    default: ''
++
++pipeline:
++  - runs: |
++      fail=0
++      for p in ${{inputs.executables}}; do
++        [ -x "$p" ] || { echo "test/paths: missing executable: $p" >&2; fail=1; }
++      done
++      for p in ${{inputs.files}}; do
++        [ -f "$p" ] || { echo "test/paths: missing file: $p" >&2; fail=1; }
++      done
++      for p in ${{inputs.dirs}}; do
++        [ -d "$p" ] || { echo "test/paths: missing directory: $p" >&2; fail=1; }
++      done
++      for p in ${{inputs.nonempty-dirs}}; do
++        if [ ! -d "$p" ] || [ -z "$(ls -A "$p" 2>/dev/null)" ]; then
++          echo "test/paths: empty or missing directory: $p" >&2
++          fail=1
++        fi
++      done
++      for p in ${{inputs.symlinks}}; do
++        [ -L "$p" ] || { echo "test/paths: missing symlink: $p" >&2; fail=1; }
++      done
++      exit $fail
+diff --git c/pkg/build/pipelines/test/version.yaml i/pkg/build/pipelines/test/version.yaml
+new file mode 100644
+index 0000000..33d03cb
+--- /dev/null
++++ i/pkg/build/pipelines/test/version.yaml
+@@ -0,0 +1,35 @@
++name: Check the packaged program reports its version
++
++inputs:
++  executable:
++    description: |
++      Program to run. Defaults to /usr/bin/<package name>.
++    default: ''
++
++  flag:
++    description: |
++      Flag that makes the program print its version. Defaults to --version.
++    default: ''
++
++  pattern:
++    description: |
++      Extended regular expression expected in the version output.
++      Defaults to the package version.
++    default: ''
++
++pipeline:
++  - runs: |
++      exe="${{inputs.executable}}"
++      [ -n "$exe" ] || exe="/usr/bin/${{package.name}}"
++      flag="${{inputs.flag}}"
++      [ -n "$flag" ] || flag="--version"
++      pattern="${{inputs.pattern}}"
++      [ -n "$pattern" ] || pattern="${{package.version}}"
++
++      [ -x "$exe" ] || { echo "test/version: $exe is not executable" >&2; exit 1; }
++      out="$("$exe" $flag 2>&1 || true)"
++      echo "$out" | head -5
++      echo "$out" | grep -qE -- "$pattern" || {
++        echo "test/version: output did not match '$pattern'" >&2
++        exit 1
++      }

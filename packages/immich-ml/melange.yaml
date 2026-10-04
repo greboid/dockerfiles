@@ -60,12 +60,23 @@ pipeline:
       expected-commit: 1b6098c9dbfffe978bec2d414606ed7a4c8e019a
       repository: https://github.com/immich-app/immich
       tag: v${{package.version}}
-  - name: Create the virtualenv over the system ML stack
-    runs: ./01-create-the-virtualenv-over-the.sh
-  - name: Install the frozen Python dependencies
-    runs: ./02-install-the-frozen-python.sh
+  - name: Create the virtualenv and install the frozen Python dependencies
+    runs: |
+      cd machine-learning
+      python3 -m venv --system-site-packages /opt/venv
+      export CMAKE_ARGS="-DONNX_USE_PROTOBUF_SHARED_LIBS=ON"
+      uv export --frozen --no-dev --extra cpu --no-emit-project --no-hashes \
+        --format requirements-txt -o /tmp/all-reqs.txt
+      grep -vE '^(onnxruntime|opencv-python|opencv-python-headless|numpy|shapely|watchfiles|websockets)==' \
+        /tmp/all-reqs.txt > /tmp/reqs.txt
+      /opt/venv/bin/pip install --no-cache-dir -r /tmp/reqs.txt \
+        --no-binary onnx --no-binary ml-dtypes
   - name: Stage the venv, service and healthcheck
-    runs: DESTDIR="${{targets.destdir}}" ./03-stage-the-venv-service-and.sh
+    runs: |
+      mkdir -p "${{targets.destdir}}/opt" "${{targets.destdir}}/usr/src"
+      cp -a /opt/venv "${{targets.destdir}}/opt/venv"
+      cp -a machine-learning/immich_ml "${{targets.destdir}}/usr/src/immich_ml"
+      cp -a machine-learning/scripts/healthcheck.py "${{targets.destdir}}/usr/src/healthcheck.py"
   - uses: go/licenses
     with:
       save: "false"
@@ -85,7 +96,25 @@ test:
         files: /opt/venv/bin/python /usr/src/healthcheck.py /usr/share/licenses/immich-ml/LICENSE
         dirs: /usr/src/immich_ml
     - name: Boots the ML server and answers its ping
-      runs: ./test-02-boots-the-ml-server-and-answers-its.sh
+      runs: |
+        mkdir -p /tmp/mlcache
+        env \
+          PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONPATH=/usr/src \
+          PATH=/opt/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+          DEVICE=cpu MACHINE_LEARNING_CACHE_FOLDER=/tmp/mlcache \
+          TRANSFORMERS_CACHE=/tmp/mlcache HF_HOME=/tmp/mlcache/hf-cache \
+          MACHINE_LEARNING_MODEL_ARENA=false IMMICH_PORT=33003 \
+          LD_PRELOAD=/usr/lib/libmimalloc.so.2 HOME=/home/nonroot \
+          /opt/venv/bin/python -m immich_ml >/tmp/imml.log 2>&1 &
+        pid=$!
+        ok=""
+        for _ in $(seq 1 30); do
+          code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:33003/ping || true)
+          [ "$code" = 200 ] && { ok=yes; break; }
+          sleep 1
+        done
+        kill "$pid" 2>/dev/null || true
+        [ "$ok" = yes ] || { cat /tmp/imml.log; exit 1; }
 update:
   enabled: true
   github:

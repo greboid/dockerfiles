@@ -1,7 +1,7 @@
 package:
   name: melange
   version: 0.61.1
-  epoch: 1
+  epoch: 2
   description: APK package builder (source-built v0.61.1, org patch set)
   target-architecture:
     - x86_64
@@ -47,6 +47,7 @@ pipeline:
         patches/005-sbom-upstream-source-license.patch
         patches/006-bwrap-guest-modes.patch
         patches/007-forgejo-update-monitor.patch
+        patches/008-embedded-org-pipelines.patch
   # melange resolves its build guests through chainguard.dev/apko as pinned
   # by its go.mod, so the apko patch series never reaches it: check out
   # exactly that tag, apply the forgejo index patch (byte-identical with the

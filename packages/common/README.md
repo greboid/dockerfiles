@@ -80,8 +80,3 @@ workflow above.
 
 - `.forgejo/workflows/build-package.yml` — the reusable build pipeline
 - `.forgejo/workflows/bootstrap.yml` — hand-run org repository seeding
-
-The bootstrap packages live in their own repos (`packages/os-release`,
-`packages/go`, `packages/melange`, `packages/apko`), recipes, patches
-and tests included. Nothing a package builds lives here: this repo owns
-how the org boots and how builds run; repos own what they build.
