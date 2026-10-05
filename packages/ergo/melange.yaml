@@ -1,7 +1,7 @@
 package:
   name: ergo
   version: 2.19.1
-  epoch: 3
+  epoch: 4
   description: Modern IRC server written in Go
   target-architecture:
     - x86_64
@@ -39,6 +39,7 @@ pipeline:
     with:
       packages: ./
       output: ergo
+      tags: i18n
   - runs: |
       mkdir -p "${{targets.destdir}}/ircd-bin"
       cp -R languages "${{targets.destdir}}/ircd-bin/languages"

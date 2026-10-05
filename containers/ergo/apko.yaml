@@ -25,6 +25,18 @@ accounts:
       members:
         - nonroot
 
+work-dir: /config
+
+paths:
+  - path: /config
+    type: directory
+    permissions: 0o755
+    uid: 65532
+    gid: 65532
+
+volumes:
+  - /config
+
 entrypoint:
   command: /usr/bin/ergo
-cmd: run --conf /ircd/ircd.yaml
+cmd: run --conf /config/ircd.yaml
