@@ -1,7 +1,7 @@
 package:
   name: immich
   version: 3.2.0
-  epoch: 2
+  epoch: 3
   description: Self-hosted photo and video management (server + embedded web)
   target-architecture:
     - x86_64
@@ -29,6 +29,7 @@ environment:
     repositories:
       - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
       - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
     packages:
       - busybox=1.37.0-r31
       - ca-certificates
@@ -55,7 +56,7 @@ environment:
       - make=4.4.1-r4
       - pkgconf=2.5.1-r0
       - python3=3.14.8-r0
-      - tzdata=2026d-r0
+      - tzdata=2026e-r0
 
 pipeline:
   - uses: git-checkout
@@ -120,6 +121,7 @@ test:
       repositories:
         - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
         - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
       packages:
         - os-release=3.24.2-r0
         - busybox

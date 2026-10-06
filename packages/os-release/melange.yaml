@@ -17,6 +17,7 @@ environment:
       - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
     repositories:
       - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
     packages:
       - busybox=1.37.0-r31
       - ca-certificates

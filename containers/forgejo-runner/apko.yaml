@@ -11,10 +11,10 @@ contents:
     - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
   packages:
     - ca-certificates-bundle=20260909-r0
-    - tzdata=2026d-r0
+    - tzdata=2026e-r0
     - os-release=3.24.2-r0
     - forgejo-runner=13.2.0-r2
-    - buildah=1.45.1-r1
+    - buildah=1.45.1-r2
     - fuse-overlay-storage-conf=1.0.0-r0
     - git=2.54.0-r0
     - fuse-overlayfs=1.16-r0
