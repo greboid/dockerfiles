@@ -1,7 +1,7 @@
 package:
   name: forgejo
   version: 16.0.5
-  epoch: 7
+  epoch: 8
   description: Forgejo self-hosted software forge (Gitea fork)
   target-architecture:
     - x86_64
@@ -27,7 +27,7 @@ environment:
       - busybox=1.37.0-r31
       - ca-certificates
       - git=2.54.0-r0
-      - go=1.27.1-r19
+      - go=1.27.1-r20
       - go-licenses=2.0.1-r0
       - os-release=3.24.2-r0
       - make=4.4.1-r4
