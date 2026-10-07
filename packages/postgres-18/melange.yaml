@@ -1,7 +1,7 @@
 package:
   name: postgres-18
   version: 18.6
-  epoch: 3
+  epoch: 4
   description: PostgreSQL 18 database server
   target-architecture:
     - x86_64

@@ -124,7 +124,7 @@ SELECT 1 FROM pg_database WHERE datname = :'db' ;
 EOSQL
     )"
     if [[ -z "$exists" ]]; then
-        POSTGRES_DB= docker_process_sql --dbname postgres <<'EOSQL'
+        POSTGRES_DB= docker_process_sql --dbname postgres --set db="$POSTGRES_DB" <<'EOSQL'
 CREATE DATABASE :"db" ;
 EOSQL
         echo

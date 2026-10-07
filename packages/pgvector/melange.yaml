@@ -1,7 +1,7 @@
 package:
   name: pgvector
   version: 0.8.6
-  epoch: 2
+  epoch: 4
   description: Open-source vector similarity search for PostgreSQL
   target-architecture:
     - x86_64
@@ -12,7 +12,7 @@ package:
       license: PostgreSQL
   dependencies:
     runtime:
-      - postgres-18=18.6-r2
+      - postgres-18=18.6-r4
 
 environment:
   contents:
@@ -28,7 +28,7 @@ environment:
       - git=2.54.0-r0
       - os-release=3.24.2-r0
       - build-base=0.5-r4
-      - postgres-18=18.6-r2
+      - postgres-18=18.6-r4
 
 pipeline:
   - uses: git-checkout

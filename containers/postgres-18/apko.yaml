@@ -12,8 +12,8 @@ contents:
     - ca-certificates-bundle=20260909-r0
     - tzdata=2026e-r0
     - os-release=3.24.2-r0
-    - postgres-18=18.6-r1
-    - pgvector=0.8.6-r1
+    - postgres-18=18.6-r4
+    - pgvector=0.8.6-r4
     - musl-locales=0.1.0-r1
     - bash=5.3.9-r1
     - busybox=1.37.0-r31
@@ -35,6 +35,12 @@ paths:
   - path: /var/lib/postgresql/data
     type: directory
     permissions: 0o750
+    uid: 65532
+    gid: 65532
+    recursive: true
+  - path: /var/run/postgresql
+    type: directory
+    permissions: 0o3775
     uid: 65532
     gid: 65532
     recursive: true
