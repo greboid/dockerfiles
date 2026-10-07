@@ -1,7 +1,7 @@
 package:
   name: irc-webhook
   version: 4.1.1
-  epoch: 9
+  epoch: 10
   description: irc-bot plugin offering webhook-to-IRC relaying with token management
   target-architecture:
     - x86_64
@@ -27,7 +27,7 @@ environment:
       - busybox=1.37.0-r31
       - ca-certificates
       - git=2.54.0-r0
-      - go=1.27.1-r20
+      - go=1.27.1-r21
       - go-licenses=2.0.1-r1
       - os-release=3.24.2-r0
 
