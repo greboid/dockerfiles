@@ -1,7 +1,7 @@
 package:
   name: libvips
   version: 8.18.6
-  epoch: 1
+  epoch: 2
   description: Fast image processing library with low memory needs
   target-architecture:
     - x86_64
@@ -55,7 +55,7 @@ environment:
       - libpng-dev=1.6.59-r0
       - libwebp-dev=1.6.0-r0
       - tiff-dev=4.7.1-r0
-      - zlib-dev=1.3.2-r0
+      - zlib-dev=1.3.2-r1
 
 pipeline:
   - uses: git-checkout
