@@ -27,7 +27,7 @@ environment:
       - busybox=1.37.0-r31
       - ca-certificates
       - git=2.54.0-r0
-      - go=1.27.1-r28
+      - go=1.26.8-r0
       - go-licenses=2.0.1-r11
       - os-release=3.24.2-r0
 
