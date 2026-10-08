@@ -1,7 +1,7 @@
 package:
   name: melange
   version: 0.61.1
-  epoch: 3
+  epoch: 4
   description: APK package builder (source-built v0.61.1, org patch set)
   target-architecture:
     - x86_64
@@ -26,7 +26,7 @@ environment:
       - busybox=1.37.0-r31
       - ca-certificates-bundle=20260909-r0
       - os-release=3.24.2-r0
-      - go=1.27.1-r28
+      - go=1.27.2-r0
       - git=2.54.0-r0
   environment:
     CGO_ENABLED: "0"

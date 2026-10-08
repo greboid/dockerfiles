@@ -1,7 +1,7 @@
 package:
   name: irc-goplum
   version: 4.0.2
-  epoch: 17
+  epoch: 18
   description: irc-bot plugin reporting goplum alert results to IRC channels
   target-architecture:
     - x86_64
@@ -27,8 +27,8 @@ environment:
       - busybox=1.37.0-r31
       - ca-certificates
       - git=2.54.0-r0
-      - go=1.27.1-r28
-      - go-licenses=2.0.1-r12
+      - go=1.27.2-r0
+      - go-licenses=2.0.1-r13
       - os-release=3.24.2-r0
 
 pipeline:
