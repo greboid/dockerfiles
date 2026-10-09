@@ -12,7 +12,7 @@ contents:
     - ca-certificates-bundle=20260909-r0
     - tzdata=2026e-r0
     - os-release=3.24.2-r0
-    - tailscale=1.102.5-r19
+    - tailscale=1.102.5-r20
 
 accounts:
   run-as: 65532:65532
@@ -34,7 +34,12 @@ paths:
     uid: 65532
     gid: 65532
     recursive: true
-
+  - path: /var/run/tailscale                                                                                                                                                       
+    type: directory                                                                                                                                                                
+    permissions: 0o755                                                                                                                                                             
+    uid: 65532                                                                                                                                                                     
+    gid: 65532                                                                                                                                                                     
+    recursive: true 
 environment:
   SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
   TS_SOCKET: /var/run/tailscale/tailscaled.sock
