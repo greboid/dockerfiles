@@ -12,7 +12,7 @@ contents:
     - ca-certificates-bundle=20260909-r0
     - tzdata=2026e-r0
     - os-release=3.24.2-r0
-    - tailscale=1.102.5-r17
+    - tailscale=1.102.5-r19
 
 accounts:
   run-as: 65532:65532
@@ -39,7 +39,6 @@ environment:
   SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
   TS_SOCKET: /var/run/tailscale/tailscaled.sock
   TS_STATE_DIR: /var/lib/tailscale
-  TS_TAILSCALED_EXTRA_ARGS: --tun=tailscale0,userspace-networking
 
 entrypoint:
   command: /usr/bin/containerboot

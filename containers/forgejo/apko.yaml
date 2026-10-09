@@ -12,7 +12,7 @@ contents:
     - ca-certificates-bundle=20260909-r0
     - tzdata=2026e-r0
     - os-release=3.24.2-r0
-    - forgejo=16.0.5-r16
+    - forgejo=16.0.5-r17
     - git=2.54.0-r0
     - bash=5.3.9-r1
     - rsync=3.5.0-r0
