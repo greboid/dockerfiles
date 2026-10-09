@@ -1,7 +1,7 @@
 package:
   name: tailscale
   version: 1.102.5
-  epoch: 18
+  epoch: 19
   description: Tailscale daemon, CLI and container entrypoint (userspace networking)
   target-architecture:
     - x86_64
@@ -34,6 +34,9 @@ environment:
 vars:
   runtime-dirs: /var/lib/tailscale
 
+data:
+  - tailscale.conf
+
 pipeline:
   - uses: git-checkout
     with:
@@ -59,7 +62,10 @@ pipeline:
       static: "true"
   - uses: dirs
     with:
-      dirs: ${{vars.runtime-dirs}}
+      dirs: /var/lib/tailscale
+  - name: copy tmpfiles.d entry for the runtime socket directory
+    runs: |
+      install -Dm644 tailscale.conf ${{targets.destdir}}/usr/lib/tmpfiles.d/tailscale.conf
   - uses: go/licenses
     with:
       packages: ./cmd/tailscaled ./cmd/tailscale ./cmd/containerboot
@@ -78,7 +84,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/tailscaled /usr/bin/tailscale /usr/bin/containerboot
-        files: /notices/tailscale.com/LICENSE /usr/share/licenses/tailscale/LICENSE
+        files: /notices/tailscale.com/LICENSE /usr/share/licenses/tailscale/LICENSE /usr/lib/tmpfiles.d/tailscale.conf
         dirs: ${{vars.runtime-dirs}}
     - uses: test/version
       with:
