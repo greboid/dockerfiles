@@ -1,7 +1,7 @@
 package:
   name: immich-ml
-  version: 3.2.0
-  epoch: 1
+  version: 3.3.1
+  epoch: 0
   description: Immich machine-learning server (CPU)
   target-architecture:
     - x86_64
@@ -58,7 +58,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 1b6098c9dbfffe978bec2d414606ed7a4c8e019a
+      expected-commit: db6e11ecc851228aec9c525abb0ee026d1f5055e
       repository: https://github.com/immich-app/immich
       tag: v${{package.version}}
   - name: Create the virtualenv and install the frozen Python dependencies
@@ -68,10 +68,16 @@ pipeline:
       export CMAKE_ARGS="-DONNX_USE_PROTOBUF_SHARED_LIBS=ON"
       uv export --frozen --no-dev --extra cpu --no-emit-project --no-hashes \
         --format requirements-txt -o /tmp/all-reqs.txt
-      grep -vE '^(onnxruntime|opencv-python|opencv-python-headless|numpy|shapely|watchfiles|websockets)==' \
+      grep -vE '^(onnxruntime|opencv-python|opencv-python-headless|numpy|shapely|watchfiles|websockets)==|^immich-model @' \
         /tmp/all-reqs.txt > /tmp/reqs.txt
       /opt/venv/bin/pip install --no-cache-dir -r /tmp/reqs.txt \
         --no-binary onnx --no-binary ml-dtypes
+      # immich-model caps requires-python at <3.14 for its rknn dev extra only;
+      # the torch-free core immich_ml consumes imports fine on 3.14. Its frozen
+      # dependency closure is already in reqs.txt, hence --no-deps.
+      grep '^immich-model @' /tmp/all-reqs.txt > /tmp/immich-model-reqs.txt
+      /opt/venv/bin/pip install --no-cache-dir --no-deps --ignore-requires-python \
+        -r /tmp/immich-model-reqs.txt
   - name: Stage the venv, service and healthcheck
     runs: |
       mkdir -p "${{targets.destdir}}/opt" "${{targets.destdir}}/usr/src"
