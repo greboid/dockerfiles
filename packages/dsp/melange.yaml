@@ -1,7 +1,7 @@
 package:
   name: dsp
-  version: 1.2.6
-  epoch: 6
+  version: 1.2.7
+  epoch: 0
   description: Filtering proxy in front of the Docker socket
   target-architecture:
     - x86_64
@@ -34,7 +34,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 4b09bec387dd247f9c98b071539217834eb21811
+      expected-commit: 27a925ee01c82b058172fa711235254b1fd3f43a
       repository: https://github.com/greboid/dsp
       tag: v${{package.version}}
   - uses: go/build

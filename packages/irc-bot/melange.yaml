@@ -1,7 +1,7 @@
 package:
   name: irc-bot
-  version: 5.0.8
-  epoch: 18
+  version: 5.0.10
+  epoch: 0
   description: Extensible IRC bot with a gRPC plugin interface
   target-architecture:
     - x86_64
@@ -34,7 +34,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 68bc23ad7c6ecd9d08f4f6595d2e57a43b90d4c2
+      expected-commit: 1e1edc39148f8c2ec8959c61d49e983831481704
       repository: https://github.com/greboid/irc-bot
       tag: v${{package.version}}
   - uses: go/build

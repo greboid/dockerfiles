@@ -1,7 +1,7 @@
 package:
   name: irc-webhook
-  version: 4.1.1
-  epoch: 17
+  version: 4.1.2
+  epoch: 0
   description: irc-bot plugin offering webhook-to-IRC relaying with token management
   target-architecture:
     - x86_64
@@ -34,7 +34,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 7b839a503adaf73b3511527b389848b982e2e477
+      expected-commit: 271955a17109c0d2df65992bd4ce9db3cfa4aaff
       repository: https://github.com/greboid/irc-webhook
       tag: v${{package.version}}
   - uses: go/build
