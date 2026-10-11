@@ -1,7 +1,7 @@
 package:
   name: identd
-  version: 1.0.4
-  epoch: 17
+  version: 1.0.5
+  epoch: 0
   description: Ident server returning a configurable static response
   target-architecture:
     - x86_64
@@ -34,7 +34,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 1ce6f781efeed1c40eb38f10e52694959798f259
+      expected-commit: 51e683b82ee98737e8b0cb737987606bfbeed15f
       repository: https://github.com/greboid/identd
       tag: v${{package.version}}
   - uses: go/build
@@ -44,7 +44,7 @@ pipeline:
       static: "true"
   - uses: go/licenses
     with:
-      checks: github.com/greboid/identd/LICENSE github.com/csmith/envflag/LICENCE
+      checks: github.com/greboid/identd/LICENSE
 test:
   environment:
     contents:
@@ -58,7 +58,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/identd
-        files: /notices/github.com/greboid/identd/LICENSE /notices/github.com/csmith/envflag/LICENCE /usr/share/licenses/identd/LICENSE
+        files: /notices/github.com/greboid/identd/LICENSE /usr/share/licenses/identd/LICENSE
 update:
   enabled: true
   github:
