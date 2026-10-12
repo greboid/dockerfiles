@@ -1,7 +1,7 @@
 package:
   name: thp
-  version: 1.2.2
-  epoch: 5
+  version: 1.2.4
+  epoch: 0
   description: Tailscale HTTP proxy forwarding tailnet requests to an upstream
   target-architecture:
     - x86_64
@@ -37,7 +37,7 @@ vars:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 3a0d611949b677068d3edbd75550bf31b2ded353
+      expected-commit: d80cf6af7517577e67d5cfa754acd69221e5a6e5
       repository: https://github.com/greboid/thp
       tag: v${{package.version}}
   - uses: go/build
