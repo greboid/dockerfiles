@@ -1,6 +1,6 @@
 package:
   name: immich-ml
-  version: 3.3.1
+  version: 3.3.3
   epoch: 0
   description: Immich machine-learning server (CPU)
   target-architecture:
@@ -58,7 +58,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: db6e11ecc851228aec9c525abb0ee026d1f5055e
+      expected-commit: d2dac658fe1c67e8bbd08aa18200a32e5d45b9e4
       repository: https://github.com/immich-app/immich
       tag: v${{package.version}}
   - name: Create the virtualenv and install the frozen Python dependencies

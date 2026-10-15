@@ -1,7 +1,7 @@
 package:
   name: sws
-  version: 2.44.0
-  epoch: 1
+  version: 2.44.1
+  epoch: 0
   description: Static web server (static-web-server) with query-preserving rewrites
   target-architecture:
     - x86_64
@@ -35,7 +35,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 27aa3450b6bf70bd1fa553b2197b53032affcba1
+      expected-commit: c5cbe67e91da91ccad838163cf9a034bf221a447
       repository: https://github.com/static-web-server/static-web-server
       tag: v${{package.version}}
   - uses: patch

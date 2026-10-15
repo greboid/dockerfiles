@@ -1,7 +1,7 @@
 package:
   name: forgejo
-  version: 16.0.5
-  epoch: 17
+  version: 17.0.0
+  epoch: 0
   description: Forgejo self-hosted software forge (Gitea fork)
   target-architecture:
     - x86_64
@@ -43,7 +43,7 @@ vars:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 8d24b7d52df327118cd776cf461d34e52e0ec1ce
+      expected-commit: 0d791421f85ca13a63b665053d81ea765fbbc571
       repository: https://codeberg.org/forgejo/forgejo
       tag: v${{package.version}}
   - name: Build the frontend assets
