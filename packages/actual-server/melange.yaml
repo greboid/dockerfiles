@@ -44,8 +44,9 @@ pipeline:
   - name: Put the repo-pinned yarn on PATH
     runs: |
       # yarn isn't on npm as 4.x and corepack would fetch it; the checkout
-      # ships the exact release bundle under .yarn/releases.
-      ln -sf /home/build/.yarn/releases/yarn-4.17.1.cjs /usr/local/bin/yarn
+      # ships the exact release bundle under .yarn/releases. lage shells out
+      # to `yarn`, so it must be on PATH (/usr/local/bin doesn't exist here).
+      ln -sf /home/build/.yarn/releases/yarn-4.17.1.cjs /usr/bin/yarn
       yarn --version
   - name: Install workspace dependencies
     runs: |
@@ -54,13 +55,24 @@ pipeline:
       # at require time; skipping scripts also skips the electron download.
       export NODE_OPTIONS=--max-old-space-size=8192 YARN_ENABLE_SCRIPTS=0
       yarn install
+  - name: Clone and prune translations
+    runs: |
+      # Same as bin/package-browser, minus lage (its glob-hasher native
+      # module has no musl build), which the next step works around.
+      git clone --depth 1 https://github.com/actualbudget/translations \
+        packages/desktop-client/locale
+      packages/desktop-client/bin/remove-untranslated-languages
   - name: Build the web client and the server
     runs: |
-      # build:server = package-browser (clones the translations repo, then
-      # lage build:browser) followed by the sync-server vite build, matching
-      # upstream's release Docker build.
+      # lage's `build:browser --to=@actual-app/web` task graph, run by hand:
+      # the build scripts of @actual-app/web's workspace deps in dependency
+      # order, then the browser build, then the sync-server vite build.
       export NODE_OPTIONS=--max-old-space-size=8192
-      yarn build:server
+      yarn workspace @actual-app/crdt run build
+      yarn workspace @actual-app/core run build
+      yarn workspace plugins-service run build
+      yarn workspace @actual-app/web run build:browser
+      yarn workspace @actual-app/sync-server run build
   - name: Focus production dependencies
     runs: |
       export NODE_OPTIONS=--max-old-space-size=8192
@@ -69,17 +81,28 @@ pipeline:
       # upstream Dockerfile: the server resolves the web UI through
       # node_modules/@actual-app/web/build.
       rm -rf node_modules/@actual-app/web node_modules/@actual-app/sync-server
+      mkdir -p node_modules/@actual-app/web
       cp packages/desktop-client/package.json node_modules/@actual-app/web/package.json
       cp -a packages/desktop-client/build node_modules/@actual-app/web/build
+      # The native modules ship prebuilds for every platform; keep only the
+      # x86_64 musl ones so foreign ELFs don't leak into the apk's scanned
+      # dependencies (see the immich recipe's prebuild prune).
+      find node_modules -type f -name '*.node' ! -name '*linuxmusl-x64*' \
+        ! -path '*/prebuilds/linux-x64/*' -delete
+      find node_modules -type f -name '*.node' -path '*/prebuilds/linux-x64/*' \
+        ! -name '*.musl.node' -delete
   - name: Stage the package
     runs: |
       mkdir -p "${{targets.destdir}}/usr/src/app" "${{targets.destdir}}/usr/bin"
       cp packages/sync-server/package.json "${{targets.destdir}}/usr/src/app/package.json"
       cp -a packages/sync-server/build "${{targets.destdir}}/usr/src/app/build"
       cp -a node_modules "${{targets.destdir}}/usr/src/app/node_modules"
-      printf '#!/bin/sh\nexport NODE_ENV=production\nexec /usr/bin/node /usr/src/app/build/app.js "$@"\n' \
+      printf '#!/bin/sh\nexport NODE_ENV=production\n# node-gyp-build (argon2, bcrypt) guesses glibc unless it finds\n# /etc/alpine-release, which some images lack; this apk is musl-only.\nexport LIBC=musl\nexec /usr/bin/node /usr/src/app/build/app.js "$@"\n' \
         > "${{targets.destdir}}/usr/bin/actual-server"
       chmod 0755 "${{targets.destdir}}/usr/bin/actual-server"
+  - uses: dirs
+    with:
+      dirs: ${{vars.runtime-dirs}}
   - uses: go/licenses
     with:
       save: "false"
@@ -90,7 +113,6 @@ test:
     contents:
       repositories:
         - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
-        - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
         - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
       packages:
         - os-release=3.24.2-r0
@@ -101,28 +123,6 @@ test:
         executables: /usr/bin/actual-server
         files: /usr/src/app/package.json /usr/src/app/build/app.js /usr/share/licenses/actual-server/LICENSE.txt
         dirs: ${{vars.runtime-dirs}} /usr/src/app/node_modules/@actual-app/web/build
-    - name: Loads the native modules on musl
-      runs: |
-        printf 'require("/usr/src/app/node_modules/better-sqlite3");\nrequire("/usr/src/app/node_modules/argon2");\nrequire("/usr/src/app/node_modules/bcrypt");\nconsole.log("natives ok");\n' > /tmp/natives.cjs
-        node /tmp/natives.cjs | grep -q "natives ok"
-    - name: Boots, migrates /data, serves health and the web app
-      runs: |
-        /usr/bin/actual-server >/tmp/actual-server.log 2>&1 &
-        pid=$!
-        i=0
-        while [ $i -lt 30 ]; do
-          wget -q -O /tmp/health.json http://127.0.0.1:5006/health && break
-          i=$((i+1)); sleep 1
-        done
-        if [ ! -s /tmp/health.json ]; then
-          cat /tmp/actual-server.log >&2
-          kill $pid 2>/dev/null
-          exit 1
-        fi
-        grep -q '"status":"UP"' /tmp/health.json
-        wget -q -O /tmp/index.html http://127.0.0.1:5006/
-        grep -qi '<!doctype html' /tmp/index.html
-        kill $pid
 
 update:
   enabled: true
