@@ -1,0 +1,100 @@
+package:
+  name: dozzle
+  version: 11.3.2
+  epoch: 0
+  description: Real-time log viewer for Docker containers with a web interface
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.27.2-r0
+      - go-licenses=2.0.1-r13
+      - nodejs=24.18.1-r0
+      - npm=11.12.1-r0
+      - openssl=3.5.9-r0
+      - os-release=3.24.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 9c7cb50c50b4d44dbb67483d54f612f57a50a0be
+      repository: https://github.com/amir20/dozzle
+      tag: v${{package.version}}
+  - name: Generate the embedded agent TLS keypair
+    runs: |
+      openssl genpkey -algorithm Ed25519 -out shared_key.pem
+      openssl req -new -key shared_key.pem -out shared_request.csr \
+        -subj "/C=US/ST=California/L=San Francisco/O=Dozzle"
+      openssl x509 -req -in shared_request.csr -signkey shared_key.pem \
+        -out shared_cert.pem -days 1825
+      rm shared_request.csr
+  - name: Install bun
+    runs: |
+      # bun isn't packaged for alpine; install the version pinned in
+      # package.json's packageManager field from npm instead.
+      npm install -g bun@1.4.3
+      bun --version
+  - name: Build the web UI
+    runs: |
+      bun install --frozen-lockfile --ignore-scripts
+      bun run build
+  - uses: go/build
+    with:
+      packages: ./
+      output: dozzle
+      static: "true"
+      ldflags: -X github.com/amir20/dozzle/internal/cli.Version=${{package.version}}
+  - uses: go/licenses
+    with:
+      module: github.com/amir20/dozzle
+      license: LICENSE
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/dozzle
+        files: /notices/github.com/amir20/dozzle/LICENSE /usr/share/licenses/dozzle/LICENSE
+    - uses: test/version
+    - name: Refuses to start without a Docker daemon
+      runs: |
+        if /usr/bin/dozzle >/tmp/dozzle.log 2>&1; then
+          echo "expected missing-daemon failure" >&2
+          exit 1
+        fi
+        grep -q "Could not connect to any Docker Engine" /tmp/dozzle.log
+
+update:
+  enabled: true
+  github:
+    identifier: amir20/dozzle
+    strip-prefix: v
+    use-tag: true
