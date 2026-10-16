@@ -1,0 +1,106 @@
+package:
+  name: beszel
+  version: 0.21.0
+  epoch: 0
+  description: Lightweight server monitoring hub with web UI and agent
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.27.2-r0
+      - go-licenses=2.0.1-r13
+      - nodejs=24.18.1-r0
+      - npm=11.12.1-r0
+      - os-release=3.24.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: ec96c134660c998f7eb044e349e3715b65733fe1
+      repository: https://github.com/henrygd/beszel
+      tag: v${{package.version}}
+  - name: Build web UI
+    runs: |
+      cd internal/site
+      npm ci --no-audit --no-fund
+      npm run build
+  - uses: go/build
+    with:
+      packages: ./internal/cmd/hub
+      output: beszel
+      static: "true"
+  - uses: go/build
+    with:
+      packages: ./internal/cmd/agent
+      output: beszel-agent
+      static: "true"
+  - uses: go/licenses
+    with:
+      module: github.com/henrygd/beszel
+      license: LICENSE
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/beszel /usr/bin/beszel-agent
+        files: /notices/github.com/henrygd/beszel/LICENSE /usr/share/licenses/beszel/LICENSE
+    - name: Hub reports its version
+      runs: |
+        /usr/bin/beszel --version | grep -q "0.21.0"
+    - name: Agent refuses to start without a key
+      runs: |
+        if /usr/bin/beszel-agent >/tmp/beszel-agent.log 2>&1; then
+          echo "expected startup failure" >&2
+          exit 1
+        fi
+        grep -q "no key provided" /tmp/beszel-agent.log
+    - name: Hub serves the health endpoint
+      runs: |
+        cd /tmp
+        /usr/bin/beszel serve --http 127.0.0.1:18090 >/tmp/beszel-hub.log 2>&1 &
+        pid=$!
+        trap 'kill $pid 2>/dev/null' EXIT
+        for i in $(seq 1 20); do
+          if wget -qO- http://127.0.0.1:18090/api/health | grep -q '"code":200'; then
+            exit 0
+          fi
+          sleep 1
+        done
+        cat /tmp/beszel-hub.log >&2
+        exit 1
+
+update:
+  enabled: true
+  github:
+    identifier: henrygd/beszel
+    strip-prefix: v
+    use-tag: true
