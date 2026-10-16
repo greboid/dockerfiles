@@ -56,6 +56,14 @@ pipeline:
       bun --version
   - name: Build the web UI
     runs: |
+      # bun's napi-rs loaders (rolldown, tailwind oxide) detect musl by
+      # reading /usr/bin/ldd as text, but the workspace has none, so they
+      # fall back to process.report, which under bun claims glibc, and
+      # pick glibc bindings that bun then refuses to load.
+      if [ ! -e /usr/bin/ldd ]; then
+        printf '#!/bin/sh\nexec /lib/ld-musl-x86_64.so.1 --version\n' > /usr/bin/ldd
+        chmod +x /usr/bin/ldd
+      fi
       bun install --frozen-lockfile --ignore-scripts
       bun run build
   - uses: go/build
