@@ -1,0 +1,132 @@
+package:
+  name: actual-server
+  version: 26.10.0
+  epoch: 0
+  description: Self-hosted personal finance manager (sync server + web UI)
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE.txt
+      license: MIT
+  dependencies:
+    runtime:
+      - nodejs=24.18.1-r0
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - bash=5.3.9-r1
+      - ca-certificates
+      - git=2.54.0-r0
+      - nodejs=24.18.1-r0
+      - os-release=3.24.2-r0
+
+vars:
+  runtime-dirs: /data
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 2bebdbaae0b701120a8cad9d56aafd64fa04c577
+      repository: https://github.com/actualbudget/actual
+      tag: v${{package.version}}
+  - name: Put the repo-pinned yarn on PATH
+    runs: |
+      # yarn isn't on npm as 4.x and corepack would fetch it; the checkout
+      # ships the exact release bundle under .yarn/releases.
+      ln -sf /home/build/.yarn/releases/yarn-4.17.1.cjs /usr/local/bin/yarn
+      yarn --version
+  - name: Install workspace dependencies
+    runs: |
+      # No build scripts: every native dependency (better-sqlite3, argon2,
+      # bcrypt) ships musl prebuilds inside its npm tarball and resolves them
+      # at require time; skipping scripts also skips the electron download.
+      export NODE_OPTIONS=--max-old-space-size=8192 YARN_ENABLE_SCRIPTS=0
+      yarn install
+  - name: Build the web client and the server
+    runs: |
+      # build:server = package-browser (clones the translations repo, then
+      # lage build:browser) followed by the sync-server vite build, matching
+      # upstream's release Docker build.
+      export NODE_OPTIONS=--max-old-space-size=8192
+      yarn build:server
+  - name: Focus production dependencies
+    runs: |
+      export NODE_OPTIONS=--max-old-space-size=8192
+      yarn workspaces focus @actual-app/sync-server --production
+      # Replace the workspace symlinks with the built artifacts, like the
+      # upstream Dockerfile: the server resolves the web UI through
+      # node_modules/@actual-app/web/build.
+      rm -rf node_modules/@actual-app/web node_modules/@actual-app/sync-server
+      cp packages/desktop-client/package.json node_modules/@actual-app/web/package.json
+      cp -a packages/desktop-client/build node_modules/@actual-app/web/build
+  - name: Stage the package
+    runs: |
+      mkdir -p "${{targets.destdir}}/usr/src/app" "${{targets.destdir}}/usr/bin"
+      cp packages/sync-server/package.json "${{targets.destdir}}/usr/src/app/package.json"
+      cp -a packages/sync-server/build "${{targets.destdir}}/usr/src/app/build"
+      cp -a node_modules "${{targets.destdir}}/usr/src/app/node_modules"
+      printf '#!/bin/sh\nexport NODE_ENV=production\nexec /usr/bin/node /usr/src/app/build/app.js "$@"\n' \
+        > "${{targets.destdir}}/usr/bin/actual-server"
+      chmod 0755 "${{targets.destdir}}/usr/bin/actual-server"
+  - uses: go/licenses
+    with:
+      save: "false"
+      license: LICENSE.txt
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/actual-server
+        files: /usr/src/app/package.json /usr/src/app/build/app.js /usr/share/licenses/actual-server/LICENSE.txt
+        dirs: ${{vars.runtime-dirs}} /usr/src/app/node_modules/@actual-app/web/build
+    - name: Loads the native modules on musl
+      runs: |
+        printf 'require("/usr/src/app/node_modules/better-sqlite3");\nrequire("/usr/src/app/node_modules/argon2");\nrequire("/usr/src/app/node_modules/bcrypt");\nconsole.log("natives ok");\n' > /tmp/natives.cjs
+        node /tmp/natives.cjs | grep -q "natives ok"
+    - name: Boots, migrates /data, serves health and the web app
+      runs: |
+        /usr/bin/actual-server >/tmp/actual-server.log 2>&1 &
+        pid=$!
+        i=0
+        while [ $i -lt 30 ]; do
+          wget -q -O /tmp/health.json http://127.0.0.1:5006/health && break
+          i=$((i+1)); sleep 1
+        done
+        if [ ! -s /tmp/health.json ]; then
+          cat /tmp/actual-server.log >&2
+          kill $pid 2>/dev/null
+          exit 1
+        fi
+        grep -q '"status":"UP"' /tmp/health.json
+        wget -q -O /tmp/index.html http://127.0.0.1:5006/
+        grep -qi '<!doctype html' /tmp/index.html
+        kill $pid
+
+update:
+  enabled: true
+  github:
+    identifier: actualbudget/actual
+    strip-prefix: v
+    use-tag: true
