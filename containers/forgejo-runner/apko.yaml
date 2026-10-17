@@ -14,7 +14,7 @@ contents:
     - tzdata=2026e-r0
     - os-release=3.24.2-r0
     - forgejo-runner=13.2.0-r16
-    - buildah=1.45.1-r5
+    - buildah=1.45.2-r0
     - fuse-overlay-storage-conf=1.0.0-r0
     - git=2.54.0-r0
     - fuse-overlayfs=1.16-r0
