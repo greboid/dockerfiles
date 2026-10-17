@@ -1,0 +1,17 @@
+[package]
+name = "secret-env"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+description = "Read secret files into an environment and directly exec an application"
+license = "MIT"
+
+[dependencies]
+libc = "0.2"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"

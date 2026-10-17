@@ -657,3 +657,37 @@ index 0000000..33d03cb
 +        echo "test/version: output did not match '$pattern'" >&2
 +        exit 1
 +      }
+diff --git c/pkg/build/pipelines/secret-env/wrap.yaml i/pkg/build/pipelines/secret-env/wrap.yaml
+new file mode 100644
+index 0000000..e6845216dc3573e69a442f78b401c32af25c2416
+--- /dev/null
++++ i/pkg/build/pipelines/secret-env/wrap.yaml
+@@ -0,0 +1,28 @@
++name: Opt-in native-name wrapper for a binary owned by this package
++
++inputs:
++  name:
++    required: true
++    description: Existing executable basename in usr/bin
++  config:
++    required: true
++    description: Source config selecting /usr/libexec/NAME.real
++
++pipeline:
++  - runs: |
++      name='${{inputs.name}}'
++      case "$name" in
++        ''|secret-env|[!A-Za-z0-9_]*|*[!A-Za-z0-9_.-]*) echo 'invalid wrapper name' >&2; exit 1 ;;
++      esac
++      test "${#name}" -le 128
++      root='${{targets.contextdir}}'
++      test -f "$root/usr/bin/$name"
++      test ! -L "$root/usr/bin/$name"
++      test ! -e "$root/usr/libexec/$name.real"
++      test ! -L "$root/usr/libexec/$name.real"
++      test ! -e "$root/etc/secret-env/$name.conf"
++      test ! -L "$root/etc/secret-env/$name.conf"
++      mkdir -p "$root/usr/libexec" "$root/etc/secret-env"
++      mv "$root/usr/bin/$name" "$root/usr/libexec/$name.real"
++      install -m644 '${{inputs.config}}' "$root/etc/secret-env/$name.conf"
++      ln -s /usr/bin/secret-env "$root/usr/bin/$name"

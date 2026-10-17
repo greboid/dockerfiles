@@ -1,0 +1,64 @@
+package:
+  name: secret-env
+  version: 0.1.0
+  epoch: 0
+  description: Read secret files into an environment and directly exec an application
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths: ["*"]
+      attestation: LICENSE
+      license: MIT
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - rust=1.96.1-r0
+      - cargo=1.96.1-r0
+      - build-base=0.5-r4
+      - python3
+
+pipeline:
+  - name: Build static launcher and run tests
+    runs: |
+      cd source
+      sha256sum -c SHA256SUMS
+      export RUSTFLAGS='-C target-feature=+crt-static'
+      cargo build --release --locked
+      cargo test --locked
+      SECRET_ENV_BIN="$PWD/target/release/secret-env" python3 -m unittest discover -s tests -v
+      install -Dm755 target/release/secret-env "${{targets.destdir}}/usr/bin/secret-env"
+      install -Dm644 LICENSE "${{targets.destdir}}/usr/share/licenses/secret-env/LICENSE"
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - busybox
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/secret-env
+        files: /usr/share/licenses/secret-env/LICENSE
+    - name: Required configuration fails closed
+      runs: |
+        if /usr/bin/secret-env; then
+          exit 1
+        fi
+    - name: Execute with a file-backed environment override
+      runs: |
+        work=$(mktemp -d)
+        trap 'rm -rf "$work"' EXIT
+        printf '%s' fixture-only > "$work/value"
+        chmod 600 "$work/value"
+        printf '[exec]\npath = /bin/sh\n[secrets]\nTOKEN = %s/value\n' "$work" > "$work/app.conf"
+        /usr/bin/secret-env --config "$work/app.conf" -- -c 'test "$TOKEN" = fixture-only'
