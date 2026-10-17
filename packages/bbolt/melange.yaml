@@ -1,0 +1,75 @@
+package:
+  name: bbolt
+  version: 1.5.0
+  epoch: 0
+  description: Command line tool for inspecting bbolt databases
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+      - tzdata
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - go=1.27.2-r0
+      - go-licenses=2.0.1-r13
+      - os-release=3.24.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: e7a8b2dd498494a3766ba24dd94d3509e5588485
+      repository: https://github.com/etcd-io/bbolt
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd/bbolt
+      output: bbolt
+      static: "true"
+      ldflags: -X go.etcd.io/bbolt/version.Version=v${{package.version}}
+  - uses: go/licenses
+    with:
+      module: go.etcd.io/bbolt
+      license: LICENSE
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/bbolt
+        files: /notices/go.etcd.io/bbolt/LICENSE /usr/share/licenses/bbolt/LICENSE
+    - name: Creates a database and reports on it
+      runs: |
+        /usr/bin/bbolt bench --path /tmp/bbolt-test.db --count 10 --work >/tmp/bbolt-bench.log 2>&1
+        /usr/bin/bbolt info /tmp/bbolt-test.db 2>&1 | grep -q "Page Size: 4096"
+
+update:
+  enabled: true
+  github:
+    identifier: etcd-io/bbolt
+    strip-prefix: v
+    use-tag: true
