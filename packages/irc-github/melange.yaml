@@ -1,6 +1,6 @@
 package:
   name: irc-github
-  version: 4.0.4
+  version: 4.0.5
   epoch: 0
   description: irc-bot plugin announcing GitHub events in IRC channels
   target-architecture:
@@ -34,7 +34,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: dbef6d870406c37137c91e92510cd1e1660a0e7d
+      expected-commit: ca32c4e4ad5dc5a4bee2461b3634a40b818de3f6
       repository: https://github.com/greboid/irc-github
       tag: v${{package.version}}
   - uses: go/build
