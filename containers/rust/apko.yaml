@@ -19,7 +19,7 @@ contents:
     - busybox=1.37.0-r31
     - busybox-binsh=1.37.0-r31
     - c-ares=1.34.8-r0
-    - ca-certificates-bundle=20261020-r0
+    - ca-certificates-bundle=20261020-r1
     - curl=8.22.0-r0
     - gcc=15.2.0-r5
     - gdbm=1.26-r0

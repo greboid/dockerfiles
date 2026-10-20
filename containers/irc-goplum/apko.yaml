@@ -9,7 +9,7 @@ contents:
     - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
     - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
   packages:
-    - ca-certificates-bundle=20261020-r0
+    - ca-certificates-bundle=20261020-r1
     - tzdata=2026e-r0
     - os-release=3.24.2-r0
     - irc-goplum=4.0.4-r0

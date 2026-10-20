@@ -1,0 +1,81 @@
+package:
+  name: ca-certificates-bundle
+  version: 20261020
+  # r1: Alpine v3.24 ships the identical 20261020-r0; the extra epoch makes
+  # this package win resolution when both repositories are configured.
+  epoch: 1
+  description: Pre generated bundle of Mozilla certificates
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: ca-certificates.license
+      license: MPL-2.0 AND MIT
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates
+      - git=2.54.0-r0
+      - openssl=3.5.9-r0
+      - perl=5.42.2-r1
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 2058424fda70ee478bcce872dcf141a0c5499ee0
+      repository: https://gitlab.alpinelinux.org/alpine/ca-certificates
+      tag: ${{package.version}}
+  - name: Generate the PEM bundle from Mozilla certdata.txt
+    runs: |
+      perl mk-ca-bundle.pl -n -w 64 cert.pem
+      sh split-ca-bundle.sh < cert.pem
+      destdir="${{targets.destdir}}"
+      install -d "$destdir"/etc/ssl/certs
+      find . -maxdepth 1 -name '*.crt' | LC_ALL=C sort |
+        while read -r i; do cat "$i"; printf "\n"; done \
+        > "$destdir"/etc/ssl/certs/ca-certificates.crt
+      chmod 0644 "$destdir"/etc/ssl/certs/ca-certificates.crt
+  - name: Install compat symlinks
+    runs: |
+      ln -s certs/ca-certificates.crt "${{targets.destdir}}"/etc/ssl/cert.pem
+      install -d "${{targets.destdir}}"/etc/ssl1.1
+      ln -s /etc/ssl/cert.pem "${{targets.destdir}}"/etc/ssl1.1/cert.pem
+      ln -s /etc/ssl/certs "${{targets.destdir}}"/etc/ssl1.1/certs
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox
+        - openssl
+  pipeline:
+    - uses: test/paths
+      with:
+        files: /etc/ssl/certs/ca-certificates.crt
+        symlinks: /etc/ssl/cert.pem /etc/ssl1.1/cert.pem /etc/ssl1.1/certs
+    - name: Bundle parses and contains the Mozilla root set
+      runs: |
+        bundle=/etc/ssl/certs/ca-certificates.crt
+        count=$(grep -c 'BEGIN CERTIFICATE' "$bundle")
+        echo "certificates in bundle: $count"
+        [ "$count" -gt 100 ]
+        openssl crl2pkcs7 -nocrl -certfile "$bundle" \
+          | openssl pkcs7 -print_certs -noout | grep -q '^subject='
+
+update:
+  enabled: true
+  release-monitor:
+    identifier: 332224

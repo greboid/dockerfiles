@@ -5,7 +5,7 @@ on:
 
 env:
   ORG_REPO: https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
-  DAG: os-release go melange apko
+  DAG: ca-certificates-bundle os-release go melange apko
 
 jobs:
   bootstrap:

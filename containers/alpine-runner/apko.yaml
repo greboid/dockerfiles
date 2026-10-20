@@ -15,7 +15,7 @@ contents:
     - apk-tools=3.0.8-r0
     - busybox=1.37.0-r31
     - busybox-binsh=1.37.0-r31
-    - ca-certificates-bundle=20261020-r0
+    - ca-certificates-bundle=20261020-r1
     - tzdata=2026e-r0
     - buildah=1.45.2-r0
     - containers-common=0.64.2-r0
