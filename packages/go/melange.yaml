@@ -1,7 +1,7 @@
 package:
   name: go
-  version: 1.27.2
-  epoch: 0
+  version: 1.27.3
+  epoch: 1
   description: Source-built Go toolchain at the legacy /usr/local/go path
   options:
     no-depends: true
@@ -17,7 +17,7 @@ package:
     runtime:
       - busybox=1.37.0-r31
       - busybox-binsh=1.37.0-r31
-      - ca-certificates-bundle=20260909-r0
+      - ca-certificates-bundle=20261020-r0
       - binutils=2.45.1-r1
       - gcc=15.2.0-r5
       - git=2.54.0-r0
@@ -36,7 +36,7 @@ environment:
       - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
     packages:
       - busybox=1.37.0-r31
-      - ca-certificates-bundle=20260909-r0
+      - ca-certificates-bundle=20261020-r0
       - bash=5.3.9-r1
       - binutils=2.45.1-r1
       - os-release=3.24.2-r0
@@ -53,7 +53,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://golang.org/dl/go${{package.version}}.src.tar.gz
-      expected-sha256: 03495da2ba64894d40f5c4992e49454fa78b50690604ff92b6afff5081b76e62
+      expected-sha256: 6e7749035cf360f06b2575d162ea79df9fda8ef671889e5c375f8e50777f26bb
   - name: Bootstrap the pinned source toolchain
     runs: |
       bootstrap="$(go env GOROOT)"
