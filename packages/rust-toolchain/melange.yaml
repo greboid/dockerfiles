@@ -1,7 +1,7 @@
 package:
   name: rust-toolchain
   version: 1.98.1
-  epoch: 0
+  epoch: 1
   description: Rust 1.98.1 minimal musl toolchain (cargo, rustc, rust-std)
   target-architecture:
     - x86_64
@@ -27,7 +27,7 @@ environment:
     packages:
       - os-release=3.24.2-r0
       - busybox=1.37.0-r31
-      - ca-certificates-bundle=20260909-r0
+      - ca-certificates-bundle=20261020-r0
       - tar=1.35-r5
       - xz
 
