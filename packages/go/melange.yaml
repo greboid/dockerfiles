@@ -17,13 +17,13 @@ package:
     runtime:
       - busybox=1.37.0-r31
       - busybox-binsh=1.37.0-r31
-      - ca-certificates-bundle
+      - ca-certificates-bundle=20261020-r2
       - binutils=2.45.1-r1
       - gcc=15.2.0-r5
       - git=2.54.0-r0
       - libgcc-static=15.2.0-r5
-      - musl=1.2.6-r2
-      - musl-dev=1.2.6-r2
+      - musl=1.2.6-r3
+      - musl-dev=1.2.6-r3
       - patch=2.8-r0
 
 environment:
@@ -36,12 +36,12 @@ environment:
       - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
     packages:
       - busybox=1.37.0-r31
-      - ca-certificates-bundle
+      - ca-certificates-bundle=20261020-r2
       - bash=5.3.9-r1
       - binutils=2.45.1-r1
       - os-release=3.24.2-r0
       - gcc=15.2.0-r5
-      - musl-dev=1.2.6-r2
+      - musl-dev=1.2.6-r3
       - go=1.26.9-r0
   environment:
     SOURCE_DATE_EPOCH: "0"

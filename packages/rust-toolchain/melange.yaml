@@ -11,9 +11,9 @@ package:
       license: MIT OR Apache-2.0
   dependencies:
     runtime:
-      - ca-certificates-bundle
+      - ca-certificates-bundle=20261020-r2
       - gcc=15.2.0-r5
-      - musl-dev=1.2.6-r2
+      - musl-dev=1.2.6-r3
       - libgcc=15.2.0-r5
 
 environment:
@@ -29,7 +29,7 @@ environment:
       - busybox=1.37.0-r31
       - ca-certificates-bundle=20261020-r1
       - tar=1.35-r5
-      - xz
+      - xz=5.8.4-r0
 
 pipeline:
   - uses: fetch
@@ -79,7 +79,7 @@ test:
         - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
       packages:
         - os-release=3.24.2-r0
-        - busybox
+        - busybox=1.37.0-r31
   pipeline:
     - name: Check the installed toolchain
       runs: |

@@ -12,8 +12,8 @@ package:
       license: MIT
   dependencies:
     runtime:
-      - ca-certificates-bundle
-      - tzdata
+      - ca-certificates-bundle=20261020-r2
+      - tzdata=2026e-r0
 
 environment:
   contents:
@@ -25,7 +25,7 @@ environment:
       - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
     packages:
       - busybox=1.37.0-r31
-      - ca-certificates
+      - ca-certificates=20261020-r2
       - git=2.54.0-r0
       - go=1.27.3-r2
       - go-licenses=2.0.1-r14
@@ -54,8 +54,8 @@ test:
         - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
       packages:
         - os-release=3.24.2-r0
-        - busybox
-        - openssl
+        - busybox=1.37.0-r31
+        - openssl=3.5.9-r0
   pipeline:
     - uses: test/paths
       with:

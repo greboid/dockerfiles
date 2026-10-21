@@ -12,7 +12,7 @@ package:
       license: Apache-2.0
   dependencies:
     runtime:
-      - ca-certificates-bundle
+      - ca-certificates-bundle=20261020-r2
 
 environment:
   contents:
@@ -89,7 +89,7 @@ test:
         - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
       packages:
         - os-release=3.24.2-r0
-        - busybox
+        - busybox=1.37.0-r31
   pipeline:
     - name: Reports the packaged version
       runs: |

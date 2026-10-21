@@ -32,7 +32,7 @@ environment:
       - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
     packages:
       - busybox=1.37.0-r31
-      - ca-certificates
+      - ca-certificates=20261020-r2
       - git=2.54.0-r0
       - os-release=3.24.2-r0
       - python3=3.14.8-r0
@@ -49,7 +49,6 @@ environment:
       - abseil-cpp-dev=20250814.1-r0
       - protobuf-dev=31.1-r1
       - cmake=4.2.3-r0
-      - build-base=0.5-r4
       - linux-headers=7.0.0-r1
       - make=4.4.1-r4
       - pkgconf=2.5.1-r0
@@ -96,8 +95,8 @@ test:
         - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
       packages:
         - os-release=3.24.2-r0
-        - busybox
-        - curl
+        - busybox=1.37.0-r31
+        - curl=8.22.0-r0
   pipeline:
     - uses: test/paths
       with:

@@ -24,7 +24,9 @@ environment:
       - ca-certificates=20261020-r0
       - git=2.54.0-r0
       - os-release=3.24.2-r0
-      - build-base=0.5-r4
+      - gcc=15.2.0-r5
+      - make=4.4.1-r4
+      - musl-dev=1.2.6-r3
       - openssl-dev=3.5.9-r0
       - perl=5.42.2-r1
 
@@ -40,6 +42,11 @@ pipeline:
   - name: Install the certificates and tools
     runs: |
       make install DESTDIR="${{targets.destdir}}"
+      # The usrmerge linter requires binaries in /usr/bin; upstream installs
+      # update-ca-certificates into /usr/sbin.
+      mv "${{targets.destdir}}"/usr/sbin/update-ca-certificates \
+        "${{targets.destdir}}"/usr/bin/
+      rmdir "${{targets.destdir}}"/usr/sbin
   - name: Generate the certificate inclusion list
     runs: |
       {
@@ -98,8 +105,8 @@ subpackages:
             - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
           packages:
             - os-release=3.24.2-r0
-            - busybox
-            - openssl
+            - busybox=1.37.0-r31
+            - openssl=3.5.9-r0
       pipeline:
         - uses: test/paths
           with:
@@ -122,13 +129,13 @@ test:
         - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
       packages:
         - os-release=3.24.2-r0
-        - busybox
-        - openssl
-        - perl
+        - busybox=1.37.0-r31
+        - openssl=3.5.9-r0
+        - perl=5.42.2-r1
   pipeline:
     - uses: test/paths
       with:
-        executables: /usr/sbin/update-ca-certificates /usr/bin/c_rehash
+        executables: /usr/bin/update-ca-certificates /usr/bin/c_rehash
         files: /etc/ca-certificates.conf
         dirs: /usr/share/ca-certificates/mozilla /etc/ssl/certs /usr/local/share/ca-certificates
     - name: Regenerates the bundle and hash symlinks

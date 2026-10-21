@@ -19,11 +19,12 @@ environment:
       - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
     packages:
       - busybox=1.37.0-r31
-      - ca-certificates
+      - ca-certificates=20261020-r2
       - rust=1.96.1-r0
       - cargo=1.96.1-r0
-      - build-base=0.5-r4
-      - python3
+      - gcc=15.2.0-r5
+      - musl-dev=1.2.6-r3
+      - python3=3.14.8-r0
 
 pipeline:
   - name: Build static launcher and run tests
@@ -43,7 +44,7 @@ test:
       repositories:
         - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
       packages:
-        - busybox
+        - busybox=1.37.0-r31
   pipeline:
     - uses: test/paths
       with:

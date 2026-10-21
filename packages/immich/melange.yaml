@@ -32,7 +32,7 @@ environment:
       - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
     packages:
       - busybox=1.37.0-r31
-      - ca-certificates
+      - ca-certificates=20261020-r2
       - git=2.54.0-r0
       - os-release=3.24.2-r0
       - bash=5.3.9-r1
@@ -52,7 +52,7 @@ environment:
       - libwebp-dev=1.6.0-r0
       - tiff-dev=4.7.2-r0
       - zlib-dev=1.3.2-r1
-      - build-base=0.5-r4
+      - g++=15.2.0-r5
       - make=4.4.1-r4
       - pkgconf=2.5.1-r0
       - python3=3.14.8-r0
@@ -127,8 +127,8 @@ test:
         - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
       packages:
         - os-release=3.24.2-r0
-        - busybox
-        - curl
+        - busybox=1.37.0-r31
+        - curl=8.22.0-r0
         - libheif-tools=1.23.4-r0
         - libheif-x265=1.23.4-r0
   pipeline:
