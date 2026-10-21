@@ -12,7 +12,7 @@ contents:
     - ca-certificates-bundle=20261020-r1
     - tzdata=2026e-r0
     - os-release=3.24.2-r0
-    - irc-notifier=1.0.6-r17
+    - irc-notifier=1.0.6-r18
 
 accounts:
   run-as: 65532:65532

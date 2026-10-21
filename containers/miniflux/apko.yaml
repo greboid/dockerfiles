@@ -12,7 +12,7 @@ contents:
     - ca-certificates-bundle=20261020-r1
     - tzdata=2026e-r0
     - os-release=3.24.2-r0
-    - miniflux=2.3.3-r21
+    - miniflux=2.3.4-r0
 
 accounts:
   run-as: 65532:65532

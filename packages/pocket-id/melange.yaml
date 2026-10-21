@@ -1,7 +1,7 @@
 package:
   name: pocket-id
-  version: 2.18.0
-  epoch: 1
+  version: 2.19.0
+  epoch: 0
   description: Simple OIDC provider that lets users authenticate with passkeys
   target-architecture:
     - x86_64
@@ -36,7 +36,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 40cb14f89309286dcafaa62dac82a88a4b5ac583
+      expected-commit: def304bf3b2170e98d624d156e65b59dc444ba65
       repository: https://github.com/stonith404/pocket-id
       tag: v${{package.version}}
   - name: Build the SvelteKit frontend into the backend's embed directory
