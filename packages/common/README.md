@@ -69,10 +69,10 @@ with the previously published melange doing the building.
 tab (Run workflow) only when the org's Alpine repository has no usable
 tools - in practice once, before the first package build. The builder is
 upstream melange installed with `go install` (not packaged in Alpine
-3.24). The workflow clones the org's own package repos - `os-release`,
-`go`, `melange`, `apko` - and walks them as a DAG, building each repo's
-real `melange.yaml` in dependency order and publishing the signed
-packages. The bootstrap has been run; from then on every repo in the
+3.24). The workflow clones the org's own package repos -
+`ca-certificates-bundle`, `os-release`, `go`, `melange`, `apko` - and
+walks them as a DAG, building each repo's real `melange.yaml` in
+dependency order and publishing the signed packages. The bootstrap has been run; from then on every repo in the
 organisation - those four included - builds through the reusable
 workflow above.
 
