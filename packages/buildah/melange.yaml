@@ -1,7 +1,7 @@
 package:
   name: buildah
   version: 1.45.2
-  epoch: 0
+  epoch: 1
   description: Tool for building OCI container images (source-built v1.45.1)
   target-architecture:
     - x86_64
@@ -28,8 +28,8 @@ environment:
     packages:
       - busybox=1.37.0-r31
       - os-release=3.24.2-r0
-      - ca-certificates-bundle=20260909-r0
-      - go=1.27.2-r0
+      - ca-certificates-bundle=20261020-r1
+      - go=1.27.3-r2
       - bash=5.3.9-r1
       - binutils=2.45.1-r1
       - make=4.4.1-r4
@@ -65,7 +65,7 @@ test:
       packages:
         - busybox=1.37.0-r31
         - os-release=3.24.2-r0
-        - ca-certificates-bundle=20260909-r0
+        - ca-certificates-bundle=20261020-r1
         - alpine-baselayout
   pipeline:
     - name: Reports the packaged custom version

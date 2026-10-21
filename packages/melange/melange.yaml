@@ -1,7 +1,7 @@
 package:
   name: melange
   version: 0.61.1
-  epoch: 5
+  epoch: 6
   description: APK package builder (source-built v0.61.1, org patch set)
   target-architecture:
     - x86_64
@@ -24,9 +24,9 @@ environment:
       - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
     packages:
       - busybox=1.37.0-r31
-      - ca-certificates-bundle=20260909-r0
+      - ca-certificates-bundle=20261020-r1
       - os-release=3.24.2-r0
-      - go=1.27.2-r0
+      - go=1.27.3-r2
       - git=2.54.0-r0
   environment:
     CGO_ENABLED: "0"
