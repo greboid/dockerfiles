@@ -28,7 +28,7 @@ environment:
       - ca-certificates
       - git=2.54.0-r0
       - go=1.27.3-r2
-      - go-licenses=2.0.1-r13
+      - go-licenses=2.0.1-r14
       - nodejs=24.18.1-r0
       - npm=11.12.1-r0
       - openssl=3.5.9-r0
