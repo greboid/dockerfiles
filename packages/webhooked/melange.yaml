@@ -27,7 +27,7 @@ environment:
       - busybox=1.37.0-r31
       - ca-certificates
       - go=1.27.3-r2
-      - go-licenses=2.0.1-r13
+      - go-licenses=2.0.1-r14
       - os-release=3.24.2-r0
 
 pipeline:
