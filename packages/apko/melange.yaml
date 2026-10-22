@@ -25,7 +25,7 @@ environment:
     packages:
       - busybox=1.37.0-r31
       - os-release=3.24.2-r0
-      - ca-certificates-bundle=20261020-r1
+      - ca-certificates-bundle=20261020-r2
       - go=1.27.3-r2
       - git=2.54.0-r0
   environment:
