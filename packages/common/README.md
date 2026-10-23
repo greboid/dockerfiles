@@ -56,7 +56,9 @@ publish back into it. The workflow
    index key explicitly, since it matches index signatures by key file
    name);
 6. runs the recipe's tests against the freshly built package;
-7. on main pushes only, uploads the signed apk to the repository and
+7. on main pushes only, uploads the signed apk to the repository, links
+   each published package to its repo (so it appears in that repo's
+   Packages tab; `201` = linked, `400` = already linked, both fine), and
    verifies the round trip against the published copy.
 
 Rebuilding a bootstrap package (os-release, go, melange, apko) after a

@@ -95,6 +95,25 @@ jobs:
               "$ORG_REPO"
           done
 
+      - name: Link packages to this repo
+        env:
+          RELEASE_PACKAGE_TOKEN: ${{ secrets.RELEASE_PACKAGE_TOKEN }}
+        run: |
+          set -eu
+          owner="${GITHUB_REPOSITORY%%/*}"
+          repo="${GITHUB_REPOSITORY#*/}"
+          for apk in dist/x86_64/*.apk; do
+            name=$(basename "$apk" | rev | cut -d- -f3- | rev)
+            code=$(curl -s -o /dev/null -w '%{http_code}' --retry 3 \
+              --user "greboid:$RELEASE_PACKAGE_TOKEN" \
+              -X POST "$GITHUB_SERVER_URL/api/v1/packages/$owner/alpine/$name/-/link/$repo")
+            case "$code" in
+              201|400) ;; # 400 = already linked
+              *) echo "unexpected link status $code for $name" >&2; exit 1 ;;
+            esac
+            echo "linked $name to $owner/$repo"
+          done
+
       - name: Verify round trip
         run: |
           set -eu
