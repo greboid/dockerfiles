@@ -45,7 +45,7 @@ environment:
       - py3-shapely=2.1.2-r1
       - py3-watchfiles=1.1.1-r1
       - py3-websockets=16.0-r1
-      - uv=0.11.19-r0
+      - uv=0.11.19-r1
       - abseil-cpp-dev=20250814.1-r0
       - protobuf-dev=31.1-r1
       - cmake=4.2.3-r0
