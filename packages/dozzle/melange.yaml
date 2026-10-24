@@ -1,7 +1,7 @@
 package:
   name: dozzle
   version: 11.3.4
-  epoch: 1
+  epoch: 2
   description: Real-time log viewer for Docker containers with a web interface
   target-architecture:
     - x86_64
@@ -29,7 +29,7 @@ environment:
       - git=2.54.0-r0
       - go=1.27.3-r2
       - go-licenses=2.0.1-r14
-      - nodejs=24.18.1-r0
+      - nodejs=24.22.1-r0
       - npm=11.12.1-r0
       - openssl=3.5.9-r0
       - os-release=3.24.2-r0

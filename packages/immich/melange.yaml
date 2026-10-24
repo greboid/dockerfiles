@@ -1,7 +1,7 @@
 package:
   name: immich
   version: 3.3.5
-  epoch: 0
+  epoch: 1
   description: Self-hosted photo and video management (server + embedded web)
   target-architecture:
     - x86_64
@@ -12,7 +12,7 @@ package:
       license: AGPL-3.0-only
   dependencies:
     runtime:
-      - nodejs=24.18.1-r0
+      - nodejs=24.22.1-r0
       - jellyfin-ffmpeg=7.1.3_p5-r0
       - perl=5.42.2-r1
       - coreutils=9.11-r0
@@ -36,7 +36,7 @@ environment:
       - git=2.54.0-r0
       - os-release=3.24.2-r0
       - bash=5.3.9-r1
-      - nodejs=24.18.1-r0
+      - nodejs=24.22.1-r0
       - npm=11.12.1-r0
       - curl=8.22.0-r0
       - libvips=8.18.7-r1

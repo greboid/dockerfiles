@@ -1,7 +1,7 @@
 package:
   name: pdsps
-  version: 1.0.0
-  epoch: 18
+  version: 1.0.1
+  epoch: 0
   description: Answering atproto age-assurance states in front of a PDS
   target-architecture:
     - x86_64
@@ -34,7 +34,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 4afcf07f101cb4f524e702b3fb1be42549b323cb
+      expected-commit: b62be3211b4d3aadfb65345c0f59f1f23424702e
       repository: https://github.com/csmith/pdsps
       tag: v${{package.version}}
   - uses: go/build
