@@ -1,0 +1,73 @@
+package:
+  name: restic
+  version: 0.19.1
+  epoch: 0
+  description: Fast, secure, efficient backup program
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: BSD-2-Clause
+  dependencies:
+    runtime:
+      - ca-certificates-bundle=20261020-r2
+      - tzdata=2026e-r0
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates=20261020-r2
+      - git=2.54.0-r0
+      - go=1.27.3-r2
+      - go-licenses=2.0.1-r14
+      - os-release=3.24.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 6aa3a516ce654808a1f28f9fa21e9b7c8e6e90bf
+      repository: https://github.com/restic/restic
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd/restic
+      output: restic
+      static: "true"
+  - uses: go/licenses
+    with:
+      module: github.com/restic/restic
+      license: LICENSE
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox=1.37.0-r31
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/restic
+        files: /notices/github.com/restic/restic/LICENSE /usr/share/licenses/restic/LICENSE
+    - name: Version reports the packaged release
+      runs: |
+        /usr/bin/restic version 2>&1 | grep -q "restic 0.19.1"
+
+update:
+  enabled: true
+  github:
+    identifier: restic/restic
+    strip-prefix: v
+    use-tag: true
