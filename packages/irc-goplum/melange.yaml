@@ -1,7 +1,7 @@
 package:
   name: irc-goplum
-  version: 4.0.4
-  epoch: 1
+  version: 4.1.0
+  epoch: 0
   description: irc-bot plugin reporting goplum alert results to IRC channels
   target-architecture:
     - x86_64
@@ -34,7 +34,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 4391b7738f9e1ed1a4c9c27d9f8eb83968ef099d
+      expected-commit: db2f13c9c8bc7e991193d4b0db48851d0b053625
       repository: https://github.com/greboid/irc-goplum
       tag: v${{package.version}}
   - uses: go/build
