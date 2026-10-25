@@ -1,0 +1,83 @@
+package:
+  name: bailer
+  version: 0.1.0
+  epoch: 0
+  description: Docker volume backup tool with local and restic backends
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENCE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle=20261020-r2
+      - tzdata=2026e-r0
+      - restic=0.19.1-r0
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates=20261020-r2
+      - git=2.54.0-r0
+      - go=1.27.3-r2
+      - go-licenses=2.0.1-r14
+      - os-release=3.24.2-r0
+
+vars:
+  runtime-dirs: /backups
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 9c25df402be215714e9cfd0bd977209721fe0a54
+      repository: https://git.mouse-lake.ts.net/greboid/bailer
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./
+      output: bailer
+      static: "true"
+  - uses: dirs
+    with:
+      dirs: ${{vars.runtime-dirs}}
+  - uses: go/licenses
+    with:
+      checks: github.com/csmith/envflag/v2/LICENCE github.com/csmith/slogflags/LICENCE
+      module: github.com/greboid/bailer
+      license: LICENCE
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox=1.37.0-r31
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/bailer
+        files: /notices/github.com/greboid/bailer/LICENCE /notices/github.com/csmith/envflag/v2/LICENCE /notices/github.com/csmith/slogflags/LICENCE /usr/share/licenses/bailer/LICENCE
+        dirs: ${{vars.runtime-dirs}}
+    - name: Prints usage when invoked with -h
+      runs: |
+        out=$(/usr/bin/bailer -h 2>&1)
+        echo "$out" | grep -q "restic-bin"
+
+update:
+  enabled: true
+  github:
+    identifier: greboid/bailer
+    strip-prefix: v
+    use-tag: true
