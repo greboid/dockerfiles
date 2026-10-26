@@ -1,7 +1,7 @@
 package:
   name: cocoon
   version: 0.14
-  epoch: 0
+  epoch: 1
   description: An atproto PDS (Bluesky) server
   target-architecture:
     - x86_64
@@ -13,6 +13,8 @@ package:
   dependencies:
     runtime:
       - ca-certificates-bundle=20261020-r2
+      - libgcc=15.2.0-r5
+      - musl=1.2.6-r3
       - tzdata=2026e-r0
 
 environment:
@@ -26,8 +28,10 @@ environment:
     packages:
       - busybox=1.37.0-r31
       - ca-certificates=20261020-r2
+      - gcc=15.2.0-r5
       - git=2.54.0-r0
       - go=1.27.3-r2
+      - musl-dev=1.2.6-r3
       - go-licenses=2.0.1-r14
       - os-release=3.24.2-r0
 
@@ -41,7 +45,7 @@ pipeline:
     with:
       packages: ./cmd/cocoon
       output: cocoon
-      static: "true"
+      static: "false"
       ldflags: -X main.Version=v${{package.version}}
   - uses: go/licenses
     with:

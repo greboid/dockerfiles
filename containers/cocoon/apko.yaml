@@ -12,7 +12,7 @@ contents:
     - ca-certificates-bundle=20261020-r2
     - tzdata=2026e-r0
     - os-release=3.24.2-r0
-    - cocoon=0.14-r0
+    - cocoon=0.14-r1
 
 accounts:
   run-as: 65532:65532
@@ -29,6 +29,8 @@ accounts:
 
 environment:
   SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+  COCOON_ROTATION_KEY_PATH: /keys/rotation.key
+  COCOON_JWK_PATH: /keys/jwk.key
 
 entrypoint:
   command: /usr/bin/cocoon
