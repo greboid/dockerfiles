@@ -35,4 +35,6 @@ environment:
 entrypoint:
   command: /usr/bin/cocoon
 
+work-dir: /data
+
 cmd: run
