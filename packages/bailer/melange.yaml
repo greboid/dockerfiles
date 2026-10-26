@@ -1,6 +1,6 @@
 package:
   name: bailer
-  version: 0.1.0
+  version: 0.2.0
   epoch: 0
   description: Docker volume backup tool with local and restic backends
   target-architecture:
@@ -38,7 +38,7 @@ vars:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 9c25df402be215714e9cfd0bd977209721fe0a54
+      expected-commit: ed732f7c862e742885d1beeca502d8675e3a5ce7
       repository: https://git.mouse-lake.ts.net/greboid/bailer
       tag: v${{package.version}}
   - uses: go/build

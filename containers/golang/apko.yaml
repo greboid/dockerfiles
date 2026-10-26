@@ -28,7 +28,7 @@ contents:
     - jansson=2.15.0-r0
     - libatomic=15.2.0-r5
     - libcrypto3=3.5.9-r0
-    - libcurl=8.22.0-r0
+    - libcurl=8.23.0-r0
     - libexpat=2.9.0-r0
     - libgcc=15.2.0-r5
     - libgcc-static=15.2.0-r5

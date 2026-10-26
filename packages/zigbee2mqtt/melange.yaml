@@ -5,7 +5,6 @@ package:
   description: Zigbee to MQTT bridge using zigbee-herdsman
   target-architecture:
     - x86_64
-    - aarch64
   copyright:
     - paths:
         - "*"
@@ -79,7 +78,7 @@ test:
   pipeline:
     - uses: test/paths
       with:
-        files: /usr/src/app/dist/index.js /usr/src/app/dist/.hash /usr/src/app/data/configuration.example.yaml /usr/share/licenses/zigbee2mqtt/LICENSE
+        files: /usr/src/app/dist/controller.js /usr/src/app/dist/.hash /usr/src/app/data/configuration.example.yaml /usr/share/licenses/zigbee2mqtt/LICENSE
         dirs: /usr/src/app/data /usr/src/app/node_modules
         symlinks: /usr/bin/zigbee2mqtt
     - name: Writes the version hash

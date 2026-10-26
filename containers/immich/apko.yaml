@@ -13,7 +13,7 @@ contents:
     - ca-certificates-bundle=20261020-r2
     - tzdata=2026e-r0
     - os-release=3.24.2-r0
-    - immich=3.3.5-r1
+    - immich=3.3.5-r2
 
 accounts:
   run-as: 65532:65532
