@@ -5,6 +5,7 @@ on:
 
 jobs:
   build:
+    name: Build
     runs-on: alpine
     env:
       ORG_REPO: https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
@@ -13,7 +14,7 @@ jobs:
         uses: actions/toolkit/git-checkout@master
 
       - name: Install build prerequisites
-        run: apk add --no-cache bubblewrap openssl
+        run: apk add --no-cache bubblewrap openssl yq
 
       - name: Trust the org repository
         run: |
@@ -52,47 +53,72 @@ jobs:
       - name: Build package
         run: |
           set -eu
-          export SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)
-          melange build melange.yaml \
-            --arch x86_64 \
-            --namespace packages \
-            --git-repo-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
-            --signing-key keys/packages.rsa \
-            --keyring-append "$PWD/keys/packages.rsa.pub" \
-            $(cat org-repo.args) \
-            --out-dir dist
-
-      - name: Test package
-        run: |
-          set -eu
-          melange test melange.yaml \
-            --arch x86_64 \
-            --source-dir . \
-            --keyring-append "$PWD/keys/packages.rsa.pub" \
-            --repository-append "$PWD/dist" \
-            $(cat org-repo.args)
+          setup_binfmt() {
+            target="$1"
+            host="$(uname -m)"
+            if [ "$target" = "$host" ]; then
+              echo "$target is the host architecture; binfmt not needed"
+              return 0
+            fi
+            apk add --no-cache "qemu-$target"
+            if [ ! -e "/proc/sys/fs/binfmt_misc/qemu-$target" ]; then
+              mountpoint -q /proc/sys/fs/binfmt_misc || mount -t binfmt_misc binfmt /proc/sys/fs/binfmt_misc
+              # aarch64 handler: ELF class 64-bit little-endian, ET_EXEC/ET_DYN,
+              # EM_AARCH64; F flag pre-opens the interpreter so sandboxed
+              # guests can execute foreign binaries.
+              printf ':qemu-%s:M::\177ELF\002\001\001\000\000\000\000\000\000\000\000\000\002\000\267\000:\377\377\377\377\377\377\377\000\377\377\377\377\377\377\377\377\376\377\377\377:/usr/bin/qemu-%s:F' "$target" "$target" > /proc/sys/fs/binfmt_misc/register
+            fi
+            test -e "/proc/sys/fs/binfmt_misc/qemu-$target"
+            echo "binfmt handler for $target ready"
+          }
+          for arch in $(yq -r '.package.target-architecture[]' melange.yaml); do
+            echo "::group::binfmt for $arch"
+            setup_binfmt "$arch"
+            echo "::endgroup::"
+            echo "::group::melange build $arch"
+            export SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)
+            melange build melange.yaml \
+              --arch "$arch" \
+              --namespace packages \
+              --git-repo-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
+              --signing-key keys/packages.rsa \
+              --keyring-append "$PWD/keys/packages.rsa.pub" \
+              $(cat org-repo.args) \
+              --out-dir dist
+            echo "::endgroup::"
+            echo "::group::melange test $arch"
+            melange test melange.yaml \
+              --arch "$arch" \
+              --source-dir . \
+              --keyring-append "$PWD/keys/packages.rsa.pub" \
+              --repository-append "$PWD/dist" \
+              $(cat org-repo.args)
+            echo "::endgroup::"
+          done
 
       - name: Publish package
         env:
           RELEASE_PACKAGE_TOKEN: ${{ secrets.RELEASE_PACKAGE_TOKEN }}
         run: |
           set -eu
-          for apk in dist/x86_64/*.apk; do
-            name=$(basename "$apk")
-            echo "deleting previous: $name"
-            code=$(curl -s -o /dev/null -w '%{http_code}' --retry 3 \
-              --user "greboid:$RELEASE_PACKAGE_TOKEN" \
-              -X DELETE "$ORG_REPO/x86_64/$name") || code=000
-            case "$code" in
-              200|201|204|404) ;;
-              *) echo "unexpected delete status $code for $name" >&2; exit 1 ;;
-            esac
-            echo "publishing: $apk"
-            curl -fsS --retry 3 \
-              --user "greboid:$RELEASE_PACKAGE_TOKEN" \
-              -F "file=@$apk" \
-              -X PUT \
-              "$ORG_REPO"
+          for arch in $(yq -r '.package.target-architecture[]' melange.yaml); do
+            for apk in dist/$arch/*.apk; do
+              name=$(basename "$apk")
+              echo "deleting previous: $name"
+              code=$(curl -s -o /dev/null -w '%{http_code}' --retry 3 \
+                --user "greboid:$RELEASE_PACKAGE_TOKEN" \
+                -X DELETE "$ORG_REPO/$arch/$name") || code=000
+              case "$code" in
+                200|201|204|404) ;;
+                *) echo "unexpected delete status $code for $name" >&2; exit 1 ;;
+              esac
+              echo "publishing: $apk"
+              curl -fsS --retry 3 \
+                --user "greboid:$RELEASE_PACKAGE_TOKEN" \
+                -F "file=@$apk" \
+                -X PUT \
+                "$ORG_REPO"
+            done
           done
 
       - name: Link packages to this repo
@@ -102,24 +128,28 @@ jobs:
           set -eu
           owner="${GITHUB_REPOSITORY%%/*}"
           repo="${GITHUB_REPOSITORY#*/}"
-          for apk in dist/x86_64/*.apk; do
-            name=$(basename "$apk" | rev | cut -d- -f3- | rev)
-            code=$(curl -s -o /dev/null -w '%{http_code}' --retry 3 \
-              --user "greboid:$RELEASE_PACKAGE_TOKEN" \
-              -X POST "$GITHUB_SERVER_URL/api/v1/packages/$owner/alpine/$name/-/link/$repo")
-            case "$code" in
-              201|400) ;; # 400 = already linked
-              *) echo "unexpected link status $code for $name" >&2; exit 1 ;;
-            esac
-            echo "linked $name to $owner/$repo"
+          for arch in $(yq -r '.package.target-architecture[]' melange.yaml); do
+            for apk in dist/$arch/*.apk; do
+              name=$(basename "$apk" | rev | cut -d- -f3- | rev)
+              code=$(curl -s -o /dev/null -w '%{http_code}' --retry 3 \
+                --user "greboid:$RELEASE_PACKAGE_TOKEN" \
+                -X POST "$GITHUB_SERVER_URL/api/v1/packages/$owner/alpine/$name/-/link/$repo")
+              case "$code" in
+                201|400) ;; # 400 = already linked
+                *) echo "unexpected link status $code for $name" >&2; exit 1 ;;
+              esac
+              echo "linked $name to $owner/$repo"
+            done
           done
 
       - name: Verify round trip
         run: |
           set -eu
-          for apk in dist/x86_64/*.apk; do
-            name=$(basename "$apk")
-            curl -fsSL --retry 3 -o /tmp/roundtrip.apk "$ORG_REPO/x86_64/$name"
-            test "$(sha256sum /tmp/roundtrip.apk | cut -d' ' -f1)" = "$(sha256sum "$apk" | cut -d' ' -f1)"
-            echo "published $name"
+          for arch in $(yq -r '.package.target-architecture[]' melange.yaml); do
+            for apk in dist/$arch/*.apk; do
+              name=$(basename "$apk")
+              curl -fsSL --retry 3 -o /tmp/roundtrip.apk "$ORG_REPO/$arch/$name"
+              test "$(sha256sum /tmp/roundtrip.apk | cut -d' ' -f1)" = "$(sha256sum "$apk" | cut -d' ' -f1)"
+              echo "published $name"
+            done
           done

@@ -1,0 +1,91 @@
+package:
+  name: grafana
+  version: 13.2.4
+  epoch: 0
+  description: Observability and data visualization platform (server + embedded web)
+  target-architecture:
+    - x86_64
+    - aarch64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: AGPL-3.0-only
+  dependencies:
+    runtime:
+      - ca-certificates-bundle=20261020-r2
+      - tzdata=2026e-r0
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates=20261020-r2
+      - git=2.54.0-r0
+      - go=1.27.3-r2
+      - go-licenses=2.0.1-r14
+      - nodejs=24.22.1-r0
+      - npm=11.12.1-r0
+      - os-release=3.24.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: af4a33e3786594ad72f72d97e6744010330c2977
+      repository: https://github.com/grafana/grafana
+      tag: v${{package.version}}
+  - name: Install frontend dependencies
+    runs: |
+      # Grafana ships yarn 4 itself (.yarn/releases); scripts are disabled in
+      # .yarnrc.yml so no postinstall builds run.
+      node .yarn/releases/yarn-4.17.1.cjs install --immutable
+  - name: Build frontend
+    runs: |
+      node .yarn/releases/yarn-4.17.1.cjs run build
+  - uses: go/build
+    with:
+      packages: ./pkg/cmd/grafana
+      output: grafana
+      static: "true"
+      ldflags: -X main.version=${{package.version}} -X main.commit=af4a33e3786594ad72f72d97e6744010330c2977 -X main.buildBranch=main
+  - name: Install frontend and default config
+    runs: |
+      mkdir -p "${{targets.destdir}}/usr/share/grafana"
+      cp -a public "${{targets.destdir}}/usr/share/grafana/public"
+      cp -a conf "${{targets.destdir}}/usr/share/grafana/conf"
+  - uses: go/licenses
+    with:
+      module: github.com/grafana/grafana
+      license: LICENSE
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox=1.37.0-r31
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/grafana
+        files: /notices/github.com/grafana/grafana/LICENSE /usr/share/licenses/grafana/LICENSE /usr/share/grafana/conf/defaults.ini
+        dirs: /usr/share/grafana/public
+    - name: Prints version
+      runs: |
+        /usr/bin/grafana -v 2>&1 | grep -q "13.2.4"
+
+update:
+  enabled: true
+  github:
+    identifier: grafana/grafana
+    strip-prefix: v
+    use-tag: true

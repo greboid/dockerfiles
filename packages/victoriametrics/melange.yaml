@@ -1,0 +1,82 @@
+package:
+  name: victoriametrics
+  version: 1.155.0
+  epoch: 0
+  description: Cost-effective and scalable time series database (single-node)
+  target-architecture:
+    - x86_64
+    - aarch64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: Apache-2.0
+  dependencies:
+    runtime:
+      - ca-certificates-bundle=20261020-r2
+      - tzdata=2026e-r0
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates=20261020-r2
+      - git=2.54.0-r0
+      - go=1.27.3-r2
+      - go-licenses=2.0.1-r14
+      - os-release=3.24.2-r0
+
+vars:
+  runtime-dirs: /data
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 3fec2f72414d00d1acda807c8818d7af90cc966d
+      repository: https://github.com/VictoriaMetrics/VictoriaMetrics
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./app/victoria-metrics
+      output: victoriametrics
+      static: "true"
+      ldflags: -X github.com/VictoriaMetrics/VictoriaMetrics/lib/buildinfo.Version=v${{package.version}}
+  - uses: dirs
+    with:
+      dirs: ${{vars.runtime-dirs}}
+  - uses: go/licenses
+    with:
+      module: github.com/VictoriaMetrics/VictoriaMetrics
+      license: LICENSE
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox=1.37.0-r31
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/victoriametrics
+        files: /notices/github.com/VictoriaMetrics/VictoriaMetrics/LICENSE /usr/share/licenses/victoriametrics/LICENSE
+        dirs: ${{vars.runtime-dirs}}
+    - name: Prints version
+      runs: |
+        /usr/bin/victoriametrics -version 2>&1 | grep -q "v1.155.0"
+
+update:
+  enabled: true
+  github:
+    identifier: VictoriaMetrics/VictoriaMetrics
+    strip-prefix: v
+    use-tag: true

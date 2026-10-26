@@ -1,0 +1,79 @@
+package:
+  name: telegraf
+  version: 1.40.2
+  epoch: 0
+  description: Agent for collecting and reporting metrics and data
+  target-architecture:
+    - x86_64
+    - aarch64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle=20261020-r2
+      - tzdata=2026e-r0
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates=20261020-r2
+      - git=2.54.0-r0
+      - go=1.27.3-r2
+      - go-licenses=2.0.1-r14
+      - os-release=3.24.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 2e0a2ed1de9e091452ace949007cbab7cbfeb570
+      repository: https://github.com/influxdata/telegraf
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd/telegraf
+      output: telegraf
+      static: "true"
+      ldflags: -X github.com/influxdata/telegraf/internal.Version=${{package.version}} -X github.com/influxdata/telegraf/internal.Commit=2e0a2ed1de9e091452ace949007cbab7cbfeb570 -X github.com/influxdata/telegraf/internal.Branch=main
+  - uses: go/licenses
+    with:
+      module: github.com/influxdata/telegraf
+      license: LICENSE
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox=1.37.0-r31
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/telegraf
+        files: /notices/github.com/influxdata/telegraf/LICENSE /usr/share/licenses/telegraf/LICENSE
+    - name: Prints version
+      runs: |
+        /usr/bin/telegraf version 2>&1 | grep -q "1.40.2"
+    - name: Parses a minimal config
+      runs: |
+        printf '[agent]\ninterval = "10s"\n[[outputs.file]]\nfiles = ["stdout"]\n' > /tmp/telegraf.conf
+        /usr/bin/telegraf --config /tmp/telegraf.conf --test --input-filter mem --output-filter file 2>&1 | grep -q "mem,host="
+
+update:
+  enabled: true
+  github:
+    identifier: influxdata/telegraf
+    strip-prefix: v
+    use-tag: true

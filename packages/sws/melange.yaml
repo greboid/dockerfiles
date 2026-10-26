@@ -1,7 +1,7 @@
 package:
   name: sws
   version: 2.44.1
-  epoch: 0
+  epoch: 1
   description: Static web server (static-web-server) with query-preserving rewrites
   target-architecture:
     - x86_64
@@ -59,7 +59,7 @@ test:
       packages:
         - os-release=3.24.2-r0
         - busybox=1.37.0-r31
-        - curl=8.22.0-r0
+        - curl=8.23.0-r0
   pipeline:
     - uses: test/paths
       with:
