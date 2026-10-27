@@ -12,7 +12,7 @@ contents:
     - ca-certificates-bundle=20261020-r2
     - tzdata=2026e-r0
     - os-release=3.24.2-r0
-    - redis=8.10.2-r1
+    - redis=8.10.3-r0
 
 accounts:
   run-as: 65532:65532
