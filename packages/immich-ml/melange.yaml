@@ -1,7 +1,7 @@
 package:
   name: immich-ml
   version: 3.3.5
-  epoch: 0
+  epoch: 1
   description: Immich machine-learning server (CPU)
   target-architecture:
     - x86_64
@@ -12,7 +12,7 @@ package:
       license: AGPL-3.0-only
   dependencies:
     runtime:
-      - python3=3.14.8-r0
+      - python3=3.14.10-r1
       - py3-onnxruntime=1.24.4-r1
       - py3-opencv=4.12.0-r7
       - py3-numpy=2.4.6-r0
@@ -35,8 +35,8 @@ environment:
       - ca-certificates=20261020-r2
       - git=2.54.0-r0
       - os-release=3.24.2-r0
-      - python3=3.14.8-r0
-      - python3-dev=3.14.8-r0
+      - python3=3.14.10-r1
+      - python3-dev=3.14.10-r1
       - py3-pip=26.1.2-r0
       - py3-numpy=2.4.6-r0
       - py3-numpy-dev=2.4.6-r0
@@ -96,7 +96,7 @@ test:
       packages:
         - os-release=3.24.2-r0
         - busybox=1.37.0-r31
-        - curl=8.22.0-r0
+        - curl=8.23.0-r0
   pipeline:
     - uses: test/paths
       with:
