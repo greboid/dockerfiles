@@ -1,7 +1,7 @@
 package:
   name: redis
-  version: 8.10.2
-  epoch: 1
+  version: 8.10.3
+  epoch: 0
   description: In-memory data store with disk persistence (statically linked)
   target-architecture:
     - x86_64
@@ -46,7 +46,7 @@ vars:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 498ecd0d6d007db11ddb3aea9428552598a78622
+      expected-commit: 1a2574ce1551d3de6e0b4a56756c0fdbc6659e4f
       repository: https://github.com/redis/redis
       tag: ${{package.version}}
   - uses: autoconf/make
