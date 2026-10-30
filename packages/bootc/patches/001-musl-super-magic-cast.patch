@@ -1,0 +1,51 @@
+diff -ru a/crates/lib/src/generator.rs b/crates/lib/src/generator.rs
+--- a/crates/lib/src/generator.rs	2026-10-28 12:37:27.000000000 +0000
++++ b/crates/lib/src/generator.rs	2026-10-30 19:03:14.972892710 +0000
+@@ -98,7 +98,7 @@
+     // composefs always uses overlayfs, so check the filesystem magic first as
+     // a cheap gate.  Then inspect the mount source to distinguish regular
+     // composefs ("composefs:<digest>") from transient ("transient:composefs=<digest>").
+-    let is_overlayfs = rustix::fs::fstatfs(root.as_fd())?.f_type == libc::OVERLAYFS_SUPER_MAGIC;
++    let is_overlayfs = rustix::fs::fstatfs(root.as_fd())?.f_type == libc::OVERLAYFS_SUPER_MAGIC as u64;
+     let root_source = if is_overlayfs {
+         match bootc_mount::inspect_filesystem(camino::Utf8Path::new("/")) {
+             Ok(fs) => Some(fs.source),
+@@ -193,7 +193,7 @@
+ 
+     // Only run for overlayfs roots (composefs mounts an overlay, regular or transient).
+     let st = rustix::fs::fstatfs(root.as_fd())?;
+-    if st.f_type != libc::OVERLAYFS_SUPER_MAGIC {
++    if st.f_type != libc::OVERLAYFS_SUPER_MAGIC as u64 {
+         tracing::trace!("Root is not overlayfs");
+         return Ok(());
+     }
+@@ -331,7 +331,7 @@
+         let dir = Dir::open_ambient_dir(path, cap_std::ambient_authority())
+             .with_context(|| format!("Opening {path}"))?;
+         let st = rustix::fs::fstatfs(dir.as_fd())?;
+-        if st.f_type != libc::OVERLAYFS_SUPER_MAGIC {
++        if st.f_type != libc::OVERLAYFS_SUPER_MAGIC as u64 {
+             tracing::trace!("{path} is not an overlayfs mount, skipping relabel");
+             continue;
+         }
+diff -ru a/crates/lib/src/install.rs b/crates/lib/src/install.rs
+--- a/crates/lib/src/install.rs	2026-10-28 12:37:27.000000000 +0000
++++ b/crates/lib/src/install.rs	2026-10-30 19:03:14.973540704 +0000
+@@ -1602,7 +1602,7 @@
+     // to also *not* fsfreeze other filesystems.
+     let fsdir = root.open_dir(path.as_str())?;
+     let st = rustix::fs::fstatfs(fsdir.as_fd())?;
+-    if st.f_type == libc::MSDOS_SUPER_MAGIC {
++    if st.f_type == libc::MSDOS_SUPER_MAGIC as u64 {
+         tracing::debug!("Filesystem {fsname} is VFAT, skipping fsfreeze");
+     } else {
+         for a in ["-f", "-u"] {
+@@ -1648,7 +1648,7 @@
+ /// actually.
+ pub(crate) fn setup_tmp_mount() -> Result<()> {
+     let st = rustix::fs::statfs("/tmp")?;
+-    if st.f_type == libc::TMPFS_MAGIC {
++    if st.f_type == libc::TMPFS_MAGIC as u64 {
+         tracing::trace!("Already have tmpfs /tmp")
+     } else {
+         // Note we explicitly also don't want a "nosuid" tmp, because that

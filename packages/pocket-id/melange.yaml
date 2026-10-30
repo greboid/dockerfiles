@@ -1,7 +1,7 @@
 package:
   name: pocket-id
   version: 2.19.1
-  epoch: 1
+  epoch: 2
   description: Simple OIDC provider that lets users authenticate with passkeys
   target-architecture:
     - x86_64
@@ -26,8 +26,8 @@ environment:
       - ca-certificates
       - git=2.54.0-r0
       - go=1.27.3-r2
-      - nodejs=24.22.1-r0
-      - pnpm=11.20.0-r0
+      - nodejs=24.22.1-r1
+      - pnpm=11.28.9-r0
       - os-release=3.24.2-r0
   environment:
     GOPATH: /go

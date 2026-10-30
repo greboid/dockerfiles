@@ -1,6 +1,8 @@
+diff --git a/pkg/build/accounts.go b/pkg/build/accounts.go
+index 4678da1e..e1621961 100644
 --- a/pkg/build/accounts.go
 +++ b/pkg/build/accounts.go
-@@ -55,7 +55,8 @@
+@@ -55,7 +55,8 @@ func userToUserEntry(user types.User) passwd.UserEntry {
  		GID:      gid,
  		HomeDir:  user.HomeDir,
  		Password: "x",

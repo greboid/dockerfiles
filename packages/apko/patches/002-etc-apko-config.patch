@@ -1,14 +1,16 @@
+diff --git a/pkg/build/build_implementation.go b/pkg/build/build_implementation.go
+index 2c5c0f4b..d27fd38e 100644
 --- a/pkg/build/build_implementation.go
 +++ b/pkg/build/build_implementation.go
-@@ -20,7 +20,6 @@
+@@ -20,7 +20,6 @@ import (
  	"context"
  	"crypto/sha256"
  	"encoding/hex"
 -	"encoding/json"
+ 	"errors"
  	"fmt"
  	"hash"
- 	"io"
-@@ -274,10 +273,6 @@
+@@ -329,10 +328,6 @@ func (bc *Context) buildImage(ctx context.Context) ([]apk.InstalledDiff, error)
  		}
  	}
  
@@ -19,8 +21,8 @@
  	if err := mutatePaths(bc.fs, &bc.o, &bc.ic); err != nil {
  		return nil, fmt.Errorf("failed to mutate paths: %w", err)
  	}
-@@ -367,24 +362,6 @@
- 	return nil
+@@ -442,24 +437,6 @@ func ldsoLibDirs(fsys apkfs.FullFS, confDirs []string) []string {
+ 	return libdirs
  }
  
 -func (bc *Context) WriteEtcApkoConfig(_ context.Context) error {

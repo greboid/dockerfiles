@@ -1,6 +1,8 @@
+diff --git a/pkg/apk/apk/cache.go b/pkg/apk/apk/cache.go
+index 60dae3dc..262f5794 100644
 --- a/pkg/apk/apk/cache.go
 +++ b/pkg/apk/apk/cache.go
-@@ -232,6 +232,29 @@
+@@ -232,6 +232,29 @@ func (t *cacheTransport) head(request *http.Request, cacheFile string) (*http.Re
  		// HEAD shouldn't have a body. Make sure we close it so we can reuse the connection.
  		defer resp.Body.Close()
  
@@ -30,9 +32,11 @@
  		t.cache.store(cacheFile, resp)
  
  		return resp, nil
+diff --git a/pkg/apk/apk/index.go b/pkg/apk/apk/index.go
+index 5a78f8a4..dcfec266 100644
 --- a/pkg/apk/apk/index.go
 +++ b/pkg/apk/apk/index.go
-@@ -106,10 +106,6 @@
+@@ -110,10 +110,6 @@ func (i *indexCache) get(ctx context.Context, repoName, repoURL string, keys map
  		}
  		defer resp.Body.Close()
  
@@ -41,9 +45,9 @@
 -		}
 -
  		fetchAndParse := func(etag string) (NamedIndex, error) {
- 			b, err := fetchRepositoryIndex(ctx, u, etag, opts)
+ 			b, _, err := fetchRepositoryIndex(ctx, u, etag, opts)
  			if err != nil {
-@@ -122,6 +118,21 @@
+@@ -126,6 +122,21 @@ func (i *indexCache) get(ctx context.Context, repoName, repoURL string, keys map
  			return NewNamedRepositoryWithIndex(repoName, repoRef.WithIndex(idx)), nil
  		}
  
@@ -65,7 +69,10 @@
  		etag, ok := etagFromResponse(resp)
  		if !ok {
  			// If there's no etag, we can't cache it, so just return the result.
---- a/pkg/apk/apk/index_head405_test.go
+diff --git a/pkg/apk/apk/index_head405_test.go b/pkg/apk/apk/index_head405_test.go
+new file mode 100644
+index 00000000..ec1eedd0
+--- /dev/null
 +++ b/pkg/apk/apk/index_head405_test.go
 @@ -0,0 +1,379 @@
 +package apk

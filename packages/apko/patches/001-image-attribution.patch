@@ -1,6 +1,8 @@
+diff --git a/pkg/build/oci/image.go b/pkg/build/oci/image.go
+index a6917861..ae98946d 100644
 --- a/pkg/build/oci/image.go
 +++ b/pkg/build/oci/image.go
-@@ -51,8 +51,10 @@
+@@ -51,8 +51,10 @@ func BuildImageFromLayers(ctx context.Context, baseImage v1.Image, layers []v1.L
  		return nil, err
  	}
  
@@ -13,7 +15,7 @@
  	if len(layers) > 1 {
  		comment = ""
  	}
-@@ -80,9 +82,12 @@
+@@ -80,9 +82,12 @@ func BuildImageFromLayers(ctx context.Context, baseImage v1.Image, layers []v1.L
  		add := mutate.Addendum{
  			Layer: layer,
  			History: v1.History{
@@ -28,7 +30,7 @@
  				Created:   v1.Time{Time: created}, // TODO: Consider per-layer creation time?
  			},
  		}
-@@ -126,7 +131,7 @@
+@@ -126,7 +131,7 @@ func BuildImageFromLayers(ctx context.Context, baseImage v1.Image, layers []v1.L
  	}
  
  	cfg = cfg.DeepCopy()
@@ -37,9 +39,11 @@
  	platform := arch.ToOCIPlatform()
  	cfg.Architecture = platform.Architecture
  	cfg.Variant = platform.Variant
+diff --git a/pkg/build/oci/image_test.go b/pkg/build/oci/image_test.go
+index 28ab4306..51ee465e 100644
 --- a/pkg/build/oci/image_test.go
 +++ b/pkg/build/oci/image_test.go
-@@ -46,12 +46,12 @@
+@@ -46,12 +46,12 @@ func TestBuildImageFromLayer(t *testing.T) {
  			Environment: map[string]string{},
  		},
  		want: &v1.ConfigFile{
@@ -56,7 +60,7 @@
  			}},
  			Created: v1now,
  			OS:      "linux",
-@@ -74,12 +74,12 @@
+@@ -74,12 +74,12 @@ func TestBuildImageFromLayer(t *testing.T) {
  			},
  		},
  		want: &v1.ConfigFile{
@@ -73,7 +77,7 @@
  			}},
  			Created: v1now,
  			OS:      "linux",
-@@ -104,12 +104,12 @@
+@@ -104,12 +104,12 @@ func TestBuildImageFromLayer(t *testing.T) {
  			},
  		},
  		want: &v1.ConfigFile{
@@ -90,7 +94,7 @@
  			}},
  			Created: v1now,
  			OS:      "linux",
-@@ -134,12 +134,12 @@
+@@ -134,12 +134,12 @@ func TestBuildImageFromLayer(t *testing.T) {
  			},
  		},
  		want: &v1.ConfigFile{

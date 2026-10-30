@@ -1,3 +1,6 @@
+diff --git a/pkg/sbom/canonical/jcs.go b/pkg/sbom/canonical/jcs.go
+new file mode 100644
+index 00000000..6077c32d
 --- /dev/null
 +++ b/pkg/sbom/canonical/jcs.go
 @@ -0,0 +1,227 @@
@@ -228,128 +231,9 @@
 +	}
 +	return len(ua) < len(ub)
 +}
---- /dev/null
-+++ b/pkg/sbom/canonical/namespace.go
-@@ -0,0 +1,119 @@
-+// Package canonical implements RFC 8785 (JSON Canonicalization Scheme) canonical
-+// JSON serialization and the deterministic g5d.dev SPDX document namespace
-+// scheme used by our patched apko builds (containers repository plan.md).
-+//
-+// These files are byte-identical (modulo this package clause and doc comment)
-+// with tooling/internal/metadata in the containers repository, so verification
-+// tooling recomputes exactly the identifiers this package embeds. Update all
-+// copies together. Keep the stdlib-only imports: dependencies stay pinned.
-+package canonical
-+
-+// The namespace scheme is shared with the containers repository
-+// (tooling/internal/metadata/namespace.go); keep the copies byte-identical
-+// apart from this doc comment. documentNamespace is the ONLY field excluded
-+// from the hashed content; emitted documents must be finalized beforehand.
-+
-+import (
-+	"crypto/sha256"
-+	"encoding/hex"
-+	"encoding/json"
-+	"fmt"
-+)
-+
-+// SPDX deterministic namespace support shared with the patched melange/apko
-+// sources (tooling/{melange,apko}/patches add byte-identical copies, modulo
-+// the package clause, under pkg/sbom/canonical). Update all copies together.
-+//
-+// Plan (plan.md, SBOM namespaces): the SPDX documentNamespace is
-+//
-+//	https://g5d.dev/containers/sbom/spdx/{packages|images}/<unique-id>
-+//
-+// where <unique-id> is the SHA-256 of the RFC 8785 canonical JSON of the
-+// emitted document with documentNamespace omitted — the only omission. The
-+// emitted document itself must be finalised before hashing (deterministic
-+// ordering of set-like arrays at emission and epoch-based creation
-+// timestamps); this package deliberately applies no schema-aware
-+// normalization of its own, so the identity is exactly reproducible from the
-+// emitted artifact bytes alone.
-+
-+const (
-+	// NamespacePackages is the SPDX documentNamespace prefix for melange
-+	// package SBOMs.
-+	NamespacePackages = "https://g5d.dev/containers/sbom/spdx/packages/"
-+
-+	// NamespaceImages is the SPDX documentNamespace prefix for apko image
-+	// and image-index SBOMs.
-+	NamespaceImages = "https://g5d.dev/containers/sbom/spdx/images/"
-+)
-+
-+// SPDXUniqueID returns the deterministic plan.md <unique-id> for doc (a
-+// decoded SPDX document): the hex SHA-256 of the RFC 8785 canonical JSON of
-+// the document with ONLY documentNamespace removed. Array element order is
-+// preserved and explicit nulls are kept, so two documents hash identically
-+// if and only if their emitted content (minus the namespace) is identical.
-+func SPDXUniqueID(doc map[string]any) (string, error) {
-+	if doc == nil {
-+		return "", fmt.Errorf("SPDX document is nil")
-+	}
-+	out, ok := deepCopyValue(doc).(map[string]any)
-+	if !ok {
-+		return "", fmt.Errorf("SPDX document is not a JSON object")
-+	}
-+	delete(out, "documentNamespace")
-+	canonical, err := Canonicalize(out)
-+	if err != nil {
-+		return "", fmt.Errorf("canonicalizing SPDX document: %w", err)
-+	}
-+	sum := sha256.Sum256(canonical)
-+	return hex.EncodeToString(sum[:]), nil
-+}
-+
-+// SPDXDocumentNamespace returns the full plan-conformant documentNamespace
-+// (prefix + <unique-id>) for doc. The URI never contains a fragment.
-+func SPDXDocumentNamespace(doc map[string]any, prefix string) (string, error) {
-+	id, err := SPDXUniqueID(doc)
-+	if err != nil {
-+		return "", err
-+	}
-+	return prefix + id, nil
-+}
-+
-+// StructNamespace converts v (typically an SPDX document struct) to its
-+// generic JSON value space via encoding/json and returns its deterministic
-+// documentNamespace. encoding/json is used only as the struct-to-value
-+// transport; canonicalization itself is RFC 8785 (see jcs.go). v must be the
-+// finalized document (all array ordering applied at the emission site); the
-+// result changes with any content change, which is the intended identity
-+// property.
-+func StructNamespace(v any, prefix string) (string, error) {
-+	raw, err := json.Marshal(v)
-+	if err != nil {
-+		return "", fmt.Errorf("encoding SPDX document: %w", err)
-+	}
-+	var doc map[string]any
-+	if err := json.Unmarshal(raw, &doc); err != nil {
-+		return "", fmt.Errorf("decoding SPDX document: %w", err)
-+	}
-+	return SPDXDocumentNamespace(doc, prefix)
-+}
-+
-+// deepCopyValue returns a deep copy of a decoded JSON value so hashing never
-+// aliases or mutates caller-owned documents.
-+func deepCopyValue(v any) any {
-+	switch t := v.(type) {
-+	case map[string]any:
-+		out := make(map[string]any, len(t))
-+		for k, e := range t {
-+			out[k] = deepCopyValue(e)
-+		}
-+		return out
-+	case []any:
-+		out := make([]any, len(t))
-+		for i, e := range t {
-+			out[i] = deepCopyValue(e)
-+		}
-+		return out
-+	default:
-+		return v
-+	}
-+}
+diff --git a/pkg/sbom/canonical/jcs_test.go b/pkg/sbom/canonical/jcs_test.go
+new file mode 100644
+index 00000000..6fbf6b98
 --- /dev/null
 +++ b/pkg/sbom/canonical/jcs_test.go
 @@ -0,0 +1,150 @@
@@ -503,6 +387,134 @@
 +		}
 +	}
 +}
+diff --git a/pkg/sbom/canonical/namespace.go b/pkg/sbom/canonical/namespace.go
+new file mode 100644
+index 00000000..7bfe6ec0
+--- /dev/null
++++ b/pkg/sbom/canonical/namespace.go
+@@ -0,0 +1,119 @@
++// Package canonical implements RFC 8785 (JSON Canonicalization Scheme) canonical
++// JSON serialization and the deterministic g5d.dev SPDX document namespace
++// scheme used by our patched apko builds (containers repository plan.md).
++//
++// These files are byte-identical (modulo this package clause and doc comment)
++// with tooling/internal/metadata in the containers repository, so verification
++// tooling recomputes exactly the identifiers this package embeds. Update all
++// copies together. Keep the stdlib-only imports: dependencies stay pinned.
++package canonical
++
++// The namespace scheme is shared with the containers repository
++// (tooling/internal/metadata/namespace.go); keep the copies byte-identical
++// apart from this doc comment. documentNamespace is the ONLY field excluded
++// from the hashed content; emitted documents must be finalized beforehand.
++
++import (
++	"crypto/sha256"
++	"encoding/hex"
++	"encoding/json"
++	"fmt"
++)
++
++// SPDX deterministic namespace support shared with the patched melange/apko
++// sources (tooling/{melange,apko}/patches add byte-identical copies, modulo
++// the package clause, under pkg/sbom/canonical). Update all copies together.
++//
++// Plan (plan.md, SBOM namespaces): the SPDX documentNamespace is
++//
++//	https://g5d.dev/containers/sbom/spdx/{packages|images}/<unique-id>
++//
++// where <unique-id> is the SHA-256 of the RFC 8785 canonical JSON of the
++// emitted document with documentNamespace omitted — the only omission. The
++// emitted document itself must be finalised before hashing (deterministic
++// ordering of set-like arrays at emission and epoch-based creation
++// timestamps); this package deliberately applies no schema-aware
++// normalization of its own, so the identity is exactly reproducible from the
++// emitted artifact bytes alone.
++
++const (
++	// NamespacePackages is the SPDX documentNamespace prefix for melange
++	// package SBOMs.
++	NamespacePackages = "https://g5d.dev/containers/sbom/spdx/packages/"
++
++	// NamespaceImages is the SPDX documentNamespace prefix for apko image
++	// and image-index SBOMs.
++	NamespaceImages = "https://g5d.dev/containers/sbom/spdx/images/"
++)
++
++// SPDXUniqueID returns the deterministic plan.md <unique-id> for doc (a
++// decoded SPDX document): the hex SHA-256 of the RFC 8785 canonical JSON of
++// the document with ONLY documentNamespace removed. Array element order is
++// preserved and explicit nulls are kept, so two documents hash identically
++// if and only if their emitted content (minus the namespace) is identical.
++func SPDXUniqueID(doc map[string]any) (string, error) {
++	if doc == nil {
++		return "", fmt.Errorf("SPDX document is nil")
++	}
++	out, ok := deepCopyValue(doc).(map[string]any)
++	if !ok {
++		return "", fmt.Errorf("SPDX document is not a JSON object")
++	}
++	delete(out, "documentNamespace")
++	canonical, err := Canonicalize(out)
++	if err != nil {
++		return "", fmt.Errorf("canonicalizing SPDX document: %w", err)
++	}
++	sum := sha256.Sum256(canonical)
++	return hex.EncodeToString(sum[:]), nil
++}
++
++// SPDXDocumentNamespace returns the full plan-conformant documentNamespace
++// (prefix + <unique-id>) for doc. The URI never contains a fragment.
++func SPDXDocumentNamespace(doc map[string]any, prefix string) (string, error) {
++	id, err := SPDXUniqueID(doc)
++	if err != nil {
++		return "", err
++	}
++	return prefix + id, nil
++}
++
++// StructNamespace converts v (typically an SPDX document struct) to its
++// generic JSON value space via encoding/json and returns its deterministic
++// documentNamespace. encoding/json is used only as the struct-to-value
++// transport; canonicalization itself is RFC 8785 (see jcs.go). v must be the
++// finalized document (all array ordering applied at the emission site); the
++// result changes with any content change, which is the intended identity
++// property.
++func StructNamespace(v any, prefix string) (string, error) {
++	raw, err := json.Marshal(v)
++	if err != nil {
++		return "", fmt.Errorf("encoding SPDX document: %w", err)
++	}
++	var doc map[string]any
++	if err := json.Unmarshal(raw, &doc); err != nil {
++		return "", fmt.Errorf("decoding SPDX document: %w", err)
++	}
++	return SPDXDocumentNamespace(doc, prefix)
++}
++
++// deepCopyValue returns a deep copy of a decoded JSON value so hashing never
++// aliases or mutates caller-owned documents.
++func deepCopyValue(v any) any {
++	switch t := v.(type) {
++	case map[string]any:
++		out := make(map[string]any, len(t))
++		for k, e := range t {
++			out[k] = deepCopyValue(e)
++		}
++		return out
++	case []any:
++		out := make([]any, len(t))
++		for i, e := range t {
++			out[i] = deepCopyValue(e)
++		}
++		return out
++	default:
++		return v
++	}
++}
+diff --git a/pkg/sbom/canonical/namespace_test.go b/pkg/sbom/canonical/namespace_test.go
+new file mode 100644
+index 00000000..044a38cd
 --- /dev/null
 +++ b/pkg/sbom/canonical/namespace_test.go
 @@ -0,0 +1,175 @@

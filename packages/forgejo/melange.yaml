@@ -31,7 +31,7 @@ environment:
       - go-licenses=2.0.1-r14
       - os-release=3.24.2-r0
       - make=4.4.1-r4
-      - nodejs=24.22.1-r0
+      - nodejs=24.22.1-r1
       - npm=11.12.1-r0
       - gcc=15.2.0-r5
       - musl-dev=1.2.6-r3

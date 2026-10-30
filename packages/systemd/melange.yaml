@@ -1,0 +1,255 @@
+package:
+  name: systemd
+  version: 262.1
+  epoch: 0
+  description: systemd init system (PID 1), udev and core daemons built for musl
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      license: LGPL-2.1-or-later
+  dependencies:
+    runtime:
+      - busybox-binsh=1.37.0-r31
+      - kmod=34.2-r1
+      - linux-pam=1.7.1-r2
+      - util-linux=2.42.3-r1
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - os-release=3.24.2-r0
+      - busybox=1.37.0-r31
+      - ca-certificates-bundle=20261020-r2
+      - gcc=15.2.0-r5
+      - musl-dev=1.2.6-r3
+      - bash=5.3.9-r1
+      - coreutils=9.11-r0
+      - gperf=3.3-r0
+      - pkgconf=2.5.1-r0
+      - python3=3.14.10-r1
+      - py3-elftools=0.32-r1
+      - py3-jinja2=3.1.6-r1
+      - meson=1.11.1-r0
+      - linux-headers=7.0.0-r1
+      - libcap-dev=2.78-r0
+      - libucontext-dev=1.5.1-r0
+      - util-linux-dev=2.42.3-r1
+      - musl-libintl=1.2.6-r3
+      - kmod-dev=34.2-r1
+      - acl-dev=2.3.2-r1
+      - attr-dev=2.5.2-r2
+      - libseccomp-dev=2.6.1-r0
+      - linux-pam-dev=1.7.1-r2
+      - zstd-dev=1.5.7-r2
+      - xz-dev=5.8.4-r0
+      - lz4-dev=1.10.0-r1
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://github.com/systemd/systemd/archive/refs/tags/v${{package.version}}.tar.gz
+      expected-sha256: 100fc873b848b9b0297d8a705e8e2ed326256c8483d9960ee1ffe264c8a5c3e3
+  - name: Configure
+    runs: |
+      # Flag set mirrors Alpine's aports systemd-boot recipe for the same
+      # systemd version (known-good musl configuration), with the network,
+      # login, hwdb, initrd and tmpfiles/sysusers components enabled for a
+      # full PID 1 system and everything outside that scope disabled.
+      meson setup output \
+        --prefix=/usr \
+        --sysconfdir=/etc \
+        --localstatedir=/var \
+        --libexecdir=/usr/libexec \
+        --wrap-mode=nodownload \
+        -Dlibc=musl \
+        -Dversion-tag=${{package.version}}-r${{package.epoch}} \
+        -Dsbat-distro=alpine \
+        -Dsbat-distro-summary="Alpine Linux" \
+        -Dsbat-distro-pkgname="${{package.name}}" \
+        -Dsbat-distro-version="${{package.version}}" \
+        -Dsbat-distro-url="https://alpinelinux.org/" \
+        -Dtests=false \
+        -Dman=disabled \
+        -Dhtml=disabled \
+        -Dsplit-bin=false \
+        -Dinitrd=true \
+        -Dtmpfiles=true \
+        -Dsysusers=true \
+        -Dhwdb=true \
+        -Dlogind=true \
+        -Dnetworkd=true \
+        -Dresolve=true \
+        -Dtimesyncd=true \
+        -Dhostnamed=true \
+        -Dtimedated=true \
+        -Dbootloader=enabled \
+        -Defi=true \
+        -Dlibcrypt=disabled \
+        -Dpcre2=disabled \
+        -Dselinux=disabled \
+        -Dapparmor=disabled \
+        -Ddbus=disabled \
+        -Dpolkit=disabled \
+        -Dopenssl=disabled \
+        -Delfutils=disabled \
+        -Dtpm=false \
+        -Dukify=disabled \
+        -Dkernel-install=false \
+        -Dfexecve=false \
+        -Dutmp=false \
+        -Dldconfig=false \
+        -Dhomed=disabled \
+        -Dimportd=disabled \
+        -Dremote=disabled \
+        -Drepart=disabled \
+        -Dsysupdate=disabled \
+        -Dvmspawn=disabled \
+        -Dportabled=false \
+        -Duserdb=false \
+        -Doomd=false \
+        -Dfirstboot=false \
+        -Dfirst-boot-full-preset=false \
+        -Dadm-group=false \
+        -Dwheel-group=false \
+        -Dcompat-mutable-uid-boundaries=false \
+        -Dgshadow=false \
+        -Ddns-over-tls=false \
+        -Dsmack=false \
+        -Dima=false \
+        -Dnss-myhostname=false \
+        -Dnss-mymachines=disabled \
+        -Dnss-resolve=disabled \
+        -Dnss-systemd=false \
+        -Dbinfmt=false \
+        -Dcoredump=false \
+        -Dbacklight=false \
+        -Denvironment-d=false \
+        -Dhibernate=false \
+        -Didn=false \
+        -Dmachined=false \
+        -Dpstore=false \
+        -Dquotacheck=false \
+        -Drandomseed=false \
+        -Drfkill=false \
+        -Dstoragetm=false \
+        -Dsysext=false \
+        -Durlify=false \
+        -Dxdg-autostart=false \
+        -Danalyze=false \
+        -Dvconsole=false \
+        -Dlocaled=false
+  - name: Build
+    runs: |
+      meson compile -C output
+  - name: Install
+    runs: |
+      DESTDIR="${{targets.destdir}}" meson install -C output
+      # PID 1 entry point; busybox does not ship /sbin/init
+      install -d "${{targets.destdir}}/sbin"
+      ln -sf /usr/lib/systemd/systemd "${{targets.destdir}}/sbin/init"
+      install -Dm 0644 LICENSES/LGPL-2.1-or-later.txt \
+        "${{targets.destdir}}/usr/share/licenses/${{package.name}}/LGPL-2.1-or-later.txt"
+      # Boot EFI artifacts ship in the systemd-boot / systemd-efistub
+      # subpackages; remove them from the main package to avoid conflicts.
+      rm -rf "${{targets.destdir}}/usr/lib/systemd/boot"
+  - uses: strip
+
+subpackages:
+  - name: systemd-dev
+    pipeline:
+      - uses: split/dev
+    dependencies:
+      runtime:
+        - systemd=${{package.full-version}}
+    test:
+      environment:
+        contents:
+          packages:
+            - pkgconf=2.5.1-r0
+      pipeline:
+        - name: libsystemd is discoverable via pkg-config
+          runs: |
+            pkg-config --modversion libsystemd | grep -q "${{package.version}}"
+            test -f /usr/include/systemd/sd-journal.h
+  - name: systemd-efistub
+    pipeline:
+      - name: Install the EFI stub
+        runs: |
+          install -d "${{targets.subpkgdir}}/usr/lib/systemd/boot/efi"
+          find output/src/boot/ -name '*.stub' -exec \
+            install -Dm 0644 {} -t "${{targets.subpkgdir}}/usr/lib/systemd/boot/efi" \;
+  - name: systemd-boot
+    pipeline:
+      - name: Install the EFI boot manager
+        runs: |
+          install -d "${{targets.subpkgdir}}/usr/lib/systemd/boot/efi"
+          find output/src/boot/ -name 'systemd*.efi' -exec \
+            install -Dm 0644 {} -t "${{targets.subpkgdir}}/usr/lib/systemd/boot/efi" \;
+    dependencies:
+      runtime:
+        - systemd-efistub=${{package.full-version}}
+  - name: ukify
+    pipeline:
+      - name: Install the UKI builder
+        runs: |
+          install -Dm 0755 src/ukify/ukify.py \
+            "${{targets.subpkgdir}}/usr/sbin/ukify"
+          _v=${{package.version}}
+          sed -i "s|{{PROJECT_VERSION}} ({{VERSION_TAG}})|${_v%%.*} (${_v})|" \
+            "${{targets.subpkgdir}}/usr/sbin/ukify"
+          mkdir -p "${{targets.subpkgdir}}/usr/lib/systemd/boot"
+          cp -r src/boot/hwids "${{targets.subpkgdir}}/usr/lib/systemd/boot/"
+    dependencies:
+      runtime:
+        - binutils=2.45.1-r1
+        - py3-pefile=2024.8.26-r2
+        - systemd-efistub=${{package.full-version}}
+
+test:
+  environment:
+    contents:
+      keyring:
+        - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox=1.37.0-r31
+  pipeline:
+    - name: PID 1 binary reports its version
+      runs: |
+        /usr/lib/systemd/systemd --version | grep -q "systemd ${{package.version}}"
+        test "$(readlink /sbin/init)" = /usr/lib/systemd/systemd
+    - name: Core tools are present
+      runs: |
+        for exe in /usr/bin/systemctl /usr/bin/journalctl /usr/bin/udevadm \
+          /usr/bin/loginctl /usr/bin/bootctl /usr/bin/resolvectl \
+          /usr/bin/networkctl /usr/bin/timedatectl /usr/bin/hostnamectl; do
+          test -x "$exe" || { echo "missing: $exe" >&2; exit 1; }
+        done
+        systemctl --version | head -1
+    - name: systemd-boot and UKI tooling are present
+      runs: |
+        test -s /usr/lib/systemd/boot/efi/systemd-bootx64.efi
+        test -s /usr/lib/systemd/boot/efi/linuxx64.efi.stub
+        test -x /usr/sbin/ukify
+        /usr/sbin/ukify --version
+    - name: Unit search path contains the vendor directories
+      runs: |
+        test -d /usr/lib/systemd/system
+        test -d /usr/lib/systemd/network
+
+update:
+  enabled: true
+  github:
+    identifier: systemd/systemd
+    strip-prefix: v

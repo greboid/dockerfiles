@@ -1,0 +1,535 @@
+2026/10/30 18:22:51 INFO melange version  with runner  building [melange.yaml] at commit  for arches [amd64]
+2026/10/30 18:22:51 DEBU git commit for build config not provided, attempting to detect automatically
+2026/10/30 18:22:51 DEBU detecting git state from "."
+2026/10/30 18:22:51 WARN unable to detect commit for build config file: opening git repository: repository does not exist
+2026/10/30 18:22:51 WARN git repository URL for build config not provided
+2026/10/30 18:22:51 INFO melange v0.61.1+dirty with runner bubblewrap is building:
+2026/10/30 18:22:51 DEBU   configuration file: melange.yaml
+2026/10/30 18:22:51 DEBU   workspace dir: /tmp/melange-workspace-4185283389
+2026/10/30 18:22:51 DEBU evaluating pipelines for package requirements
+2026/10/30 18:22:51 DEBU trying to load pipeline "fetch" from "/usr/share/melange/pipelines"
+2026/10/30 18:22:51 DEBU trying to load pipeline "fetch" from embedded fs pipelines/"fetch".yaml
+2026/10/30 18:22:51 DEBU   adding package "wget" for pipeline "fetch"
+2026/10/30 18:22:51 DEBU trying to load pipeline "strip" from "/usr/share/melange/pipelines"
+2026/10/30 18:22:51 DEBU trying to load pipeline "strip" from embedded fs pipelines/"strip".yaml
+2026/10/30 18:22:51 DEBU   adding package "binutils" for pipeline "strip"
+2026/10/30 18:22:51 DEBU   adding package "pax-utils" for pipeline "strip"
+2026/10/30 18:22:51 DEBU trying to load pipeline "split/dev" from "/usr/share/melange/pipelines"
+2026/10/30 18:22:51 DEBU trying to load pipeline "split/dev" from embedded fs pipelines/"split/dev".yaml
+2026/10/30 18:22:51 DEBU   adding package "busybox" for pipeline "split/dev"
+2026/10/30 18:22:51 DEBU --cache-dir ./melange-cache/ not a dir; skipping
+2026/10/30 18:22:51 INFO populating workspace /tmp/melange-workspace-4185283389 from .
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-15/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-15/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-15/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-15/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-16/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-16/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-16/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-16/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-17/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-17/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-17/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-17/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-18/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-18/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-18/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-18/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-19/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-19/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-19/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-19/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-20/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-20/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-20/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-20/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-21/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-21/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-21/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-21/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-22/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-22/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-22/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-22/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-23/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-23/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-23/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-23/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-24/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-24/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-24/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-24/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-25/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-25/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-25/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-25/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-26/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-26/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-26/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-26/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-27/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-27/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-27/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-27/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-28/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-28/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-28/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-28/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-29/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-29/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-29/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-29/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-30/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-30/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-30/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-30/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-31/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-31/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-31/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-31/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-32/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-32/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-32/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-32/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-33/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-33/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-33/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-33/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-34/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-34/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-34/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-34/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-35/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-35/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-35/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-35/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-36/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-36/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-36/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-36/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-37/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-37/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-37/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-37/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-38/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-38/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-38/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-38/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-39/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-39/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-39/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-39/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-40/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-40/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-40/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-40/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-41/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-41/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-41/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-41/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-42/aarch64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-42/x86_64-unknown-linux-gnu-clang.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-42/aarch64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU wrote clang driver config to /tmp/melange-workspace-4185283389/.config/clang-42/x86_64-unknown-linux-gnu-clang++.cfg
+2026/10/30 18:22:51 DEBU   -> .depbot.yaml
+2026/10/30 18:22:51 DEBU   -> .forgejo/workflows/build.yml
+2026/10/30 18:22:51 DEBU   -> build.log
+2026/10/30 18:22:51 DEBU   -> keys/alpine.rsa.pub
+2026/10/30 18:22:51 DEBU   -> keys/packages.rsa
+2026/10/30 18:22:51 DEBU   -> keys/packages.rsa.pub
+2026/10/30 18:22:51 DEBU   -> keys/packages@f3acd02d7d98309c4ae1d1bf92e58fe2673383ee9b816cb8b0ef8a5eac56c6bc.rsa.pub
+2026/10/30 18:22:51 DEBU   -> melange.yaml
+2026/10/30 18:22:51 DEBU doing pre-flight checks
+2026/10/30 18:22:51 DEBU initializing apk database
+2026/10/30 18:22:51 DEBU performing request method=HEAD url=https://alpinelinux.org/releases.json
+2026/10/30 18:22:51 DEBU performing request method=HEAD url=https://alpinelinux.org/keys/alpine-devel%40lists.alpinelinux.org-6165ee59.rsa.pub
+2026/10/30 18:22:51 DEBU performing request method=GET url=https://dl-cdn.alpinelinux.org/alpine/v3.24/community/apk-configuration
+2026/10/30 18:22:51 DEBU performing request method=GET url=https://dl-cdn.alpinelinux.org/alpine/v3.24/community/apk-configuration
+2026/10/30 18:22:51 DEBU performing request method=GET url=https://dl-cdn.alpinelinux.org/alpine/v3.24/main/apk-configuration
+2026/10/30 18:22:51 DEBU performing request method=GET url=https://dl-cdn.alpinelinux.org/alpine/v3.24/main/apk-configuration
+2026/10/30 18:22:51 DEBU performing request method=GET url=https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main/apk-configuration
+2026/10/30 18:22:51 DEBU performing request method=GET url=https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main/apk-configuration
+2026/10/30 18:22:52 DEBU finished initializing apk database
+2026/10/30 18:22:52 DEBU initializing apk keyring
+2026/10/30 18:22:52 DEBU setting apk repositories: [https://dl-cdn.alpinelinux.org/alpine/v3.24/community https://dl-cdn.alpinelinux.org/alpine/v3.24/main https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main]
+2026/10/30 18:22:52 DEBU installing key https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+2026/10/30 18:22:52 DEBU installing key keys/packages@f3acd02d7d98309c4ae1d1bf92e58fe2673383ee9b816cb8b0ef8a5eac56c6bc.rsa.pub
+2026/10/30 18:22:52 DEBU installing key keys/alpine.rsa.pub
+2026/10/30 18:22:52 DEBU performing request method=HEAD url=https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+2026/10/30 18:22:52 DEBU installing key keys/packages.rsa.pub
+2026/10/30 18:22:52 DEBU setting apk world
+2026/10/30 18:22:52 DEBU determining desired apk world
+2026/10/30 18:22:52 DEBU performing request method=HEAD url=https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main/x86_64/APKINDEX.tar.gz
+2026/10/30 18:22:52 DEBU performing request method=HEAD url=https://dl-cdn.alpinelinux.org/alpine/v3.24/community/x86_64/APKINDEX.tar.gz
+2026/10/30 18:22:52 DEBU performing request method=HEAD url=https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/APKINDEX.tar.gz
+2026/10/30 18:22:52 DEBU performing request method=GET url=https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main/x86_64/APKINDEX.tar.gz
+2026/10/30 18:22:52 DEBU performing request method=GET url=https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main/x86_64/APKINDEX.tar.gz
+2026/10/30 18:22:52 DEBU got 3 indexes:
+https://dl-cdn.alpinelinux.org/alpine/v3.24/community/x86_64/APKINDEX.tar.gz
+https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/APKINDEX.tar.gz
+https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main/x86_64/APKINDEX.tar.gz
+2026/10/30 18:22:52 DEBU performing request method=GET url=https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main/x86_64/APKINDEX.tar.gz
+2026/10/30 18:22:52 DEBU got 79 packages to install:
+musl (1.2.6-r3) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/musl-1.2.6-r3.apk
+acl-libs (2.3.2-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/acl-libs-2.3.2-r1.apk
+pkgconf (2.5.1-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/pkgconf-2.5.1-r0.apk
+acl-dev (2.3.2-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/acl-dev-2.3.2-r1.apk
+libattr (2.5.2-r2) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libattr-2.5.2-r2.apk
+attr-dev (2.5.2-r2) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/attr-dev-2.5.2-r2.apk
+ncurses-terminfo-base (6.6_p20260516-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/ncurses-terminfo-base-6.6_p20260516-r0.apk
+libncursesw (6.6_p20260516-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libncursesw-6.6_p20260516-r0.apk
+readline (8.3.3-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/readline-8.3.3-r1.apk
+busybox (1.37.0-r31) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/busybox-1.37.0-r31.apk
+busybox-binsh (1.37.0-r31) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/busybox-binsh-1.37.0-r31.apk
+bash (5.3.9-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/bash-5.3.9-r1.apk
+libgcc (15.2.0-r5) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libgcc-15.2.0-r5.apk
+jansson (2.15.0-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/jansson-2.15.0-r0.apk
+libstdc++ (15.2.0-r5) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libstdc++-15.2.0-r5.apk
+zlib (1.3.2-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/zlib-1.3.2-r1.apk
+zstd-libs (1.5.7-r2) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/zstd-libs-1.5.7-r2.apk
+binutils (2.45.1-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/binutils-2.45.1-r1.apk
+ca-certificates-bundle (20261020-r2) https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main/x86_64/ca-certificates-bundle-20261020-r2.apk
+coreutils-env (9.11-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/coreutils-env-9.11-r0.apk
+coreutils-fmt (9.11-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/coreutils-fmt-9.11-r0.apk
+libcrypto3 (3.5.9-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libcrypto3-3.5.9-r0.apk
+coreutils-sha512sum (9.11-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/coreutils-sha512sum-9.11-r0.apk
+skalibs-libs (2.15.0.0-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/skalibs-libs-2.15.0.0-r0.apk
+utmps-libs (0.1.3.3-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/utmps-libs-0.1.3.3-r0.apk
+coreutils (9.11-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/coreutils-9.11-r0.apk
+gperf (3.3-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/gperf-3.3-r0.apk
+xz-libs (5.8.4-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/xz-libs-5.8.4-r0.apk
+kmod-libs (34.2-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/kmod-libs-34.2-r1.apk
+libssl3 (3.5.9-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libssl3-3.5.9-r0.apk
+openssl-dev (3.5.9-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/openssl-dev-3.5.9-r0.apk
+xz (5.8.4-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/xz-5.8.4-r0.apk
+xz-dev (5.8.4-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/xz-dev-5.8.4-r0.apk
+zstd (1.5.7-r2) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/zstd-1.5.7-r2.apk
+zstd-dev (1.5.7-r2) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/zstd-dev-1.5.7-r2.apk
+zlib-dev (1.3.2-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/zlib-dev-1.3.2-r1.apk
+kmod-dev (34.2-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/kmod-dev-34.2-r1.apk
+libcap2 (2.78-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libcap2-2.78-r0.apk
+linux-headers (7.0.0-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/linux-headers-7.0.0-r1.apk
+libcap-dev (2.78-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libcap-dev-2.78-r0.apk
+libseccomp (2.6.1-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libseccomp-2.6.1-r0.apk
+libseccomp-dev (2.6.1-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libseccomp-dev-2.6.1-r0.apk
+libucontext (1.5.1-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libucontext-1.5.1-r0.apk
+libucontext-dev (1.5.1-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libucontext-dev-1.5.1-r0.apk
+linux-pam (1.7.1-r2) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/linux-pam-1.7.1-r2.apk
+linux-pam-dev (1.7.1-r2) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/linux-pam-dev-1.7.1-r2.apk
+lz4-libs (1.10.0-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/lz4-libs-1.10.0-r1.apk
+lz4-dev (1.10.0-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/lz4-dev-1.10.0-r1.apk
+libexpat (2.9.0-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libexpat-2.9.0-r0.apk
+libbz2 (1.0.8-r6) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libbz2-1.0.8-r6.apk
+libffi (3.5.2-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libffi-3.5.2-r1.apk
+gdbm (1.26-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/gdbm-1.26-r0.apk
+mpdecimal (4.0.1-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/mpdecimal-4.0.1-r0.apk
+libpanelw (6.6_p20260516-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libpanelw-6.6_p20260516-r0.apk
+sqlite-libs (3.53.4-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/sqlite-libs-3.53.4-r0.apk
+python3 (3.14.10-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/python3-3.14.10-r1.apk
+samurai (1.2-r8) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/samurai-1.2-r8.apk
+meson (1.11.1-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/meson-1.11.1-r0.apk
+musl-libintl (1.2.6-r3) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/musl-libintl-1.2.6-r3.apk
+os-release (3.24.2-r0) https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main/x86_64/os-release-3.24.2-r0.apk
+scanelf (1.3.9-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/scanelf-1.3.9-r1.apk
+pax-utils (1.3.9-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/pax-utils-1.3.9-r1.apk
+py3-elftools (0.32-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/py3-elftools-0.32-r1.apk
+py3-markupsafe (3.0.3-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/py3-markupsafe-3.0.3-r1.apk
+py3-jinja2 (3.1.6-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/py3-jinja2-3.1.6-r1.apk
+libeconf (0.8.3-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libeconf-0.8.3-r0.apk
+libblkid (2.42.3-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libblkid-2.42.3-r1.apk
+libuuid (2.42.3-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libuuid-2.42.3-r1.apk
+libfdisk (2.42.3-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libfdisk-2.42.3-r1.apk
+liblastlog2 (2.42.3-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/liblastlog2-2.42.3-r1.apk
+libmount (2.42.3-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libmount-2.42.3-r1.apk
+libsmartcols (2.42.3-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libsmartcols-2.42.3-r1.apk
+sqlite (3.53.4-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/sqlite-3.53.4-r0.apk
+sqlite-dev (3.53.4-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/sqlite-dev-3.53.4-r0.apk
+util-linux-dev (2.42.3-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/util-linux-dev-2.42.3-r1.apk
+libunistring (1.4.2-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libunistring-1.4.2-r0.apk
+libidn2 (2.3.8-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libidn2-2.3.8-r0.apk
+pcre2 (10.49-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/pcre2-10.49-r0.apk
+wget (1.25.0-r3) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/wget-1.25.0-r3.apk
+2026/10/30 18:22:52 DEBU doing pre-flight checks
+2026/10/30 18:22:52 DEBU initializing apk database
+2026/10/30 18:22:52 DEBU finished initializing apk database
+2026/10/30 18:22:52 DEBU setting apk world
+2026/10/30 18:22:52 DEBU initializing apk keyring
+2026/10/30 18:22:52 DEBU installing key keys/packages@f3acd02d7d98309c4ae1d1bf92e58fe2673383ee9b816cb8b0ef8a5eac56c6bc.rsa.pub
+2026/10/30 18:22:52 DEBU setting apk repositories: [https://dl-cdn.alpinelinux.org/alpine/v3.24/community https://dl-cdn.alpinelinux.org/alpine/v3.24/main https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main]
+2026/10/30 18:22:52 DEBU installing key https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+2026/10/30 18:22:52 DEBU installing key keys/alpine.rsa.pub
+2026/10/30 18:22:52 DEBU installing key keys/packages.rsa.pub
+2026/10/30 18:22:52 DEBU performing request method=GET url=https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main/x86_64/APKINDEX.tar.gz
+2026/10/30 18:22:52 INFO image configuration:
+2026/10/30 18:22:52 INFO   contents:
+2026/10/30 18:22:52 INFO     build repositories: [https://dl-cdn.alpinelinux.org/alpine/v3.24/community https://dl-cdn.alpinelinux.org/alpine/v3.24/main https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main]
+2026/10/30 18:22:52 INFO     runtime repositories: []
+2026/10/30 18:22:52 INFO     repositories: [https://dl-cdn.alpinelinux.org/alpine/v3.24/community https://dl-cdn.alpinelinux.org/alpine/v3.24/main https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main]
+2026/10/30 18:22:52 INFO     keyring:      [https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub keys/alpine.rsa.pub keys/packages.rsa.pub keys/packages@f3acd02d7d98309c4ae1d1bf92e58fe2673383ee9b816cb8b0ef8a5eac56c6bc.rsa.pub]
+2026/10/30 18:22:52 INFO     packages:     [acl-dev=2.3.2-r1 acl-libs=2.3.2-r1 attr-dev=2.5.2-r2 bash=5.3.9-r1 binutils=2.45.1-r1 busybox-binsh=1.37.0-r31 busybox=1.37.0-r31 ca-certificates-bundle=20261020-r2 coreutils-env=9.11-r0 coreutils-fmt=9.11-r0 coreutils-sha512sum=9.11-r0 coreutils=9.11-r0 gdbm=1.26-r0 gperf=3.3-r0 jansson=2.15.0-r0 kmod-dev=34.2-r1 kmod-libs=34.2-r1 libattr=2.5.2-r2 libblkid=2.42.3-r1 libbz2=1.0.8-r6 libcap-dev=2.78-r0 libcap2=2.78-r0 libcrypto3=3.5.9-r0 libeconf=0.8.3-r0 libexpat=2.9.0-r0 libfdisk=2.42.3-r1 libffi=3.5.2-r1 libgcc=15.2.0-r5 libidn2=2.3.8-r0 liblastlog2=2.42.3-r1 libmount=2.42.3-r1 libncursesw=6.6_p20260516-r0 libpanelw=6.6_p20260516-r0 libseccomp-dev=2.6.1-r0 libseccomp=2.6.1-r0 libsmartcols=2.42.3-r1 libssl3=3.5.9-r0 libstdc++=15.2.0-r5 libucontext-dev=1.5.1-r0 libucontext=1.5.1-r0 libunistring=1.4.2-r0 libuuid=2.42.3-r1 linux-headers=7.0.0-r1 linux-pam-dev=1.7.1-r2 linux-pam=1.7.1-r2 lz4-dev=1.10.0-r1 lz4-libs=1.10.0-r1 meson=1.11.1-r0 mpdecimal=4.0.1-r0 musl-libintl=1.2.6-r3 musl=1.2.6-r3 ncurses-terminfo-base=6.6_p20260516-r0 openssl-dev=3.5.9-r0 os-release=3.24.2-r0 pax-utils=1.3.9-r1 pcre2=10.49-r0 pkgconf=2.5.1-r0 py3-elftools=0.32-r1 py3-jinja2=3.1.6-r1 py3-markupsafe=3.0.3-r1 python3=3.14.10-r1 readline=8.3.3-r1 samurai=1.2-r8 scanelf=1.3.9-r1 skalibs-libs=2.15.0.0-r0 sqlite-dev=3.53.4-r0 sqlite-libs=3.53.4-r0 sqlite=3.53.4-r0 util-linux-dev=2.42.3-r1 utmps-libs=0.1.3.3-r0 wget=1.25.0-r3 xz-dev=5.8.4-r0 xz-libs=5.8.4-r0 xz=5.8.4-r0 zlib-dev=1.3.2-r1 zlib=1.3.2-r1 zstd-dev=1.5.7-r2 zstd-libs=1.5.7-r2 zstd=1.5.7-r2]
+2026/10/30 18:22:52 INFO   accounts:
+2026/10/30 18:22:52 INFO     runas:  
+2026/10/30 18:22:52 INFO     users:
+2026/10/30 18:22:52 INFO       - uid=1000(build) gid=1000
+2026/10/30 18:22:52 INFO     groups:
+2026/10/30 18:22:52 INFO       - gid=1000(build) members=[build]
+2026/10/30 18:22:52 INFO auth configured for: 0x11113e0
+2026/10/30 18:22:52 DEBU synchronizing with desired apk world
+2026/10/30 18:22:52 DEBU determining desired apk world
+2026/10/30 18:22:52 DEBU performing request method=GET url=https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main/x86_64/APKINDEX.tar.gz
+2026/10/30 18:22:53 DEBU got 3 indexes:
+https://dl-cdn.alpinelinux.org/alpine/v3.24/community/x86_64/APKINDEX.tar.gz
+https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/APKINDEX.tar.gz
+https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main/x86_64/APKINDEX.tar.gz
+2026/10/30 18:22:53 DEBU got 79 packages to install:
+musl (1.2.6-r3) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/musl-1.2.6-r3.apk
+acl-libs (2.3.2-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/acl-libs-2.3.2-r1.apk
+pkgconf (2.5.1-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/pkgconf-2.5.1-r0.apk
+acl-dev (2.3.2-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/acl-dev-2.3.2-r1.apk
+libattr (2.5.2-r2) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libattr-2.5.2-r2.apk
+attr-dev (2.5.2-r2) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/attr-dev-2.5.2-r2.apk
+busybox (1.37.0-r31) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/busybox-1.37.0-r31.apk
+busybox-binsh (1.37.0-r31) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/busybox-binsh-1.37.0-r31.apk
+ncurses-terminfo-base (6.6_p20260516-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/ncurses-terminfo-base-6.6_p20260516-r0.apk
+libncursesw (6.6_p20260516-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libncursesw-6.6_p20260516-r0.apk
+readline (8.3.3-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/readline-8.3.3-r1.apk
+bash (5.3.9-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/bash-5.3.9-r1.apk
+libgcc (15.2.0-r5) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libgcc-15.2.0-r5.apk
+jansson (2.15.0-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/jansson-2.15.0-r0.apk
+libstdc++ (15.2.0-r5) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libstdc++-15.2.0-r5.apk
+zlib (1.3.2-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/zlib-1.3.2-r1.apk
+zstd-libs (1.5.7-r2) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/zstd-libs-1.5.7-r2.apk
+binutils (2.45.1-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/binutils-2.45.1-r1.apk
+ca-certificates-bundle (20261020-r2) https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main/x86_64/ca-certificates-bundle-20261020-r2.apk
+coreutils-env (9.11-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/coreutils-env-9.11-r0.apk
+coreutils-fmt (9.11-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/coreutils-fmt-9.11-r0.apk
+libcrypto3 (3.5.9-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libcrypto3-3.5.9-r0.apk
+coreutils-sha512sum (9.11-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/coreutils-sha512sum-9.11-r0.apk
+skalibs-libs (2.15.0.0-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/skalibs-libs-2.15.0.0-r0.apk
+utmps-libs (0.1.3.3-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/utmps-libs-0.1.3.3-r0.apk
+coreutils (9.11-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/coreutils-9.11-r0.apk
+gdbm (1.26-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/gdbm-1.26-r0.apk
+gperf (3.3-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/gperf-3.3-r0.apk
+xz-libs (5.8.4-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/xz-libs-5.8.4-r0.apk
+kmod-libs (34.2-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/kmod-libs-34.2-r1.apk
+libssl3 (3.5.9-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libssl3-3.5.9-r0.apk
+openssl-dev (3.5.9-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/openssl-dev-3.5.9-r0.apk
+xz (5.8.4-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/xz-5.8.4-r0.apk
+xz-dev (5.8.4-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/xz-dev-5.8.4-r0.apk
+zstd (1.5.7-r2) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/zstd-1.5.7-r2.apk
+zstd-dev (1.5.7-r2) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/zstd-dev-1.5.7-r2.apk
+zlib-dev (1.3.2-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/zlib-dev-1.3.2-r1.apk
+kmod-dev (34.2-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/kmod-dev-34.2-r1.apk
+libeconf (0.8.3-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libeconf-0.8.3-r0.apk
+libblkid (2.42.3-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libblkid-2.42.3-r1.apk
+libbz2 (1.0.8-r6) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libbz2-1.0.8-r6.apk
+libcap2 (2.78-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libcap2-2.78-r0.apk
+linux-headers (7.0.0-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/linux-headers-7.0.0-r1.apk
+libcap-dev (2.78-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libcap-dev-2.78-r0.apk
+libexpat (2.9.0-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libexpat-2.9.0-r0.apk
+libuuid (2.42.3-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libuuid-2.42.3-r1.apk
+libfdisk (2.42.3-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libfdisk-2.42.3-r1.apk
+libffi (3.5.2-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libffi-3.5.2-r1.apk
+libunistring (1.4.2-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libunistring-1.4.2-r0.apk
+libidn2 (2.3.8-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libidn2-2.3.8-r0.apk
+linux-pam (1.7.1-r2) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/linux-pam-1.7.1-r2.apk
+sqlite-libs (3.53.4-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/sqlite-libs-3.53.4-r0.apk
+liblastlog2 (2.42.3-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/liblastlog2-2.42.3-r1.apk
+libmount (2.42.3-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libmount-2.42.3-r1.apk
+libpanelw (6.6_p20260516-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libpanelw-6.6_p20260516-r0.apk
+libseccomp (2.6.1-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libseccomp-2.6.1-r0.apk
+libseccomp-dev (2.6.1-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libseccomp-dev-2.6.1-r0.apk
+libsmartcols (2.42.3-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libsmartcols-2.42.3-r1.apk
+libucontext (1.5.1-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libucontext-1.5.1-r0.apk
+libucontext-dev (1.5.1-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/libucontext-dev-1.5.1-r0.apk
+linux-pam-dev (1.7.1-r2) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/linux-pam-dev-1.7.1-r2.apk
+lz4-libs (1.10.0-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/lz4-libs-1.10.0-r1.apk
+lz4-dev (1.10.0-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/lz4-dev-1.10.0-r1.apk
+mpdecimal (4.0.1-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/mpdecimal-4.0.1-r0.apk
+python3 (3.14.10-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/python3-3.14.10-r1.apk
+samurai (1.2-r8) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/samurai-1.2-r8.apk
+meson (1.11.1-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/meson-1.11.1-r0.apk
+musl-libintl (1.2.6-r3) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/musl-libintl-1.2.6-r3.apk
+os-release (3.24.2-r0) https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main/x86_64/os-release-3.24.2-r0.apk
+scanelf (1.3.9-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/scanelf-1.3.9-r1.apk
+pax-utils (1.3.9-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/pax-utils-1.3.9-r1.apk
+pcre2 (10.49-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/pcre2-10.49-r0.apk
+py3-elftools (0.32-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/py3-elftools-0.32-r1.apk
+py3-markupsafe (3.0.3-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/py3-markupsafe-3.0.3-r1.apk
+py3-jinja2 (3.1.6-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/py3-jinja2-3.1.6-r1.apk
+sqlite (3.53.4-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/sqlite-3.53.4-r0.apk
+sqlite-dev (3.53.4-r0) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/sqlite-dev-3.53.4-r0.apk
+util-linux-dev (2.42.3-r1) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/util-linux-dev-2.42.3-r1.apk
+wget (1.25.0-r3) https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/wget-1.25.0-r3.apk
+2026/10/30 18:22:53 DEBU cache hit (busybox-binsh)
+2026/10/30 18:22:53 DEBU cache hit (acl-dev)
+2026/10/30 18:22:53 DEBU cache hit (acl-libs)
+2026/10/30 18:22:53 DEBU cache hit (attr-dev)
+2026/10/30 18:22:53 DEBU cache hit (jansson)
+2026/10/30 18:22:53 DEBU cache hit (zlib)
+2026/10/30 18:22:53 DEBU cache hit (ncurses-terminfo-base)
+2026/10/30 18:22:53 DEBU cache hit (pkgconf)
+2026/10/30 18:22:53 DEBU cache hit (coreutils-env)
+2026/10/30 18:22:53 DEBU cache hit (coreutils-fmt)
+2026/10/30 18:22:53 DEBU cache hit (libgcc)
+2026/10/30 18:22:53 DEBU cache hit (coreutils-sha512sum)
+2026/10/30 18:22:53 DEBU cache hit (utmps-libs)
+2026/10/30 18:22:53 DEBU cache hit (ca-certificates-bundle)
+2026/10/30 18:22:53 DEBU cache hit (readline)
+2026/10/30 18:22:53 DEBU cache hit (gdbm)
+2026/10/30 18:22:53 DEBU cache hit (libncursesw)
+2026/10/30 18:22:53 DEBU cache hit (skalibs-libs)
+2026/10/30 18:22:53 DEBU cache hit (libattr)
+2026/10/30 18:22:53 DEBU cache hit (kmod-libs)
+2026/10/30 18:22:53 DEBU cache hit (xz-libs)
+2026/10/30 18:22:53 DEBU cache hit (gperf)
+2026/10/30 18:22:53 DEBU cache hit (kmod-dev)
+2026/10/30 18:22:53 DEBU cache hit (zstd-dev)
+2026/10/30 18:22:53 DEBU cache hit (xz)
+2026/10/30 18:22:53 DEBU cache hit (zlib-dev)
+2026/10/30 18:22:53 DEBU cache hit (zstd)
+2026/10/30 18:22:53 DEBU cache hit (xz-dev)
+2026/10/30 18:22:53 DEBU cache hit (libcap-dev)
+2026/10/30 18:22:53 DEBU cache hit (libexpat)
+2026/10/30 18:22:53 DEBU cache hit (libuuid)
+2026/10/30 18:22:53 DEBU cache hit (bash)
+2026/10/30 18:22:53 DEBU cache hit (coreutils)
+2026/10/30 18:22:53 DEBU cache hit (busybox)
+2026/10/30 18:22:53 DEBU cache hit (musl)
+2026/10/30 18:22:53 DEBU cache hit (libfdisk)
+2026/10/30 18:22:53 DEBU cache hit (libeconf)
+2026/10/30 18:22:53 INFO installing musl (1.2.6-r3)
+2026/10/30 18:22:53 INFO installing acl-libs (2.3.2-r1)
+2026/10/30 18:22:53 INFO installing pkgconf (2.5.1-r0)
+2026/10/30 18:22:53 INFO installing acl-dev (2.3.2-r1)
+2026/10/30 18:22:53 DEBU cache hit (libbz2)
+2026/10/30 18:22:53 INFO installing libattr (2.5.2-r2)
+2026/10/30 18:22:53 INFO installing attr-dev (2.5.2-r2)
+2026/10/30 18:22:53 INFO installing busybox (1.37.0-r31)
+2026/10/30 18:22:53 INFO installing busybox-binsh (1.37.0-r31)
+2026/10/30 18:22:53 INFO installing ncurses-terminfo-base (6.6_p20260516-r0)
+2026/10/30 18:22:53 INFO installing libncursesw (6.6_p20260516-r0)
+2026/10/30 18:22:53 INFO installing readline (8.3.3-r1)
+2026/10/30 18:22:53 INFO installing bash (5.3.9-r1)
+2026/10/30 18:22:53 DEBU cache hit (libstdc++)
+2026/10/30 18:22:53 INFO installing libgcc (15.2.0-r5)
+2026/10/30 18:22:53 INFO installing jansson (2.15.0-r0)
+2026/10/30 18:22:53 INFO installing libstdc++ (15.2.0-r5)
+2026/10/30 18:22:53 INFO installing zlib (1.3.2-r1)
+2026/10/30 18:22:53 DEBU cache hit (zstd-libs)
+2026/10/30 18:22:53 INFO installing zstd-libs (1.5.7-r2)
+2026/10/30 18:22:53 DEBU cache hit (libmount)
+2026/10/30 18:22:53 DEBU cache hit (libssl3)
+2026/10/30 18:22:53 DEBU cache hit (libseccomp-dev)
+2026/10/30 18:22:53 DEBU cache hit (libpanelw)
+2026/10/30 18:22:53 DEBU cache hit (libucontext)
+2026/10/30 18:22:53 DEBU cache hit (libffi)
+2026/10/30 18:22:53 DEBU cache hit (liblastlog2)
+2026/10/30 18:22:53 DEBU cache hit (libucontext-dev)
+2026/10/30 18:22:53 DEBU cache hit (libcap2)
+2026/10/30 18:22:53 DEBU cache hit (libseccomp)
+2026/10/30 18:22:53 DEBU cache hit (linux-pam-dev)
+2026/10/30 18:22:53 DEBU cache hit (libsmartcols)
+2026/10/30 18:22:53 DEBU cache hit (musl-libintl)
+2026/10/30 18:22:53 DEBU cache hit (lz4-dev)
+2026/10/30 18:22:53 DEBU cache hit (os-release)
+2026/10/30 18:22:53 DEBU cache hit (libidn2)
+2026/10/30 18:22:53 DEBU cache hit (samurai)
+2026/10/30 18:22:53 DEBU cache hit (libblkid)
+2026/10/30 18:22:53 DEBU cache hit (lz4-libs)
+2026/10/30 18:22:53 DEBU cache hit (openssl-dev)
+2026/10/30 18:22:53 DEBU cache hit (scanelf)
+2026/10/30 18:22:53 DEBU cache hit (mpdecimal)
+2026/10/30 18:22:53 DEBU cache hit (py3-markupsafe)
+2026/10/30 18:22:53 DEBU cache hit (pax-utils)
+2026/10/30 18:22:53 DEBU cache hit (util-linux-dev)
+2026/10/30 18:22:53 DEBU cache hit (linux-pam)
+2026/10/30 18:22:53 DEBU cache hit (py3-jinja2)
+2026/10/30 18:22:53 DEBU cache hit (py3-elftools)
+2026/10/30 18:22:53 DEBU cache hit (sqlite-dev)
+2026/10/30 18:22:53 DEBU cache hit (wget)
+2026/10/30 18:22:53 DEBU cache hit (pcre2)
+2026/10/30 18:22:53 DEBU cache hit (sqlite-libs)
+2026/10/30 18:22:53 DEBU cache hit (libunistring)
+2026/10/30 18:22:53 DEBU cache hit (libcrypto3)
+2026/10/30 18:22:53 DEBU cache hit (sqlite)
+2026/10/30 18:22:53 DEBU cache hit (meson)
+2026/10/30 18:22:53 DEBU cache hit (binutils)
+2026/10/30 18:22:53 INFO installing binutils (2.45.1-r1)
+2026/10/30 18:22:53 INFO installing ca-certificates-bundle (20261020-r2)
+2026/10/30 18:22:53 INFO installing coreutils-env (9.11-r0)
+2026/10/30 18:22:53 INFO installing coreutils-fmt (9.11-r0)
+2026/10/30 18:22:53 INFO installing libcrypto3 (3.5.9-r0)
+2026/10/30 18:22:53 INFO installing coreutils-sha512sum (9.11-r0)
+2026/10/30 18:22:53 INFO installing skalibs-libs (2.15.0.0-r0)
+2026/10/30 18:22:53 INFO installing utmps-libs (0.1.3.3-r0)
+2026/10/30 18:22:53 INFO installing coreutils (9.11-r0)
+2026/10/30 18:22:53 INFO installing gdbm (1.26-r0)
+2026/10/30 18:22:53 INFO installing gperf (3.3-r0)
+2026/10/30 18:22:53 INFO installing xz-libs (5.8.4-r0)
+2026/10/30 18:22:53 INFO installing kmod-libs (34.2-r1)
+2026/10/30 18:22:53 INFO installing libssl3 (3.5.9-r0)
+2026/10/30 18:22:53 INFO installing openssl-dev (3.5.9-r0)
+2026/10/30 18:22:53 INFO installing xz (5.8.4-r0)
+2026/10/30 18:22:53 INFO installing xz-dev (5.8.4-r0)
+2026/10/30 18:22:53 INFO installing zstd (1.5.7-r2)
+2026/10/30 18:22:53 INFO installing zstd-dev (1.5.7-r2)
+2026/10/30 18:22:53 INFO installing zlib-dev (1.3.2-r1)
+2026/10/30 18:22:53 INFO installing kmod-dev (34.2-r1)
+2026/10/30 18:22:53 INFO installing libeconf (0.8.3-r0)
+2026/10/30 18:22:53 INFO installing libblkid (2.42.3-r1)
+2026/10/30 18:22:53 INFO installing libbz2 (1.0.8-r6)
+2026/10/30 18:22:53 INFO installing libcap2 (2.78-r0)
+2026/10/30 18:22:53 DEBU cache hit (linux-headers)
+2026/10/30 18:22:53 INFO installing linux-headers (7.0.0-r1)
+2026/10/30 18:22:53 INFO installing libcap-dev (2.78-r0)
+2026/10/30 18:22:53 INFO installing libexpat (2.9.0-r0)
+2026/10/30 18:22:53 INFO installing libuuid (2.42.3-r1)
+2026/10/30 18:22:53 INFO installing libfdisk (2.42.3-r1)
+2026/10/30 18:22:53 INFO installing libffi (3.5.2-r1)
+2026/10/30 18:22:53 INFO installing libunistring (1.4.2-r0)
+2026/10/30 18:22:53 INFO installing libidn2 (2.3.8-r0)
+2026/10/30 18:22:53 INFO installing linux-pam (1.7.1-r2)
+2026/10/30 18:22:53 INFO installing sqlite-libs (3.53.4-r0)
+2026/10/30 18:22:53 INFO installing liblastlog2 (2.42.3-r1)
+2026/10/30 18:22:53 INFO installing libmount (2.42.3-r1)
+2026/10/30 18:22:53 INFO installing libpanelw (6.6_p20260516-r0)
+2026/10/30 18:22:53 INFO installing libseccomp (2.6.1-r0)
+2026/10/30 18:22:53 INFO installing libseccomp-dev (2.6.1-r0)
+2026/10/30 18:22:53 INFO installing libsmartcols (2.42.3-r1)
+2026/10/30 18:22:53 INFO installing libucontext (1.5.1-r0)
+2026/10/30 18:22:53 INFO installing libucontext-dev (1.5.1-r0)
+2026/10/30 18:22:53 INFO installing linux-pam-dev (1.7.1-r2)
+2026/10/30 18:22:53 INFO installing lz4-libs (1.10.0-r1)
+2026/10/30 18:22:53 INFO installing lz4-dev (1.10.0-r1)
+2026/10/30 18:22:53 INFO installing mpdecimal (4.0.1-r0)
+2026/10/30 18:22:53 DEBU cache hit (python3)
+2026/10/30 18:22:53 INFO installing python3 (3.14.10-r1)
+2026/10/30 18:22:53 INFO installing samurai (1.2-r8)
+2026/10/30 18:22:53 INFO installing meson (1.11.1-r0)
+2026/10/30 18:22:53 INFO installing musl-libintl (1.2.6-r3)
+2026/10/30 18:22:53 INFO installing os-release (3.24.2-r0)
+2026/10/30 18:22:53 INFO installing scanelf (1.3.9-r1)
+2026/10/30 18:22:53 INFO installing pax-utils (1.3.9-r1)
+2026/10/30 18:22:53 INFO installing pcre2 (10.49-r0)
+2026/10/30 18:22:53 INFO installing py3-elftools (0.32-r1)
+2026/10/30 18:22:53 INFO installing py3-markupsafe (3.0.3-r1)
+2026/10/30 18:22:53 INFO installing py3-jinja2 (3.1.6-r1)
+2026/10/30 18:22:53 INFO installing sqlite (3.53.4-r0)
+2026/10/30 18:22:53 INFO installing sqlite-dev (3.53.4-r0)
+2026/10/30 18:22:53 INFO installing util-linux-dev (2.42.3-r1)
+2026/10/30 18:22:53 INFO installing wget (1.25.0-r3)
+2026/10/30 18:22:53 DEBU resolving APK DB location
+2026/10/30 18:22:53 DEBU created symlink for lib/apk
+2026/10/30 18:22:53 DEBU generating supervision tree
+2026/10/30 18:22:53 DEBU /etc/ld.so.conf not found, skipping /etc/ld.so.cache update: file does not exist
+2026/10/30 18:22:53 DEBU finished building filesystem
+2026/10/30 18:22:53 DEBU using /tmp/apko-temp-331970663/apko-x86_64.tar.gz for image layer
+2026/10/30 18:22:53 DEBU pushed /tmp/apko-temp-331970663/apko-x86_64.tar.gz as /tmp/bubblewrap-guest-2459432674
+2026/10/30 18:22:53 DEBU successfully built workspace with apko
+2026/10/30 18:22:53 DEBU ImgRef = /tmp/bubblewrap-guest-2459432674
+2026/10/30 18:22:53 DEBU executing: bwrap --bind /tmp/bubblewrap-guest-2459432674 / --bind /tmp/melange-workspace-4185283389 /home/build --bind /etc/resolv.conf /etc/resolv.conf --unshare-pid --die-with-parent --dev /dev --proc /proc --ro-bind /sys /sys --chdir /home/build --clearenv --unshare-user --uid 1000 --gid 1000 --cap-add CAP_CHOWN --cap-add CAP_DAC_OVERRIDE --cap-add CAP_FSETID --cap-add CAP_FOWNER --cap-add CAP_MKNOD --cap-add CAP_NET_RAW --cap-add CAP_SETGID --cap-add CAP_SETUID --cap-add CAP_SETFCAP --cap-add CAP_SETPCAP --cap-add CAP_NET_BIND_SERVICE --cap-add CAP_SYS_CHROOT --cap-add CAP_KILL --cap-add CAP_AUDIT_WRITE --new-session --setenv SOURCE_DATE_EPOCH 0 --setenv GOMODCACHE /var/cache/melange/gomodcache --setenv UV_CACHE_DIR /var/cache/melange/uv --setenv PIP_CACHE_DIR /var/cache/melange/pip --setenv COMPOSER_CACHE_DIR /var/cache/melange/composer --setenv npm_config_cache /var/cache/melange/npm --setenv HOME /home/build --setenv GOPATH /home/build/.cache/go /bin/sh -c [ -x /sbin/ldconfig ] && /sbin/ldconfig /lib || true
+2026/10/30 18:22:53 WARN bwrap: Can't mount proc on /proc: Operation not permitted
+2026/10/30 18:22:53 DEBU deleting workspace dir /tmp/melange-workspace-4185283389
+2026/10/30 18:22:53 DEBU removing image path /tmp/bubblewrap-guest-2459432674
+2026/10/30 18:22:53 ERRO failed to build package: unable to start pod: exit status 1

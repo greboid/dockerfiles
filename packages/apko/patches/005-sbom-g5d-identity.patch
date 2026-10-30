@@ -1,6 +1,8 @@
+diff --git a/pkg/sbom/generator/spdx/spdx.go b/pkg/sbom/generator/spdx/spdx.go
+index d58fa244..14d4ddfe 100644
 --- a/pkg/sbom/generator/spdx/spdx.go
 +++ b/pkg/sbom/generator/spdx/spdx.go
-@@ -33,6 +33,7 @@
+@@ -38,6 +38,7 @@ import (
  
  	"chainguard.dev/apko/pkg/apk/apk"
  	apkfs "chainguard.dev/apko/pkg/apk/fs"
@@ -8,7 +10,7 @@
  	"chainguard.dev/apko/pkg/sbom/generator"
  	"chainguard.dev/apko/pkg/sbom/options"
  )
-@@ -107,12 +108,11 @@
+@@ -112,12 +113,11 @@ func (sx *SPDX) Generate(ctx context.Context, opts *options.Options, path string
  			Created: opts.ImageInfo.SourceDateEpoch.Format(time.RFC3339),
  			Creators: []string{
  				fmt.Sprintf("Tool: apko (%s)", version.GetVersionInfo().GitVersion),
@@ -22,7 +24,7 @@
  		Packages:       []Package{},
  		Relationships:  []Relationship{},
  		LicensingInfos: []LicensingInfo{},
-@@ -173,6 +173,15 @@
+@@ -195,6 +195,15 @@ func (sx *SPDX) Generate(ctx context.Context, opts *options.Options, path string
  	}
  	doc.Packages = dedupedPackages
  
@@ -38,7 +40,7 @@
  	if err := renderDoc(doc, path); err != nil {
  		return fmt.Errorf("rendering document: %w", err)
  	}
-@@ -576,12 +585,11 @@
+@@ -766,12 +775,11 @@ func (sx *SPDX) GenerateIndex(opts *options.Options, path string) error {
  			Created: opts.ImageInfo.SourceDateEpoch.Format(time.RFC3339),
  			Creators: []string{
  				fmt.Sprintf("Tool: apko (%s)", version.GetVersionInfo().GitVersion),
@@ -52,7 +54,7 @@
  		Packages:      []Package{},
  		Relationships: []Relationship{},
  	}
-@@ -658,6 +666,14 @@
+@@ -848,6 +856,14 @@ func (sx *SPDX) GenerateIndex(opts *options.Options, path string) error {
  		addSourcePackage(opts.ImageInfo.VCSUrl, doc, &indexPackage, opts)
  	}
  
@@ -67,6 +69,8 @@
  	if err := renderDoc(doc, path); err != nil {
  		return fmt.Errorf("rendering document: %w", err)
  	}
+diff --git a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/both-describes-methods.spdx.json b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/both-describes-methods.spdx.json
+index 158110cc..c855353a 100644
 --- a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/both-describes-methods.spdx.json
 +++ b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/both-describes-methods.spdx.json
 @@ -6,12 +6,12 @@
@@ -84,6 +88,8 @@
    "documentDescribes": [
      "SPDXRef-Package-ImageLayer-"
    ],
+diff --git a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/custom-license.spdx.json b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/custom-license.spdx.json
+index 9e2ae2ff..9811aa52 100644
 --- a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/custom-license.spdx.json
 +++ b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/custom-license.spdx.json
 @@ -6,12 +6,12 @@
@@ -101,6 +107,8 @@
    "documentDescribes": [
      "SPDXRef-Package-ImageLayer-"
    ],
+diff --git a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/describes-relationship.spdx.json b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/describes-relationship.spdx.json
+index a97bc223..1cd51bdb 100644
 --- a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/describes-relationship.spdx.json
 +++ b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/describes-relationship.spdx.json
 @@ -6,12 +6,12 @@
@@ -118,6 +126,8 @@
    "documentDescribes": [
      "SPDXRef-Package-ImageLayer-"
    ],
+diff --git a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/no-supplier.spdx.json b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/no-supplier.spdx.json
+index ac17f96e..7054b2dd 100644
 --- a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/no-supplier.spdx.json
 +++ b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/no-supplier.spdx.json
 @@ -6,12 +6,12 @@
@@ -135,6 +145,8 @@
    "documentDescribes": [
      "SPDXRef-Package-ImageLayer-"
    ],
+diff --git a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/package-deduplicating.spdx.json b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/package-deduplicating.spdx.json
+index 9ef1a539..b3838a6b 100644
 --- a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/package-deduplicating.spdx.json
 +++ b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/package-deduplicating.spdx.json
 @@ -6,12 +6,12 @@
@@ -152,6 +164,8 @@
    "documentDescribes": [
      "SPDXRef-Package-ImageLayer-"
    ],
+diff --git a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/unbound-package-dedupe.spdx.json b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/unbound-package-dedupe.spdx.json
+index 7260e81b..b7346d48 100644
 --- a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/unbound-package-dedupe.spdx.json
 +++ b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/unbound-package-dedupe.spdx.json
 @@ -6,12 +6,12 @@

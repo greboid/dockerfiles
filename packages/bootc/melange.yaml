@@ -1,0 +1,145 @@
+package:
+  name: bootc
+  version: 1.17.3
+  epoch: 0
+  description: Bootable container images - bootc for Alpine (no SELinux)
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      license: MIT OR Apache-2.0
+  dependencies:
+    runtime:
+      - ostree=2025.7-r1
+      - pcre2
+      - ca-certificates-bundle=20261020-r2
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - os-release=3.24.2-r0
+      - busybox=1.37.0-r31
+      - ca-certificates-bundle=20261020-r2
+      - rust-toolchain=1.98.1-r1
+      - gcc=15.2.0-r5
+      - musl-dev=1.2.6-r3
+      - pkgconf=2.5.1-r0
+      - ostree-dev=2025.7-r1
+      - openssl-dev=3.5.9-r0
+      - pcre2-dev
+      - patch
+      - zstd=1.5.7-r2
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://github.com/bootc-dev/bootc/releases/download/v${{package.version}}/bootc-${{package.version}}.tar.zstd
+      expected-sha256: 5841cd9f7d684fb604e1f12112fa6373bd61bb8124f38f410fe007722c474280
+      extract: false
+  - uses: fetch
+    with:
+      uri: https://github.com/bootc-dev/bootc/releases/download/v${{package.version}}/bootc-${{package.version}}-vendor.tar.zstd
+      expected-sha256: 86539ca4458b6c23614bdcc2aecf1b1104264767268bdfd26b59360520e1217c
+      extract: false
+  - name: Unpack source and vendored crates
+    runs: |
+      zstd -d -c bootc-${{package.version}}.tar.zstd | tar -x
+      zstd -d -c bootc-${{package.version}}-vendor.tar.zstd | tar -x -C bootc-${{package.version}}
+      test -d bootc-${{package.version}}/vendor
+      # cargo only reads .cargo/config.toml; merge in the vendored-sources
+      # configuration shipped as .cargo/vendor-config.toml.
+      cat bootc-${{package.version}}/.cargo/vendor-config.toml >> \
+        bootc-${{package.version}}/.cargo/config.toml
+      grep -q vendored-sources bootc-${{package.version}}/.cargo/config.toml
+      patch -d bootc-${{package.version}} -p1 < \
+        patches/001-musl-super-magic-cast.patch
+  - name: Build
+    runs: |
+      # Alpine has no SELinux; drop the default selinux feature and keep
+      # install-to-disk so `bootc install` can lay down disks. The workspace
+      # xtask tooling does not build on musl, so build the shipped binaries
+      # directly. PCRE2_SYS_STATIC=0 links the system pcre2.
+      cd bootc-${{package.version}}
+      # Dynamic musl binary (matches the rest of the org's packages); the
+      # toolchain otherwise defaults to static-pie, which cannot link the
+      # dynamic ostree/glib stack.
+      RUSTFLAGS="-C target-feature=-crt-static" PCRE2_SYS_STATIC=0 \
+        cargo build --release --offline \
+        --no-default-features --features install-to-disk \
+        -p bootc -p bootc-initramfs-setup -p system-reinstall-bootc
+  - name: Install
+    runs: |
+      cd bootc-${{package.version}}
+      destdir="${{targets.destdir}}"
+      install -Dm 0755 target/release/bootc "$destdir/usr/bin/bootc"
+      install -Dm 0755 target/release/system-reinstall-bootc \
+        "$destdir/usr/bin/system-reinstall-bootc"
+      install -d -m 0755 \
+        "$destdir/usr/lib/bootc/bound-images.d" \
+        "$destdir/usr/lib/bootc/kargs.d" \
+        "$destdir/usr/lib/bootc/install"
+      ln -s ../../../sysroot/ostree/bootc/storage \
+        "$destdir/usr/lib/bootc/storage"
+      install -Dm 0755 target/release/bootc-initramfs-setup \
+        "$destdir/usr/lib/bootc/initramfs-setup"
+      install -Dm 0755 crates/cli/bootc-generator-stub \
+        "$destdir/usr/lib/systemd/system-generators/bootc-systemd-generator"
+      install -d -m 0755 "$destdir/usr/lib/dracut/modules.d/51bootc"
+      install -m 0755 crates/initramfs/dracut/module-setup.sh \
+        "$destdir/usr/lib/dracut/modules.d/51bootc/"
+      install -Dm 0644 crates/initramfs/bootc-root-setup.service \
+        "$destdir/usr/lib/systemd/system/bootc-root-setup.service"
+      install -Dm 0644 -t "$destdir/usr/lib/systemd/system" \
+        systemd/*.service systemd/*.timer systemd/*.path systemd/*.target
+      install -d -m 0755 \
+        "$destdir/usr/share/doc/bootc/baseimage/base/usr/lib/ostree" \
+        "$destdir/usr/share/doc/bootc/baseimage/base/sysroot"
+      install -Dm 0644 baseimage/base/usr/lib/ostree/prepare-root.conf \
+        "$destdir/usr/share/doc/bootc/baseimage/base/usr/lib/ostree/prepare-root.conf"
+      cp -Prf baseimage/dracut \
+        "$destdir/usr/share/doc/bootc/baseimage/dracut"
+      cp -Prf baseimage/systemd \
+        "$destdir/usr/share/doc/bootc/baseimage/systemd"
+      install -Dm 0644 LICENSE-MIT \
+        "$destdir/usr/share/licenses/${{package.name}}/LICENSE-MIT"
+      install -Dm 0644 LICENSE-APACHE \
+        "$destdir/usr/share/licenses/${{package.name}}/LICENSE-APACHE"
+  - uses: strip
+
+test:
+  environment:
+    contents:
+      keyring:
+        - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox=1.37.0-r31
+  pipeline:
+    - name: Binary reports its version
+      runs: |
+        /usr/bin/bootc --version
+    - name: Initramfs and systemd integration shipped
+      runs: |
+        test -x /usr/lib/bootc/initramfs-setup
+        test -f /usr/lib/dracut/modules.d/51bootc/module-setup.sh
+        test -f /usr/lib/systemd/system/bootc-root-setup.service
+        test -f /usr/lib/systemd/system/bootc-fetch-apply-updates.timer
+        test -f /usr/lib/systemd/system/bootc-fetch-apply-updates.service
+        test -d /usr/share/doc/bootc/baseimage/dracut
+
+update:
+  enabled: true
+  github:
+    identifier: bootc-dev/bootc
+    strip-prefix: v

@@ -1,6 +1,6 @@
 package:
   name: centauri
-  version: 2.9.1
+  version: 2.9.2
   epoch: 0
   description: TLS front proxy with automatic certificates via lego
   target-architecture:
@@ -37,7 +37,7 @@ vars:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: d4b80f57858ec3773f2d566f7c73cd1c5f784b71
+      expected-commit: 8e96de2f2f0d67818499f89c8bc8b754f02ba3de
       repository: https://github.com/csmith/centauri
       tag: v${{package.version}}
   - uses: go/build
