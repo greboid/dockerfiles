@@ -155,8 +155,8 @@ pipeline:
       # PID 1 entry point; busybox does not ship /sbin/init
       install -d "${{targets.destdir}}/sbin"
       ln -sf /usr/lib/systemd/systemd "${{targets.destdir}}/sbin/init"
-      install -Dm 0644 LICENSES/LGPL-2.1-or-later.txt \
-        "${{targets.destdir}}/usr/share/licenses/${{package.name}}/LGPL-2.1-or-later.txt"
+      install -Dm 0644 LICENSE.LGPL2.1 \
+        "${{targets.destdir}}/usr/share/licenses/${{package.name}}/LICENSE.LGPL2.1"
       # Boot EFI artifacts ship in the systemd-boot / systemd-efistub
       # subpackages; remove them from the main package to avoid conflicts.
       rm -rf "${{targets.destdir}}/usr/lib/systemd/boot"
