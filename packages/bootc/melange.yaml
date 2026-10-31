@@ -103,6 +103,10 @@ pipeline:
         "$destdir/usr/share/doc/bootc/baseimage/base/sysroot"
       install -Dm 0644 baseimage/base/usr/lib/ostree/prepare-root.conf \
         "$destdir/usr/share/doc/bootc/baseimage/base/usr/lib/ostree/prepare-root.conf"
+      # The reference base carries its own ostree symlink and sysroot dir;
+      # bootc's lint recurses into this tree and expects both.
+      cp -PfT baseimage/base/ostree \
+        "$destdir/usr/share/doc/bootc/baseimage/base/ostree"
       cp -Prf baseimage/dracut \
         "$destdir/usr/share/doc/bootc/baseimage/dracut"
       cp -Prf baseimage/systemd \
