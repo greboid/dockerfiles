@@ -1,7 +1,7 @@
 package:
   name: dracut
-  version: 111
-  epoch: 2
+  version: 112
+  epoch: 0
   description: Generic initramfs generator built without the eudev dependency chain
   target-architecture:
     - x86_64
@@ -38,7 +38,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://github.com/dracut-ng/dracut-ng/archive/refs/tags/${{package.version}}.tar.gz
-      expected-sha256: ca949190692e91611ef16ea3642c0f764f63948860f3f742524310728c991493
+      expected-sha256: 839d21eb4bd27bb0ee40d74c9da46df088c2e1425fcd8c3ea62b7e3a3dd28a91
   - name: Configure
     runs: |
       # dracut-cpio (rust) is optional: plain cpio is the default and the

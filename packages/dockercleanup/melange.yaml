@@ -69,6 +69,7 @@ test:
         echo "$out" | grep -q "unable to clean perform cleanup"
 update:
   enabled: true
-  github:
+  forgejo:
     identifier: greboid/dockercleanup
+    uses-tags: true
     strip-prefix: v
