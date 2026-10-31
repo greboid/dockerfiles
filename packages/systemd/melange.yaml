@@ -152,9 +152,9 @@ pipeline:
   - name: Install
     runs: |
       DESTDIR="${{targets.destdir}}" meson install -C output
-      # PID 1 entry point; busybox does not ship /sbin/init
-      install -d "${{targets.destdir}}/sbin"
-      ln -sf /usr/lib/systemd/systemd "${{targets.destdir}}/sbin/init"
+      # No /sbin/init entry point: the image boots with an explicit
+      # init=/usr/lib/systemd/systemd kernel argument (the usrmerge linter
+      # forbids shipping /sbin paths, and Alpine is not usrmerged).
       install -Dm 0644 LICENSE.LGPL2.1 \
         "${{targets.destdir}}/usr/share/licenses/${{package.name}}/LICENSE.LGPL2.1"
       # Boot EFI artifacts ship in the systemd-boot / systemd-efistub
@@ -201,10 +201,10 @@ subpackages:
       - name: Install the UKI builder
         runs: |
           install -Dm 0755 src/ukify/ukify.py \
-            "${{targets.subpkgdir}}/usr/sbin/ukify"
+            "${{targets.subpkgdir}}/usr/bin/ukify"
           _v=${{package.version}}
           sed -i "s|{{PROJECT_VERSION}} ({{VERSION_TAG}})|${_v%%.*} (${_v})|" \
-            "${{targets.subpkgdir}}/usr/sbin/ukify"
+            "${{targets.subpkgdir}}/usr/bin/ukify"
           mkdir -p "${{targets.subpkgdir}}/usr/lib/systemd/boot"
           cp -r src/boot/hwids "${{targets.subpkgdir}}/usr/lib/systemd/boot/"
     dependencies:
@@ -228,7 +228,6 @@ test:
     - name: PID 1 binary reports its version
       runs: |
         /usr/lib/systemd/systemd --version | grep -q "systemd ${{package.version}}"
-        test "$(readlink /sbin/init)" = /usr/lib/systemd/systemd
     - name: Core tools are present
       runs: |
         for exe in /usr/bin/systemctl /usr/bin/journalctl /usr/bin/udevadm \
@@ -241,8 +240,8 @@ test:
       runs: |
         test -s /usr/lib/systemd/boot/efi/systemd-bootx64.efi
         test -s /usr/lib/systemd/boot/efi/linuxx64.efi.stub
-        test -x /usr/sbin/ukify
-        /usr/sbin/ukify --version
+        test -x /usr/bin/ukify
+        /usr/bin/ukify --version
     - name: Unit search path contains the vendor directories
       runs: |
         test -d /usr/lib/systemd/system
