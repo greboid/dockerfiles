@@ -1,0 +1,87 @@
+package:
+  name: dracut
+  version: 111
+  epoch: 2
+  description: Generic initramfs generator built without the eudev dependency chain
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      license: GPL-2.0-or-later
+  dependencies:
+    runtime:
+      - busybox-binsh=1.37.0-r31
+      - kmod=34.2-r1
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - os-release=3.24.2-r0
+      - busybox=1.37.0-r31
+      - ca-certificates-bundle=20261020-r2
+      - pkgconf=2.5.1-r0
+      - kmod-dev=34.2-r1
+      - musl-fts-dev
+      - bash=5.3.9-r1
+      - coreutils=9.11-r0
+      - gcc=15.2.0-r5
+      - musl-dev=1.2.6-r3
+      - make=4.4.1-r4
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://github.com/dracut-ng/dracut-ng/archive/refs/tags/${{package.version}}.tar.gz
+      expected-sha256: ca949190692e91611ef16ea3642c0f764f63948860f3f742524310728c991493
+  - name: Configure
+    runs: |
+      # dracut-cpio (rust) is optional: plain cpio is the default and the
+      # enhanced cpio is not needed for our initramfs.
+      ./configure \
+        --prefix=/usr \
+        --sysconfdir=/etc \
+        --disable-dracut-cpio \
+        --disable-documentation
+  - name: Build
+    runs: |
+      make -j"$(nproc)"
+  - name: Install
+    runs: |
+      make install DESTDIR="${{targets.destdir}}"
+      install -Dm 0644 COPYING \
+        "${{targets.destdir}}/usr/share/licenses/${{package.name}}/COPYING"
+
+test:
+  environment:
+    contents:
+      keyring:
+        - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox=1.37.0-r31
+  pipeline:
+    - name: Generator and C helpers are present
+      runs: |
+        /usr/bin/dracut --version
+        test -x /usr/lib/dracut/dracut-install
+        test -x /usr/lib/dracut/skipcpio
+        test -x /usr/lib/dracut/dracut-util
+    - name: Modules ship the base set
+      runs: |
+        test -d /usr/lib/dracut/modules.d/80base
+        test -d /usr/lib/dracut/modules.d/70kernel-modules
+        test -d /usr/lib/dracut/modules.d/74rootfs-block
+
+update:
+  enabled: true
+  github:
+    identifier: dracut-ng/dracut-ng
