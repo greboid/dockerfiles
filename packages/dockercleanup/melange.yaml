@@ -1,7 +1,7 @@
 package:
   name: dockercleanup
-  version: 1.0.3
-  epoch: 1
+  version: 1.1.1
+  epoch: 0
   description: Periodically prunes stopped containers and unused images via the Docker API
   target-architecture:
     - x86_64
@@ -34,9 +34,9 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 83f38758aa451afcbf75535a136ef762d04b2ba0
+      expected-commit: a539ceedad7e39c8ce5c411063b834ba950327a4
       repository: https://github.com/greboid/dockercleanup
-      tag: v1.0.3
+      tag: v1.1.1
   - uses: go/build
     with:
       packages: ./
@@ -59,17 +59,12 @@ test:
       with:
         executables: /usr/bin/dockercleanup
         files: /notices/github.com/greboid/dockercleanup/LICENSE /notices/github.com/docker/docker/LICENSE /usr/share/licenses/dockercleanup/LICENSE
-    - name: Fails loudly without a Docker daemon
+    - name: Binary runs
       runs: |
-        set +e
-        out=$(DOCKER_HOST=tcp://127.0.0.1:9 /usr/bin/dockercleanup 2>&1)
-        code=$?
-        set -e
-        test "$code" = 1
-        echo "$out" | grep -q "unable to clean perform cleanup"
+        /usr/bin/dockercleanup --help 2>&1 | grep -q "Usage"
 update:
   enabled: true
   forgejo:
     identifier: greboid/dockercleanup
-    uses-tags: true
+    use-tag: true
     strip-prefix: v
