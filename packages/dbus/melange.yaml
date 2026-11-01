@@ -1,0 +1,144 @@
+package:
+  name: dbus
+  version: 1.16.2
+  epoch: 3
+  description: Freedesktop.org message bus system (systemd socket activation)
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      license: AFL-2.1 OR GPL-2.0-or-later
+  dependencies:
+    runtime:
+      # libdbus/daemon library deps (expat, libsystemd) are emitted
+      # automatically as so: binds by melange's ELF scanning; explicit
+      # versioned systemd pins here would bootstrap-block against the
+      # systemd epoch bump.
+      - ca-certificates-bundle
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates-bundle=20261020-r2
+      - os-release=3.24.2-r0
+      - gcc=15.2.0-r5
+      - musl-dev=1.2.6-r3
+      - meson=1.11.1-r0
+      - pkgconf=2.5.1-r0
+      - expat-dev=2.9.0-r0
+      # libsystemd for socket activation + sd_notify (Type=notify);
+      # Alpine's dbus omits this, which is why the stock package cannot
+      # run under dbus.socket ("compiled without systemd support").
+      - systemd-dev=262.1-r0
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://dbus.freedesktop.org/releases/dbus/dbus-${{package.version}}.tar.xz
+      expected-sha256: 0ba2a1a4b16afe7bceb2c07e9ce99a8c2c3508e5dec290dbb643384bd6beb7e2
+  - name: Configure
+    runs: |
+      meson setup output \
+        --prefix=/usr \
+        --sysconfdir=/etc \
+        --localstatedir=/var \
+        -Dsystemd=enabled \
+        -Dsystem_pid_file=/run/dbus/dbus.pid \
+        -Dmodular_tests=disabled \
+        -Dx11_autolaunch=disabled \
+        -Dxml_docs=disabled \
+        -Ddoxygen_docs=disabled \
+        -Dducktype_docs=disabled
+  - name: Build
+    runs: |
+      meson compile -C output
+  - name: Install
+    runs: |
+      DESTDIR="${{targets.destdir}}" meson install --no-rebuild -C output
+      install -Dm 0644 COPYING \
+        "${{targets.destdir}}/usr/share/licenses/${{package.name}}/COPYING"
+
+subpackages:
+  - name: dbus-libs
+    pipeline:
+      - runs: |
+          install -d "${{targets.subpkgdir}}/usr/lib"
+          mv "${{targets.destdir}}"/usr/lib/libdbus-1.so.* \
+            "${{targets.subpkgdir}}/usr/lib/"
+    dependencies:
+      runtime:
+        - ca-certificates-bundle
+    test:
+      environment:
+        contents:
+          keyring:
+            - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+          repositories:
+            - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+          packages:
+            - busybox=1.37.0-r31
+      pipeline:
+        - name: Client library is present
+          runs: |
+            test -s /usr/lib/libdbus-1.so.3
+  - name: dbus-dev
+    pipeline:
+      - uses: split/dev
+    dependencies:
+      runtime:
+        - dbus=${{package.full-version}}
+        - dbus-libs=${{package.full-version}}
+    test:
+      environment:
+        contents:
+          keyring:
+            - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+          repositories:
+            - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+          packages:
+            - pkgconf=2.5.1-r0
+      pipeline:
+        - name: libdbus is discoverable via pkg-config
+          runs: |
+            pkg-config --modversion dbus-1
+
+test:
+  environment:
+    contents:
+      keyring:
+        - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox=1.37.0-r31
+        - systemd=262.1-r0
+  pipeline:
+    - name: Daemon executes
+      runs: |
+        /usr/bin/dbus-daemon --version
+    - name: Socket-activated unit pair is installed
+      runs: |
+        test -f /usr/lib/systemd/system/dbus.service
+        test -f /usr/lib/systemd/system/dbus.socket
+        grep -q "systemd-activation" /usr/lib/systemd/system/dbus.service
+    - name: Sysusers and tmpfiles fragments are installed
+      runs: |
+        test -f /usr/lib/sysusers.d/dbus.conf
+        test -f /usr/lib/tmpfiles.d/dbus.conf
+
+update:
+  enabled: true
+  github:
+    identifier: dbus/dbus
+    strip-prefix: dbus-
+    use-tag: true
