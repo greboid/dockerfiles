@@ -1,7 +1,7 @@
 package:
   name: osimage-kernel
   version: 7.1.5
-  epoch: 1
+  epoch: 2
   description: Alpine linux-stable kernel repacked into the bootc /usr/lib/modules layout
   target-architecture:
     - x86_64
@@ -35,6 +35,12 @@ environment:
       - systemd=262.1-r1
       - lsblk=2.42.3-r1
       - device-mapper=2.03.35-r3
+      # util-linux blkid: dracut's dmsquash-live and udev-rules modules
+      # inst_multiple it, so the binary AND libblkid.so.1 land in the
+      # initramfs; systemd-udevd's blkid builtin dlopens libblkid at
+      # runtime (busybox blkid is static and dracut would ship no lib,
+      # breaking ID_FS_LABEL detection of the installer media)
+      - blkid=2.42.3-r1
       # kernel source content; must move in lockstep with package.version
       # (linux-stable lives in the Alpine community repository)
       - linux-stable=7.1.5-r0
@@ -139,6 +145,10 @@ test:
         test -s "/usr/lib/modules/$kver/initramfs-install.img"
         lsinitrd "/usr/lib/modules/$kver/initramfs.img" > /tmp/boot-contents
         lsinitrd "/usr/lib/modules/$kver/initramfs-install.img" > /tmp/live-contents
+        # udevd's blkid builtin dlopens libblkid at runtime; without it no
+        # ID_FS_LABEL is ever set and dmsquash-live cannot find the media
+        grep -q libblkid.so.1 /tmp/live-contents
+        grep -q sbin/blkid /tmp/live-contents
         grep -q usr/lib/bootc/initramfs-setup /tmp/boot-contents
         grep -q composefs-setup.sh /tmp/boot-contents
         grep -q remount-root.sh /tmp/boot-contents
