@@ -1,0 +1,2 @@
+--lint-require dev,infodir,libtool/la-files,setuidgid,tempdir,varempty,worldwrite
+--lint-warn usrmerge

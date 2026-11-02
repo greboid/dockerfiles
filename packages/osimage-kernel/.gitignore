@@ -1,0 +1,4 @@
+dist/
+keys/packages.rsa
+keys/packages.rsa.pub
+melange-build.log

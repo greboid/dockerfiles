@@ -1,0 +1,392 @@
+2026/11/02 19:05:45 INFO melange version  with runner  building [melange.yaml] at commit  for arches [amd64]
+2026/11/02 19:05:45 INFO melange v0.61.1+dirty with runner bubblewrap is building:
+2026/11/02 19:05:45 INFO populating workspace /tmp/melange-workspace-2671347930 from .
+2026/11/02 19:05:46 INFO image configuration:
+2026/11/02 19:05:46 INFO   contents:
+2026/11/02 19:05:46 INFO     build repositories: [https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main]
+2026/11/02 19:05:46 INFO     runtime repositories: []
+2026/11/02 19:05:46 INFO     repositories: [https://dl-cdn.alpinelinux.org/alpine/v3.24/community https://dl-cdn.alpinelinux.org/alpine/v3.24/main]
+2026/11/02 19:05:46 INFO     keyring:      [https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub keys/local.rsa.pub keys/packages@f3acd02d7d98309c4ae1d1bf92e58fe2673383ee9b816cb8b0ef8a5eac56c6bc.rsa.pub]
+2026/11/02 19:05:46 INFO     packages:     [acl-libs=2.3.2-r1 apk-tools=3.0.8-r0 bash=5.3.9-r1 bootc=1.17.3-r0 brotli-libs=1.2.1-r0 busybox-binsh=1.37.0-r31 busybox=1.37.0-r31 c-ares=1.34.9-r0 ca-certificates-bundle=20261020-r2 cryptsetup-libs=2.8.6-r0 device-mapper-libs=2.03.35-r3 device-mapper=2.03.35-r3 dracut=111-r2 fuse3-libs=3.18.3-r0 gdbm=1.26-r0 glib=2.88.1-r1 gmp=6.3.0-r4 gnupg-dirmngr=2.4.9-r1 gnupg-gpgconf=2.4.9-r1 gnupg-keyboxd=2.4.9-r1 gnutls=3.8.13-r0 gpg-agent=2.4.9-r1 gpg=2.4.9-r1 gpgme=2.0.1-r1 gpgsm=2.4.9-r1 json-c=0.18-r1 kmod-libs=34.2-r1 kmod=34.2-r1 lddtree=1.27-r0 libapk=3.0.8-r0 libarchive=3.8.10-r0 libassuan=3.0.2-r0 libblkid=2.42.3-r1 libbz2=1.0.8-r6 libcrypto3=3.5.9-r0 libcurl=8.23.0-r0 libeconf=0.8.3-r0 libexpat=2.10.0-r0 libffi=3.5.2-r1 libgcc=15.2.0-r5 libgcrypt=1.12.2-r0 libgpg-error=1.61-r0 libidn2=2.3.8-r0 libintl=1.0-r0 libksba=1.7.0-r0 libldap=2.6.15-r0 libmount=2.42.3-r1 libncursesw=6.6_p20260516-r0 libpsl=0.21.5-r3 libsasl=2.1.28-r9 libsmartcols=2.42.3-r1 libssl3=3.5.9-r0 libtasn1=4.21.0-r0 libucontext=1.5.1-r0 libunistring=1.4.2-r0 libuuid=2.42.3-r1 linux-firmware-none=20260519-r0 linux-pam=1.7.1-r2 linux-stable=7.1.5-r0 lsblk=2.42.3-r1 lz4-libs=1.10.0-r1 mdev-conf=4.10-r0 mkinitfs=3.14.1-r0 musl-fts=1.2.7-r7 musl=1.2.6-r3 ncurses-terminfo-base=6.6_p20260516-r0 nettle=3.10.2-r0 nghttp2-libs=1.70.0-r0 npth=1.8-r0 os-release=3.24.2-r0 ostree=2025.7-r1 p11-kit=0.26.2-r0 pcre2=10.49-r0 pinentry=1.3.2-r0 readline=8.3.3-r1 scanelf=1.3.9-r1 skalibs-libs=2.15.0.0-r0 sqlite-libs=3.53.4-r0 systemd=262.1-r1 util-linux=2.42.3-r1 utmps-libs=0.1.3.3-r0 xz-libs=5.8.4-r0 zlib=1.3.2-r1 zstd-libs=1.5.7-r2]
+2026/11/02 19:05:46 INFO   accounts:
+2026/11/02 19:05:46 INFO     runas:  
+2026/11/02 19:05:46 INFO     users:
+2026/11/02 19:05:46 INFO       - uid=1000(build) gid=1000
+2026/11/02 19:05:46 INFO     groups:
+2026/11/02 19:05:46 INFO       - gid=1000(build) members=[build]
+2026/11/02 19:05:46 INFO auth configured for: 0x11113e0
+2026/11/02 19:05:46 INFO installing musl (1.2.6-r3)
+2026/11/02 19:05:46 INFO installing acl-libs (2.3.2-r1)
+2026/11/02 19:05:46 INFO installing ca-certificates-bundle (20261020-r2)
+2026/11/02 19:05:46 INFO installing libcrypto3 (3.5.9-r0)
+2026/11/02 19:05:46 INFO installing libssl3 (3.5.9-r0)
+2026/11/02 19:05:46 INFO installing zlib (1.3.2-r1)
+2026/11/02 19:05:46 INFO installing libapk (3.0.8-r0)
+2026/11/02 19:05:46 INFO installing apk-tools (3.0.8-r0)
+2026/11/02 19:05:46 INFO installing busybox (1.37.0-r31)
+2026/11/02 19:05:46 INFO installing busybox-binsh (1.37.0-r31)
+2026/11/02 19:05:46 INFO installing ncurses-terminfo-base (6.6_p20260516-r0)
+2026/11/02 19:05:46 INFO installing libncursesw (6.6_p20260516-r0)
+2026/11/02 19:05:46 INFO installing readline (8.3.3-r1)
+2026/11/02 19:05:46 INFO installing bash (5.3.9-r1)
+2026/11/02 19:05:46 INFO installing libbz2 (1.0.8-r6)
+2026/11/02 19:05:46 INFO installing libexpat (2.10.0-r0)
+2026/11/02 19:05:46 INFO installing lz4-libs (1.10.0-r1)
+2026/11/02 19:05:46 INFO installing xz-libs (5.8.4-r0)
+2026/11/02 19:05:46 INFO installing zstd-libs (1.5.7-r2)
+2026/11/02 19:05:46 INFO installing libarchive (3.8.10-r0)
+2026/11/02 19:05:46 INFO installing brotli-libs (1.2.1-r0)
+2026/11/02 19:05:46 INFO installing c-ares (1.34.9-r0)
+2026/11/02 19:05:46 INFO installing libunistring (1.4.2-r0)
+2026/11/02 19:05:46 INFO installing libidn2 (2.3.8-r0)
+2026/11/02 19:05:46 INFO installing nghttp2-libs (1.70.0-r0)
+2026/11/02 19:05:46 INFO installing libpsl (0.21.5-r3)
+2026/11/02 19:05:46 INFO installing libcurl (8.23.0-r0)
+2026/11/02 19:05:46 INFO installing fuse3-libs (3.18.3-r0)
+2026/11/02 19:05:46 INFO installing libffi (3.5.2-r1)
+2026/11/02 19:05:46 INFO installing libintl (1.0-r0)
+2026/11/02 19:05:46 INFO installing libeconf (0.8.3-r0)
+2026/11/02 19:05:46 INFO installing libblkid (2.42.3-r1)
+2026/11/02 19:05:46 INFO installing libmount (2.42.3-r1)
+2026/11/02 19:05:46 INFO installing pcre2 (10.49-r0)
+2026/11/02 19:05:46 INFO installing glib (2.88.1-r1)
+2026/11/02 19:05:46 INFO installing libgpg-error (1.61-r0)
+2026/11/02 19:05:46 INFO installing libassuan (3.0.2-r0)
+2026/11/02 19:05:46 INFO installing pinentry (1.3.2-r0)
+2026/11/02 19:05:46 INFO installing libgcrypt (1.12.2-r0)
+2026/11/02 19:05:46 INFO installing gnupg-gpgconf (2.4.9-r1)
+2026/11/02 19:05:46 INFO installing gmp (6.3.0-r4)
+2026/11/02 19:05:46 INFO installing nettle (3.10.2-r0)
+2026/11/02 19:05:46 INFO installing libtasn1 (4.21.0-r0)
+2026/11/02 19:05:46 INFO installing p11-kit (0.26.2-r0)
+2026/11/02 19:05:46 INFO installing gnutls (3.8.13-r0)
+2026/11/02 19:05:46 INFO installing libksba (1.7.0-r0)
+2026/11/02 19:05:46 INFO installing gdbm (1.26-r0)
+2026/11/02 19:05:46 INFO installing libsasl (2.1.28-r9)
+2026/11/02 19:05:46 INFO installing libldap (2.6.15-r0)
+2026/11/02 19:05:46 INFO installing npth (1.8-r0)
+2026/11/02 19:05:46 INFO installing gnupg-dirmngr (2.4.9-r1)
+2026/11/02 19:05:46 INFO installing sqlite-libs (3.53.4-r0)
+2026/11/02 19:05:46 INFO installing gnupg-keyboxd (2.4.9-r1)
+2026/11/02 19:05:46 INFO installing gpg (2.4.9-r1)
+2026/11/02 19:05:46 INFO installing gpg-agent (2.4.9-r1)
+2026/11/02 19:05:46 INFO installing gpgsm (2.4.9-r1)
+2026/11/02 19:05:46 INFO installing gpgme (2.0.1-r1)
+2026/11/02 19:05:46 INFO installing ostree (2025.7-r1)
+2026/11/02 19:05:46 INFO installing libgcc (15.2.0-r5)
+2026/11/02 19:05:46 INFO installing bootc (1.17.3-r0)
+2026/11/02 19:05:46 INFO installing device-mapper-libs (2.03.35-r3)
+2026/11/02 19:05:46 INFO installing json-c (0.18-r1)
+2026/11/02 19:05:46 INFO installing libuuid (2.42.3-r1)
+2026/11/02 19:05:46 INFO installing cryptsetup-libs (2.8.6-r0)
+2026/11/02 19:05:46 INFO installing device-mapper (2.03.35-r3)
+2026/11/02 19:05:46 INFO installing kmod (34.2-r1)
+2026/11/02 19:05:46 INFO installing musl-fts (1.2.7-r7)
+2026/11/02 19:05:46 INFO installing kmod-libs (34.2-r1)
+2026/11/02 19:05:46 INFO installing dracut (111-r2)
+2026/11/02 19:05:46 INFO installing scanelf (1.3.9-r1)
+2026/11/02 19:05:46 INFO installing lddtree (1.27-r0)
+2026/11/02 19:05:46 INFO installing libsmartcols (2.42.3-r1)
+2026/11/02 19:05:46 INFO installing libucontext (1.5.1-r0)
+2026/11/02 19:05:46 INFO installing linux-firmware-none (20260519-r0)
+2026/11/02 19:05:46 INFO installing skalibs-libs (2.15.0.0-r0)
+2026/11/02 19:05:46 INFO installing utmps-libs (0.1.3.3-r0)
+2026/11/02 19:05:46 INFO installing linux-pam (1.7.1-r2)
+2026/11/02 19:05:46 INFO installing mdev-conf (4.10-r0)
+2026/11/02 19:05:46 INFO installing mkinitfs (3.14.1-r0)
+2026/11/02 19:05:46 INFO installing linux-stable (7.1.5-r0)
+2026/11/02 19:05:46 INFO installing lsblk (2.42.3-r1)
+2026/11/02 19:05:46 INFO installing os-release (3.24.2-r0)
+2026/11/02 19:05:46 INFO installing util-linux (2.42.3-r1)
+2026/11/02 19:05:46 INFO installing systemd (262.1-r1)
+2026/11/02 19:05:47 INFO running step "Relocate the kernel into the bootc /usr/lib/modules layout"
+2026/11/02 19:05:47 INFO running step "Install the osimage dracut modules and bootc initramfs config"
+2026/11/02 19:05:47 INFO running pipeline for subpackage osimage-kernel-initramfs
+2026/11/02 19:05:47 INFO running step "Generate the composefs initramfs" subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:47 WARN realpath: -e: No such file or directory subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:47 WARN /usr/bin/dracut: line 1428: findmnt: command not found subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:47 WARN BusyBox v1.37.0 (2026-01-10 15:38:28 UTC) multi-call binary. subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:47 WARN subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:47 WARN Usage: ln [-sfnbtv] [-S SUF] TARGET... LINK|DIR subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:47 WARN subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:47 WARN Create a link LINK or DIR/TARGET to the specified TARGET(s) subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:47 WARN subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:47 WARN     -s    Make symlinks instead of hardlinks subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:47 WARN     -f    Remove existing destinations subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:47 WARN     -n    Don't dereference symlinks - treat like normal file subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:47 WARN     -b    Make a backup of the target (if exists) before link operation subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:47 WARN     -S SUF    Use suffix instead of ~ when making backup files subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:47 WARN     -T    Treat LINK as a file, not DIR subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:47 WARN     -v    Verbose subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:47 WARN dracut[E]: Module 'network' depends on module 'network-legacy', which can't be installed subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:47 WARN dracut[E]: Module 'nbd' depends on module 'network', which can't be installed subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN /usr/bin/dracut: line 1586: ldconfig: command not found subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN dracut[E]: ldconfig might need uid=0 (root) for chroot() subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN find: unrecognized: -newermt subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN BusyBox v1.37.0 (2026-01-10 15:38:28 UTC) multi-call binary. subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN Usage: find [-HL] [PATH]... [OPTIONS] [ACTIONS] subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN Search for files and perform actions on them. subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN First failed action stops processing of current file. subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN Defaults: PATH is current directory, action is '-print' subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -L,-follow    Follow symlinks subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -H        ...on command line only subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -xdev        Don't descend directories on other filesystems subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -maxdepth N    Descend at most N levels. -maxdepth 0 applies subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN             actions to command line arguments only subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -mindepth N    Don't act on first N levels subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -depth        Act on directory *after* traversing it subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN Actions: subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     ( ACTIONS )    Group actions for -o / -a subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     ! ACT        Invert ACT's success/failure subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     ACT1 [-a] ACT2    If ACT1 fails, stop, else do ACT2 subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     ACT1 -o ACT2    If ACT1 succeeds, stop, else do ACT2 subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN             Note: -a has higher priority than -o subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -name PATTERN    Match file name (w/o directory name) to PATTERN subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -iname PATTERN    Case insensitive -name subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -path PATTERN    Match path to PATTERN subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -ipath PATTERN    Case insensitive -path subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -regex PATTERN    Match path to regex PATTERN subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -type X        File type is X (one of: f,d,l,b,c,s,p) subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -executable    File is executable subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -perm MASK    At least one mask bit (+MASK), all bits (-MASK), subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN             or exactly MASK bits are set in file's mode subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -mtime DAYS    mtime is greater than (+N), less than (-N), subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN             or exactly N days in the past subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -atime DAYS    atime +N/-N/N days in the past subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -ctime DAYS    ctime +N/-N/N days in the past subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -mmin MINS    mtime is greater than (+N), less than (-N), subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN             or exactly N minutes in the past subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -newer FILE    mtime is more recent than FILE's subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -inum N        File has inode number N subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -user NAME/ID    File is owned by given user subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -group NAME/ID    File is owned by given group subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -size N[bck]    File size is N (c:bytes,k:kbytes,b:512 bytes(def.)) subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN             +/-N: file size is bigger/smaller than N subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -links N    Number of links is greater than (+N), less than (-N), subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN             or exactly N subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -empty        Match empty file/directory subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -prune        If current file is directory, don't descend into it subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN If none of the following actions is specified, -print is assumed subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -print        Print file name subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -print0        Print file name, NUL terminated subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -exec CMD ARG ;    Run CMD with all instances of {} replaced by subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN             file name. Fails if CMD exits with nonzero subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -exec CMD ARG + Run CMD with {} replaced by list of file names subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -ok CMD ARG ;   Prompt and run CMD with {} replaced subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -delete        Delete current file/directory. Turns on -depth option subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -quit        Exit subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN BusyBox v1.37.0 (2026-01-10 15:38:28 UTC) multi-call binary. subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN Usage: cpio [-dmvu] [-F FILE] [-R USER[:GRP]] [-H newc] [-tio] [-p DIR] [EXTR_FILE]... subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN Extract (-i) or list (-t) files from a cpio archive on stdin, or subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN take file list from stdin and create an archive (-o) or copy files (-p) subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN Main operation mode: subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -t    List subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -i    Extract EXTR_FILEs (or all) subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -o    Create (requires -H newc) subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -p DIR    Copy files to DIR subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN Options: subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -H newc    Archive format subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -d    Make leading directories subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -m    Restore mtime subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -v    Verbose subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -u    Overwrite subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -F FILE    Input (-t,-i,-p) or output (-o) file subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -R USER[:GRP]    Set owner of created files subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -L    Dereference symlinks subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     -0    NUL terminated input subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     --ignore-devno subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:50 WARN     --renumber-inodes subpackage=osimage-kernel-initramfs
+2026/11/02 19:05:53 INFO running pipeline for subpackage osimage-kernel-initramfs-live
+2026/11/02 19:05:53 INFO running step "Generate the dmsquash-live installer initramfs" subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:53 WARN realpath: -e: No such file or directory subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:53 WARN /usr/bin/dracut: line 1428: findmnt: command not found subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:53 WARN BusyBox v1.37.0 (2026-01-10 15:38:28 UTC) multi-call binary. subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:53 WARN subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:53 WARN Usage: ln [-sfnbtv] [-S SUF] TARGET... LINK|DIR subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:53 WARN subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:53 WARN Create a link LINK or DIR/TARGET to the specified TARGET(s) subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:53 WARN subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:53 WARN     -s    Make symlinks instead of hardlinks subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:53 WARN     -f    Remove existing destinations subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:53 WARN     -n    Don't dereference symlinks - treat like normal file subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:53 WARN     -b    Make a backup of the target (if exists) before link operation subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:53 WARN     -S SUF    Use suffix instead of ~ when making backup files subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:53 WARN     -T    Treat LINK as a file, not DIR subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:53 WARN     -v    Verbose subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN /usr/bin/dracut: line 1586: ldconfig: command not found subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN dracut[E]: ldconfig might need uid=0 (root) for chroot() subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN find: unrecognized: -newermt subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN BusyBox v1.37.0 (2026-01-10 15:38:28 UTC) multi-call binary. subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN Usage: find [-HL] [PATH]... [OPTIONS] [ACTIONS] subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN Search for files and perform actions on them. subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN First failed action stops processing of current file. subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN Defaults: PATH is current directory, action is '-print' subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -L,-follow    Follow symlinks subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -H        ...on command line only subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -xdev        Don't descend directories on other filesystems subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -maxdepth N    Descend at most N levels. -maxdepth 0 applies subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN             actions to command line arguments only subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -mindepth N    Don't act on first N levels subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -depth        Act on directory *after* traversing it subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN Actions: subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     ( ACTIONS )    Group actions for -o / -a subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     ! ACT        Invert ACT's success/failure subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     ACT1 [-a] ACT2    If ACT1 fails, stop, else do ACT2 subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     ACT1 -o ACT2    If ACT1 succeeds, stop, else do ACT2 subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN             Note: -a has higher priority than -o subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -name PATTERN    Match file name (w/o directory name) to PATTERN subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -iname PATTERN    Case insensitive -name subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -path PATTERN    Match path to PATTERN subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -ipath PATTERN    Case insensitive -path subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -regex PATTERN    Match path to regex PATTERN subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -type X        File type is X (one of: f,d,l,b,c,s,p) subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -executable    File is executable subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -perm MASK    At least one mask bit (+MASK), all bits (-MASK), subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN             or exactly MASK bits are set in file's mode subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -mtime DAYS    mtime is greater than (+N), less than (-N), subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN             or exactly N days in the past subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -atime DAYS    atime +N/-N/N days in the past subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -ctime DAYS    ctime +N/-N/N days in the past subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -mmin MINS    mtime is greater than (+N), less than (-N), subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN             or exactly N minutes in the past subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -newer FILE    mtime is more recent than FILE's subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -inum N        File has inode number N subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -user NAME/ID    File is owned by given user subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -group NAME/ID    File is owned by given group subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -size N[bck]    File size is N (c:bytes,k:kbytes,b:512 bytes(def.)) subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN             +/-N: file size is bigger/smaller than N subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -links N    Number of links is greater than (+N), less than (-N), subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN             or exactly N subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -empty        Match empty file/directory subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -prune        If current file is directory, don't descend into it subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN If none of the following actions is specified, -print is assumed subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -print        Print file name subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -print0        Print file name, NUL terminated subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -exec CMD ARG ;    Run CMD with all instances of {} replaced by subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN             file name. Fails if CMD exits with nonzero subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -exec CMD ARG + Run CMD with {} replaced by list of file names subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -ok CMD ARG ;   Prompt and run CMD with {} replaced subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -delete        Delete current file/directory. Turns on -depth option subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -quit        Exit subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN BusyBox v1.37.0 (2026-01-10 15:38:28 UTC) multi-call binary. subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN Usage: cpio [-dmvu] [-F FILE] [-R USER[:GRP]] [-H newc] [-tio] [-p DIR] [EXTR_FILE]... subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN Extract (-i) or list (-t) files from a cpio archive on stdin, or subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN take file list from stdin and create an archive (-o) or copy files (-p) subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN Main operation mode: subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -t    List subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -i    Extract EXTR_FILEs (or all) subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -o    Create (requires -H newc) subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -p DIR    Copy files to DIR subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN Options: subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -H newc    Archive format subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -d    Make leading directories subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -m    Restore mtime subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -v    Verbose subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -u    Overwrite subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -F FILE    Input (-t,-i,-p) or output (-o) file subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -R USER[:GRP]    Set owner of created files subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -L    Dereference symlinks subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     -0    NUL terminated input subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     --ignore-devno subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:55 WARN     --renumber-inodes subpackage=osimage-kernel-initramfs-live
+2026/11/02 19:05:58 INFO retrieving workspace from builder: 
+2026/11/02 19:05:58 INFO retrieved and wrote post-build workspace to: /tmp/melange-workspace-2671347930
+2026/11/02 19:05:58 INFO running package linters for osimage-kernel
+2026/11/02 19:05:58 INFO linting apk: osimage-kernel
+2026/11/02 19:05:58 WARN [usrmerge] Package contains paths in violation of usrmerge:
+2026/11/02 19:05:58 WARN   lib
+2026/11/02 19:05:58 WARN   lib/modules
+2026/11/02 19:05:58 WARN   → Move binary to /usr/bin
+2026/11/02 19:05:58 WARN     - lib
+2026/11/02 19:05:58 WARN     - lib/modules
+2026/11/02 19:05:59 INFO no lint findings to persist for package osimage-kernel
+2026/11/02 19:05:59 INFO running package linters for osimage-kernel-initramfs
+2026/11/02 19:05:59 INFO linting apk: osimage-kernel-initramfs
+2026/11/02 19:05:59 INFO no lint findings to persist for package osimage-kernel-initramfs
+2026/11/02 19:05:59 INFO running package linters for osimage-kernel-initramfs-live
+2026/11/02 19:05:59 INFO linting apk: osimage-kernel-initramfs-live
+2026/11/02 19:05:59 INFO no lint findings to persist for package osimage-kernel-initramfs-live
+2026/11/02 19:05:59 INFO checking license information
+2026/11/02 19:05:59 INFO no license files detected
+2026/11/02 19:05:59 WARN invalid license: NOASSERTION
+2026/11/02 19:05:59 WARN invalid license: NOASSERTION
+2026/11/02 19:05:59 WARN invalid license: NOASSERTION
+2026/11/02 19:05:59 INFO generating package osimage-kernel-7.1.5-r1
+2026/11/02 19:05:59 INFO scanning for ld.so.conf.d files...
+2026/11/02 19:05:59 INFO scanning for shared object dependencies...
+2026/11/02 19:05:59 INFO scanning for commands...
+2026/11/02 19:05:59 INFO scanning for -doc package...
+2026/11/02 19:05:59 INFO scanning for pkg-config data...
+2026/11/02 19:05:59 INFO scanning for perl modules...
+2026/11/02 19:05:59 INFO scanning for python modules...
+2026/11/02 19:05:59 INFO scanning for ruby gems...
+2026/11/02 19:05:59 INFO scanning for shbang deps...
+2026/11/02 19:05:59 INFO scanning for kernel dependencies...
+2026/11/02 19:06:10 INFO   runtime:
+2026/11/02 19:06:10 INFO     kmod=34.2-r1
+2026/11/02 19:06:10 INFO     linux-firmware-any
+2026/11/02 19:06:10 INFO     osimage-kernel-initramfs=7.1.5-r1
+2026/11/02 19:06:10 INFO   provides:
+2026/11/02 19:06:10 INFO     linux:
+2026/11/02 19:06:10 INFO     linux:7.1.5-0-stable
+2026/11/02 19:06:10 INFO   installed-size: 152954696
+2026/11/02 19:06:10 INFO   data.tar.gz digest: 841af7992cd0f3c97ed619ba5b417c1200317a25699048efa5b82525418d75be
+2026/11/02 19:06:10 INFO wrote dist/x86_64/osimage-kernel-7.1.5-r1.apk
+2026/11/02 19:06:10 INFO generating package osimage-kernel-initramfs-7.1.5-r1
+2026/11/02 19:06:10 INFO scanning for ld.so.conf.d files...
+2026/11/02 19:06:10 INFO scanning for shared object dependencies...
+2026/11/02 19:06:10 INFO scanning for commands...
+2026/11/02 19:06:10 INFO scanning for -doc package...
+2026/11/02 19:06:10 INFO scanning for pkg-config data...
+2026/11/02 19:06:10 INFO scanning for perl modules...
+2026/11/02 19:06:10 INFO scanning for python modules...
+2026/11/02 19:06:10 INFO scanning for ruby gems...
+2026/11/02 19:06:10 INFO scanning for shbang deps...
+2026/11/02 19:06:10 INFO scanning for kernel dependencies...
+2026/11/02 19:06:11 INFO   runtime:
+2026/11/02 19:06:11 INFO     osimage-kernel=7.1.5-r1
+2026/11/02 19:06:11 INFO   installed-size: 40539914
+2026/11/02 19:06:11 INFO   data.tar.gz digest: 86a6b9ffcb7682cd92ad553c0665f60a3557dac988b0cbe3c29001803d752d09
+2026/11/02 19:06:11 INFO wrote dist/x86_64/osimage-kernel-initramfs-7.1.5-r1.apk
+2026/11/02 19:06:11 INFO generating package osimage-kernel-initramfs-live-7.1.5-r1
+2026/11/02 19:06:11 INFO scanning for ld.so.conf.d files...
+2026/11/02 19:06:11 INFO scanning for shared object dependencies...
+2026/11/02 19:06:11 INFO scanning for commands...
+2026/11/02 19:06:11 INFO scanning for -doc package...
+2026/11/02 19:06:11 INFO scanning for pkg-config data...
+2026/11/02 19:06:11 INFO scanning for perl modules...
+2026/11/02 19:06:11 INFO scanning for python modules...
+2026/11/02 19:06:11 INFO scanning for ruby gems...
+2026/11/02 19:06:11 INFO scanning for shbang deps...
+2026/11/02 19:06:11 INFO scanning for kernel dependencies...
+2026/11/02 19:06:12 INFO   runtime:
+2026/11/02 19:06:12 INFO     osimage-kernel=7.1.5-r1
+2026/11/02 19:06:12 INFO   installed-size: 40420188
+2026/11/02 19:06:12 INFO   data.tar.gz digest: 167b543fbe11446a674c6d78661b2405f0fd86f82443aa8f040327d77efcb613
+2026/11/02 19:06:12 INFO wrote dist/x86_64/osimage-kernel-initramfs-live-7.1.5-r1.apk
+2026/11/02 19:06:12 INFO cleaning Workspace by removing 14 file/directories in /home/build
+2026/11/02 19:06:12 INFO generating apk index from packages in dist/x86_64
+2026/11/02 19:06:12 INFO processing package dist/x86_64/osimage-kernel-initramfs-live-7.1.5-r1.apk
+2026/11/02 19:06:12 INFO processing package dist/x86_64/osimage-kernel-7.1.5-r1.apk
+2026/11/02 19:06:12 INFO processing package dist/x86_64/osimage-kernel-initramfs-7.1.5-r1.apk
+2026/11/02 19:06:12 INFO loaded 3/3 packages from index dist/x86_64/APKINDEX.tar.gz
+2026/11/02 19:06:12 INFO updating index at dist/x86_64/APKINDEX.tar.gz with new packages: [osimage-kernel-7.1.5-r1 osimage-kernel-initramfs-7.1.5-r1 osimage-kernel-initramfs-live-7.1.5-r1]
+2026/11/02 19:06:12 INFO signing apk index at dist/x86_64/APKINDEX.tar.gz
+2026/11/02 19:06:12 INFO signing index dist/x86_64/APKINDEX.tar.gz with key keys/local.rsa
+2026/11/02 19:06:12 INFO appending signature RSA256 to index dist/x86_64/APKINDEX.tar.gz
+2026/11/02 19:06:12 INFO writing signed index to dist/x86_64/APKINDEX.tar.gz
+2026/11/02 19:06:12 INFO signed index dist/x86_64/APKINDEX.tar.gz with key keys/local.rsa

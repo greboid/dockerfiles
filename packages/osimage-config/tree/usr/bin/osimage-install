@@ -1,0 +1,98 @@
+#!/bin/sh
+# osimage installer: import the pristine live rootfs (the squashfs the
+# system is running from, mounted read-only by dmsquash-live) into
+# podman's container storage and install it to the target disk with
+# bootc.
+#
+# The installed system records OSIMAGE_TARGET_REF (default: the
+# published system image) as its upgrade origin; the locally imported
+# image has a synthetic digest until the first `bootc upgrade`
+# reconciles it with that tag.
+#
+# Usage: osimage-install <disk-device> [extra bootc install to-disk
+# options]. Needs ~2GB RAM for the container-storage copy.
+set -eu
+
+disk="${1:?usage: osimage-install <disk-device> [extra bootc options]}"
+shift
+
+pristine=/run/rootfsbase
+if [ ! -d "$pristine/usr/lib/systemd" ]; then
+    echo "osimage-install: pristine live rootfs not mounted at $pristine" >&2
+    exit 1
+fi
+if [ ! -b "$disk" ]; then
+    echo "osimage-install: $disk is not a block device" >&2
+    exit 1
+fi
+
+mem_kb=$(awk '/MemTotal/ {print $2}' /proc/meminfo)
+if [ "${mem_kb:-0}" -lt 2200000 ]; then
+    echo "osimage-install: warning: the import needs ~2GB RAM, found ${mem_kb}kB" >&2
+fi
+
+# podman's overlay driver cannot stack on the live system's overlayfs
+# root; keep container storage on plain tmpfs instead (discarded with
+# the live overlay).
+if grep -q osimage-store /etc/containers/storage.conf 2>/dev/null; then
+    :
+else
+    mkdir -p /etc/containers /run/osimage-store
+    cat > /etc/containers/storage.conf <<EOF
+[storage]
+driver = "overlay"
+runroot = "/run/osimage-store/runroot"
+graphroot = "/run/osimage-store/graphroot"
+EOF
+fi
+
+# Modules bootc's composefs staging needs; udev may not have coldplugged
+# them on a live system with no matching root device. The kernel tree is
+# at /usr/lib/modules (bootc canonical layout); modprobe wants /lib.
+ln -sfn /usr/lib/modules /lib/modules
+modprobe erofs 2>/dev/null || true
+modprobe overlay 2>/dev/null || true
+
+echo '== importing pristine live rootfs into container storage'
+# GNU tar (/usr/bin/tar): the root '.' entry must carry the squashfs
+# root's real stat (epoch, root-owned) — busybox tar stamps it with the
+# archive time, which would break the staged digest match.
+tar -C "$pristine" -c . | podman import - localhost/osimage-installer:live
+podman image exists localhost/osimage-installer:live
+
+# Diagnostic for sealed-digest mismatches: the staged tree's digest and
+# dumpfile.
+bootc container compute-composefs-digest-from-storage --erofs-version=v1 \
+    --write-dumpfile-to /var/tmp/staged.dump \
+    localhost/osimage-installer:live || echo "osimage-install: staged-dump computation failed"
+
+# Sealed UKI boot: all kernel arguments are baked into the UKI at
+# assembly (immutable boot); bootc rejects --karg on unified installs.
+if bootc install to-disk \
+    --source-imgref containers-storage:localhost/osimage-installer:live \
+    --target-imgref "${OSIMAGE_TARGET_REF:-git.mouse-lake.ts.net/osimage/osimage:latest}" \
+    --skip-fetch-check --filesystem ext4 \
+    "$disk" --wipe "$@"; then
+    :
+else
+    rc=$?
+    # Rescue the staged-tree dumpfile onto the target's fresh root fs so
+    # the host can pull it out of the disk image for diffing.
+    if [ -s /var/tmp/staged.dump ]; then
+        mkdir -p /mnt
+        # udev may not have re-created the partition nodes yet
+        blockdev --rereadpt "$disk" 2>/dev/null || true
+        mounted=
+        for i in 1 2 3 4 5; do
+            if mount -t ext4 "$disk"3 /mnt; then mounted=1; break; fi
+            echo "osimage-install: mount $disk""3 retry $i"
+            sleep 2
+        done
+        if [ -n "$mounted" ]; then
+            cp /var/tmp/staged.dump /mnt/staged.dump && umount /mnt
+        else
+            echo "osimage-install: could not mount the target root for the dump"
+        fi
+    fi
+    exit "$rc"
+fi

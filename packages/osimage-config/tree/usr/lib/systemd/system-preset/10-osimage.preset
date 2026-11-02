@@ -1,0 +1,15 @@
+# Enable the systemd OS stack at image build / preset-all time.
+enable systemd-networkd.service
+enable systemd-resolved.service
+enable systemd-timesyncd.service
+enable systemd-boot-update.service
+
+# Updates are driven manually through new images for now.
+disable bootc-fetch-apply-updates.timer
+
+# Boot assessment: stamp systemd-boot counting suffixes at boot, and run
+# the upstream health gate that protects boot-complete.target (and
+# thereby the bless + soft-failure rollback path).  The gate works now
+# that dbus is enabled: it talks to PID1 through the system broker.
+enable osimage-boot-count.service
+enable systemd-boot-check-no-failures.service

@@ -1,0 +1,35 @@
+#!/bin/sh
+# Deterministic ESP mounting for systemd-bless-boot.
+#
+# bless's built-in $BOOT partition scan depends on udev blkid
+# properties that are not reliably populated this early after
+# multi-user on fast boots ("Couldn't find $BOOT partition"), so mount
+# the ESP ourselves (same discovery as osimage-boot-count) and point
+# bless at the mount point.
+
+PATH=/usr/bin:/bin:/usr/sbin:/sbin
+export PATH
+
+ESP_PARTTYPE=c12a7328-f81f-11d2-ba4b-00a0c93ec93b
+MNT=/run/osimage-bless
+
+mkdir -p "$MNT" || exit 1
+mounted=
+for part in $(lsblk -no PATH,PARTTYPE 2>/dev/null |
+        awk -v g="$ESP_PARTTYPE" '$2 == g {print $1}'); do
+    if mount -t vfat "$part" "$MNT" 2>/dev/null; then
+        mounted=1
+        break
+    fi
+done
+if [ -z "$mounted" ]; then
+    echo "osimage-bless: no ESP found" >&2
+    rmdir "$MNT" 2>/dev/null
+    exit 1
+fi
+
+/usr/lib/systemd/systemd-bless-boot --path="$MNT" good
+rc=$?
+umount "$MNT"
+rmdir "$MNT" 2>/dev/null
+exit $rc

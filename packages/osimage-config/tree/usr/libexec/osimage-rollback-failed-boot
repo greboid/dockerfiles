@@ -1,0 +1,85 @@
+#!/bin/sh
+# Roll back to the previous deployment after a failed boot assessment.
+#
+# Started through OnFailure= on systemd-boot-check-no-failures.service:
+# the boot reached userspace but failed the health gate.  `bootc rollback` moves
+# the previous deployment back to the primary boot entry; the boot-count
+# hook then arms it with fresh boot attempts.
+#
+# Loop guard: /var is shared across deployments through the stateroot.
+# Each incident records the pair (rolled-back-from, rolled-back-to) as
+# a flag file named after the failed deployment containing the target's
+# digest.  When the booted deployment is either end of a recorded
+# incident, the gate failure is left for manual intervention -- rolling
+# back again would only bounce between the two unhealthy deployments.
+# Delete the flag files to re-arm.
+
+PATH=/usr/bin:/bin:/usr/sbin:/sbin
+export PATH
+
+ESP_PARTTYPE=c12a7328-f81f-11d2-ba4b-00a0c93ec93b
+MNT=/run/osimage-rollback
+
+log() { echo "osimage-rollback-failed-boot: $*"; }
+
+digest=$(tr ' ' '\n' </proc/cmdline |
+    sed -n 's/^composefs\.digest=[^:]*://p')
+if [ -z "$digest" ]; then
+    log "no composefs.digest on the kernel cmdline; refusing to roll back"
+    exit 1
+fi
+
+flagdir=/var/lib/osimage/auto-rollback
+mkdir -p "$flagdir" || exit 1
+for f in "$flagdir"/*; do
+    [ -e "$f" ] || continue
+    if [ "$(basename "$f")" = "$digest" ] ||
+        [ "$(cat "$f" 2>/dev/null)" = "$digest" ]; then
+        log "booted deployment $digest is part of a past rollback incident; staying put"
+        exit 1
+    fi
+done
+
+# The rollback target is the one non-booted deployment: the BLS entry
+# whose composefs digest differs from the booted one.
+target=
+mkdir -p "$MNT" || exit 1
+for part in $(lsblk -no PATH,PARTTYPE 2>/dev/null |
+        awk -v g="$ESP_PARTTYPE" '$2 == g {print $1}'); do
+    mount -t vfat "$part" "$MNT" 2>/dev/null || continue
+    for f in "$MNT"/loader/entries/*.conf; do
+        [ -f "$f" ] || continue
+        d=$(sed -n 's/.*composefs\.digest=[^:]*:\([0-9a-f]\{8,\}\).*/\1/p' "$f")
+        [ -n "$d" ] || continue
+        if [ "$d" != "$digest" ]; then
+            if [ -n "$target" ] && [ "$target" != "$d" ]; then
+                log "multiple rollback candidates; refusing to guess"
+                umount "$MNT"
+                rmdir "$MNT" 2>/dev/null
+                exit 1
+            fi
+            target=$d
+        fi
+    done
+    umount "$MNT"
+done
+rmdir "$MNT" 2>/dev/null
+if [ -z "$target" ]; then
+    log "no rollback target found; staying put"
+    exit 1
+fi
+
+# Record the incident before rolling back: a crash between rollback and
+# reboot must not lead to a rollback loop.
+: >"$flagdir/$digest" || { log "cannot write $flagdir/$digest"; exit 1; }
+echo "$target" >"$flagdir/$digest"
+
+if ! bootc rollback; then
+    log "bootc rollback failed; staying on the current deployment"
+    exit 1
+fi
+
+/usr/libexec/osimage-boot-count
+log "rolled back from $digest to $target; rebooting"
+sync
+systemctl reboot --no-wall

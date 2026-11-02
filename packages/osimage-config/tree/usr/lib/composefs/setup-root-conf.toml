@@ -1,0 +1,6 @@
+# Composefs-native bootc image marker.
+#
+# The presence of this file tells bootc this image is composefs-native
+# (no ostree repository in the image); see bootc-setup-root-conf(5).
+# Keep it valid TOML; bootc reads it at install/upgrade time.
+enabled = true

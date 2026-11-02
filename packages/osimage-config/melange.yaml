@@ -1,0 +1,125 @@
+package:
+  name: osimage-config
+  version: 1.0.0
+  epoch: 0
+  description: OS configuration for osimage bootc images (baked systemd enablement, boot kargs, boot assessment)
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      license: MIT
+  dependencies:
+    runtime:
+      - busybox-binsh=1.37.0-r31
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+    packages:
+      - os-release=3.24.2-r0
+      - busybox=1.37.0-r31
+
+pipeline:
+  - name: Install the osimage configuration tree
+    runs: |
+      cp -a tree/. "${{targets.destdir}}/"
+
+  - name: Bake the systemd enablement symlinks
+    runs: |
+      # Replicates the `systemctl preset-all` output of the pinned
+      # systemd/bootc/osimage unit set: preset enable links, [Install]
+      # aliases and wants links. Regenerate against a fresh rootfs
+      # whenever systemd/bootc bump (drift shows up at boot as
+      # missing/extra enablement, caught by the VM test suite).
+      d="${{targets.destdir}}/etc/systemd/system"
+      mkdir -p "$d/boot-complete.target.requires"
+      mkdir -p "$d/bootc-status-updated-onboot.target.wants"
+      mkdir -p "$d/bootc-status-updated.target.wants"
+      mkdir -p "$d/getty.target.wants"
+      mkdir -p "$d/multi-user.target.wants"
+      mkdir -p "$d/network-online.target.wants"
+      mkdir -p "$d/sockets.target.wants"
+      mkdir -p "$d/sysinit.target.wants"
+      mkdir -p "$d/systemd-journald.service.wants"
+      ln -s /usr/lib/systemd/system/getty@.service "$d/autovt@.service"
+      ln -s /usr/lib/systemd/system/systemd-boot-check-no-failures.service "$d/boot-complete.target.requires/systemd-boot-check-no-failures.service"
+      ln -s /usr/lib/systemd/system/bootc-publish-rhsm-facts.service "$d/bootc-status-updated-onboot.target.wants/bootc-publish-rhsm-facts.service"
+      ln -s /usr/lib/systemd/system/bootc-publish-rhsm-facts.service "$d/bootc-status-updated.target.wants/bootc-publish-rhsm-facts.service"
+      ln -s /usr/lib/systemd/system/systemd-networkd.service "$d/dbus-org.freedesktop.network1.service"
+      ln -s /usr/lib/systemd/system/systemd-resolved.service "$d/dbus-org.freedesktop.resolve1.service"
+      ln -s /usr/lib/systemd/system/systemd-timesyncd.service "$d/dbus-org.freedesktop.timesync1.service"
+      ln -s /usr/lib/systemd/system/getty@.service "$d/getty.target.wants/getty@tty1.service"
+      ln -s /usr/lib/systemd/system/osimage-boot-count.service "$d/multi-user.target.wants/osimage-boot-count.service"
+      ln -s /usr/lib/systemd/system/remote-fs.target "$d/multi-user.target.wants/remote-fs.target"
+      ln -s /usr/lib/systemd/system/systemd-networkd.service "$d/multi-user.target.wants/systemd-networkd.service"
+      ln -s /usr/lib/systemd/system/systemd-networkd-wait-online.service "$d/network-online.target.wants/systemd-networkd-wait-online.service"
+      ln -s /usr/lib/systemd/system/systemd-factory-reset.socket "$d/sockets.target.wants/systemd-factory-reset.socket"
+      ln -s /usr/lib/systemd/system/systemd-journalctl-metrics.socket "$d/sockets.target.wants/systemd-journalctl-metrics.socket"
+      ln -s /usr/lib/systemd/system/systemd-journald-audit.socket "$d/sockets.target.wants/systemd-journald-audit.socket"
+      ln -s /usr/lib/systemd/system/systemd-mountfsd.socket "$d/sockets.target.wants/systemd-mountfsd.socket"
+      ln -s /usr/lib/systemd/system/systemd-networkd-resolve-hook.socket "$d/sockets.target.wants/systemd-networkd-resolve-hook.socket"
+      ln -s /usr/lib/systemd/system/systemd-networkd-varlink-metrics.socket "$d/sockets.target.wants/systemd-networkd-varlink-metrics.socket"
+      ln -s /usr/lib/systemd/system/systemd-networkd-varlink.socket "$d/sockets.target.wants/systemd-networkd-varlink.socket"
+      ln -s /usr/lib/systemd/system/systemd-networkd.socket "$d/sockets.target.wants/systemd-networkd.socket"
+      ln -s /usr/lib/systemd/system/systemd-nsresourced.socket "$d/sockets.target.wants/systemd-nsresourced.socket"
+      ln -s /usr/lib/systemd/system/systemd-report-basic.socket "$d/sockets.target.wants/systemd-report-basic.socket"
+      ln -s /usr/lib/systemd/system/systemd-report-cgroup.socket "$d/sockets.target.wants/systemd-report-cgroup.socket"
+      ln -s /usr/lib/systemd/system/systemd-report-files.socket "$d/sockets.target.wants/systemd-report-files.socket"
+      ln -s /usr/lib/systemd/system/systemd-report-sign-tsm.socket "$d/sockets.target.wants/systemd-report-sign-tsm.socket"
+      ln -s /usr/lib/systemd/system/systemd-report.socket "$d/sockets.target.wants/systemd-report.socket"
+      ln -s /usr/lib/systemd/system/systemd-resolved-monitor.socket "$d/sockets.target.wants/systemd-resolved-monitor.socket"
+      ln -s /usr/lib/systemd/system/systemd-resolved-varlink.socket "$d/sockets.target.wants/systemd-resolved-varlink.socket"
+      ln -s /usr/lib/systemd/system/systemd-storage-block.socket "$d/sockets.target.wants/systemd-storage-block.socket"
+      ln -s /usr/lib/systemd/system/systemd-storage-fs.socket "$d/sockets.target.wants/systemd-storage-fs.socket"
+      ln -s /usr/lib/systemd/system/systemd-sysupdate-notify-bootctl.socket "$d/sockets.target.wants/systemd-sysupdate-notify-bootctl.socket"
+      ln -s /usr/lib/systemd/system/systemd-boot-clear-sysfail.service "$d/sysinit.target.wants/systemd-boot-clear-sysfail.service"
+      ln -s /usr/lib/systemd/system/systemd-boot-update.service "$d/sysinit.target.wants/systemd-boot-update.service"
+      ln -s /usr/lib/systemd/system/systemd-network-generator.service "$d/sysinit.target.wants/systemd-network-generator.service"
+      ln -s /usr/lib/systemd/system/systemd-resolved.service "$d/sysinit.target.wants/systemd-resolved.service"
+      ln -s /usr/lib/systemd/system/systemd-timesyncd.service "$d/sysinit.target.wants/systemd-timesyncd.service"
+      ln -s /usr/lib/systemd/system/systemd-udev-load-credentials.service "$d/sysinit.target.wants/systemd-udev-load-credentials.service"
+      ln -s /usr/lib/systemd/system/systemd-journald-audit.socket "$d/systemd-journald.service.wants/systemd-journald-audit.socket"
+
+  - name: Smoke-check the payload
+    runs: |
+      ls -la "${{targets.destdir}}/etc/systemd/system/" | head
+      echo "autovt: $(readlink "${{targets.destdir}}/etc/systemd/system/autovt@.service" || echo MISSING)"
+      test -x "${{targets.destdir}}/usr/bin/osimage-install"
+      test -f "${{targets.destdir}}/usr/lib/composefs/setup-root-conf.toml"
+      grep -q '^enabled = true$' "${{targets.destdir}}/usr/lib/composefs/setup-root-conf.toml"
+      grep -q 'console=ttyS0,115200' "${{targets.destdir}}/usr/lib/bootc/kargs.d/10-console.args"
+      test "$(readlink "${{targets.destdir}}/etc/systemd/system/autovt@.service")" = "/usr/lib/systemd/system/getty@.service"
+      test "$(readlink "${{targets.destdir}}/etc/systemd/system/multi-user.target.wants/systemd-networkd.service")" = "/usr/lib/systemd/system/systemd-networkd.service"
+
+test:
+  environment:
+    contents:
+      keyring:
+        - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox=1.37.0-r31
+        - alpine-baselayout=3.7.2-r1
+  pipeline:
+    - name: Enablement symlinks and osimage units are in place
+      runs: |
+        test -f /etc/machine-id
+        test -x /usr/bin/osimage-install
+        test "$(readlink /etc/systemd/system/multi-user.target.wants/osimage-boot-count.service)" = "/usr/lib/systemd/system/osimage-boot-count.service"
+        test "$(readlink /etc/systemd/system/sysinit.target.wants/systemd-boot-update.service)" = "/usr/lib/systemd/system/systemd-boot-update.service"
+        test "$(readlink /etc/systemd/system/sockets.target.wants/systemd-networkd.socket)" = "/usr/lib/systemd/system/systemd-networkd.socket"
+        test "$(readlink /etc/systemd/system/bootc-status-updated.target.wants/bootc-publish-rhsm-facts.service)" = "/usr/lib/systemd/system/bootc-publish-rhsm-facts.service"
+        test -f /usr/lib/systemd/system-preset/10-osimage.preset
+        test -f /usr/lib/systemd/system/osimage-boot-count.service
+        test -f /usr/lib/tmpfiles.d/osimage.conf
+        test -f /usr/lib/composefs/setup-root-conf.toml
+
+update:
+  enabled: false
+  exclude-reason: no upstream to track; version is internal to this repository

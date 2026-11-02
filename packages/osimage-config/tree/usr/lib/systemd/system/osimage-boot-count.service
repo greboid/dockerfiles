@@ -1,0 +1,13 @@
+[Unit]
+Description=Stamp boot-counting suffixes on bootc BLS entries
+# Self-healing stamp at boot; the authoritative stamp runs after each
+# bootloader-entry exchange via the drop-in on
+# bootc-finalize-staged.service (and after explicit `bootc rollback`).
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/osimage-boot-count
+
+[Install]
+WantedBy=multi-user.target

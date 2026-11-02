@@ -82,3 +82,11 @@ workflow above.
 
 - `.forgejo/workflows/build-package.yml` — the reusable build pipeline
 - `.forgejo/workflows/bootstrap.yml` — hand-run org repository seeding
+
+## Lint overrides
+
+A repo can ship a `lint.args` file (one CLI argument per line, e.g.
+`--lint-warn usrmerge`) that is appended to the `melange build` invocation
+for deliberate linter violations. The workflow creates an empty file when
+the repo has none, so the build command is uniform. Document any override
+next to the offending content in the package's `melange.yaml`.

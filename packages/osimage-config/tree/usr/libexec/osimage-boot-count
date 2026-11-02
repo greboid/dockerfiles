@@ -1,0 +1,97 @@
+#!/bin/sh
+# Stamp systemd-boot boot-counting suffixes onto bootc composefs BLS entries.
+#
+# bootc installs Type 1 BLS entries without boot-counting suffixes, so
+# systemd-boot never counts boot attempts: a broken staged deployment is
+# selected as the default entry forever.  This hook applies the loader's
+# own counting scheme (filenames ending in +<tries>-<done>) to the
+# entries bootc manages:
+#
+#   - the entry whose composefs digest matches the booted one is proven
+#     good: any counter suffix is stripped,
+#   - every other bootc entry (staged deployment or rollback target)
+#     gets a +2-0 suffix (two boot attempts) when it has none.  Counters
+#     are never reset here: freshening an expired counter on every boot
+#     would make the broken deployment the default again and boot-loop
+#     the machine.
+#
+# Entries come in two shapes: Type 1 carries the digest in its options
+# line; a sealed Type 2 entry points at the deployment's UKI
+# (`linux .../bootc-<digest>.efi`) and the digest is read from the UKI
+# filename — it is the same digest the UKI embeds on the cmdline.
+#
+# Runs at boot (osimage-boot-count.service, self-healing for entries
+# that missed stamping) and after every bootc bootloader-entry exchange:
+# via the drop-in on bootc-finalize-staged.service, whose ExecStop runs
+# after `bootc composefs-finalize-staged`.  `bootc rollback` exchanges
+# the entries itself, so it must be followed by an explicit run.
+#
+# Failure to stamp is logged but never fails the unit: a missing or
+# unmountable ESP must not fail the boot assessment.
+
+PATH=/usr/bin:/bin:/usr/sbin:/sbin
+export PATH
+
+TRIES=2
+ESP_PARTTYPE=c12a7328-f81f-11d2-ba4b-00a0c93ec93b
+MNT=/run/osimage-boot-count
+FLAGDIR=/var/lib/osimage/auto-rollback
+
+log() { echo "osimage-boot-count: $*"; }
+
+booted_digest=$(tr ' ' '\n' </proc/cmdline |
+    sed -n 's/^composefs\.digest=[^:]*://p')
+if [ -z "$booted_digest" ]; then
+    # Direct-kernel boots (installer) and non-composefs systems have no
+    # counted deployments; nothing to do.
+    log "no composefs.digest on the kernel cmdline; nothing to do"
+    exit 0
+fi
+
+stamp_entry() {
+    d="$1/loader/entries"
+    [ -d "$d" ] || return 0
+    for f in "$d"/*.conf; do
+        [ -f "$f" ] || continue
+        name=${f##*/}
+        case "$name" in
+            *+*-*.conf) counter=yes ;;
+            *) counter=no ;;
+        esac
+        edigest=$(sed -n 's/.*composefs\.digest=[^:]*:\([0-9a-f]\{8,\}\).*/\1/p' "$f")
+        [ -n "$edigest" ] || edigest=$(sed -n 's|^linux \(.*/\)\{0,1\}bootc-\([0-9a-f]\{8,\}\)\.efi[[:space:]]*$|\2|p' "$f")
+        if [ -z "$edigest" ]; then
+            log "cannot read composefs digest from $name; skipping"
+            continue
+        fi
+        if [ "$edigest" = "$booted_digest" ]; then
+            if [ "$counter" = yes ]; then
+                mv "$f" "$d/${name%%+*}.conf" &&
+                    log "booted entry $name marked good (counter stripped)"
+            fi
+        elif [ "$counter" = no ] && [ ! -e "$FLAGDIR/$edigest" ]; then
+            # Never re-arm a deployment that an auto-rollback already
+            # walked back: the boot-time run would otherwise give the
+            # broken deployment fresh attempts on every healthy boot of
+            # its rollback target.  Applies to the finalize run too: a
+            # re-deploy of the exact same digest needs the flag deleted
+            # (or a new digest) to regain counted attempts.
+            mv "$f" "$d/${name%.conf}+$TRIES-0.conf" &&
+                log "staged entry $name stamped +$TRIES-0"
+        fi
+    done
+}
+
+mkdir -p "$MNT" || exit 0
+found=
+for part in $(lsblk -no PATH,PARTTYPE 2>/dev/null |
+        awk -v g="$ESP_PARTTYPE" '$2 == g {print $1}'); do
+    if mount -t vfat "$part" "$MNT" 2>/dev/null; then
+        found=1
+        stamp_entry "$MNT"
+        umount "$MNT"
+    fi
+done
+rmdir "$MNT" 2>/dev/null
+[ -n "$found" ] || log "no ESP with bootc BLS entries found; nothing to do"
+exit 0

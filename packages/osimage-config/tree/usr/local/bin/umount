@@ -1,0 +1,17 @@
+#!/bin/sh
+# busybox umount lacks -R; emulate the recursive form that bootc's
+# finalization uses (umount -R <target>).
+case "$1" in
+  -R)
+    target=$2
+    rc=0
+    awk -v t="$target" 'index($2, t "/") == 1 {print $2}' /proc/mounts |
+      sort -r |
+      while read -r m; do
+        umount "$m" || rc=1
+      done
+    umount "$target" || rc=1
+    exit $rc
+    ;;
+esac
+exec /bin/busybox umount "$@"

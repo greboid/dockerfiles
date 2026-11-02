@@ -29,6 +29,13 @@ jobs:
           apk update
           echo "trusting index key packages@$hash"
 
+      - name: Collect optional lint overrides
+        run: |
+          # A repo may ship a lint.args file (one CLI argument per line) to
+          # relax or tighten melange's linters for deliberate violations,
+          # e.g. osimage-kernel's non-usrmerged /lib/modules symlink.
+          touch lint.args
+
       - name: Install melange from the org repository
         run: |
           set -eu
@@ -60,6 +67,7 @@ jobs:
             --signing-key keys/packages.rsa \
             --keyring-append "$PWD/keys/packages.rsa.pub" \
             $(cat org-repo.args) \
+            $(cat lint.args) \
             --out-dir dist
 
       - name: Test package

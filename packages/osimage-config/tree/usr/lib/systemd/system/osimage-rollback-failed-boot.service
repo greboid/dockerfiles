@@ -1,0 +1,11 @@
+[Unit]
+Description=Roll back to the previous bootc deployment after a failed boot assessment
+# Started through OnFailure= on systemd-boot-check-no-failures.service:
+# the boot reached userspace but failed the health gate.
+After=systemd-boot-check-no-failures.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/osimage-rollback-failed-boot
+# bootc rollback plus the boot-count stamp on slow media.
+TimeoutStartSec=10min
