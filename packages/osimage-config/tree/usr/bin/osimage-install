@@ -55,10 +55,28 @@ modprobe erofs 2>/dev/null || true
 modprobe overlay 2>/dev/null || true
 
 echo "== installing $source_ref onto $disk (origin: $target_ref)"
-# kargs come from the image's /usr/lib/bootc/kargs.d; pass extra options
-# (e.g. --karg) for machine-specific overrides.
+# The image's packaged kernel arguments live in /usr/lib/bootc/kargs.d
+# (init=, consoles). bootc's composefs to-disk flow does not carry them
+# into the installed BLS entry on its own - without init= the composefs
+# root cannot start systemd - so pass them explicitly. root= is skipped
+# because bootc sets the deployment root itself. User-passed options
+# come last and win.
+kargs_args=
+for f in /usr/lib/bootc/kargs.d/*.args; do
+    [ -f "$f" ] || continue
+    while read -r karg; do
+        case "$karg" in
+            "" | root=*) continue ;;
+        esac
+        kargs_args="$kargs_args --karg $karg"
+    done < "$f"
+done
+
+# Extra options (e.g. --karg) for machine-specific overrides.
+# shellcheck disable=SC2086
 exec bootc install to-disk \
     --source-imgref "$source_ref" \
     --target-imgref "$target_ref" \
     --filesystem ext4 \
+    $kargs_args \
     "$disk" --wipe "$@"
