@@ -1,7 +1,7 @@
 package:
   name: dbus
   version: 1.16.2
-  epoch: 3
+  epoch: 4
   description: Freedesktop.org message bus system (systemd socket activation)
   target-architecture:
     - x86_64
@@ -33,11 +33,11 @@ environment:
       - musl-dev=1.2.6-r3
       - meson=1.11.1-r0
       - pkgconf=2.5.1-r0
-      - expat-dev=2.9.0-r0
+      - expat-dev=2.10.0-r0
       # libsystemd for socket activation + sd_notify (Type=notify);
       # Alpine's dbus omits this, which is why the stock package cannot
       # run under dbus.socket ("compiled without systemd support").
-      - systemd-dev=262.1-r0
+      - systemd-dev=262.1-r2
 
 pipeline:
   - uses: fetch
@@ -121,7 +121,7 @@ test:
       packages:
         - os-release=3.24.2-r0
         - busybox=1.37.0-r31
-        - systemd=262.1-r0
+        - systemd=262.1-r2
   pipeline:
     - name: Daemon executes
       runs: |

@@ -54,7 +54,7 @@ environment:
       - zstd-dev=1.5.7-r2
       - xz-dev=5.8.4-r0
       - lz4-dev=1.10.0-r1
-      - dbus-dev=1.16.2-r2
+      - dbus-dev=1.16.2-r4
 
 pipeline:
   - uses: fetch

@@ -1,6 +1,6 @@
 package:
   name: miniflux
-  version: 2.3.4
+  version: 2.3.5
   epoch: 0
   description: Minimalist and opinionated feed reader
   target-architecture:
@@ -36,7 +36,7 @@ vars:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 238c5614e584ebc87894e7d9f10bc91373a0b2c2
+      expected-commit: faecfa2fac61a91f4f69550bb1afd506c4b51749
       repository: https://github.com/miniflux/v2
       tag: v${{package.version}}
   - uses: go/build
