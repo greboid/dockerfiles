@@ -1,7 +1,7 @@
 package:
   name: systemd
   version: 262.1
-  epoch: 1
+  epoch: 2
   description: systemd init system (PID 1), udev and core daemons built for musl
   target-architecture:
     - x86_64
@@ -13,6 +13,9 @@ package:
     runtime:
       - busybox-binsh=1.37.0-r31
       - kmod=34.2-r1
+      # udevd dlopen()s libkmod.so.2 for its module-autoload builtin; the
+      # library lives in kmod-libs, which nothing else pulls in
+      - kmod-libs=34.2-r1
       - linux-pam=1.7.1-r2
       - util-linux=2.42.3-r1
 
