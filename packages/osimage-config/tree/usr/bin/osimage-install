@@ -58,7 +58,7 @@ echo "== installing $source_ref onto $disk (origin: $target_ref)"
 # kargs come from the image's /usr/lib/bootc/kargs.d; pass extra options
 # (e.g. --karg) for machine-specific overrides.
 exec bootc install to-disk \
-    --source-imgref "docker://$source_ref" \
+    --source-imgref "$source_ref" \
     --target-imgref "$target_ref" \
     --filesystem ext4 \
     "$disk" --wipe "$@"
