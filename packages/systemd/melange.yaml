@@ -1,7 +1,7 @@
 package:
   name: systemd
   version: 262.1
-  epoch: 3
+  epoch: 4
   description: systemd init system (PID 1), udev and core daemons built for musl
   target-architecture:
     - x86_64
@@ -55,12 +55,20 @@ environment:
       - xz-dev=5.8.4-r0
       - lz4-dev=1.10.0-r1
       - dbus-dev=1.16.2-r4
+      - patch
 
 pipeline:
   - uses: fetch
     with:
       uri: https://github.com/systemd/systemd/archive/refs/tags/v${{package.version}}.tar.gz
       expected-sha256: 100fc873b848b9b0297d8a705e8e2ed326256c8483d9960ee1ffe264c8a5c3e3
+  - name: Patch
+    runs: |
+      # musl getopt() does not permute non-option arguments: repart's
+      # ext4 mkfs options from SYSTEMD_REPART_MKFS_OPTIONS_* (bootc
+      # passes -O verity) must precede the device node, or mkfs.ext4
+      # parses them as positionals ("invalid blocks '-O'").
+      patch -p1 < patches/001-mkfs-util-extra-options-before-node.patch
   - name: Configure
     runs: |
       # Flag set mirrors Alpine's aports systemd-boot recipe for the same

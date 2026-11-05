@@ -1,0 +1,28 @@
+--- a/src/shared/mkfs-util.c
++++ b/src/shared/mkfs-util.c
+@@ -444,9 +444,6 @@
+                 if (FLAGS_SET(flags, MKFS_FS_VERITY) && strv_extend_many(&argv, "-O", "verity") < 0)
+                         return log_oom();
+ 
+-                if (strv_extend(&argv, node) < 0)
+-                        return log_oom();
+-
+                 if (sector_size > 0) {
+                         if (strv_extend(&env, "MKE2FS_DEVICE_SECTSIZE") < 0)
+                                 return log_oom();
+@@ -675,6 +672,15 @@
+         if (extra_mkfs_args && strv_extend_strv(&argv, extra_mkfs_args, false) < 0)
+                 return log_oom();
+ 
++        /* musl getopt() does not permute non-option arguments (glibc
++         * does), so options passed via SYSTEMD_REPART_MKFS_OPTIONS_*
++         * must precede the device node: the ext* mkfs tools treat the
++         * first positional as the device and the second as the optional
++         * block count. */
++        if (STR_IN_SET(fstype, "ext2", "ext3", "ext4"))
++                if (strv_extend(&argv, node) < 0)
++                        return log_oom();
++
+         if (streq(fstype, "btrfs")) {
+                 struct stat st;
+ 
