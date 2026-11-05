@@ -1,7 +1,7 @@
 package:
   name: osimage-config
   version: 1.0.0
-  epoch: 9
+  epoch: 11
   description: OS configuration for osimage bootc images (baked systemd enablement, boot kargs, boot assessment)
   target-architecture:
     - x86_64
@@ -64,6 +64,15 @@ pipeline:
       ln -s /usr/lib/systemd/system/systemd-networkd.service "$d/dbus-org.freedesktop.network1.service"
       ln -s /usr/lib/systemd/system/systemd-resolved.service "$d/dbus-org.freedesktop.resolve1.service"
       ln -s /usr/lib/systemd/system/systemd-timesyncd.service "$d/dbus-org.freedesktop.timesync1.service"
+      # D-Bus activation aliases upstream installs at package install
+      # time (units/meson.build `symlinks`, not [Install]/preset
+      # products): without these dbus cannot activate the services -
+      # visible as `shutdown -h now` printing "Failed to set wall
+      # message" because org.freedesktop.login1 never comes up.
+      ln -s /usr/lib/systemd/system/systemd-logind.service "$d/dbus-org.freedesktop.login1.service"
+      ln -s /usr/lib/systemd/system/systemd-logind.service "$d/multi-user.target.wants/systemd-logind.service"
+      ln -s /usr/lib/systemd/system/systemd-hostnamed.service "$d/dbus-org.freedesktop.hostname1.service"
+      ln -s /usr/lib/systemd/system/systemd-timedated.service "$d/dbus-org.freedesktop.timedate1.service"
       ln -s /usr/lib/systemd/system/getty@.service "$d/getty.target.wants/getty@tty1.service"
       ln -s /usr/lib/systemd/system/osimage-boot-count.service "$d/multi-user.target.wants/osimage-boot-count.service"
       # tailscale + docker (units in tree/; containerd.service is pulled
@@ -111,6 +120,10 @@ pipeline:
       test "$(readlink "${{targets.destdir}}/usr/bin/umount")" = /bin/busybox
       test -f "${{targets.destdir}}/usr/lib/composefs/setup-root-conf.toml"
       grep -q '^enabled = true$' "${{targets.destdir}}/usr/lib/composefs/setup-root-conf.toml"
+      # dbus-activated services must have their activation aliases
+      test "$(readlink "${{targets.destdir}}/etc/systemd/system/dbus-org.freedesktop.login1.service")" = /usr/lib/systemd/system/systemd-logind.service
+      test "$(readlink "${{targets.destdir}}/etc/systemd/system/dbus-org.freedesktop.hostname1.service")" = /usr/lib/systemd/system/systemd-hostnamed.service
+      test "$(readlink "${{targets.destdir}}/etc/systemd/system/dbus-org.freedesktop.timedate1.service")" = /usr/lib/systemd/system/systemd-timedated.service
       # repart profile: ESP fixed 1 GiB, root-x86-64 ext4 min 4 GiB
       test -f "${{targets.destdir}}/usr/lib/repart.d/10-esp.conf"
       test -f "${{targets.destdir}}/usr/lib/repart.d/20-root.conf"

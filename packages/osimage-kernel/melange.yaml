@@ -1,7 +1,7 @@
 package:
   name: osimage-kernel
   version: 7.1.5
-  epoch: 3
+  epoch: 4
   description: Alpine linux-stable kernel repacked into the bootc /usr/lib/modules layout
   target-architecture:
     - x86_64

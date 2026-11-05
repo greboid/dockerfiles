@@ -104,5 +104,11 @@ fi
 mkdir -p "$NEWROOT"
 # busybox mount's fs auto-probing fails with ENOENT here; be explicit.
 # The repart profile formats root as ext4.
+#
+# rw is required for bootc composefs: the bootc initramfs setup
+# bind-mounts /var (persistent state) from the backing filesystem, so a
+# read-only superblock would make those binds read-only. The composefs
+# root itself stays read-only; /etc is pinned read-only via
+# setup-root-conf.toml ([etc] mount = "none").
 info "bootc-gptroot: mounting discoverable root $rootdev"
-mount -t ext4 -o ro "$rootdev" "$NEWROOT"
+mount -t ext4 -o rw "$rootdev" "$NEWROOT"

@@ -4,3 +4,16 @@
 # (no ostree repository in the image); see bootc-setup-root-conf(5).
 # Keep it valid TOML; bootc reads it at install/upgrade time.
 enabled = true
+
+# /etc stays part of the sealed composefs image: read-only, identical on
+# every deployment, replaced wholesale by upgrades (no per-deployment
+# /etc bind from the state directory).
+[etc]
+mount = "none"
+
+# /var bind-mounts the shared per-machine state directory from the
+# backing root filesystem: writable and persistent across reboots and
+# deployments. This is bootc's default; stated explicitly so an upstream
+# default change cannot silently revert it.
+[var]
+mount = "bind"
