@@ -1,3 +1,0 @@
-init=/usr/lib/systemd/systemd
-console=tty0
-console=ttyS0,115200

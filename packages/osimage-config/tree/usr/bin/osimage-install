@@ -13,6 +13,18 @@
 #
 # Usage: osimage-install <disk-device> [extra bootc install to-disk
 # options]
+#
+# Standard mode installs a UKI layout with systemd-repart: 1 GiB ESP
+# plus an ext4 root (minimum 4 GiB, grown into the remaining disk), per
+# the repart.d profile shipped in osimage-config. bootc partitions,
+# deploys and sets up systemd-boot; kernel arguments are baked into the
+# UKI by the image itself (machine-specific arguments belong in image
+# variants, not the installer).
+#
+# OSIMAGE_LEGACY_BLS=1 restores the pre-UKI flow (packaged-kernel BLS
+# entries with --karg injection and --filesystem ext4) for
+# migration-test installs of older images. It requires the target image
+# to be a pre-UKI build.
 set -eu
 
 disk="${1:?usage: osimage-install <disk-device> [extra bootc options]}"
@@ -54,29 +66,139 @@ fi
 modprobe erofs 2>/dev/null || true
 modprobe overlay 2>/dev/null || true
 
-echo "== installing $source_ref onto $disk (origin: $target_ref)"
-# The image's packaged kernel arguments live in /usr/lib/bootc/kargs.d
-# (init=, consoles). bootc's composefs to-disk flow does not carry them
-# into the installed BLS entry on its own - without init= the composefs
-# root cannot start systemd - so pass them explicitly. root= is skipped
-# because bootc sets the deployment root itself. User-passed options
-# come last and win.
-kargs_args=
-for f in /usr/lib/bootc/kargs.d/*.args; do
-    [ -f "$f" ] || continue
-    while read -r karg; do
-        case "$karg" in
-            "" | root=*) continue ;;
-        esac
-        kargs_args="$kargs_args --karg $karg"
-    done < "$f"
+legacy_bls="${OSIMAGE_LEGACY_BLS:-0}"
+
+# --- preflight ---------------------------------------------------------
+
+die() {
+    echo "osimage-install: $*" >&2
+    exit 1
+}
+
+# Parent disk name of a partition device. Uses sysfs: lsblk prints the
+# whole subtree of the given node, so a disk that already carries
+# partitions would yield one PKNAME row per child and defeat the
+# whole-disk check below.
+disk_of() {
+    if [ -e "/sys/class/block/$1/partition" ]; then
+        basename "$(readlink -f "/sys/class/block/$1/..")"
+    else
+        echo "$1"
+    fi
+}
+
+dev=$(basename "$(readlink -f "$disk")")
+# The kernel exposes the partition attribute only on partition nodes.
+if [ -e "/sys/class/block/$dev/partition" ]; then
+    die "$disk is a partition; osimage-install installs to a whole disk"
+fi
+target=$dev
+
+# Refuse the disk the running installer booted from.
+live_backing() {
+    findmnt -nrno SOURCE /run/initramfs/live 2>/dev/null && return
+    findmnt -nrno SOURCE /run/initramfs/squashfs 2>/dev/null && return
+    findmnt -nrno SOURCE / 2>/dev/null
+}
+for live_src in $(live_backing | sort -u); do
+    case "$live_src" in
+        /dev/*) ;;
+        *) continue ;;
+    esac
+    if [ "$(disk_of "$(basename "$live_src")")" = "$target" ]; then
+        die "$disk is the installer media this system booted from"
+    fi
 done
 
-# Extra options (e.g. --karg) for machine-specific overrides.
-# shellcheck disable=SC2086
+# Refuse disks with mounted descendants (target, ESP, old root, ...).
+for mnt in $(lsblk -rno MOUNTPOINT "/dev/$target" 2>/dev/null); do
+    [ -n "$mnt" ] || continue
+    die "$disk has a mounted filesystem at $mnt; unmount it first"
+done
+
+# Capacity: 1 GiB ESP + 4 GiB root minimum.
+size_bytes=$(lsblk -bdn -o SIZE "/dev/$target" 2>/dev/null) ||
+    die "cannot read size of $disk"
+min_bytes=$((1 * 1024 * 1024 * 1024 + 4 * 1024 * 1024 * 1024))
+[ "${size_bytes:-0}" -ge "$min_bytes" ] ||
+    die "$disk is $((size_bytes / 1024 / 1024)) MiB; the repart profile needs at least 5120 MiB"
+
+ident=$(lsblk -dn -o MODEL,SERIAL "/dev/$target" 2>/dev/null | tr -s ' \t' ' ' | sed 's/^ *//;s/ *$//')
+
+if [ "$legacy_bls" = 1 ]; then
+    echo "== installing $source_ref onto $disk (origin: $target_ref) [legacy BLS mode]"
+    echo "== target: $ident"
+    # The image's packaged kernel arguments live in /usr/lib/bootc/kargs.d
+    # (init=, consoles) as TOML files (bootc kargs.d format). bootc's
+    # composefs to-disk flow does not carry them into the installed BLS
+    # entry on its own - without init= the composefs root cannot start
+    # systemd - so pass them explicitly. root= is skipped because bootc
+    # sets the deployment root itself. User-passed options come last and
+    # win.
+    kargs_args=
+    for f in /usr/lib/bootc/kargs.d/*.toml; do
+        [ -f "$f" ] || continue
+        while read -r karg; do
+            case "$karg" in
+                "" | root=*) continue ;;
+            esac
+            kargs_args="$kargs_args --karg $karg"
+        done <<EOF2
+$(sed -n 's/^[[:space:]]*"\(.*\)",\{0,1\}[[:space:]]*$/\1/p' "$f")
+EOF2
+    done
+
+    # Extra options (e.g. --karg) for machine-specific overrides.
+    # shellcheck disable=SC2086
+    exec bootc install to-disk \
+        --source-imgref "$source_ref" \
+        --target-imgref "$target_ref" \
+        --filesystem ext4 \
+        $kargs_args \
+        "$disk" --wipe "$@"
+fi
+
+# Standard UKI mode: repart must run, or bootc would silently fall back
+# to its built-in partitioner (run_repart && can_use_systemd_repart() in
+# bootc 1.17.3) and produce a different layout.
+command -v systemd-repart >/dev/null 2>&1 ||
+    die "systemd-repart is not installed; refusing to install with the fallback partitioner"
+for def in \
+    /usr/lib/repart.d/10-esp.conf \
+    /usr/lib/repart.d/20-root.conf; do
+    [ -f "$def" ] || die "repart definition $def missing from installer root"
+done
+if ! { grep -q '^Type=esp$' /usr/lib/repart.d/10-esp.conf &&
+    grep -q '^Format=vfat$' /usr/lib/repart.d/10-esp.conf; }; then
+    die "/usr/lib/repart.d/10-esp.conf is not the expected ESP profile"
+fi
+if ! { grep -q '^Type=root-x86-64$' /usr/lib/repart.d/20-root.conf &&
+    grep -q '^Format=ext4$' /usr/lib/repart.d/20-root.conf &&
+    grep -q '^SizeMinBytes=4G$' /usr/lib/repart.d/20-root.conf; }; then
+    die "/usr/lib/repart.d/20-root.conf is not the expected root profile"
+fi
+# Definitions are read from the running installer root (not pulled from
+# the target image); report which build provides them.
+profile_version=$(awk -F: '$1 == "P" { p = $2 } $1 == "V" && p == "osimage-config" { print $2; exit }' /lib/apk/db/installed 2>/dev/null || true)
+[ -n "$profile_version" ] || profile_version="unknown"
+
+for opt in "$@"; do
+    case "$opt" in
+        --karg | --karg=* | --karg-delete | --karg-delete=* | --filesystem | --filesystem=* | --root-size | --root-size=* | --block-setup | --block-setup=*)
+            die "$opt is not supported for UKI installations: the kernel command line is baked into the image, and the disk layout is defined by the repart profile (machine-specific arguments belong in image variants)"
+            ;;
+    esac
+done
+
+echo "== installing $source_ref onto $disk (origin: $target_ref)"
+echo "== target: $ident"
+echo "== repart profile: osimage-config $profile_version (/usr/lib/repart.d: 1 GiB esp, ext4 root >= 4 GiB)"
+
 exec bootc install to-disk \
     --source-imgref "$source_ref" \
     --target-imgref "$target_ref" \
-    --filesystem ext4 \
-    $kargs_args \
-    "$disk" --wipe "$@"
+    --composefs-backend \
+    --bootloader systemd \
+    --run-repart \
+    --wipe "$disk" \
+    "$@"

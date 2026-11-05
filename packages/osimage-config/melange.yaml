@@ -1,7 +1,7 @@
 package:
   name: osimage-config
   version: 1.0.0
-  epoch: 6
+  epoch: 9
   description: OS configuration for osimage bootc images (baked systemd enablement, boot kargs, boot assessment)
   target-architecture:
     - x86_64
@@ -66,6 +66,11 @@ pipeline:
       ln -s /usr/lib/systemd/system/systemd-timesyncd.service "$d/dbus-org.freedesktop.timesync1.service"
       ln -s /usr/lib/systemd/system/getty@.service "$d/getty.target.wants/getty@tty1.service"
       ln -s /usr/lib/systemd/system/osimage-boot-count.service "$d/multi-user.target.wants/osimage-boot-count.service"
+      # tailscale + docker (units in tree/; containerd.service is pulled
+      # in by docker.service's Wants=, not enabled standalone)
+      ln -s /usr/lib/systemd/system/tailscaled.service "$d/multi-user.target.wants/tailscaled.service"
+      ln -s /usr/lib/systemd/system/docker.service "$d/multi-user.target.wants/docker.service"
+      ln -s /usr/lib/systemd/system/docker.socket "$d/sockets.target.wants/docker.socket"
       ln -s /usr/lib/systemd/system/remote-fs.target "$d/multi-user.target.wants/remote-fs.target"
       ln -s /usr/lib/systemd/system/systemd-networkd.service "$d/multi-user.target.wants/systemd-networkd.service"
       ln -s /usr/lib/systemd/system/systemd-networkd-wait-online.service "$d/network-online.target.wants/systemd-networkd-wait-online.service"
@@ -106,7 +111,23 @@ pipeline:
       test "$(readlink "${{targets.destdir}}/usr/bin/umount")" = /bin/busybox
       test -f "${{targets.destdir}}/usr/lib/composefs/setup-root-conf.toml"
       grep -q '^enabled = true$' "${{targets.destdir}}/usr/lib/composefs/setup-root-conf.toml"
-      grep -q 'console=ttyS0,115200' "${{targets.destdir}}/usr/lib/bootc/kargs.d/10-console.args"
+      # repart profile: ESP fixed 1 GiB, root-x86-64 ext4 min 4 GiB
+      test -f "${{targets.destdir}}/usr/lib/repart.d/10-esp.conf"
+      test -f "${{targets.destdir}}/usr/lib/repart.d/20-root.conf"
+      grep -q '^Type=esp$' "${{targets.destdir}}/usr/lib/repart.d/10-esp.conf"
+      grep -q '^Format=vfat$' "${{targets.destdir}}/usr/lib/repart.d/10-esp.conf"
+      grep -q '^Type=root-x86-64$' "${{targets.destdir}}/usr/lib/repart.d/20-root.conf"
+      grep -q '^Format=ext4$' "${{targets.destdir}}/usr/lib/repart.d/20-root.conf"
+      grep -q '^SizeMinBytes=4G$' "${{targets.destdir}}/usr/lib/repart.d/20-root.conf"
+      # tailscale + docker services and units
+      test -f "${{targets.destdir}}/usr/lib/systemd/system/tailscaled.service"
+      test -f "${{targets.destdir}}/usr/lib/systemd/system/containerd.service"
+      test -f "${{targets.destdir}}/usr/lib/sysusers.d/20-osimage-docker.conf"
+      test "$(readlink "${{targets.destdir}}/etc/systemd/system/multi-user.target.wants/tailscaled.service")" = "/usr/lib/systemd/system/tailscaled.service"
+      test "$(readlink "${{targets.destdir}}/etc/systemd/system/multi-user.target.wants/docker.service")" = "/usr/lib/systemd/system/docker.service"
+      test "$(readlink "${{targets.destdir}}/etc/systemd/system/sockets.target.wants/docker.socket")" = "/usr/lib/systemd/system/docker.socket"
+      grep -q 'console=ttyS0,115200' "${{targets.destdir}}/usr/lib/bootc/kargs.d/10-console.toml"
+      grep -q 'root=gpt-auto' "${{targets.destdir}}/usr/lib/bootc/kargs.d/20-root.toml"
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/autovt@.service")" = "/usr/lib/systemd/system/getty@.service"
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/multi-user.target.wants/systemd-networkd.service")" = "/usr/lib/systemd/system/systemd-networkd.service"
 
@@ -115,8 +136,10 @@ test:
     contents:
       keyring:
         - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+        - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-6165ee59.rsa.pub
       repositories:
         - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
       packages:
         - os-release=3.24.2-r0
         - busybox=1.37.0-r31
@@ -139,6 +162,22 @@ test:
         test "$(readlink /usr/bin/mount)" = /bin/busybox
         test "$(readlink /usr/bin/umount)" = /bin/busybox
         test -f /usr/lib/composefs/setup-root-conf.toml
+    - name: Shared digest parsing covers BLS options and UKI wrappers
+      runs: |
+        . /usr/libexec/osimage-boot-common
+        d=$(mktemp -d)
+        echo 'options root=UUID=x rw composefs.digest=repo:0123456789abcdef extra' \
+          > "$d/type1.conf"
+        test "$(entry_composefs_digest "$d/type1.conf")" = 0123456789abcdef
+        echo 'uki /EFI/Linux/bootc/bootc_composefs-0123456789abcdef.efi' \
+          > "$d/uki.conf"
+        test "$(entry_composefs_digest "$d/uki.conf")" = 0123456789abcdef
+        echo 'efi /EFI/Linux/bootc/bootc_composefs-fedcba9876543210.efi' \
+          > "$d/efi.conf"
+        test "$(entry_composefs_digest "$d/efi.conf")" = fedcba9876543210
+        echo 'uki /EFI/Linux/other-12345678.efi' > "$d/nonbootc.conf"
+        test -z "$(entry_composefs_digest "$d/nonbootc.conf")"
+        rm -rf "$d"
 
 update:
   enabled: false

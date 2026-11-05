@@ -1,0 +1,7 @@
+# root=gpt-auto: the hardened bootc-gptroot initramfs hook resolves the
+# discoverable root on the disk of the booted ESP (systemd-stub sets
+# LoaderDevicePartUUID; per-install root=UUID cannot be baked into a
+# sealed UKI).
+kargs = [
+  "root=gpt-auto",
+]

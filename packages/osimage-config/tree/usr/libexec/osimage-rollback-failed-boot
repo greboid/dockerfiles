@@ -17,13 +17,13 @@
 PATH=/usr/bin:/bin:/usr/sbin:/sbin
 export PATH
 
-ESP_PARTTYPE=c12a7328-f81f-11d2-ba4b-00a0c93ec93b
 MNT=/run/osimage-rollback
+
+. /usr/libexec/osimage-boot-common
 
 log() { echo "osimage-rollback-failed-boot: $*"; }
 
-digest=$(tr ' ' '\n' </proc/cmdline |
-    sed -n 's/^composefs\.digest=[^:]*://p')
+digest=$(booted_composefs_digest)
 if [ -z "$digest" ]; then
     log "no composefs.digest on the kernel cmdline; refusing to roll back"
     exit 1
@@ -41,15 +41,19 @@ for f in "$flagdir"/*; do
 done
 
 # The rollback target is the one non-booted deployment: the BLS entry
-# whose composefs digest differs from the booted one.
+# whose composefs digest differs from the booted one, on the ESP the
+# system booted from (never an attached installer USB's ESP).
 target=
+esp=$(booted_esp_device)
+if [ -z "$esp" ]; then
+    log "cannot identify the booted ESP; staying put"
+    exit 1
+fi
 mkdir -p "$MNT" || exit 1
-for part in $(lsblk -no PATH,PARTTYPE 2>/dev/null |
-        awk -v g="$ESP_PARTTYPE" '$2 == g {print $1}'); do
-    mount -t vfat "$part" "$MNT" 2>/dev/null || continue
+if mount -t vfat "$esp" "$MNT" 2>/dev/null; then
     for f in "$MNT"/loader/entries/*.conf; do
         [ -f "$f" ] || continue
-        d=$(sed -n 's/.*composefs\.digest=[^:]*:\([0-9a-f]\{8,\}\).*/\1/p' "$f")
+        d=$(entry_composefs_digest "$f")
         [ -n "$d" ] || continue
         if [ "$d" != "$digest" ]; then
             if [ -n "$target" ] && [ "$target" != "$d" ]; then
@@ -62,7 +66,11 @@ for part in $(lsblk -no PATH,PARTTYPE 2>/dev/null |
         fi
     done
     umount "$MNT"
-done
+else
+    log "cannot mount the booted ESP $esp; staying put"
+    rmdir "$MNT" 2>/dev/null
+    exit 1
+fi
 rmdir "$MNT" 2>/dev/null
 if [ -z "$target" ]; then
     log "no rollback target found; staying put"

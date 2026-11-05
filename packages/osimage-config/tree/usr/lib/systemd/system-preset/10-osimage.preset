@@ -13,3 +13,9 @@ disable bootc-fetch-apply-updates.timer
 # that dbus is enabled: it talks to PID1 through the system broker.
 enable osimage-boot-count.service
 enable systemd-boot-check-no-failures.service
+
+# tailscale + docker: units ship in tree/ (containerd.service is pulled
+# by docker.service's Wants=, not enabled standalone)
+enable tailscaled.service
+enable docker.socket
+enable docker.service

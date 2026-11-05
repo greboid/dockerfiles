@@ -1,0 +1,62 @@
+# Shared helpers for the osimage boot assessment scripts
+# (osimage-boot-count, osimage-rollback-failed-boot, osimage-bless).
+# Sourced, not executed: keeps digest parsing and ESP selection
+# identical across the scripts.
+# shellcheck shell=sh
+#
+# Composefs deployment digests appear in bootc-managed BLS entries in
+# two shapes:
+#   - Type 1 entries carry them in the kernel options line:
+#       options ... composefs.digest=<repo>:<hex>
+#   - UKI entries are wrapper .conf files pointing at the deployment's
+#     UKI, written as `uki <path>` by bootc with systemd >= 258 and as
+#     a legacy `efi <path>` otherwise; the UKI filename is
+#       bootc_composefs-<hex>.efi
+#     and embeds the same digest on its kernel command line.
+
+PATH=/usr/bin:/bin:/usr/sbin:/sbin
+export PATH
+
+# Composefs digest of the running system, from the kernel command line
+# (embedded in the UKI for UKI boots; set by composefs for Type 1).
+booted_composefs_digest() {
+    tr ' ' '\n' </proc/cmdline |
+        sed -n 's/^composefs\.digest=[^:]*://p'
+}
+
+# Composefs digest a bootc BLS entry file points at. Prints nothing for
+# non-bootc entries.
+entry_composefs_digest() {
+    _f=$1
+    _d=$(sed -n 's/.*composefs\.digest=[^:]*:\([0-9a-f]\{8,\}\).*/\1/p' "$_f")
+    [ -n "$_d" ] && {
+        echo "$_d"
+        return 0
+    }
+    sed -n 's/^\(uki\|efi\) .*\/bootc_composefs-\([0-9a-f]\{8,\}\)\.efi[[:space:]]*$/\2/p' "$_f"
+}
+
+# Partition UUID of the ESP the systemd-boot loader booted from:
+# LoaderDevicePartUUID, stored as an EFI variable (4-byte attribute
+# header, then UTF-16LE; UUID characters are ASCII, so dropping NULs
+# decodes them).
+booted_esp_partuuid() {
+    _v=/sys/firmware/efi/efivars/LoaderDevicePartUUID-4a67b082-0a4c-41cf-b6c7-440b29bb8c4f
+    [ -r "$_v" ] || return 0
+    dd if="$_v" bs=4 skip=1 2>/dev/null | tr -d '\0' | tr 'A-F' 'a-f'
+}
+
+# Block device of the booted system's ESP: matched by
+# LoaderDevicePartUUID first, then by whatever is mounted on /boot
+# (bootc mounts the ESP there). Prints nothing when the system was not
+# booted through an identified ESP (e.g. direct-kernel diagnostic
+# boots) - callers must not guess among several ESPs.
+booted_esp_device() {
+    _pu=$(booted_esp_partuuid)
+    if [ -n "$_pu" ]; then
+        lsblk -rno PATH,PARTUUID 2>/dev/null |
+            awk -v u="$_pu" 'tolower($2) == u {print $1; exit}'
+        return 0
+    fi
+    findmnt -nrno SOURCE /boot 2>/dev/null
+}

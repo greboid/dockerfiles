@@ -15,10 +15,16 @@
 #     would make the broken deployment the default again and boot-loop
 #     the machine.
 #
-# Entries come in two shapes: Type 1 carries the digest in its options
-# line; a sealed Type 2 entry points at the deployment's UKI
-# (`linux .../bootc-<digest>.efi`) and the digest is read from the UKI
-# filename — it is the same digest the UKI embeds on the cmdline.
+# Entries come in three shapes: Type 1 carries the digest in its options
+# line; a sealed entry is a wrapper .conf pointing at the deployment's
+# UKI via `uki` (systemd >= 258) or the legacy `efi` key, and the digest
+# is read from the bootc_composefs-<digest>.efi filename - it is the
+# same digest the UKI embeds on the cmdline. Parsing is shared with the
+# other boot assessment scripts through /usr/libexec/osimage-boot-common.
+#
+# Only the ESP the running system booted from is touched: an attached
+# installer USB or a second installed disk has its own ESP that must
+# never gain or lose counters.
 #
 # Runs at boot (osimage-boot-count.service, self-healing for entries
 # that missed stamping) and after every bootc bootloader-entry exchange:
@@ -33,14 +39,14 @@ PATH=/usr/bin:/bin:/usr/sbin:/sbin
 export PATH
 
 TRIES=2
-ESP_PARTTYPE=c12a7328-f81f-11d2-ba4b-00a0c93ec93b
 MNT=/run/osimage-boot-count
 FLAGDIR=/var/lib/osimage/auto-rollback
 
+. /usr/libexec/osimage-boot-common
+
 log() { echo "osimage-boot-count: $*"; }
 
-booted_digest=$(tr ' ' '\n' </proc/cmdline |
-    sed -n 's/^composefs\.digest=[^:]*://p')
+booted_digest=$(booted_composefs_digest)
 if [ -z "$booted_digest" ]; then
     # Direct-kernel boots (installer) and non-composefs systems have no
     # counted deployments; nothing to do.
@@ -58,8 +64,7 @@ stamp_entry() {
             *+*-*.conf) counter=yes ;;
             *) counter=no ;;
         esac
-        edigest=$(sed -n 's/.*composefs\.digest=[^:]*:\([0-9a-f]\{8,\}\).*/\1/p' "$f")
-        [ -n "$edigest" ] || edigest=$(sed -n 's|^linux \(.*/\)\{0,1\}bootc-\([0-9a-f]\{8,\}\)\.efi[[:space:]]*$|\2|p' "$f")
+        edigest=$(entry_composefs_digest "$f")
         if [ -z "$edigest" ]; then
             log "cannot read composefs digest from $name; skipping"
             continue
@@ -82,16 +87,18 @@ stamp_entry() {
     done
 }
 
+esp=$(booted_esp_device)
+if [ -z "$esp" ]; then
+    log "cannot identify the booted ESP; nothing to do"
+    exit 0
+fi
+
 mkdir -p "$MNT" || exit 0
-found=
-for part in $(lsblk -no PATH,PARTTYPE 2>/dev/null |
-        awk -v g="$ESP_PARTTYPE" '$2 == g {print $1}'); do
-    if mount -t vfat "$part" "$MNT" 2>/dev/null; then
-        found=1
-        stamp_entry "$MNT"
-        umount "$MNT"
-    fi
-done
+if mount -t vfat "$esp" "$MNT" 2>/dev/null; then
+    stamp_entry "$MNT"
+    umount "$MNT"
+else
+    log "cannot mount the booted ESP $esp; nothing to do"
+fi
 rmdir "$MNT" 2>/dev/null
-[ -n "$found" ] || log "no ESP with bootc BLS entries found; nothing to do"
 exit 0

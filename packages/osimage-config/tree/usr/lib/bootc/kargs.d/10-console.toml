@@ -1,0 +1,7 @@
+# Kernel arguments baked into the sealed UKI (bootc kargs.d TOML
+# format); consoles for both the virtual console and the serial port.
+kargs = [
+  "init=/usr/lib/systemd/systemd",
+  "console=tty0",
+  "console=ttyS0,115200",
+]

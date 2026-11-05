@@ -1,0 +1,20 @@
+# Tailscale node agent: the org tailscale package ships binaries and a
+# tmpfiles fragment but no systemd unit (upstream unit, adapted to the
+# /usr/bin paths of the org build).
+[Unit]
+Description=Tailscale node agent
+Documentation=https://tailscale.com/kb/
+Wants=network-pre.target
+Before=network-pre.target multi-user.target
+After=systemd-resolved.service
+
+[Service]
+ExecStartPre=-/usr/bin/tailscaled --cleanup
+ExecStart=/usr/bin/tailscaled --port 41641 --state=/var/lib/tailscale/tailscaled.state
+ExecReload=/bin/kill -HUP $MAINPID
+RuntimeDirectory=tailscale
+RuntimeDirectoryMode=0755
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

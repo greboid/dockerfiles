@@ -1,7 +1,7 @@
 package:
   name: systemd
   version: 262.1
-  epoch: 2
+  epoch: 3
   description: systemd init system (PID 1), udev and core daemons built for musl
   target-architecture:
     - x86_64
@@ -70,7 +70,10 @@ pipeline:
       # HAVE_DBUS (-Ddbus=enabled) additionally installs the broker
       # policy/activation data files so that org.freedesktop.systemd1 is
       # reachable through dbus-daemon (compile-only: libdbus is not
-      # linked).
+      # linked). repart is enabled and requires libfdisk (fdisk.pc ships
+      # in util-linux-dev); an explicit enable turns a missing libfdisk
+      # into a hard configure error. No TPM/OpenSSL/cryptsetup needed for
+      # GPT/vfat/ext4 operation.
       meson setup output \
         --prefix=/usr \
         --sysconfdir=/etc \
@@ -117,7 +120,7 @@ pipeline:
         -Dhomed=disabled \
         -Dimportd=disabled \
         -Dremote=disabled \
-        -Drepart=disabled \
+        -Drepart=enabled \
         -Dsysupdate=disabled \
         -Dvmspawn=disabled \
         -Dportabled=false \
@@ -168,6 +171,20 @@ pipeline:
       # Boot EFI artifacts ship in the systemd-boot / systemd-efistub
       # subpackages; remove them from the main package to avoid conflicts.
       rm -rf "${{targets.destdir}}/usr/lib/systemd/boot"
+      # The repartitioner, its units and built-in definitions ship in the
+      # systemd-repart subpackage (moved out by that subpackage's
+      # pipeline, which runs after strip). Here we only remove upstream's
+      # boot-time enablement: systemd-repart.service is wanted by
+      # sysinit.target and initrd-root-fs.target and its socket by
+      # sockets.target. We only ever repartition via bootc install
+      # --run-repart, and the image ships /usr/lib/repart.d definitions,
+      # so keeping these links would repartition on every boot of the
+      # installed system or the live installer. The unit files stay
+      # (static) for explicit/invoked use; the removal is asserted in the
+      # subpackage pipeline.
+      rm -f "${{targets.destdir}}/usr/lib/systemd/system/sysinit.target.wants/systemd-repart.service"
+      rm -f "${{targets.destdir}}/usr/lib/systemd/system/initrd-root-fs.target.wants/systemd-repart.service"
+      rm -f "${{targets.destdir}}/usr/lib/systemd/system/sockets.target.wants/systemd-repart.socket"
   - uses: strip
 
 subpackages:
@@ -240,6 +257,66 @@ subpackages:
         - name: EFI boot manager binary is present
           runs: |
             test -s /usr/lib/systemd/boot/efi/systemd-bootx64.efi
+  - name: systemd-repart
+    dependencies:
+      runtime:
+        # Links /usr/lib/systemd/libsystemd-shared-262.so from the main
+        # package; must move in lockstep.
+        - systemd=${{package.full-version}}
+    pipeline:
+      - name: Move the repartitioner, its units and built-in definitions out of the main package
+        runs: |
+          install -Dm 0755 "${{targets.destdir}}/usr/bin/systemd-repart" \
+            "${{targets.subpkgdir}}/usr/bin/systemd-repart"
+          install -d "${{targets.subpkgdir}}/usr/lib/systemd/system" \
+            "${{targets.subpkgdir}}/usr/lib/systemd/repart/definitions"
+          mv "${{targets.destdir}}/usr/lib/systemd/system/systemd-repart.service" \
+             "${{targets.destdir}}/usr/lib/systemd/system/systemd-repart.socket" \
+             "${{targets.destdir}}/usr/lib/systemd/system/systemd-repart@.service" \
+             "${{targets.subpkgdir}}/usr/lib/systemd/system/"
+          # Built-in definitions for sysext/confext/portable factory
+          # images; our osimage repart.d profile ships in osimage-config.
+          cp -r "${{targets.destdir}}/usr/lib/systemd/repart/definitions/." \
+            "${{targets.subpkgdir}}/usr/lib/systemd/repart/definitions/"
+          rm -rf "${{targets.destdir}}/usr/bin/systemd-repart" \
+            "${{targets.destdir}}/usr/lib/systemd/repart"
+          # Copy from the main destdir (already stripped, with the
+          # install RUNPATH); removing it from the destdir above keeps the
+          # main package clean: its contents are finalized after
+          # subpackage pipelines.
+          # Boot-time enablement must not ship anywhere: upstream's wants
+          # links are removed from the main package (see Install); assert
+          # so a systemd upgrade that re-adds them fails the build
+          # instead of silently repartitioning disks at boot.
+          d="${{targets.subpkgdir}}/usr/lib/systemd/system"
+          test ! -e "$d/sysinit.target.wants/systemd-repart.service"
+          test ! -e "$d/initrd-root-fs.target.wants/systemd-repart.service"
+          test ! -e "$d/sockets.target.wants/systemd-repart.socket"
+    test:
+      environment:
+        contents:
+          keyring:
+            - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+          repositories:
+            - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+            - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+          packages:
+            - os-release=3.24.2-r0
+            - busybox=1.37.0-r31
+      pipeline:
+        - name: Repartitioner executes and support files are present
+          runs: |
+            systemd-repart --version
+            test -f /usr/lib/systemd/system/systemd-repart.service
+            test -f /usr/lib/systemd/system/systemd-repart@.service
+            test -f /usr/lib/systemd/system/systemd-repart.socket
+            test -d /usr/lib/systemd/repart/definitions
+            # Boot-time enablement must not have shipped in this package
+            # either (no wants links to the moved units).
+            d=/usr/lib/systemd/system
+            test ! -e "$d/sysinit.target.wants/systemd-repart.service"
+            test ! -e "$d/initrd-root-fs.target.wants/systemd-repart.service"
+            test ! -e "$d/sockets.target.wants/systemd-repart.socket"
   - name: ukify
     pipeline:
       - name: Install the UKI builder
