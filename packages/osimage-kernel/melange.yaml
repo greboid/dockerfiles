@@ -1,7 +1,7 @@
 package:
   name: osimage-kernel
   version: 7.1.5
-  epoch: 4
+  epoch: 5
   description: Alpine linux-stable kernel repacked into the bootc /usr/lib/modules layout
   target-architecture:
     - x86_64
@@ -32,6 +32,14 @@ environment:
       # repository appended by the shared CI workflow
       - dracut=111-r2
       - bootc=1.17.3-r0
+      # /usr/lib/composefs/setup-root-conf.toml must exist in the build
+      # root: the bootc dracut module embeds it into the initramfs (the
+      # initramfs reads it from its own filesystem before pivot). Without
+      # it initramfs-setup falls back to its defaults, which bind-mount
+      # /etc read-write instead of keeping it sealed in the composefs
+      # image ([etc] mount = "none"). Must move in lockstep with the
+      # image's osimage-config pin.
+      - osimage-config=1.0.0-r11
       - systemd=262.1-r1
       - lsblk=2.42.3-r1
       - device-mapper=2.03.35-r3
@@ -156,6 +164,10 @@ test:
         grep -q libblkid.so.1 /tmp/live-contents
         grep -q sbin/blkid /tmp/live-contents
         grep -q usr/lib/bootc/initramfs-setup /tmp/boot-contents
+        # the composefs mount config ([etc] mount = "none" keeps /etc
+        # sealed) must be embedded; without it initramfs-setup defaults
+        # to rw /etc + rw /var binds
+        grep -q usr/lib/composefs/setup-root-conf.toml /tmp/boot-contents
         grep -q composefs-setup.sh /tmp/boot-contents
         grep -q remount-root.sh /tmp/boot-contents
         # host UKIs resolve root=gpt-auto through the hardened GPT-root
