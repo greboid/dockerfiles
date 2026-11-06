@@ -1,7 +1,7 @@
 package:
   name: systemd
   version: 262.1
-  epoch: 4
+  epoch: 5
   description: systemd init system (PID 1), udev and core daemons built for musl
   target-architecture:
     - x86_64
@@ -81,7 +81,9 @@ pipeline:
       # linked). repart is enabled and requires libfdisk (fdisk.pc ships
       # in util-linux-dev); an explicit enable turns a missing libfdisk
       # into a hard configure error. No TPM/OpenSSL/cryptsetup needed for
-      # GPT/vfat/ext4 operation.
+      # GPT/vfat/ext4 operation. Alpine keeps /usr/sbin separate from
+      # /usr/bin; split-bin=true includes it in the service PATH.
+      # lint.args permits systemd's matching /usr/sbin install layout.
       meson setup output \
         --prefix=/usr \
         --sysconfdir=/etc \
@@ -98,7 +100,7 @@ pipeline:
         -Dtests=false \
         -Dman=disabled \
         -Dhtml=disabled \
-        -Dsplit-bin=false \
+        -Dsplit-bin=true \
         -Dinitrd=true \
         -Dtmpfiles=true \
         -Dsysusers=true \
@@ -172,8 +174,8 @@ pipeline:
     runs: |
       DESTDIR="${{targets.destdir}}" meson install -C output
       # No /sbin/init entry point: the image boots with an explicit
-      # init=/usr/lib/systemd/systemd kernel argument (the usrmerge linter
-      # forbids shipping /sbin paths, and Alpine is not usrmerged).
+      # init=/usr/lib/systemd/systemd kernel argument. Alpine's /sbin is
+      # separate from systemd's /usr/sbin install directory.
       install -Dm 0644 LICENSE.LGPL2.1 \
         "${{targets.destdir}}/usr/share/licenses/${{package.name}}/LICENSE.LGPL2.1"
       # Boot EFI artifacts ship in the systemd-boot / systemd-efistub
@@ -382,6 +384,15 @@ test:
           test -x "$exe" || { echo "missing: $exe" >&2; exit 1; }
         done
         systemctl --version
+    - name: Default service PATH includes Alpine administrative binaries
+      runs: |
+        path="$(/usr/bin/systemd-path search-binaries-default)"
+        for dir in /usr/sbin /usr/bin; do
+          case ":$path:" in
+            *":$dir:"*) ;;
+            *) echo "missing $dir in default service PATH: $path" >&2; exit 1 ;;
+          esac
+        done
     - name: Unit search path contains the vendor directories
       runs: |
         test -d /usr/lib/systemd/system
