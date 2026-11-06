@@ -1,7 +1,7 @@
 package:
   name: bootc
   version: 1.17.3
-  epoch: 0
+  epoch: 1
   description: Bootable container images - bootc for Alpine (no SELinux)
   target-architecture:
     - x86_64
@@ -90,6 +90,11 @@ pipeline:
       install -Dm 0755 target/release/bootc-initramfs-setup \
         "$destdir/usr/lib/bootc/initramfs-setup"
       install -Dm 0755 crates/cli/bootc-generator-stub \
+        "$destdir/usr/lib/systemd/system-generators/bootc-systemd-generator"
+      # Fedora ships the stub with #!/bin/bash; Alpine base images have no
+      # bash (busybox sh runs the stub fine), and a missing interpreter
+      # makes the generator fail on every boot.
+      sed -i '1s|^#!/bin/bash$|#!/bin/sh|' \
         "$destdir/usr/lib/systemd/system-generators/bootc-systemd-generator"
       install -d -m 0755 "$destdir/usr/lib/dracut/modules.d/51bootc"
       install -m 0755 crates/initramfs/dracut/module-setup.sh \
