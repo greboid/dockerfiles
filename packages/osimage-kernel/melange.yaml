@@ -31,7 +31,7 @@ environment:
       # org packages (dracut, bootc, systemd) resolve through the org
       # repository appended by the shared CI workflow
       - dracut=111-r2
-      - bootc=1.17.3-r1
+      - bootc=1.17.3-r2
       # /usr/lib/composefs/setup-root-conf.toml must exist in the build
       # root: the bootc dracut module embeds it into the initramfs (the
       # initramfs reads it from its own filesystem before pivot). Without
@@ -39,7 +39,7 @@ environment:
       # /etc read-write instead of keeping it sealed in the composefs
       # image ([etc] mount = "none"). Must move in lockstep with the
       # image's osimage-config pin.
-      - osimage-config=1.0.0-r12
+      - osimage-config=1.0.0-r14
       - systemd=262.1-r1
       - lsblk=2.42.3-r1
       - device-mapper=2.03.35-r3

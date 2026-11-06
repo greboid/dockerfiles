@@ -115,7 +115,7 @@ pipeline:
   - name: Smoke-check the payload
     runs: |
       ls -la "${{targets.destdir}}/usr/bin/"
-      ls -la "${{targets.destdir}}/etc/systemd/system/" | head
+      ls -la "${{targets.destdir}}/etc/systemd/system/" | sed -n '1,12p'
       echo "autovt: $(readlink "${{targets.destdir}}/etc/systemd/system/autovt@.service" || echo MISSING)"
       test "$(readlink "${{targets.destdir}}/usr/bin/mount")" = /bin/busybox
       test "$(readlink "${{targets.destdir}}/usr/bin/umount")" = /bin/busybox
