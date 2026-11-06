@@ -1,7 +1,7 @@
 package:
   name: osimage-kernel
   version: 7.1.5
-  epoch: 6
+  epoch: 7
   description: Alpine linux-stable kernel repacked into the bootc /usr/lib/modules layout
   target-architecture:
     - x86_64
@@ -31,7 +31,7 @@ environment:
       # org packages (dracut, bootc, systemd) resolve through the org
       # repository appended by the shared CI workflow
       - dracut=111-r2
-      - bootc=1.17.3-r0
+      - bootc=1.17.3-r1
       # /usr/lib/composefs/setup-root-conf.toml must exist in the build
       # root: the bootc dracut module embeds it into the initramfs (the
       # initramfs reads it from its own filesystem before pivot). Without

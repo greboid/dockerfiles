@@ -1,7 +1,7 @@
 package:
   name: osimage-config
   version: 1.0.0
-  epoch: 12
+  epoch: 13
   description: OS configuration for osimage bootc images (baked systemd enablement, boot kargs, boot assessment)
   target-architecture:
     - x86_64
@@ -31,7 +31,9 @@ pipeline:
       # /usr/bin/umount; Alpine 3.24 ships no package providing them
       # (mount and umount are busybox applets at /bin). Shipped as build
       # steps, not tree files: melange's workspace population silently
-      # drops symlinks.
+      # drops symlinks. (install -d: with osimage-install moved to the
+      # osimage-installer package, nothing in tree/ creates usr/bin.)
+      install -d "${{targets.destdir}}/usr/bin"
       ln -s /bin/busybox "${{targets.destdir}}/usr/bin/mount"
       ln -s /bin/busybox "${{targets.destdir}}/usr/bin/umount"
 
@@ -115,7 +117,6 @@ pipeline:
       ls -la "${{targets.destdir}}/usr/bin/"
       ls -la "${{targets.destdir}}/etc/systemd/system/" | head
       echo "autovt: $(readlink "${{targets.destdir}}/etc/systemd/system/autovt@.service" || echo MISSING)"
-      test -x "${{targets.destdir}}/usr/bin/osimage-install"
       test "$(readlink "${{targets.destdir}}/usr/bin/mount")" = /bin/busybox
       test "$(readlink "${{targets.destdir}}/usr/bin/umount")" = /bin/busybox
       test -f "${{targets.destdir}}/usr/lib/composefs/setup-root-conf.toml"
@@ -124,14 +125,7 @@ pipeline:
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/dbus-org.freedesktop.login1.service")" = /usr/lib/systemd/system/systemd-logind.service
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/dbus-org.freedesktop.hostname1.service")" = /usr/lib/systemd/system/systemd-hostnamed.service
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/dbus-org.freedesktop.timedate1.service")" = /usr/lib/systemd/system/systemd-timedated.service
-      # repart profile: ESP fixed 1 GiB, root-x86-64 ext4 min 4 GiB
-      test -f "${{targets.destdir}}/usr/lib/repart.d/10-esp.conf"
-      test -f "${{targets.destdir}}/usr/lib/repart.d/20-root.conf"
-      grep -q '^Type=esp$' "${{targets.destdir}}/usr/lib/repart.d/10-esp.conf"
-      grep -q '^Format=vfat$' "${{targets.destdir}}/usr/lib/repart.d/10-esp.conf"
-      grep -q '^Type=root-x86-64$' "${{targets.destdir}}/usr/lib/repart.d/20-root.conf"
-      grep -q '^Format=ext4$' "${{targets.destdir}}/usr/lib/repart.d/20-root.conf"
-      grep -q '^SizeMinBytes=4G$' "${{targets.destdir}}/usr/lib/repart.d/20-root.conf"
+      # repart.d + osimage-install moved to the osimage-installer package
       # tailscale + docker services and units
       test -f "${{targets.destdir}}/usr/lib/systemd/system/tailscaled.service"
       test -f "${{targets.destdir}}/usr/lib/systemd/system/containerd.service"
@@ -161,7 +155,6 @@ test:
     - name: Enablement symlinks and osimage units are in place
       runs: |
         test -f /etc/machine-id
-        test -x /usr/bin/osimage-install
         test "$(readlink /usr/bin/mount)" = /bin/busybox
         test "$(readlink /usr/bin/umount)" = /bin/busybox
         test "$(readlink /etc/systemd/system/multi-user.target.wants/osimage-boot-count.service)" = "/usr/lib/systemd/system/osimage-boot-count.service"

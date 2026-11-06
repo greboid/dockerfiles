@@ -1,0 +1,33 @@
+package:
+  name: osimage-installer
+  version: 1.0.0
+  epoch: 0
+  description: osimage installer tooling (osimage-install + repart partition profile)
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      license: MIT
+  dependencies:
+    runtime:
+      - busybox-binsh=1.37.0-r31
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+    packages:
+      - os-release=3.24.2-r0
+      - busybox=1.37.0-r31
+
+pipeline:
+  - name: Install the installer tree
+    runs: |
+      cp -a tree/. "${{targets.destdir}}/"
+
+update:
+  enabled: false
+  exclude-reason: must move in lockstep with the osimage-config package and the image pins

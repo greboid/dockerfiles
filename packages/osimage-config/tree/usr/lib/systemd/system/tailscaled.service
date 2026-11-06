@@ -3,6 +3,9 @@
 # /usr/bin paths of the org build).
 [Unit]
 Description=Tailscale node agent
+# The osimage installer image ships this unit (via osimage-config) but not
+# the tailscale package; skip cleanly instead of failing the boot assessment.
+ConditionPathExists=/usr/bin/tailscaled
 Documentation=https://tailscale.com/kb/
 Wants=network-pre.target
 Before=network-pre.target multi-user.target

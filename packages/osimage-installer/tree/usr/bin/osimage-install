@@ -179,7 +179,7 @@ if ! { grep -q '^Type=root-x86-64$' /usr/lib/repart.d/20-root.conf &&
 fi
 # Definitions are read from the running installer root (not pulled from
 # the target image); report which build provides them.
-profile_version=$(awk -F: '$1 == "P" { p = $2 } $1 == "V" && p == "osimage-config" { print $2; exit }' /lib/apk/db/installed 2>/dev/null || true)
+profile_version=$(awk -F: '$1 == "P" { p = $2 } $1 == "V" && p == "osimage-installer" { print $2; exit }' /lib/apk/db/installed 2>/dev/null || true)
 [ -n "$profile_version" ] || profile_version="unknown"
 
 for opt in "$@"; do
@@ -192,7 +192,7 @@ done
 
 echo "== installing $source_ref onto $disk (origin: $target_ref)"
 echo "== target: $ident"
-echo "== repart profile: osimage-config $profile_version (/usr/lib/repart.d: 1 GiB esp, ext4 root >= 4 GiB)"
+echo "== repart profile: osimage-installer $profile_version (/usr/lib/repart.d: 1 GiB esp, ext4 root >= 4 GiB)"
 
 exec bootc install to-disk \
     --source-imgref "$source_ref" \

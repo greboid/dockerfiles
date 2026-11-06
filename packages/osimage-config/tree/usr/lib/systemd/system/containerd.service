@@ -3,6 +3,9 @@
 # package ships no systemd unit of its own.
 [Unit]
 Description=containerd container runtime
+# Ship-with-image guard: the osimage installer image carries this unit but
+# not the containerd package.
+ConditionPathExists=/usr/bin/containerd
 Documentation=https://containerd.io
 After=network.target local-fs.target
 
