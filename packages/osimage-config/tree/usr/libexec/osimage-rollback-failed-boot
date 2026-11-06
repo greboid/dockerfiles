@@ -50,7 +50,7 @@ if [ -z "$esp" ]; then
     exit 1
 fi
 mkdir -p "$MNT" || exit 1
-if mount -t vfat "$esp" "$MNT" 2>/dev/null; then
+if mount_esp "$esp" "$MNT"; then
     for f in "$MNT"/loader/entries/*.conf; do
         [ -f "$f" ] || continue
         d=$(entry_composefs_digest "$f")

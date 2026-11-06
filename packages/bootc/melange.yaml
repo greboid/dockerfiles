@@ -1,7 +1,7 @@
 package:
   name: bootc
   version: 1.17.3
-  epoch: 1
+  epoch: 2
   description: Bootable container images - bootc for Alpine (no SELinux)
   target-architecture:
     - x86_64
@@ -60,6 +60,8 @@ pipeline:
       grep -q vendored-sources bootc-${{package.version}}/.cargo/config.toml
       patch -d bootc-${{package.version}} -p1 < \
         patches/001-musl-super-magic-cast.patch
+      patch -d bootc-${{package.version}} -p1 < \
+        patches/002-esp-mount-iocharset-ascii.patch
   - name: Build
     runs: |
       # Alpine has no SELinux; drop the default selinux feature and keep

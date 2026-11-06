@@ -60,3 +60,12 @@ booted_esp_device() {
     fi
     findmnt -nrno SOURCE /boot 2>/dev/null
 }
+
+# Mount the booted ESP. An explicit iocharset is required: Alpine's
+# kernel sets FAT_DEFAULT_IOCHARSET=utf8, and the kernel logs a
+# "utf8 is not a recommended IO charset" warning on every option-less
+# vfat mount. ascii keeps FAT's case-insensitive semantics and covers
+# every filename an ESP may legitimately carry.
+mount_esp() {
+    mount -t vfat -o iocharset=ascii "$@" 2>/dev/null
+}

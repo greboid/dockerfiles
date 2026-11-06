@@ -94,7 +94,7 @@ if [ -z "$esp" ]; then
 fi
 
 mkdir -p "$MNT" || exit 0
-if mount -t vfat "$esp" "$MNT" 2>/dev/null; then
+if mount_esp "$esp" "$MNT"; then
     stamp_entry "$MNT"
     umount "$MNT"
 else

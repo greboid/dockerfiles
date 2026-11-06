@@ -1,0 +1,15 @@
+diff -ru a/crates/lib/src/bootc_composefs/boot.rs b/crates/lib/src/bootc_composefs/boot.rs
+--- a/crates/lib/src/bootc_composefs/boot.rs
++++ b/crates/lib/src/bootc_composefs/boot.rs
+@@ -440,7 +440,10 @@
+     MountFlags::from_bits_retain(MountFlags::NOEXEC.bits() | MountFlags::NOSUID.bits());
+ 
+ /// FAT mount options: owner-only permissions on files (0600) and dirs (0700).
+-const ESP_MOUNT_DATA: &std::ffi::CStr = c"fmask=0177,dmask=0077";
++/// iocharset=ascii is explicit because distro kernels built with
++/// CONFIG_FAT_DEFAULT_IOCHARSET=utf8 (e.g. Alpine) log a kernel warning
++/// on every vfat mount that omits a charset.
++const ESP_MOUNT_DATA: &std::ffi::CStr = c"fmask=0177,dmask=0077,iocharset=ascii";
+ 
+ /// Fresh `mount(2)` of the ESP into a tempdir. Returns EBUSY if the device
+ /// is already mounted in the current mount namespace; callers should use
