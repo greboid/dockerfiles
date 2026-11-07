@@ -7,8 +7,15 @@
 # own counting scheme (filenames ending in +<tries>-<done>) to the
 # entries bootc manages:
 #
-#   - the entry whose composefs digest matches the booted one is proven
-#     good: any counter suffix is stripped,
+#   - the entry whose composefs digest matches the booted one is left
+#     alone: reaching this script proves nothing about its health. Its
+#     counter (if any) is removed only by systemd-bless-boot.service,
+#     which runs after boot-complete.target, i.e. after the
+#     systemd-boot-check-no-failures health gate passed.  Stripping it
+#     here (multi-user.target, or the shutdown-path finalize run) would
+#     mark a deployment good before assessment: one that hangs or
+#     crashes between multi-user and boot-complete would stay the
+#     default entry forever instead of falling back,
 #   - every other bootc entry (staged deployment or rollback target)
 #     gets a +2-0 suffix (two boot attempts) when it has none.  Counters
 #     are never reset here: freshening an expired counter on every boot
@@ -70,10 +77,10 @@ stamp_entry() {
             continue
         fi
         if [ "$edigest" = "$booted_digest" ]; then
-            if [ "$counter" = yes ]; then
-                mv "$f" "$d/${name%%+*}.conf" &&
-                    log "booted entry $name marked good (counter stripped)"
-            fi
+            # blessing is systemd-bless-boot's job (see header)
+            [ "$counter" = yes ] &&
+                log "booted entry $name still counted; left for systemd-bless-boot"
+            continue
         elif [ "$counter" = no ] && [ ! -e "$FLAGDIR/$edigest" ]; then
             # Never re-arm a deployment that an auto-rollback already
             # walked back: the boot-time run would otherwise give the

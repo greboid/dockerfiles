@@ -1,7 +1,7 @@
 package:
   name: osimage-kernel
   version: 7.1.5
-  epoch: 7
+  epoch: 8
   description: Alpine linux-stable kernel repacked into the bootc /usr/lib/modules layout
   target-architecture:
     - x86_64
@@ -39,8 +39,8 @@ environment:
       # /etc read-write instead of keeping it sealed in the composefs
       # image ([etc] mount = "none"). Must move in lockstep with the
       # image's osimage-config pin.
-      - osimage-config=1.0.0-r14
-      - systemd=262.1-r1
+      - osimage-config=1.0.0-r16
+      - systemd=262.1-r5
       - lsblk=2.42.3-r1
       - device-mapper=2.03.35-r3
       # util-linux blkid: dracut's dmsquash-live and udev-rules modules
@@ -85,6 +85,7 @@ pipeline:
     runs: |
       cp -a dracut/90bootc-remount /usr/lib/dracut/modules.d/90bootc-remount
       cp -a dracut/90bootc-gptroot /usr/lib/dracut/modules.d/90bootc-gptroot
+      cp -a dracut/90osimage-state /usr/lib/dracut/modules.d/90osimage-state
       mkdir -p /usr/lib/dracut.conf.d
       cat > /usr/lib/dracut.conf.d/10-bootc.conf <<'DRACUTCONF'
       # Generic (server-side build) initramfs with the bootc composefs
@@ -92,7 +93,7 @@ pipeline:
       # so the initramfs networking modules (and their eudev/nbd
       # dependency chain) are omitted.
       hostonly=no
-      add_dracutmodules+=" bootc bootc-remount bootc-gptroot "
+      add_dracutmodules+=" bootc bootc-remount bootc-gptroot osimage-state "
       omit_dracutmodules+=" network network-legacy nbd "
       DRACUTCONF
 
@@ -109,7 +110,7 @@ subpackages:
           install -d "${{targets.subpkgdir}}/usr/lib/modules/$kver"
           dracut --force --no-hostonly --tmpdir /tmp \
             --kmoddir "/lib/modules/$kver" \
-            --add " bootc bootc-remount " \
+            --add " bootc bootc-remount osimage-state " \
             "${{targets.subpkgdir}}/usr/lib/modules/$kver/initramfs.img" "$kver"
           test -s "${{targets.subpkgdir}}/usr/lib/modules/$kver/initramfs.img"
   - name: osimage-kernel-initramfs-live
@@ -124,7 +125,7 @@ subpackages:
           install -d "${{targets.subpkgdir}}/usr/lib/modules/$kver"
           dracut --force --no-hostonly --tmpdir /tmp \
             --kmoddir "/lib/modules/$kver" \
-            -m " base kernel-modules dmsquash-live bootc-remount " \
+            -m " base kernel-modules dmsquash-live bootc-remount osimage-state " \
             "${{targets.subpkgdir}}/usr/lib/modules/$kver/initramfs-install.img" "$kver"
           test -s "${{targets.subpkgdir}}/usr/lib/modules/$kver/initramfs-install.img"
 
@@ -174,6 +175,10 @@ test:
         # hook; it must be in the sealed initramfs
         grep -q gptroot-mount.sh /tmp/boot-contents
         grep -q parse-gptroot.sh /tmp/boot-contents
+        # per-machine /etc state (machine-id, hostname, shadow binds from
+        # /var) must be set up before PID 1 on installed and live boots
+        grep -q etc-state.sh /tmp/boot-contents
+        grep -q etc-state.sh /tmp/live-contents
         grep -q sbin/dmsquash-live-root /tmp/live-contents
         grep -q sbin/dmsetup /tmp/live-contents
 

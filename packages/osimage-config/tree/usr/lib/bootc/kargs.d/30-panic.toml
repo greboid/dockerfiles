@@ -1,0 +1,7 @@
+# Reboot 10 s after a kernel panic instead of halting: a deployment
+# that panics (e.g. a broken init) must consume its boot-counting
+# attempts on its own for systemd-boot to fall back to the previous
+# entry. The delay keeps the panic text readable on the console.
+kargs = [
+  "panic=10",
+]

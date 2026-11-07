@@ -2,3 +2,7 @@ dist/
 keys/packages.rsa
 keys/packages.rsa.pub
 melange-build.log
+# melange throwaway signing keys (never commit; CI signs with APK_SIGNING_KEY)
+keys/*.rsa
+keys/local.rsa.pub
+keys/packages.rsa.pub

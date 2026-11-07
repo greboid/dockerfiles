@@ -1,7 +1,7 @@
 package:
   name: osimage-config
   version: 1.0.0
-  epoch: 15
+  epoch: 16
   description: OS configuration for osimage bootc images (baked systemd enablement, boot kargs, boot assessment)
   target-architecture:
     - x86_64
@@ -31,8 +31,7 @@ pipeline:
       # /usr/bin/umount; Alpine 3.24 ships no package providing them
       # (mount and umount are busybox applets at /bin). Shipped as build
       # steps, not tree files: melange's workspace population silently
-      # drops symlinks. (install -d: with osimage-install moved to the
-      # osimage-installer package, nothing in tree/ creates usr/bin.)
+      # drops symlinks.
       install -d "${{targets.destdir}}/usr/bin"
       ln -s /bin/busybox "${{targets.destdir}}/usr/bin/mount"
       ln -s /bin/busybox "${{targets.destdir}}/usr/bin/umount"
@@ -125,6 +124,15 @@ pipeline:
       head -n 1 "$resolv" | grep -q '^#.*systemd-resolved'
       test "$(grep '^nameserver ' "$resolv")" = 'nameserver 127.0.0.53'
       test -f "${{targets.destdir}}/usr/lib/composefs/setup-root-conf.toml"
+      # per-machine /etc state: machine-id ships empty (PID 1 fills the
+      # /var copy the initramfs binds over it), the hostname default is a
+      # seed, and the hostname is not forced through tmpfiles any more
+      # (that write fails against the sealed /etc on every boot)
+      test -f "${{targets.destdir}}/etc/machine-id" && test ! -s "${{targets.destdir}}/etc/machine-id"
+      test "$(cat "${{targets.destdir}}/usr/lib/osimage/etc-seed/hostname")" = osimage
+      ! grep -q '/etc/hostname' "${{targets.destdir}}/usr/lib/tmpfiles.d/osimage.conf"
+      test -x "${{targets.destdir}}/usr/bin/osimage-passwd"
+      grep -q '^ConditionPathExists=!/var/lib/osimage/etc/machine-id$' "${{targets.destdir}}/usr/lib/systemd/system/systemd-machine-id-commit.service.d/osimage-state.conf"
       grep -q '^enabled = true$' "${{targets.destdir}}/usr/lib/composefs/setup-root-conf.toml"
       # dbus-activated services must have their activation aliases
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/dbus-org.freedesktop.login1.service")" = /usr/lib/systemd/system/systemd-logind.service
@@ -140,6 +148,10 @@ pipeline:
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/sockets.target.wants/docker.socket")" = "/usr/lib/systemd/system/docker.socket"
       grep -q 'console=ttyS0,115200' "${{targets.destdir}}/usr/lib/bootc/kargs.d/10-console.toml"
       grep -q 'root=gpt-auto' "${{targets.destdir}}/usr/lib/bootc/kargs.d/20-root.toml"
+      grep -q '"panic=10"' "${{targets.destdir}}/usr/lib/bootc/kargs.d/30-panic.toml"
+      grep -q '^kernel.panic = 10$' "${{targets.destdir}}/usr/lib/sysctl.d/50-osimage-panic.conf"
+      grep -q '^RuntimeWatchdogSec=30s$' "${{targets.destdir}}/usr/lib/systemd/system.conf.d/10-osimage-watchdog.conf"
+      grep -q '^DefaultEnvironment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin$' "${{targets.destdir}}/usr/lib/systemd/system.conf.d/20-osimage-path.conf"
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/autovt@.service")" = "/usr/lib/systemd/system/getty@.service"
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/multi-user.target.wants/systemd-networkd.service")" = "/usr/lib/systemd/system/systemd-networkd.service"
 
