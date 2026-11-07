@@ -15,7 +15,9 @@
 #               the image's /etc/hostname. Edit the /var copy and reboot
 #   shadow      written by the installer; seeded from the image's
 #               /etc/shadow when missing. Changed with osimage-passwd,
-#               which edits the /var copy in place
+#               which edits the /var copy in place. Accounts added by
+#               later images are merged in on boot (append-only, so
+#               per-machine passwords survive upgrades)
 #
 # The binds are read-only: the files change only through their /var
 # copies, never through /etc. Each file is only bound when the image
@@ -64,6 +66,31 @@ for f in machine-id hostname shadow; do
         [ "$f" = shadow ] && chmod 0640 "$STATE/$f.new"
         mv "$STATE/$f.new" "$STATE/$f" || continue
         info "osimage-state: seeded $STATE/$f"
+    fi
+    # Seeding happens once: a machine installed before an image added
+    # accounts keeps a shadow copy without them, and the read-only bind
+    # then leaves those accounts unable to ever hold a password. Append
+    # the image's lines for accounts the copy lacks; existing lines are
+    # never touched, so per-machine passwords win over the image's.
+    if [ "$f" = shadow ] && [ -f "$STATE/$f" ]; then
+        added="$STATE/$f.merge-accounts.$$"
+        if awk -F: 'NR == FNR { seen[$1] = 1; next } !($1 in seen) { print }' \
+            "$STATE/$f" "$NEWROOT/etc/$f" > "$added"; then
+            if [ -s "$added" ]; then
+                merged="$STATE/$f.new"
+                if cat "$STATE/$f" "$added" > "$merged" \
+                    && chmod 0640 "$merged" \
+                    && mv "$merged" "$STATE/$f"; then
+                    info "osimage-state: merged new accounts into $STATE/$f"
+                else
+                    rm -f "$merged"
+                    warn "osimage-state: cannot merge new accounts into $STATE/$f"
+                fi
+            fi
+        else
+            warn "osimage-state: cannot diff accounts between /etc/shadow and $STATE/shadow"
+        fi
+        rm -f "$added"
     fi
     if ! mount --bind "$STATE/$f" "$NEWROOT/etc/$f"; then
         warn "osimage-state: cannot bind $STATE/$f over /etc/$f"

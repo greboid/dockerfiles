@@ -1,7 +1,7 @@
 package:
   name: osimage-kernel
   version: 7.1.5
-  epoch: 9
+  epoch: 10
   description: Alpine linux-stable kernel repacked into the bootc /usr/lib/modules layout
   target-architecture:
     - x86_64
@@ -185,6 +185,8 @@ test:
           hook=$(lsinitrd -f var/lib/dracut/hooks/pre-pivot/70-etc-state.sh "/usr/lib/modules/$kver/$img")
           echo "$hook" | grep -q 'mount -o remount,bind,ro'
           echo "$hook" | grep -q 'new_machine_id >'
+          # later images' accounts are appended to the per-machine shadow
+          echo "$hook" | grep -q '!($1 in seen)'
         done
         grep -q sbin/dmsquash-live-root /tmp/live-contents
         grep -q sbin/dmsetup /tmp/live-contents
