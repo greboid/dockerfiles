@@ -1,7 +1,7 @@
 package:
   name: osimage-installer
   version: 1.0.0
-  epoch: 3
+  epoch: 4
   description: osimage installer tooling (osimage-install + repart partition profile)
   target-architecture:
     - x86_64
@@ -12,6 +12,10 @@ package:
   dependencies:
     runtime:
       - busybox-binsh=1.37.0-r31
+      # the installer itself: the Go osimage-install (packages org,
+      # built from osimage/install); this package adds the repart
+      # profile it checks and the live installer's motd
+      - osimage-install=0.1.0-r0
       # osimage-install refuses to run without systemd-repart (bootc
       # install to-disk --run-repart execs it); declared here so image
       # consumers get it transitively

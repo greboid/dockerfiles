@@ -1,7 +1,7 @@
 package:
   name: go
   version: 1.27.3
-  epoch: 2
+  epoch: 3
   description: Source-built Go toolchain at the legacy /usr/local/go path
   options:
     no-depends: true
@@ -24,7 +24,7 @@ package:
       - libgcc-static=15.2.0-r5
       - musl=1.2.6-r3
       - musl-dev=1.2.6-r3
-      - patch=2.8-r0
+      - patch=2.8.1-r0
 
 environment:
   contents:
@@ -42,7 +42,7 @@ environment:
       - os-release=3.24.2-r0
       - gcc=15.2.0-r5
       - musl-dev=1.2.6-r3
-      - go=1.26.9-r0
+      - go=1.26.10-r0
   environment:
     SOURCE_DATE_EPOCH: "0"
     GOTELEMETRY: "off"

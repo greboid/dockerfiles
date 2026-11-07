@@ -1,0 +1,77 @@
+package:
+  name: osimage-install
+  version: 0.1.0
+  epoch: 0
+  description: osimage installer (bootc install-to-disk with per-machine state seeding)
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: MIT
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates=20261020-r2
+      - git=2.54.0-r0
+      - go=1.27.3-r3
+      - os-release=3.24.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 9586eac80e622a1e8b37902cf7c4e892847956fd
+      repository: https://git.mouse-lake.ts.net/osimage/install
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd/osimage-install
+      output: osimage-install
+      static: "true"
+  - uses: go/licenses
+    with:
+      checks: golang.org/x/sys/LICENSE golang.org/x/term/LICENSE
+      module: github.com/greboid/osimage-install
+      license: LICENSE
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox=1.37.0-r31
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/osimage-install
+        files: /notices/github.com/greboid/osimage-install/LICENSE /notices/golang.org/x/sys/LICENSE /notices/golang.org/x/term/LICENSE /usr/share/licenses/osimage-install/LICENSE
+    - name: Prints usage with --help
+      runs: |
+        out=$(/usr/bin/osimage-install --help 2>&1)
+        echo "$out" | grep -q -- "--non-interactive"
+    - name: Refuses a target that is not a block device
+      runs: |
+        if out=$(/usr/bin/osimage-install --non-interactive /dev/null 2>&1); then
+          echo "osimage-install accepted /dev/null" >&2
+          exit 1
+        fi
+        echo "$out" | grep -q "is not a block device"
+
+update:
+  enabled: true
+  forgejo:
+    identifier: osimage/install
+    use-tag: true
+    strip-prefix: v
