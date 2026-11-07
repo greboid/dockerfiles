@@ -1,0 +1,59 @@
+package:
+  name: qemu-guest-agent-systemd
+  version: 1.0.0
+  epoch: 0
+  description: systemd unit and udev rule for Alpine's qemu-guest-agent (which ships only an OpenRC service)
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      license: MIT
+  dependencies:
+    runtime:
+      - qemu-guest-agent=11.0.3-r0
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - os-release=3.24.2-r0
+
+pipeline:
+  - name: Install the unit and udev rule
+    runs: |
+      install -Dm644 qemu-guest-agent.service "${{targets.destdir}}/usr/lib/systemd/system/qemu-guest-agent.service"
+      install -Dm644 99-qemu-guest-agent.rules "${{targets.destdir}}/usr/lib/udev/rules.d/99-qemu-guest-agent.rules"
+  - name: Smoke-check the payload
+    runs: |
+      grep -q '^ExecStart=-/usr/bin/qemu-ga$' "${{targets.destdir}}/usr/lib/systemd/system/qemu-guest-agent.service"
+      grep -q 'ENV{SYSTEMD_WANTS}+="qemu-guest-agent.service"' "${{targets.destdir}}/usr/lib/udev/rules.d/99-qemu-guest-agent.rules"
+
+test:
+  environment:
+    contents:
+      keyring:
+        - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+        - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-6165ee59.rsa.pub
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      packages:
+        - busybox=1.37.0-r31
+        - os-release=3.24.2-r0
+  pipeline:
+    - name: Unit, rule and the agent binary are installed
+      runs: |
+        test -f /usr/lib/systemd/system/qemu-guest-agent.service
+        test -f /usr/lib/udev/rules.d/99-qemu-guest-agent.rules
+        test -x /usr/bin/qemu-ga
+
+update:
+  enabled: false
+  exclude-reason: no upstream to track; version is internal to this repository

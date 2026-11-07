@@ -1,7 +1,7 @@
 package:
   name: osimage-config
   version: 1.0.0
-  epoch: 16
+  epoch: 17
   description: OS configuration for osimage bootc images (baked systemd enablement, boot kargs, boot assessment)
   target-architecture:
     - x86_64
@@ -27,14 +27,6 @@ pipeline:
   - name: Install the osimage configuration tree
     runs: |
       cp -a tree/. "${{targets.destdir}}/"
-      # mount units (tmp.mount, bootc ESP mounts) exec /usr/bin/mount and
-      # /usr/bin/umount; Alpine 3.24 ships no package providing them
-      # (mount and umount are busybox applets at /bin). Shipped as build
-      # steps, not tree files: melange's workspace population silently
-      # drops symlinks.
-      install -d "${{targets.destdir}}/usr/bin"
-      ln -s /bin/busybox "${{targets.destdir}}/usr/bin/mount"
-      ln -s /bin/busybox "${{targets.destdir}}/usr/bin/umount"
 
   - name: Bake the systemd enablement symlinks
     runs: |
@@ -76,8 +68,11 @@ pipeline:
       ln -s /usr/lib/systemd/system/systemd-timedated.service "$d/dbus-org.freedesktop.timedate1.service"
       ln -s /usr/lib/systemd/system/getty@.service "$d/getty.target.wants/getty@tty1.service"
       ln -s /usr/lib/systemd/system/osimage-boot-count.service "$d/multi-user.target.wants/osimage-boot-count.service"
-      # tailscale + docker (units in tree/; containerd.service is pulled
-      # in by docker.service's Wants=, not enabled standalone)
+      # tailscale + docker (units ship in the tailscale and docker-systemd
+      # packages; containerd.service, from Alpine's containerd-systemd,
+      # is pulled in by docker.service's Wants=, not enabled
+      # standalone). Links dangle harmlessly on images without those
+      # packages.
       ln -s /usr/lib/systemd/system/tailscaled.service "$d/multi-user.target.wants/tailscaled.service"
       ln -s /usr/lib/systemd/system/docker.service "$d/multi-user.target.wants/docker.service"
       ln -s /usr/lib/systemd/system/docker.socket "$d/sockets.target.wants/docker.socket"
@@ -113,11 +108,12 @@ pipeline:
 
   - name: Smoke-check the payload
     runs: |
-      ls -la "${{targets.destdir}}/usr/bin/"
       ls -la "${{targets.destdir}}/etc/systemd/system/" | sed -n '1,12p'
       echo "autovt: $(readlink "${{targets.destdir}}/etc/systemd/system/autovt@.service" || echo MISSING)"
-      test "$(readlink "${{targets.destdir}}/usr/bin/mount")" = /bin/busybox
-      test "$(readlink "${{targets.destdir}}/usr/bin/umount")" = /bin/busybox
+      # mount/umount and the agetty path come from the systemd package
+      # (util-linux deps + -D*-path build flags), not from here
+      test ! -e "${{targets.destdir}}/usr/bin/mount" && test ! -e "${{targets.destdir}}/usr/bin/umount"
+      test ! -e "${{targets.destdir}}/usr/local/bin/umount"
       # Check the payload here: the test runner bind-mounts its own resolv.conf.
       resolv="${{targets.destdir}}/etc/resolv.conf"
       test -f "$resolv" && test ! -L "$resolv"
@@ -139,10 +135,7 @@ pipeline:
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/dbus-org.freedesktop.hostname1.service")" = /usr/lib/systemd/system/systemd-hostnamed.service
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/dbus-org.freedesktop.timedate1.service")" = /usr/lib/systemd/system/systemd-timedated.service
       # repart.d + osimage-install moved to the osimage-installer package
-      # tailscale + docker services and units
-      test -f "${{targets.destdir}}/usr/lib/systemd/system/tailscaled.service"
-      test -f "${{targets.destdir}}/usr/lib/systemd/system/containerd.service"
-      test -f "${{targets.destdir}}/usr/lib/sysusers.d/20-osimage-docker.conf"
+      # tailscale + docker enablement (units come from their packages)
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/multi-user.target.wants/tailscaled.service")" = "/usr/lib/systemd/system/tailscaled.service"
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/multi-user.target.wants/docker.service")" = "/usr/lib/systemd/system/docker.service"
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/sockets.target.wants/docker.socket")" = "/usr/lib/systemd/system/docker.socket"
@@ -172,8 +165,6 @@ test:
     - name: Enablement symlinks and osimage units are in place
       runs: |
         test -f /etc/machine-id
-        test "$(readlink /usr/bin/mount)" = /bin/busybox
-        test "$(readlink /usr/bin/umount)" = /bin/busybox
         test "$(readlink /etc/systemd/system/multi-user.target.wants/osimage-boot-count.service)" = "/usr/lib/systemd/system/osimage-boot-count.service"
         test "$(readlink /etc/systemd/system/sysinit.target.wants/systemd-boot-update.service)" = "/usr/lib/systemd/system/systemd-boot-update.service"
         test "$(readlink /etc/systemd/system/sockets.target.wants/systemd-networkd.socket)" = "/usr/lib/systemd/system/systemd-networkd.socket"
@@ -182,8 +173,6 @@ test:
         test -f /usr/lib/systemd/system/osimage-boot-count.service
         test -f /usr/lib/tmpfiles.d/osimage.conf
         test "$(readlink /etc/systemd/system/local-fs.target.wants/tmp.mount)" = "/usr/lib/systemd/system/tmp.mount"
-        test "$(readlink /usr/bin/mount)" = /bin/busybox
-        test "$(readlink /usr/bin/umount)" = /bin/busybox
         test -f /usr/lib/composefs/setup-root-conf.toml
     - name: Shared digest parsing covers BLS options and UKI wrappers
       runs: |

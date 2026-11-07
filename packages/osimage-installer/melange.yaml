@@ -1,7 +1,7 @@
 package:
   name: osimage-installer
   version: 1.0.0
-  epoch: 5
+  epoch: 6
   description: osimage installer tooling (osimage-install + repart partition profile)
   target-architecture:
     - x86_64
@@ -19,7 +19,7 @@ package:
       # osimage-install refuses to run without systemd-repart (bootc
       # install to-disk --run-repart execs it); declared here so image
       # consumers get it transitively
-      - systemd-repart=262.1-r5
+      - systemd-repart=262.1-r6
 
 environment:
   contents:

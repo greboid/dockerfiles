@@ -1,7 +1,7 @@
 package:
   name: systemd
   version: 262.1
-  epoch: 5
+  epoch: 6
   description: systemd init system (PID 1), udev and core daemons built for musl
   target-architecture:
     - x86_64
@@ -17,6 +17,11 @@ package:
       # library lives in kmod-libs, which nothing else pulls in
       - kmod-libs=34.2-r1
       - linux-pam=1.7.1-r2
+      # the util-linux mount/umount the -Dmount-path/-Dumount-path units
+      # exec (busybox's applets lack options systemd and bootc pass,
+      # e.g. umount -R)
+      - mount=2.42.3-r1
+      - umount=2.42.3-r1
       - util-linux=2.42.3-r1
 
 environment:
@@ -84,6 +89,9 @@ pipeline:
       # GPT/vfat/ext4 operation. Alpine keeps /usr/sbin separate from
       # /usr/bin; split-bin=true includes it in the service PATH.
       # lint.args permits systemd's matching /usr/sbin install layout.
+      # The *-path flags point units and PID 1 at the tools where Alpine
+      # actually installs them (/bin, /sbin); left unset they default to
+      # /usr/sbin or /usr/bin, where Alpine ships none of them.
       meson setup output \
         --prefix=/usr \
         --sysconfdir=/etc \
@@ -101,6 +109,13 @@ pipeline:
         -Dman=disabled \
         -Dhtml=disabled \
         -Dsplit-bin=true \
+        -Dagetty-path=/sbin/agetty \
+        -Dkmod-path=/bin/kmod \
+        -Dmount-path=/bin/mount \
+        -Dumount-path=/bin/umount \
+        -Dswapon-path=/sbin/swapon \
+        -Dswapoff-path=/sbin/swapoff \
+        -Dnologin-path=/sbin/nologin \
         -Dinitrd=true \
         -Dtmpfiles=true \
         -Dsysusers=true \
@@ -393,6 +408,17 @@ test:
             *) echo "missing $dir in default service PATH: $path" >&2; exit 1 ;;
           esac
         done
+    - name: Units exec the Alpine locations of external tools
+      runs: |
+        d=/usr/lib/systemd/system
+        for u in getty@.service serial-getty@.service console-getty.service container-getty@.service; do
+          grep -q '^ExecStart=-/sbin/agetty ' "$d/$u" || { echo "$u: agetty path" >&2; exit 1; }
+        done
+        grep -q '^ExecStart=/bin/kmod static-nodes ' "$d/kmod-static-nodes.service"
+        grep -q '^ConditionPathExists=/bin/kmod$' "$d/kmod-static-nodes.service"
+        test -x /bin/mount && test -x /bin/umount
+        grep -qaF /bin/umount /usr/lib/systemd/libsystemd-core-262.so
+        ! grep -qaF /usr/bin/umount /usr/lib/systemd/libsystemd-core-262.so
     - name: Unit search path contains the vendor directories
       runs: |
         test -d /usr/lib/systemd/system

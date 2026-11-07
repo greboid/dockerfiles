@@ -1,0 +1,4 @@
+# Start qemu-guest-agent.service when the guest agent virtio port appears:
+# no enablement symlink needed, and inert on bare metal or on VMs without
+# the channel.
+SUBSYSTEM=="virtio-ports", ATTR{name}=="org.qemu.guest_agent.0", TAG+="systemd", ENV{SYSTEMD_WANTS}+="qemu-guest-agent.service"

@@ -14,8 +14,9 @@ disable bootc-fetch-apply-updates.timer
 enable osimage-boot-count.service
 enable systemd-boot-check-no-failures.service
 
-# tailscale + docker: units ship in tree/ (containerd.service is pulled
-# by docker.service's Wants=, not enabled standalone)
+# tailscale + docker: units ship in the tailscale and docker-systemd
+# packages (containerd.service, from Alpine's containerd-systemd, is
+# pulled by docker.service's Wants=, not enabled standalone)
 enable tailscaled.service
 enable docker.socket
 enable docker.service
