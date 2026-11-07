@@ -1,7 +1,7 @@
 package:
   name: osimage-kernel
   version: 7.1.5
-  epoch: 8
+  epoch: 9
   description: Alpine linux-stable kernel repacked into the bootc /usr/lib/modules layout
   target-architecture:
     - x86_64
@@ -179,6 +179,13 @@ test:
         # /var) must be set up before PID 1 on installed and live boots
         grep -q etc-state.sh /tmp/boot-contents
         grep -q etc-state.sh /tmp/live-contents
+        # ... bound read-only, with the machine-id generated before PID 1
+        # (the read-only bind leaves PID 1 no way to fill it in)
+        for img in initramfs.img initramfs-install.img; do
+          hook=$(lsinitrd -f var/lib/dracut/hooks/pre-pivot/70-etc-state.sh "/usr/lib/modules/$kver/$img")
+          echo "$hook" | grep -q 'mount -o remount,bind,ro'
+          echo "$hook" | grep -q 'new_machine_id >'
+        done
         grep -q sbin/dmsquash-live-root /tmp/live-contents
         grep -q sbin/dmsetup /tmp/live-contents
 

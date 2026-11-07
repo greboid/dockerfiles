@@ -1,6 +1,6 @@
 package:
   name: osimage-install
-  version: 0.1.0
+  version: 0.2.0
   epoch: 0
   description: osimage installer (bootc install-to-disk with per-machine state seeding)
   target-architecture:
@@ -29,7 +29,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 9586eac80e622a1e8b37902cf7c4e892847956fd
+      expected-commit: 66a30e7a2b67eadebea68d989cf7f8274292b433
       repository: https://git.mouse-lake.ts.net/osimage/install
       tag: v${{package.version}}
   - uses: go/build
