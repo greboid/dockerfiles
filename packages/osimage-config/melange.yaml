@@ -1,7 +1,7 @@
 package:
   name: osimage-config
   version: 1.0.0
-  epoch: 14
+  epoch: 15
   description: OS configuration for osimage bootc images (baked systemd enablement, boot kargs, boot assessment)
   target-architecture:
     - x86_64
@@ -119,6 +119,11 @@ pipeline:
       echo "autovt: $(readlink "${{targets.destdir}}/etc/systemd/system/autovt@.service" || echo MISSING)"
       test "$(readlink "${{targets.destdir}}/usr/bin/mount")" = /bin/busybox
       test "$(readlink "${{targets.destdir}}/usr/bin/umount")" = /bin/busybox
+      # Check the payload here: the test runner bind-mounts its own resolv.conf.
+      resolv="${{targets.destdir}}/etc/resolv.conf"
+      test -f "$resolv" && test ! -L "$resolv"
+      head -n 1 "$resolv" | grep -q '^#.*systemd-resolved'
+      test "$(grep '^nameserver ' "$resolv")" = 'nameserver 127.0.0.53'
       test -f "${{targets.destdir}}/usr/lib/composefs/setup-root-conf.toml"
       grep -q '^enabled = true$' "${{targets.destdir}}/usr/lib/composefs/setup-root-conf.toml"
       # dbus-activated services must have their activation aliases

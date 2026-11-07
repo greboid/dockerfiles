@@ -1,0 +1,57 @@
+package:
+  name: osimage-upgrade
+  version: 1.0.0
+  epoch: 1
+  description: osimage upgrade tooling (bootc upgrade with explicit composefs finalize)
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      license: MIT
+  dependencies:
+    runtime:
+      - busybox-binsh=1.37.0-r31
+      # both commands the wrapper execs; pinned so a bootc bump that
+      # renames or drops composefs-finalize-staged fails here first
+      - bootc=1.17.3-r2
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - os-release=3.24.2-r0
+      - busybox=1.37.0-r31
+
+pipeline:
+  - name: Install the upgrade tool
+    runs: |
+      install -Dm 0755 osimage-upgrade "${{targets.destdir}}/usr/bin/osimage-upgrade"
+
+test:
+  environment:
+    contents:
+      keyring:
+        - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+        - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-6165ee59.rsa.pub
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox=1.37.0-r31
+        - bootc=1.17.3-r2
+  pipeline:
+    - name: Wrapper is present and boots bootc
+      runs: |
+        test -x /usr/bin/osimage-upgrade
+        /usr/bin/osimage-upgrade --help | grep -q 'Usage: osimage-upgrade'
+
+update:
+  enabled: false
+  exclude-reason: must move in lockstep with the pinned bootc package

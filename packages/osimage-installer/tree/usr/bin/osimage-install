@@ -35,7 +35,7 @@ if [ ! -b "$disk" ]; then
     exit 1
 fi
 
-default_ref="${OSIMAGE_DEFAULT_REF:-git.mouse-lake.ts.net/osimage/osimage:latest}"
+default_ref="${OSIMAGE_DEFAULT_REF:-git.mouse-lake.ts.net/osimage/minimal:latest}"
 source_ref="${OSIMAGE_SOURCE_REF:-$default_ref}"
 target_ref="${OSIMAGE_TARGET_REF:-$default_ref}"
 # registry transport unless a scheme is already present (oci:/ for the
