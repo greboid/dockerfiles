@@ -1,8 +1,8 @@
 package:
   name: osimage-kernel
   version: 7.1.5
-  epoch: 10
-  description: Alpine linux-stable kernel repacked into the bootc /usr/lib/modules layout
+  epoch: 11
+  description: Alpine linux-stable kernel repacked into the bootc /usr/lib/modules layout, trimmed for headless servers
   target-architecture:
     - x86_64
   copyright:
@@ -80,6 +80,46 @@ pipeline:
       # /lib/modules, so link the canonical location into place.
       install -d "${{targets.destdir}}/lib"
       ln -s ../usr/lib/modules "${{targets.destdir}}/lib/modules"
+      # Trim module subtrees a headless server OS never loads. Console
+      # survives on the builtin simpledrm (modules.builtin) over the
+      # firmware GOP plus serial; roots are ext4-only (repart profile);
+      # networking is Ethernet via systemd-networkd; no WiFi, no
+      # net-fs/RDMA workloads. Everything dropped is a .ko.gz, so the
+      # listed sizes map ~1:1 into image size: gpu 15.7 MB, sound 13.5,
+      # media 11.5, wireless 15.3, infiniband 2.9, bluetooth 1.3,
+      # net-fs/nfs/ceph/9p 4.1, xfs+btrfs 3.0, smb 1.1, ocfs2 1.0,
+      # niche net protocols 1.3, mtd 1.1 (+ubifs/jffs2), iio 1.1,
+      # staging 0.4, exotic filesystems 0.6.
+      moddir="${{targets.destdir}}/usr/lib/modules/$kver"
+      rm -rf "$moddir/kernel/sound" "$moddir/kernel/drivers/gpu" \
+        "$moddir/kernel/drivers/media" \
+        "$moddir/kernel/drivers/net/wireless" "$moddir/kernel/net/wireless" \
+        "$moddir/kernel/drivers/infiniband" "$moddir/kernel/drivers/iio" \
+        "$moddir/kernel/drivers/mtd" "$moddir/kernel/drivers/staging" \
+        "$moddir/kernel/net/bluetooth" "$moddir/kernel/drivers/bluetooth" \
+        "$moddir/kernel/net/sctp" "$moddir/kernel/net/tipc" \
+        "$moddir/kernel/net/rds" "$moddir/kernel/net/phonet" \
+        "$moddir/kernel/net/x25" "$moddir/kernel/net/6lowpan" \
+        "$moddir/kernel/net/9p" "$moddir/kernel/net/rxrpc" \
+        "$moddir/kernel/net/sunrpc" "$moddir/kernel/net/ceph" \
+        "$moddir/kernel/fs/xfs" "$moddir/kernel/fs/btrfs" \
+        "$moddir/kernel/fs/smb" "$moddir/kernel/fs/ocfs2" \
+        "$moddir/kernel/fs/nfs" "$moddir/kernel/fs/nfsd" \
+        "$moddir/kernel/fs/lockd" "$moddir/kernel/fs/netfs" \
+        "$moddir/kernel/fs/ceph" "$moddir/kernel/fs/9p" \
+        "$moddir/kernel/fs/jfs" "$moddir/kernel/fs/hfs" \
+        "$moddir/kernel/fs/hfsplus" "$moddir/kernel/fs/hpfs" \
+        "$moddir/kernel/fs/ufs" "$moddir/kernel/fs/minix" \
+        "$moddir/kernel/fs/romfs" "$moddir/kernel/fs/efs" \
+        "$moddir/kernel/fs/ecryptfs" "$moddir/kernel/fs/omfs" \
+        "$moddir/kernel/fs/orangefs" "$moddir/kernel/fs/coda" \
+        "$moddir/kernel/fs/vboxsf" \
+        "$moddir/kernel/fs/cramfs" "$moddir/kernel/fs/ubifs" \
+        "$moddir/kernel/fs/jffs2"
+      # Regenerate the module metadata for the reduced tree: modprobe,
+      # udev coldplug and the dracut runs below resolve dependencies
+      # from these files, not from Alpine's full-tree metadata.
+      depmod -b "${{targets.destdir}}" "$kver"
 
   - name: Install the osimage dracut modules and bootc initramfs config
     runs: |
@@ -109,7 +149,7 @@ subpackages:
           kver=$(ls /lib/modules | head -1)
           install -d "${{targets.subpkgdir}}/usr/lib/modules/$kver"
           dracut --force --no-hostonly --tmpdir /tmp \
-            --kmoddir "/lib/modules/$kver" \
+            --kmoddir "${{targets.destdir}}/usr/lib/modules/$kver" \
             --add " bootc bootc-remount osimage-state " \
             "${{targets.subpkgdir}}/usr/lib/modules/$kver/initramfs.img" "$kver"
           test -s "${{targets.subpkgdir}}/usr/lib/modules/$kver/initramfs.img"
@@ -124,7 +164,7 @@ subpackages:
           kver=$(ls /lib/modules | head -1)
           install -d "${{targets.subpkgdir}}/usr/lib/modules/$kver"
           dracut --force --no-hostonly --tmpdir /tmp \
-            --kmoddir "/lib/modules/$kver" \
+            --kmoddir "${{targets.destdir}}/usr/lib/modules/$kver" \
             -m " base kernel-modules dmsquash-live bootc-remount osimage-state " \
             "${{targets.subpkgdir}}/usr/lib/modules/$kver/initramfs-install.img" "$kver"
           test -s "${{targets.subpkgdir}}/usr/lib/modules/$kver/initramfs-install.img"
@@ -153,6 +193,28 @@ test:
         test -s "/usr/lib/modules/$kver/modules.dep"
         test -d "/usr/lib/modules/$kver/kernel"
         test "$(readlink /lib/modules)" = "../usr/lib/modules"
+    - name: Headless-server trim applied and metadata consistent
+      runs: |
+        kver=$(ls /usr/lib/modules | head -1)
+        for d in kernel/sound kernel/drivers/gpu kernel/drivers/media \
+          kernel/drivers/net/wireless kernel/net/wireless \
+          kernel/drivers/infiniband kernel/drivers/iio kernel/drivers/mtd \
+          kernel/drivers/staging kernel/net/bluetooth kernel/net/sctp \
+          kernel/net/sunrpc kernel/fs/xfs kernel/fs/btrfs kernel/fs/smb \
+          kernel/fs/nfs kernel/fs/ocfs2 kernel/fs/ceph; do
+          test ! -e "/usr/lib/modules/$kver/$d" || {
+            echo "untrimmed module subtree: $d" >&2; exit 1; }
+        done
+        # one modules.dep line per shipped module: metadata regenerated
+        # for the reduced tree, not left over from Alpine's full tree
+        nk=$(find "/usr/lib/modules/$kver/kernel" -name '*.ko.gz' | wc -l)
+        nd=$(grep -c '\.ko' "/usr/lib/modules/$kver/modules.dep")
+        test "$nk" = "$nd" || {
+          echo "modules.dep ($nd lines) does not match $nk modules" >&2
+          exit 1
+        }
+        # a representative kept driver must still be resolvable
+        modprobe -d / -S "$kver" --show-depends virtio_net >/dev/null
     - name: Initramfs subpackages carry the bootc payload
       runs: |
         kver=$(ls /usr/lib/modules | head -1)
