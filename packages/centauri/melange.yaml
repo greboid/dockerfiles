@@ -1,6 +1,6 @@
 package:
   name: centauri
-  version: 2.9.2
+  version: 2.9.3
   epoch: 0
   description: TLS front proxy with automatic certificates via lego
   target-architecture:
@@ -12,8 +12,8 @@ package:
       license: MIT
   dependencies:
     runtime:
-      - ca-certificates-bundle=20261020-r2
-      - tzdata=2026e-r0
+      - ca-certificates-bundle=20261020-r3
+      - tzdata=2026f-r0
 
 environment:
   contents:
@@ -25,10 +25,10 @@ environment:
       - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
     packages:
       - busybox=1.37.0-r31
-      - ca-certificates=20261020-r2
+      - ca-certificates=20261020-r3
       - git=2.54.0-r0
-      - go=1.27.3-r2
-      - go-licenses=2.0.1-r14
+      - go=1.27.3-r3
+      - go-licenses=2.0.1-r15
       - os-release=3.24.2-r0
 
 vars:
@@ -37,7 +37,7 @@ vars:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 8e96de2f2f0d67818499f89c8bc8b754f02ba3de
+      expected-commit: a804b0ecb34fbe30ab2c900d3a961b5faf53c242
       repository: https://github.com/csmith/centauri
       tag: v${{package.version}}
   - uses: go/build

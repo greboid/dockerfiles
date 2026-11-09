@@ -1,32 +1,73 @@
 #!/bin/sh
-# osimage upgrade wrapper: run bootc upgrade and finalize the staged
-# deployment immediately, while the system is fully up.
-#
-# Why not plain `bootc upgrade`: on this layout (composefs root,
-# storage under /sysroot, no fstab entry for /) the shutdown-path
-# finalize inside bootc-finalize-staged.service fails ("Inspecting
-# filesystem /: No such file or directory"), the staged BLS entries are
-# never exchanged, and the next boot silently re-enters the OLD
-# deployment. Finalizing explicitly here makes the staged deployment
-# boot on the next reboot (see reports/bootc-finalize-staged-shutdown.md).
-#
-# Usage: osimage-upgrade [bootc upgrade options...]
 set -eu
 
-case "${1:-}" in
-    -h | --help)
-        echo 'Usage: osimage-upgrade [bootc upgrade options...]'
-        echo
-        echo 'Runs `bootc upgrade`, then finalizes the staged deployment'
-        echo '(bootc composefs-finalize-staged) so the next reboot enters it.'
-        ;;
-    *)
-        echo '== bootc upgrade'
-        bootc upgrade "$@"
+staged=/run/composefs/staged-deployment
+# A second finalize of one deployment fails: bootc has already removed
+# loader/entries.staged.
+finalized=/run/osimage-upgrade.finalized
 
-        echo '== finalize staged deployment'
-        bootc composefs-finalize-staged
+usage() {
+    echo 'Usage: osimage-upgrade [--apply] [bootc upgrade options...]'
+    echo
+    echo 'Runs `bootc upgrade`, then finalizes the staged deployment'
+    echo '(bootc composefs-finalize-staged) so the next reboot enters it.'
+    echo 'Exits without finalizing if there are no changes to apply.'
+    echo
+    echo '  --apply  reboot into the staged deployment when complete'
+}
 
-        echo '== staged deployment ready; reboot to enter it'
-        ;;
-esac
+apply=false
+passthrough=false
+n=$#
+while [ "$n" -gt 0 ]; do
+    arg=$1
+    shift
+    n=$((n - 1))
+    case "$arg" in
+        -h | --help)
+            usage
+            exit 0
+            ;;
+        --apply)
+            apply=true
+            ;;
+        --check | --download-only)
+            passthrough=true
+            set -- "$@" "$arg"
+            ;;
+        *)
+            set -- "$@" "$arg"
+            ;;
+    esac
+done
+
+if [ "$passthrough" = true ]; then
+    # Neither mode leaves a deployment to finalize; bootc rejects --apply here.
+    if [ "$apply" = true ]; then
+        set -- "$@" --apply
+    fi
+    exec bootc upgrade "$@"
+fi
+
+echo '== bootc upgrade'
+bootc upgrade "$@"
+
+if [ ! -e "$staged" ]; then
+    echo '== no changes to apply'
+    exit 0
+fi
+
+if cmp -s "$staged" "$finalized"; then
+    echo '== staged deployment already finalized'
+else
+    echo '== finalize staged deployment'
+    bootc composefs-finalize-staged
+    cp "$staged" "$finalized"
+fi
+
+if [ "$apply" = true ]; then
+    echo '== rebooting into staged deployment'
+    exec systemctl reboot
+fi
+
+echo '== staged deployment ready; reboot to enter it'

@@ -28,8 +28,8 @@ environment:
     packages:
       - busybox=1.37.0-r31
       - os-release=3.24.2-r0
-      - ca-certificates-bundle=20261020-r2
-      - go=1.27.3-r2
+      - ca-certificates-bundle=20261020-r3
+      - go=1.27.3-r3
       - bash=5.3.9-r1
       - binutils=2.45.1-r1
       - make=4.4.1-r4
@@ -65,7 +65,7 @@ test:
       packages:
         - busybox=1.37.0-r31
         - os-release=3.24.2-r0
-        - ca-certificates-bundle=20261020-r2
+        - ca-certificates-bundle=20261020-r3
         - alpine-baselayout=3.7.2-r1
   pipeline:
     - name: Reports the packaged custom version

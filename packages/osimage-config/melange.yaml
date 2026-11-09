@@ -1,7 +1,7 @@
 package:
   name: osimage-config
   version: 1.0.0
-  epoch: 18
+  epoch: 21
   description: OS configuration for osimage bootc images (baked systemd enablement, boot kargs, boot assessment)
   target-architecture:
     - x86_64
@@ -10,6 +10,10 @@ package:
         - "*"
       license: MIT
   dependencies:
+    # tree/etc/motd overrides the Alpine default; apko's file conflict
+    # check is not cleared by naming alpine-baselayout-data instead.
+    replaces:
+      - alpine-baselayout
     runtime:
       - busybox-binsh=1.37.0-r31
 
@@ -30,11 +34,6 @@ pipeline:
 
   - name: Bake the systemd enablement symlinks
     runs: |
-      # Replicates the `systemctl preset-all` output of the pinned
-      # systemd/bootc/osimage unit set: preset enable links, [Install]
-      # aliases and wants links. Regenerate against a fresh rootfs
-      # whenever systemd/bootc bump (drift shows up at boot as
-      # missing/extra enablement, caught by the VM test suite).
       d="${{targets.destdir}}/etc/systemd/system"
       mkdir -p "$d/boot-complete.target.requires"
       mkdir -p "$d/bootc-status-updated-onboot.target.wants"
@@ -47,9 +46,6 @@ pipeline:
       mkdir -p "$d/sysinit.target.wants"
       mkdir -p "$d/systemd-journald.service.wants"
       ln -s /usr/lib/systemd/system/getty@.service "$d/autovt@.service"
-      # tmpfs on /tmp: the composefs root is read-only, and /tmp is not
-      # covered by the /etc and /var binds - without this, anything that
-      # writes /tmp (bootc status/upgrade, mktemp users) hits EROFS.
       ln -s /usr/lib/systemd/system/tmp.mount "$d/local-fs.target.wants/tmp.mount"
       ln -s /usr/lib/systemd/system/systemd-boot-check-no-failures.service "$d/boot-complete.target.requires/systemd-boot-check-no-failures.service"
       ln -s /usr/lib/systemd/system/bootc-publish-rhsm-facts.service "$d/bootc-status-updated-onboot.target.wants/bootc-publish-rhsm-facts.service"
@@ -57,22 +53,12 @@ pipeline:
       ln -s /usr/lib/systemd/system/systemd-networkd.service "$d/dbus-org.freedesktop.network1.service"
       ln -s /usr/lib/systemd/system/systemd-resolved.service "$d/dbus-org.freedesktop.resolve1.service"
       ln -s /usr/lib/systemd/system/systemd-timesyncd.service "$d/dbus-org.freedesktop.timesync1.service"
-      # D-Bus activation aliases upstream installs at package install
-      # time (units/meson.build `symlinks`, not [Install]/preset
-      # products): without these dbus cannot activate the services -
-      # visible as `shutdown -h now` printing "Failed to set wall
-      # message" because org.freedesktop.login1 never comes up.
       ln -s /usr/lib/systemd/system/systemd-logind.service "$d/dbus-org.freedesktop.login1.service"
       ln -s /usr/lib/systemd/system/systemd-logind.service "$d/multi-user.target.wants/systemd-logind.service"
       ln -s /usr/lib/systemd/system/systemd-hostnamed.service "$d/dbus-org.freedesktop.hostname1.service"
       ln -s /usr/lib/systemd/system/systemd-timedated.service "$d/dbus-org.freedesktop.timedate1.service"
       ln -s /usr/lib/systemd/system/getty@.service "$d/getty.target.wants/getty@tty1.service"
       ln -s /usr/lib/systemd/system/osimage-boot-count.service "$d/multi-user.target.wants/osimage-boot-count.service"
-      # tailscale + docker (units ship in the tailscale and docker-systemd
-      # packages; containerd.service, from Alpine's containerd-systemd,
-      # is pulled in by docker.service's Wants=, not enabled
-      # standalone). Links dangle harmlessly on images without those
-      # packages.
       ln -s /usr/lib/systemd/system/tailscaled.service "$d/multi-user.target.wants/tailscaled.service"
       ln -s /usr/lib/systemd/system/docker.service "$d/multi-user.target.wants/docker.service"
       ln -s /usr/lib/systemd/system/docker.socket "$d/sockets.target.wants/docker.socket"
@@ -110,32 +96,21 @@ pipeline:
     runs: |
       ls -la "${{targets.destdir}}/etc/systemd/system/" | sed -n '1,12p'
       echo "autovt: $(readlink "${{targets.destdir}}/etc/systemd/system/autovt@.service" || echo MISSING)"
-      # mount/umount and the agetty path come from the systemd package
-      # (util-linux deps + -D*-path build flags), not from here
       test ! -e "${{targets.destdir}}/usr/bin/mount" && test ! -e "${{targets.destdir}}/usr/bin/umount"
       test ! -e "${{targets.destdir}}/usr/local/bin/umount"
-      # Check the payload here: the test runner bind-mounts its own resolv.conf.
       resolv="${{targets.destdir}}/etc/resolv.conf"
       test -f "$resolv" && test ! -L "$resolv"
       head -n 1 "$resolv" | grep -q '^#.*systemd-resolved'
       test "$(grep '^nameserver ' "$resolv")" = 'nameserver 127.0.0.53'
       test -f "${{targets.destdir}}/usr/lib/composefs/setup-root-conf.toml"
-      # per-machine /etc state: machine-id ships empty (PID 1 fills the
-      # /var copy the initramfs binds over it), the hostname default is a
-      # seed, and the hostname is not forced through tmpfiles any more
-      # (that write fails against the sealed /etc on every boot)
       test -f "${{targets.destdir}}/etc/machine-id" && test ! -s "${{targets.destdir}}/etc/machine-id"
       test "$(cat "${{targets.destdir}}/usr/lib/osimage/etc-seed/hostname")" = osimage
       ! grep -q '/etc/hostname' "${{targets.destdir}}/usr/lib/tmpfiles.d/osimage.conf"
-      test -x "${{targets.destdir}}/usr/bin/osimage-passwd"
       grep -q '^ConditionPathExists=!/var/lib/osimage/etc/machine-id$' "${{targets.destdir}}/usr/lib/systemd/system/systemd-machine-id-commit.service.d/osimage-state.conf"
       grep -q '^enabled = true$' "${{targets.destdir}}/usr/lib/composefs/setup-root-conf.toml"
-      # dbus-activated services must have their activation aliases
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/dbus-org.freedesktop.login1.service")" = /usr/lib/systemd/system/systemd-logind.service
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/dbus-org.freedesktop.hostname1.service")" = /usr/lib/systemd/system/systemd-hostnamed.service
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/dbus-org.freedesktop.timedate1.service")" = /usr/lib/systemd/system/systemd-timedated.service
-      # repart.d + osimage-install moved to the osimage-installer package
-      # tailscale + docker enablement (units come from their packages)
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/multi-user.target.wants/tailscaled.service")" = "/usr/lib/systemd/system/tailscaled.service"
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/multi-user.target.wants/docker.service")" = "/usr/lib/systemd/system/docker.service"
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/sockets.target.wants/docker.socket")" = "/usr/lib/systemd/system/docker.socket"

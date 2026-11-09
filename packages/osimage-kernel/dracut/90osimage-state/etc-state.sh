@@ -1,30 +1,4 @@
 #!/bin/sh
-# Per-machine state for the sealed /etc.
-#
-# /etc is part of the composefs image (read-only, identical on every
-# machine, replaced wholesale by upgrades). The few files that must
-# differ per machine live in /var/lib/osimage/etc (persistent, shared
-# across deployments) and are bind-mounted read-only over their /etc
-# counterparts here, before PID 1 starts:
-#
-#   machine-id  written by the installer (osimage-install); generated
-#               here when missing or empty (installs made without it,
-#               or after deleting the file to reseed)
-#   hostname    written by the installer; seeded from
-#               /usr/lib/osimage/etc-seed/hostname when missing, else
-#               the image's /etc/hostname. Edit the /var copy and reboot
-#   shadow      written by the installer; seeded from the image's
-#               /etc/shadow when missing. Changed with osimage-passwd,
-#               which edits the /var copy in place. Accounts added by
-#               later images are merged in on boot (append-only, so
-#               per-machine passwords survive upgrades)
-#
-# The binds are read-only: the files change only through their /var
-# copies, never through /etc. Each file is only bound when the image
-# ships the /etc target, so images without the layout are unaffected.
-# When /var is not writable (unexpected: bootc binds it rw, live media
-# run on an overlay), the image's files stay visible; PID 1 then falls
-# back to a transient machine-id for that boot instead of failing.
 command -v getarg > /dev/null || . /lib/dracut-lib.sh
 
 STATE="$NEWROOT/var/lib/osimage/etc"
@@ -46,8 +20,6 @@ new_machine_id() {
 
 for f in machine-id hostname shadow; do
     [ -f "$NEWROOT/etc/$f" ] || continue
-    # an empty machine-id (seeded by an older initramfs that left it to
-    # PID 1) cannot be filled in through a read-only bind: regenerate
     if [ "$f" = machine-id ] && [ -f "$STATE/$f" ] && [ ! -s "$STATE/$f" ]; then
         rm -f "$STATE/$f"
     fi
@@ -67,11 +39,6 @@ for f in machine-id hostname shadow; do
         mv "$STATE/$f.new" "$STATE/$f" || continue
         info "osimage-state: seeded $STATE/$f"
     fi
-    # Seeding happens once: a machine installed before an image added
-    # accounts keeps a shadow copy without them, and the read-only bind
-    # then leaves those accounts unable to ever hold a password. Append
-    # the image's lines for accounts the copy lacks; existing lines are
-    # never touched, so per-machine passwords win over the image's.
     if [ "$f" = shadow ] && [ -f "$STATE/$f" ]; then
         added="$STATE/$f.merge-accounts.$$"
         if awk -F: 'NR == FNR { seen[$1] = 1; next } !($1 in seen) { print }' \

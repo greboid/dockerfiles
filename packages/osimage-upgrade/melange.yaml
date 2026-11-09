@@ -1,7 +1,7 @@
 package:
   name: osimage-upgrade
   version: 1.0.0
-  epoch: 1
+  epoch: 2
   description: osimage upgrade tooling (bootc upgrade with explicit composefs finalize)
   target-architecture:
     - x86_64
@@ -12,8 +12,6 @@ package:
   dependencies:
     runtime:
       - busybox-binsh=1.37.0-r31
-      # both commands the wrapper execs; pinned so a bootc bump that
-      # renames or drops composefs-finalize-staged fails here first
       - bootc=1.17.3-r2
 
 environment:
@@ -51,6 +49,7 @@ test:
       runs: |
         test -x /usr/bin/osimage-upgrade
         /usr/bin/osimage-upgrade --help | grep -q 'Usage: osimage-upgrade'
+        /usr/bin/osimage-upgrade --help | grep -q -- '--apply'
 
 update:
   enabled: false

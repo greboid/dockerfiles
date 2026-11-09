@@ -1,0 +1,8 @@
+name: pr
+
+on:
+  pull_request:
+
+jobs:
+  ci:
+    uses: packages/common/.forgejo/workflows/pr.yml@main

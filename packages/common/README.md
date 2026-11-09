@@ -9,7 +9,6 @@ name: build
 on:
   push:
     branches: [main]
-  pull_request:
   workflow_dispatch:
 
 jobs:
@@ -17,6 +16,10 @@ jobs:
     uses: packages/common/.forgejo/workflows/build-package.yml@main
     secrets: inherit
 ```
+
+Pull requests use a second stub, `pr.yml`, which calls
+`packages/common/.forgejo/workflows/pr.yml@main` without `secrets: inherit`.
+That workflow only builds and tests, so a pull request cannot publish.
 
 The caller job stays bare: `uses:` and `secrets: inherit`, nothing else.
 A `runs-on` on a `uses:` job is not valid reusable-workflow syntax, and
@@ -32,10 +35,9 @@ org builds the same way against `containers/build-common`).
 so every repo in the org has them; no per-repo secret configuration
 exists or is needed.
 
-Inside a called workflow `github.repository` and `github.event` are the
-caller's, so package name, origin URL and publish gating derive per repo:
-pushes to the caller's main branch build, test, publish and verify; pull
-requests build and test only.
+Inside a called workflow `github.repository` is the caller's, so package
+name and origin URL derive per repo. `build-package.yml` builds, tests,
+publishes and verifies; `pr.yml` builds and tests only.
 
 ## How builds run
 
@@ -49,14 +51,13 @@ publish back into it. The workflow
    `/etc/apk/repositories`;
 3. installs `melange` from that repository with `apk` - the build tool is
    just another org package, the same one that seeded the repository;
-4. writes the org signing key (refusing to publish without it; PR runs
-   without the secret get a throwaway key and publish nothing);
+4. writes the org signing key (`pr.yml` generates a throwaway key instead);
 5. builds the repo's `melange.yaml`, resolving org-package dependencies
    from the same repository (melange is given the repository and its
    index key explicitly, since it matches index signatures by key file
    name);
 6. runs the recipe's tests against the freshly built package;
-7. on main pushes only, uploads the signed apk to the repository, links
+7. in `build-package.yml` only, uploads the signed apk to the repository, links
    each published package to its repo (so it appears in that repo's
    Packages tab; `201` = linked, `400` = already linked, both fine), and
    verifies the round trip against the published copy.
@@ -80,7 +81,8 @@ workflow above.
 
 ## Layout
 
-- `.forgejo/workflows/build-package.yml` — the reusable build pipeline
+- `.forgejo/workflows/build-package.yml` — the reusable build and publish pipeline
+- `.forgejo/workflows/pr.yml` — the reusable pull request build and test pipeline
 - `.forgejo/workflows/bootstrap.yml` — hand-run org repository seeding
 
 ## Lint overrides

@@ -28,10 +28,6 @@ environment:
 pipeline:
   - name: Install the doas.d rule
     runs: |
-      # 0750 on doas.d matches what Alpine's doas post-upgrade enforces
-      # for the directory; the file itself is 0644 root:root like the
-      # package-owned /etc/doas.conf (doas rejects group/other-writable
-      # and non-root-owned config).
       cp -a tree/. "${{targets.destdir}}/"
       chmod 0750 "${{targets.destdir}}/etc/doas.d"
 

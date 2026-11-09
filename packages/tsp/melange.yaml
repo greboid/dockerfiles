@@ -1,6 +1,6 @@
 package:
   name: tsp
-  version: 1.3.1
+  version: 1.3.2
   epoch: 0
   description: Tailscale TCP proxy forwarding tailnet connections to an upstream
   target-architecture:
@@ -12,8 +12,8 @@ package:
       license: MIT
   dependencies:
     runtime:
-      - ca-certificates-bundle=20261020-r2
-      - tzdata=2026e-r0
+      - ca-certificates-bundle=20261020-r3
+      - tzdata=2026f-r0
 
 environment:
   contents:
@@ -25,9 +25,9 @@ environment:
       - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
     packages:
       - busybox=1.37.0-r31
-      - ca-certificates=20261020-r2
+      - ca-certificates=20261020-r3
       - git=2.54.0-r0
-      - go=1.27.3-r2
+      - go=1.27.3-r3
       - os-release=3.24.2-r0
 
 vars:
@@ -36,7 +36,7 @@ vars:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: ef28b156b2766618302875f04592b8242644b89c
+      expected-commit: 520bba5c7ce80270233a25f471c8f35ae8c691e8
       repository: https://github.com/csmith/tsp
       tag: v${{package.version}}
   - uses: go/build

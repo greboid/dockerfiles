@@ -1,0 +1,7 @@
+osimage: Alpine + systemd + bootc
+
+/usr and /etc are read-only and replaced by upgrades; only /var persists.
+
+  upgrade:   osimage-upgrade
+  password:  osimage-passwd [-l] [user]
+

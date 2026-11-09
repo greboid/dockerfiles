@@ -1,6 +1,6 @@
 package:
   name: apko
-  version: 1.4.15
+  version: 1.4.17
   epoch: 0
   description: Builds OCI images from apk packages (source-built, org patch set)
   target-architecture:
@@ -12,7 +12,7 @@ package:
       license: Apache-2.0
   dependencies:
     runtime:
-      - ca-certificates-bundle=20261020-r2
+      - ca-certificates-bundle=20261020-r3
 
 environment:
   contents:
@@ -25,8 +25,8 @@ environment:
     packages:
       - busybox=1.37.0-r31
       - os-release=3.24.2-r0
-      - ca-certificates-bundle=20261020-r2
-      - go=1.27.3-r2
+      - ca-certificates-bundle=20261020-r3
+      - go=1.27.3-r3
       - git=2.54.0-r0
   environment:
     CGO_ENABLED: "0"
@@ -35,7 +35,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 167ae823bf967f160a7ed7db04fbc4f97ef61ddf
+      expected-commit: d1e7697b002d4eb0a2eda22002193884faca4780
       repository: https://github.com/chainguard-dev/apko
       tag: v${{package.version}}
   - uses: patch

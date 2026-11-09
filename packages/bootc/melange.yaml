@@ -1,7 +1,7 @@
 package:
   name: bootc
-  version: 1.17.3
-  epoch: 2
+  version: 1.17.4
+  epoch: 0
   description: Bootable container images - bootc for Alpine (no SELinux)
   target-architecture:
     - x86_64
@@ -13,7 +13,7 @@ package:
     runtime:
       - ostree=2025.7-r1
       - pcre2
-      - ca-certificates-bundle=20261020-r2
+      - ca-certificates-bundle=20261020-r3
 
 environment:
   contents:
@@ -26,7 +26,7 @@ environment:
     packages:
       - os-release=3.24.2-r0
       - busybox=1.37.0-r31
-      - ca-certificates-bundle=20261020-r2
+      - ca-certificates-bundle=20261020-r3
       - rust-toolchain=1.98.1-r1
       - gcc=15.2.0-r5
       - musl-dev=1.2.6-r3
@@ -41,12 +41,12 @@ pipeline:
   - uses: fetch
     with:
       uri: https://github.com/bootc-dev/bootc/releases/download/v${{package.version}}/bootc-${{package.version}}.tar.zstd
-      expected-sha256: 5841cd9f7d684fb604e1f12112fa6373bd61bb8124f38f410fe007722c474280
+      expected-sha256: 57d8913f9c15c92aa4bc31cb927d7cf9fb76cad623ccb7f8a83e7322d0f9a802
       extract: false
   - uses: fetch
     with:
       uri: https://github.com/bootc-dev/bootc/releases/download/v${{package.version}}/bootc-${{package.version}}-vendor.tar.zstd
-      expected-sha256: 86539ca4458b6c23614bdcc2aecf1b1104264767268bdfd26b59360520e1217c
+      expected-sha256: 84e7e1cf4f312450d2fa6c28cdeadf0360ee48ae864c5921e76c7507523610c2
       extract: false
   - name: Unpack source and vendored crates
     runs: |

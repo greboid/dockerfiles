@@ -1,6 +1,6 @@
 package:
   name: tsv
-  version: 1.2.1
+  version: 1.2.2
   epoch: 0
   description: Tailscale VPN node bridging tailnet traffic to WireGuard
   target-architecture:
@@ -12,8 +12,8 @@ package:
       license: MIT
   dependencies:
     runtime:
-      - ca-certificates-bundle=20261020-r2
-      - tzdata=2026e-r0
+      - ca-certificates-bundle=20261020-r3
+      - tzdata=2026f-r0
 
 environment:
   contents:
@@ -25,10 +25,10 @@ environment:
       - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
     packages:
       - busybox=1.37.0-r31
-      - ca-certificates=20261020-r2
+      - ca-certificates=20261020-r3
       - git=2.54.0-r0
-      - go=1.27.3-r2
-      - go-licenses=2.0.1-r14
+      - go=1.27.3-r3
+      - go-licenses=2.0.1-r15
       - os-release=3.24.2-r0
 
 vars:
@@ -37,7 +37,7 @@ vars:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 77fe9097a98aa994b75a813c853c43ae75c7e4ff
+      expected-commit: 768854df85a30e4d03d448da6b547f67fdd8746a
       repository: https://github.com/csmith/tsv
       tag: v${{package.version}}
   - uses: go/build

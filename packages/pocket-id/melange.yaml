@@ -25,7 +25,7 @@ environment:
       - busybox=1.37.0-r31
       - ca-certificates
       - git=2.54.0-r0
-      - go=1.27.3-r2
+      - go=1.27.3-r3
       - nodejs=24.22.1-r1
       - pnpm=11.28.9-r0
       - os-release=3.24.2-r0

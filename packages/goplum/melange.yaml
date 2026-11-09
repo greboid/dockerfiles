@@ -1,6 +1,6 @@
 package:
   name: goplum
-  version: 1.1.1
+  version: 1.2.0
   epoch: 0
   description: Configurable health checker with a gRPC API
   target-architecture:
@@ -12,8 +12,8 @@ package:
       license: MIT
   dependencies:
     runtime:
-      - ca-certificates-bundle=20261020-r2
-      - tzdata=2026e-r0
+      - ca-certificates-bundle=20261020-r3
+      - tzdata=2026f-r0
 
 environment:
   contents:
@@ -25,16 +25,16 @@ environment:
       - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
     packages:
       - busybox=1.37.0-r31
-      - ca-certificates=20261020-r2
+      - ca-certificates=20261020-r3
       - git=2.54.0-r0
-      - go=1.27.3-r2
-      - go-licenses=2.0.1-r14
+      - go=1.27.3-r3
+      - go-licenses=2.0.1-r15
       - os-release=3.24.2-r0
 
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 64c73429fdcc2ab59a4b3db613f26f983496fa59
+      expected-commit: 33e1bd2cef873ffabc1c58248a1168fa38361893
       repository: https://github.com/csmith/goplum
       tag: v${{package.version}}
   - uses: go/build

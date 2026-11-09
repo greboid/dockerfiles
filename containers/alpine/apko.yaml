@@ -11,13 +11,13 @@ contents:
   packages:
     - alpine-baselayout=3.7.2-r1
     - alpine-keys=2.6-r0
-    - apk-tools=3.0.8-r0
+    - apk-tools=3.0.9-r0
     - busybox=1.37.0-r31
     - busybox-binsh=1.37.0-r31
     - musl=1.2.6-r3
     - musl-utils=1.2.6-r3
-    - ca-certificates-bundle=20261020-r2
-    - tzdata=2026e-r0
+    - ca-certificates-bundle=20261020-r3
+    - tzdata=2026f-r0
     - os-release=3.24.2-r0
 
 accounts:

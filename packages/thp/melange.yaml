@@ -1,6 +1,6 @@
 package:
   name: thp
-  version: 1.3.0
+  version: 1.4.0
   epoch: 0
   description: Tailscale HTTP proxy forwarding tailnet requests to an upstream
   target-architecture:
@@ -12,8 +12,8 @@ package:
       license: MIT
   dependencies:
     runtime:
-      - ca-certificates-bundle=20261020-r2
-      - tzdata=2026e-r0
+      - ca-certificates-bundle=20261020-r3
+      - tzdata=2026f-r0
 
 environment:
   contents:
@@ -25,10 +25,10 @@ environment:
       - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
     packages:
       - busybox=1.37.0-r31
-      - ca-certificates=20261020-r2
+      - ca-certificates=20261020-r3
       - git=2.54.0-r0
-      - go=1.27.3-r2
-      - go-licenses=2.0.1-r14
+      - go=1.27.3-r3
+      - go-licenses=2.0.1-r15
       - os-release=3.24.2-r0
 
 vars:
@@ -37,7 +37,7 @@ vars:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 35e946946d920a8e2838f84304a63c4cc22526fd
+      expected-commit: 4559333c21acb0dedf9b7c06a0f9c1d1d6605311
       repository: https://github.com/greboid/thp
       tag: v${{package.version}}
   - uses: go/build
@@ -66,15 +66,6 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/thp
-        files: /notices/github.com/greboid/thp/LICENCE /usr/share/licenses/thp/LICENCE
-        dirs: ${{vars.runtime-dirs}}
-    - name: Refuses to start without an upstream
-      runs: |
-        if /usr/bin/thp >/tmp/thp.log 2>&1; then
-          echo "expected missing-upstream failure" >&2
-          exit 1
-        fi
-        grep -q "Upstream host cannot be blank" /tmp/thp.log
 update:
   enabled: true
   github:

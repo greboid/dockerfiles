@@ -1,0 +1,75 @@
+name: pr
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: alpine
+    env:
+      ORG_REPO: https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    steps:
+      - name: Checkout package repo
+        uses: actions/toolkit/git-checkout@master
+
+      - name: Install build prerequisites
+        run: apk add --no-cache bubblewrap openssl
+
+      - name: Trust the org repository
+        run: |
+          set -eu
+          curl -fsSL --retry 3 -o key.rsa.pub "${ORG_REPO%/*/*}/key"
+          hash=$(openssl pkey -pubin -in key.rsa.pub -outform DER 2>/dev/null | sha256sum | cut -d' ' -f1)
+          mv key.rsa.pub "packages@${hash}.rsa.pub"
+          cp "packages@${hash}.rsa.pub" "/etc/apk/keys/packages@${hash}.rsa.pub"
+          printf '%s\n' \
+            "--keyring-append $PWD/packages@${hash}.rsa.pub" \
+            "--repository-append $ORG_REPO" >> org-repo.args
+          echo "$ORG_REPO" >> /etc/apk/repositories
+          apk update
+          echo "trusting index key packages@$hash"
+
+      - name: Collect optional lint overrides
+        run: |
+          # A repo may ship a lint.args file (one CLI argument per line) to
+          # relax or tighten melange's linters for deliberate violations,
+          # e.g. osimage-kernel's non-usrmerged /lib/modules symlink.
+          touch lint.args
+
+      - name: Install melange from the org repository
+        run: |
+          set -eu
+          apk add --no-cache melange
+          melange version
+
+      - name: Generate a throwaway signing key
+        run: |
+          set -eu
+          mkdir -p keys
+          melange keygen keys/packages.rsa
+          openssl rsa -in keys/packages.rsa -pubout -out keys/packages.rsa.pub 2>/dev/null
+          head -1 keys/packages.rsa.pub | grep -q 'BEGIN PUBLIC KEY'
+
+      - name: Build package
+        run: |
+          set -eu
+          export SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)
+          melange build melange.yaml \
+            --arch x86_64 \
+            --namespace packages \
+            --git-repo-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
+            --signing-key keys/packages.rsa \
+            --keyring-append "$PWD/keys/packages.rsa.pub" \
+            $(cat org-repo.args) \
+            $(cat lint.args) \
+            --out-dir dist
+
+      - name: Test package
+        run: |
+          set -eu
+          melange test melange.yaml \
+            --arch x86_64 \
+            --source-dir . \
+            --keyring-append "$PWD/keys/packages.rsa.pub" \
+            --repository-append "$PWD/dist" \
+            $(cat org-repo.args)

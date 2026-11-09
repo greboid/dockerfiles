@@ -11,10 +11,6 @@ package:
       license: AFL-2.1 OR GPL-2.0-or-later
   dependencies:
     runtime:
-      # libdbus/daemon library deps (expat, libsystemd) are emitted
-      # automatically as so: binds by melange's ELF scanning; explicit
-      # versioned systemd pins here would bootstrap-block against the
-      # systemd epoch bump.
       - ca-certificates-bundle
 
 environment:
@@ -27,17 +23,14 @@ environment:
       - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
     packages:
       - busybox=1.37.0-r31
-      - ca-certificates-bundle=20261020-r2
+      - ca-certificates-bundle=20261020-r3
       - os-release=3.24.2-r0
       - gcc=15.2.0-r5
       - musl-dev=1.2.6-r3
       - meson=1.11.1-r0
       - pkgconf=2.5.1-r0
       - expat-dev=2.10.0-r0
-      # libsystemd for socket activation + sd_notify (Type=notify);
-      # Alpine's dbus omits this, which is why the stock package cannot
-      # run under dbus.socket ("compiled without systemd support").
-      - systemd-dev=262.1-r2
+      - systemd-dev=262.1-r6
 
 pipeline:
   - uses: fetch
@@ -121,7 +114,7 @@ test:
       packages:
         - os-release=3.24.2-r0
         - busybox=1.37.0-r31
-        - systemd=262.1-r2
+        - systemd=262.1-r6
   pipeline:
     - name: Daemon executes
       runs: |

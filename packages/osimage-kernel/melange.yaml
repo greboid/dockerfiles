@@ -27,33 +27,14 @@ environment:
       - busybox=1.37.0-r31
       - bash=5.3.9-r1
       - kmod=34.2-r1
-      # initramfs generator and payload tooling for the dracut runs; the
-      # org packages (dracut, bootc, systemd) resolve through the org
-      # repository appended by the shared CI workflow
       - dracut=111-r2
       - bootc=1.17.3-r2
-      # /usr/lib/composefs/setup-root-conf.toml must exist in the build
-      # root: the bootc dracut module embeds it into the initramfs (the
-      # initramfs reads it from its own filesystem before pivot). Without
-      # it initramfs-setup falls back to its defaults, which bind-mount
-      # /etc read-write instead of keeping it sealed in the composefs
-      # image ([etc] mount = "none"). Must move in lockstep with the
-      # image's osimage-config pin.
       - osimage-config=1.0.0-r16
       - systemd=262.1-r5
       - lsblk=2.42.3-r1
       - device-mapper=2.03.35-r3
-      # util-linux blkid: dracut's dmsquash-live and udev-rules modules
-      # inst_multiple it, so the binary AND libblkid.so.1 land in the
-      # initramfs; systemd-udevd's blkid builtin dlopens libblkid at
-      # runtime (busybox blkid is static and dracut would ship no lib,
-      # breaking ID_FS_LABEL detection of the installer media)
       - blkid=2.42.3-r1
-      # kernel source content; must move in lockstep with package.version
-      # (linux-stable lives in the Alpine community repository)
       - linux-stable=7.1.5-r0
-      # satisfy linux-lts' virtual dependencies inside the build
-      # environment (nothing of them is shipped or used at runtime)
       - mkinitfs=3.14.1-r0
       - linux-firmware-none=20260519-r0
 
@@ -64,32 +45,15 @@ pipeline:
       test -n "$kver"
       install -d "${{targets.destdir}}/usr/lib/modules/$kver"
       cp -a "/lib/modules/$kver/." "${{targets.destdir}}/usr/lib/modules/$kver/"
-      # Alpine ships the bootable kernel image in /boot (linux-lts adds a
-      # symlink in the modules dir, linux-stable does not); place the real
-      # kernel at the bootc canonical location and ship no /boot content.
       rm -f "${{targets.destdir}}/usr/lib/modules/$kver/vmlinuz"
       flavor="${kver##*-}"
       install -m 0644 "/boot/vmlinuz-$flavor" "${{targets.destdir}}/usr/lib/modules/$kver/vmlinuz"
-      # The kernel is booted as a UKI (systemd-stub), so it must be an
-      # EFI-capable PE executable (MZ magic).
       [ "$(head -c 2 "${{targets.destdir}}/usr/lib/modules/$kver/vmlinuz")" = MZ ] || {
         echo "osimage-kernel: vmlinuz lacks MZ magic; not EFI-bootable" >&2
         exit 1
       }
-      # Alpine's kmod is non-usrmerged: module autoload only searches
-      # /lib/modules, so link the canonical location into place.
       install -d "${{targets.destdir}}/lib"
       ln -s ../usr/lib/modules "${{targets.destdir}}/lib/modules"
-      # Trim module subtrees a headless server OS never loads. Console
-      # survives on the builtin simpledrm (modules.builtin) over the
-      # firmware GOP plus serial; roots are ext4-only (repart profile);
-      # networking is Ethernet via systemd-networkd; no WiFi, no
-      # net-fs/RDMA workloads. Everything dropped is a .ko.gz, so the
-      # listed sizes map ~1:1 into image size: gpu 15.7 MB, sound 13.5,
-      # media 11.5, wireless 15.3, infiniband 2.9, bluetooth 1.3,
-      # net-fs/nfs/ceph/9p 4.1, xfs+btrfs 3.0, smb 1.1, ocfs2 1.0,
-      # niche net protocols 1.3, mtd 1.1 (+ubifs/jffs2), iio 1.1,
-      # staging 0.4, exotic filesystems 0.6.
       moddir="${{targets.destdir}}/usr/lib/modules/$kver"
       rm -rf "$moddir/kernel/sound" "$moddir/kernel/drivers/gpu" \
         "$moddir/kernel/drivers/media" \
@@ -116,9 +80,6 @@ pipeline:
         "$moddir/kernel/fs/vboxsf" \
         "$moddir/kernel/fs/cramfs" "$moddir/kernel/fs/ubifs" \
         "$moddir/kernel/fs/jffs2"
-      # Regenerate the module metadata for the reduced tree: modprobe,
-      # udev coldplug and the dracut runs below resolve dependencies
-      # from these files, not from Alpine's full-tree metadata.
       depmod -b "${{targets.destdir}}" "$kver"
 
   - name: Install the osimage dracut modules and bootc initramfs config
@@ -128,10 +89,6 @@ pipeline:
       cp -a dracut/90osimage-state /usr/lib/dracut/modules.d/90osimage-state
       mkdir -p /usr/lib/dracut.conf.d
       cat > /usr/lib/dracut.conf.d/10-bootc.conf <<'DRACUTCONF'
-      # Generic (server-side build) initramfs with the bootc composefs
-      # module. Networking happens in the real root via systemd-networkd,
-      # so the initramfs networking modules (and their eudev/nbd
-      # dependency chain) are omitted.
       hostonly=no
       add_dracutmodules+=" bootc bootc-remount bootc-gptroot osimage-state "
       omit_dracutmodules+=" network network-legacy nbd "
@@ -222,27 +179,16 @@ test:
         test -s "/usr/lib/modules/$kver/initramfs-install.img"
         lsinitrd "/usr/lib/modules/$kver/initramfs.img" > /tmp/boot-contents
         lsinitrd "/usr/lib/modules/$kver/initramfs-install.img" > /tmp/live-contents
-        # udevd's blkid builtin dlopens libblkid at runtime; without it no
-        # ID_FS_LABEL is ever set and dmsquash-live cannot find the media
         grep -q libblkid.so.1 /tmp/live-contents
         grep -q sbin/blkid /tmp/live-contents
         grep -q usr/lib/bootc/initramfs-setup /tmp/boot-contents
-        # the composefs mount config ([etc] mount = "none" keeps /etc
-        # sealed) must be embedded; without it initramfs-setup defaults
-        # to rw /etc + rw /var binds
         grep -q usr/lib/composefs/setup-root-conf.toml /tmp/boot-contents
         grep -q composefs-setup.sh /tmp/boot-contents
         grep -q remount-root.sh /tmp/boot-contents
-        # host UKIs resolve root=gpt-auto through the hardened GPT-root
-        # hook; it must be in the sealed initramfs
         grep -q gptroot-mount.sh /tmp/boot-contents
         grep -q parse-gptroot.sh /tmp/boot-contents
-        # per-machine /etc state (machine-id, hostname, shadow binds from
-        # /var) must be set up before PID 1 on installed and live boots
         grep -q etc-state.sh /tmp/boot-contents
         grep -q etc-state.sh /tmp/live-contents
-        # ... bound read-only, with the machine-id generated before PID 1
-        # (the read-only bind leaves PID 1 no way to fill it in)
         for img in initramfs.img initramfs-install.img; do
           hook=$(lsinitrd -f var/lib/dracut/hooks/pre-pivot/70-etc-state.sh "/usr/lib/modules/$kver/$img")
           echo "$hook" | grep -q 'mount -o remount,bind,ro'
@@ -252,11 +198,6 @@ test:
         done
         grep -q sbin/dmsquash-live-root /tmp/live-contents
         grep -q sbin/dmsetup /tmp/live-contents
-
-# The /lib/modules -> ../usr/lib/modules symlink is deliberate: Alpine's
-# kmod is non-usrmerged and only autoloads from /lib/modules. The linter
-# override lives in lint.args (--lint-warn usrmerge), consumed by the
-# shared CI workflow.
 
 update:
   enabled: false
