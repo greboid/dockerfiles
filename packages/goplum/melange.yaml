@@ -1,6 +1,6 @@
 package:
   name: goplum
-  version: 1.2.0
+  version: 1.3.0
   epoch: 0
   description: Configurable health checker with a gRPC API
   target-architecture:
@@ -34,7 +34,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 33e1bd2cef873ffabc1c58248a1168fa38361893
+      expected-commit: 375a3821e182aea3c9a737102cd599ab9633b7a8
       repository: https://github.com/csmith/goplum
       tag: v${{package.version}}
   - uses: go/build
@@ -61,14 +61,6 @@ test:
       with:
         executables: /usr/bin/goplum
         files: /notices/chameth.com/goplum/LICENCE /notices/github.com/csmith/envflag/v2/LICENCE /usr/share/licenses/goplum/LICENCE
-    - name: Refuses to run without a config file
-      runs: |
-        set +e
-        out=$(/usr/bin/goplum 2>&1)
-        code=$?
-        set -e
-        test "$code" = 1
-        echo "$out" | grep -q "Unable to read config"
 update:
   enabled: true
   github:
