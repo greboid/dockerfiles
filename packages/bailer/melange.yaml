@@ -1,7 +1,7 @@
 package:
   name: bailer
   version: 0.2.0
-  epoch: 1
+  epoch: 2
   description: Docker volume backup tool with local and restic backends
   target-architecture:
     - x86_64
@@ -14,7 +14,7 @@ package:
     runtime:
       - ca-certificates-bundle=20261020-r3
       - tzdata=2026f-r0
-      - restic=0.19.1-r1
+      - restic=0.19.1-r2
 
 environment:
   contents:
@@ -28,8 +28,8 @@ environment:
       - busybox=1.37.0-r31
       - ca-certificates=20261020-r3
       - git=2.54.0-r0
-      - go=1.27.3-r3
-      - go-licenses=2.0.1-r15
+      - go=1.27.4-r0
+      - go-licenses=2.0.1-r17
       - os-release=3.24.2-r0
 
 vars:

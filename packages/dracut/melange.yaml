@@ -24,7 +24,7 @@ environment:
     packages:
       - os-release=3.24.2-r0
       - busybox=1.37.0-r31
-      - ca-certificates-bundle=20261020-r3
+      - ca-certificates-bundle=20261020-r4
       - pkgconf=2.5.1-r0
       - kmod-dev=34.2-r1
       - musl-fts-dev

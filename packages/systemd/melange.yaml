@@ -35,7 +35,7 @@ environment:
     packages:
       - os-release=3.24.2-r0
       - busybox=1.37.0-r31
-      - ca-certificates-bundle=20261020-r3
+      - ca-certificates-bundle=20261020-r4
       - gcc=15.2.0-r5
       - musl-dev=1.2.6-r3
       - bash=5.3.9-r1

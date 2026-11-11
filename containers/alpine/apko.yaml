@@ -16,7 +16,7 @@ contents:
     - busybox-binsh=1.37.0-r31
     - musl=1.2.6-r3
     - musl-utils=1.2.6-r3
-    - ca-certificates-bundle=20261020-r3
+    - ca-certificates-bundle=20261020-r4
     - tzdata=2026f-r0
     - os-release=3.24.2-r0
 

@@ -9,10 +9,10 @@ contents:
     - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
     - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
   packages:
-    - ca-certificates-bundle=20261020-r3
+    - ca-certificates-bundle=20261020-r4
     - tzdata=2026f-r0
     - os-release=3.24.2-r0
-    - actual-server=26.10.0-r2
+    - actual-server=26.10.0-r3
 
 accounts:
   run-as: 65532:65532

@@ -13,8 +13,8 @@ contents:
     - ca-certificates-bundle=20261020-r3
     - tzdata=2026f-r0
     - os-release=3.24.2-r0
-    - forgejo-runner=13.2.1-r1
-    - buildah=1.46.0-r0
+    - forgejo-runner=13.2.1-r2
+    - buildah=1.46.0-r1
     - fuse-overlay-storage-conf=1.0.0-r0
     - git=2.54.0-r0
     - fuse-overlayfs=1.16-r0

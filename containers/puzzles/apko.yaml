@@ -12,7 +12,7 @@ contents:
     - ca-certificates-bundle=20261020-r3
     - tzdata=2026f-r0
     - os-release=3.24.2-r0
-    - puzzles=1.0.3-r21
+    - puzzles=1.0.3-r22
 
 accounts:
   run-as: 65532:65532

@@ -1,7 +1,7 @@
 package:
   name: cocoon
   version: 0.14.1
-  epoch: 1
+  epoch: 2
   description: An atproto PDS (Bluesky) server
   target-architecture:
     - x86_64
@@ -30,9 +30,9 @@ environment:
       - ca-certificates=20261020-r3
       - gcc=15.2.0-r5
       - git=2.54.0-r0
-      - go=1.27.3-r3
+      - go=1.27.4-r0
       - musl-dev=1.2.6-r3
-      - go-licenses=2.0.1-r15
+      - go-licenses=2.0.1-r17
       - os-release=3.24.2-r0
 
 pipeline:

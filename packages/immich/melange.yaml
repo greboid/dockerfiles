@@ -1,7 +1,7 @@
 package:
   name: immich
-  version: 3.3.6
-  epoch: 0
+  version: 3.4.0
+  epoch: 1
   description: Self-hosted photo and video management (server + embedded web)
   target-architecture:
     - x86_64
@@ -18,7 +18,7 @@ package:
       - coreutils=9.11-r0
       - coreutils-env=9.11-r0
       - icu-data-full=78.1-r0
-      - libvips=8.18.7-r4
+      - libvips=8.18.7-r5
       - libheif-jpeg=1.23.7-r0
       - libheif-openjpeg=1.23.7-r0
 
@@ -32,14 +32,14 @@ environment:
       - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
     packages:
       - busybox=1.37.0-r31
-      - ca-certificates=20261020-r3
-      - git=2.54.0-r0
+      - ca-certificates=20261020-r4
+      - git=2.54.1-r0
       - os-release=3.24.2-r0
       - bash=5.3.9-r1
       - nodejs=24.22.1-r1
       - npm=11.12.1-r0
       - curl=8.23.0-r0
-      - libvips=8.18.7-r4
+      - libvips=8.18.7-r5
       - cgif-dev=0.5.4-r0
       - expat-dev=2.10.0-r0
       - glib-dev=2.88.1-r1
@@ -61,7 +61,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 587f549f46f1cd1822a06e16dcccecef04ea4565
+      expected-commit: 0715bcf8dab4b91118d6184479e2be2767ef8294
       repository: https://github.com/immich-app/immich
       tag: v${{package.version}}
   - uses: pnpm/install

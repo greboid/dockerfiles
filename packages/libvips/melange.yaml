@@ -1,7 +1,7 @@
 package:
   name: libvips
   version: 8.18.7
-  epoch: 4
+  epoch: 5
   description: Fast image processing library with low memory needs
   target-architecture:
     - x86_64
@@ -36,8 +36,8 @@ environment:
       - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
     packages:
       - busybox=1.37.0-r31
-      - ca-certificates=20261020-r3
-      - git=2.54.0-r0
+      - ca-certificates=20261020-r4
+      - git=2.54.1-r0
       - os-release=3.24.2-r0
       - g++=15.2.0-r5
       - meson=1.11.1-r0
