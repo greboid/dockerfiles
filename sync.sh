@@ -6,7 +6,7 @@
 # each default branch, materialises them into the worktree under
 # <org>/<name>/ and commits the result as a single squashed snapshot.
 # A commit is pushed only when the org content changed, so this repository is
-# generated output: never edit containers/ or packages/ directly, and never
+# generated output: never edit containers/, packages/ or osimage/ directly, and never
 # push to this repository from anywhere but this script.
 #
 # The org directories are wiped and rebuilt from the fetched commits on every
@@ -18,7 +18,7 @@
 #
 # Environment:
 #   FORGEJO_URL     instance base URL          (default https://git.mouse-lake.ts.net)
-#   SYNC_ORGS       organisations to sync      (default "containers packages")
+#   SYNC_ORGS       organisations to sync      (default "containers packages osimage")
 #   SYNC_BRANCH     branch the view is pushed  (default master)
 #   PUSH_REPO       target slug owner/repo     (default: parsed from origin)
 #   REQUIRED_INFRA  files that must exist before a commit is made
@@ -29,7 +29,7 @@
 set -euo pipefail
 
 FORGEJO_URL="${FORGEJO_URL:-https://git.mouse-lake.ts.net}"
-SYNC_ORGS="${SYNC_ORGS:-containers packages}"
+SYNC_ORGS="${SYNC_ORGS:-containers packages osimage}"
 SYNC_BRANCH="${SYNC_BRANCH:-master}"
 REQUIRED_INFRA="${REQUIRED_INFRA:-README.md sync.sh .forgejo/workflows/sync.yml}"
 
