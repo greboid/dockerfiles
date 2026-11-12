@@ -1,7 +1,7 @@
 package:
   name: forgejo
   version: 17.0.1
-  epoch: 4
+  epoch: 5
   description: Forgejo self-hosted software forge (Gitea fork)
   target-architecture:
     - x86_64
@@ -31,7 +31,7 @@ environment:
       - go-licenses=2.0.1-r18
       - os-release=3.24.2-r0
       - make=4.4.1-r4
-      - nodejs=24.22.1-r1
+      - nodejs=24.22.3-r0
       - npm=11.12.1-r0
       - gcc=15.2.0-r5
       - musl-dev=1.2.6-r3

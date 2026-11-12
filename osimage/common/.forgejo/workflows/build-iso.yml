@@ -1,0 +1,118 @@
+name: build-iso
+
+on:
+  workflow_call:
+    inputs:
+      installer-ref:
+        description: 'Installer image ref to pull (default osimage/installer:latest)'
+        required: false
+        type: string
+        default: ''
+      version:
+        description: 'ISO version tag (default: UTC date, e.g. 2026.11.04)'
+        required: false
+        type: string
+
+concurrency:
+  group: build-iso-${{ github.repository }}
+
+jobs:
+  iso:
+    runs-on: alpine
+    env:
+      ORG_REPO: https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      OSIMAGE_INSTALLER_REF: ${{ inputs.installer-ref }}
+    steps:
+      - name: Checkout caller repo
+        uses: actions/toolkit/git-checkout@master
+
+      - name: Checkout common
+        env:
+          COMMON_REF: ${{ github.action_ref }}
+        run: |
+          set -eu
+          apk add --no-cache git
+          git clone --depth 1 "--branch=${COMMON_REF:-master}" \
+            "$GITHUB_SERVER_URL/osimage/common.git" common
+
+      - name: Trust the org repository and install build tools
+        run: |
+          set -eu
+          curl -fsSL --retry 3 -o key.rsa.pub "${ORG_REPO%/*/*}/key"
+          hash=$(openssl pkey -pubin -in key.rsa.pub -outform DER | sha256sum | cut -d' ' -f1)
+          mv key.rsa.pub "/etc/apk/keys/packages@$hash.rsa.pub"
+          echo "$ORG_REPO" >> /etc/apk/repositories
+          apk update
+          apk add --no-cache crane tar python3 ukify binutils xorriso \
+            mtools squashfs-tools curl
+
+      - name: Pull the published installer image
+        run: common/fetch-installer-rootfs.sh dist
+
+      - name: Build the installer ISO
+        run: common/build-installer-iso.sh dist
+
+      - name: Checksum
+        run: |
+          cd dist
+          sha256sum installer.iso > installer.iso.sha256
+
+      - name: Publish the ISO as a generic package
+        env:
+          RELEASE_PACKAGE_TOKEN: ${{ secrets.RELEASE_PACKAGE_TOKEN }}
+          ISO_VERSION: ${{ inputs.version }}
+        id: publish
+        run: |
+          set -eu
+          owner="${GITHUB_REPOSITORY%%/*}"
+          api="https://git.mouse-lake.ts.net/api/packages/$owner/generic/installer-iso"
+          version="${ISO_VERSION:-$(date -u +%Y.%m.%d)}"
+          put() {
+            curl -s -o /dev/null -w '%{http_code}' --retry 3 \
+              --user "greboid:$RELEASE_PACKAGE_TOKEN" \
+              --upload-file "$1" "$api/$2/$3"
+          }
+          date_version=$version
+          rev=1
+          while :; do
+            code=$(put dist/installer.iso "$version" "installer-$version.iso")
+            [ "$code" = 201 ] && break
+            if [ "$code" = 409 ] && [ "$version" = "$date_version" ]; then
+              rev=2
+            elif [ "$code" = 409 ]; then
+              rev=$((rev + 1))
+            else
+              echo "upload failed with $code" >&2
+              exit 1
+            fi
+            [ "$rev" -gt 20 ] && { echo "no free revision within 20" >&2; exit 1; }
+            version="$date_version-r$rev"
+            echo "version exists; retrying as $version"
+          done
+          put dist/installer.iso.sha256 "$version" "installer-$version.iso.sha256" >/dev/null
+          code=$(curl -s -o /dev/null -w '%{http_code}' --retry 3 \
+            --user "greboid:$RELEASE_PACKAGE_TOKEN" -X DELETE \
+            "$api/latest") || code=000
+          case "$code" in
+            200|201|204|404) ;;
+            *) echo "unexpected delete status $code for the latest alias" >&2; exit 1 ;;
+          esac
+          code=$(put dist/installer.iso "latest" "installer.iso")
+          [ "$code" = 201 ] || { echo "latest upload failed with $code" >&2; exit 1; }
+          echo "published installer-$version.iso (+ latest alias)"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Verify round trip
+        env:
+          RELEASE_PACKAGE_TOKEN: ${{ secrets.RELEASE_PACKAGE_TOKEN }}
+          ISO_VERSION: ${{ steps.publish.outputs.version }}
+        run: |
+          set -eu
+          owner="${GITHUB_REPOSITORY%%/*}"
+          version="${ISO_VERSION:?version missing from the publish step}"
+          curl -fsSL --retry 3 --user "greboid:$RELEASE_PACKAGE_TOKEN" \
+            -o /tmp/roundtrip.iso \
+            "https://git.mouse-lake.ts.net/api/packages/$owner/generic/installer-iso/$version/installer-$version.iso"
+          test "$(sha256sum /tmp/roundtrip.iso | cut -d' ' -f1)" \
+            = "$(cut -d' ' -f1 dist/installer.iso.sha256)"
+          echo "round trip verified"

@@ -11,7 +11,7 @@ contents:
     - ca-certificates-bundle=20261020-r4
     - tzdata=2026f-r0
     - os-release=3.24.2-r0
-    - actual-server=26.10.0-r3
+    - actual-server=26.10.0-r4
 
 accounts:
   run-as: 65532:65532

@@ -1,0 +1,19 @@
+name: build
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: build
+
+jobs:
+  build:
+    uses: osimage/common/.forgejo/workflows/apko-image.yml@master
+    with:
+      image-def: apko.yaml
+      name: minimal
+      seal-uki: true
+      publish-ref: git.mouse-lake.ts.net/osimage/minimal
+    secrets: inherit

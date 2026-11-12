@@ -1,0 +1,24 @@
+name: build-iso
+
+on:
+  workflow_dispatch:
+    inputs:
+      installer-ref:
+        description: 'Installer image ref to pull (default osimage/installer:latest)'
+        required: false
+        type: string
+      version:
+        description: 'ISO version tag (default: UTC date, e.g. 2026.11.04)'
+        required: false
+        type: string
+
+concurrency:
+  group: build-iso
+
+jobs:
+  iso:
+    uses: osimage/common/.forgejo/workflows/build-iso.yml@master
+    with:
+      installer-ref: ${{ inputs.installer-ref }}
+      version: ${{ inputs.version }}
+    secrets: inherit

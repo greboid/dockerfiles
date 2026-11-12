@@ -1,0 +1,19 @@
+name: build
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: build
+
+jobs:
+  build:
+    uses: osimage/common/.forgejo/workflows/apko-image.yml@master
+    with:
+      image-def: apko.yaml
+      name: installer
+      seal-uki: false
+      publish-ref: git.mouse-lake.ts.net/osimage/installer
+    secrets: inherit

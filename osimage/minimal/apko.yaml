@@ -1,0 +1,127 @@
+archs:
+  - x86_64
+
+contents:
+  keyring:
+    - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+  repositories:
+    - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+    - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+    - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+  packages:
+    - alpine-baselayout=3.7.2-r1
+    - busybox-binsh=1.37.0-r31
+    - ssl_client=1.37.0-r31
+    - musl=1.2.6-r3
+    - libgcc=15.2.0-r5
+    - musl-utils=1.2.6-r3
+    - ca-certificates-bundle=20261020-r4
+    - tzdata=2026f-r0
+    - os-release=3.24.2-r0
+    - systemd=262.1-r6
+    - systemd-boot=262.1-r6
+    - systemd-efistub=262.1-r6
+    - bootc=1.17.4-r1
+    - podman=5.8.10-r0
+    - osimage-upgrade=1.0.0-r4
+    - osimage-passwd=1.0.0-r1
+    - skopeo=1.20.1-r2
+    - zstd=1.5.7-r2
+    - osimage-kernel=7.1.5-r11
+    - osimage-kernel-initramfs=7.1.5-r11
+    - linux-firmware-none=20260519-r0
+    - osimage-config=1.0.0-r21
+    - e2fsprogs=1.47.4-r0
+    - agetty=2.42.3-r1
+    - util-linux-misc=2.42.3-r1
+    - findmnt=2.42.3-r1
+    - lsblk=2.42.3-r1
+    - setpriv=2.42.3-r1
+    - fstrim=2.42.3-r1
+    - qemu-guest-agent=11.0.3-r0
+    - qemu-guest-agent-systemd=1.0.0-r0
+    - dbus=1.16.2-r4
+    - erofs-utils=1.9.1-r0
+    - tailscale=1.104.6-r0
+    - docker=29.9.3-r1
+    - docker-systemd=29.9.3-r1
+    - containerd-systemd=2.3.7-r0
+    - docker-cli-compose=5.6.1-r0
+    - osimage-doas=1.0.0-r0
+    - nftables=1.1.6-r1
+    - git=2.54.1-r0
+    - openssh-client-default=10.3_p1-r2
+    - nano=9.3-r0
+
+paths:
+  - path: /boot
+    type: directory
+    permissions: 0o755
+  - path: /sysroot
+    type: directory
+    permissions: 0o755
+
+accounts:
+  run-as: 0
+  users:
+    - uid: 994
+      username: messagebus
+      homedir: /
+      shell: /usr/bin/nologin
+    - uid: 993
+      gid: 993
+      username: systemd-network
+      homedir: /
+      shell: /usr/bin/nologin
+    - uid: 992
+      gid: 992
+      username: systemd-resolve
+      homedir: /
+      shell: /usr/bin/nologin
+    - uid: 991
+      gid: 991
+      username: systemd-timesync
+      homedir: /
+      shell: /usr/bin/nologin
+    - uid: 1000
+      gid: 1000
+      username: greboid
+      homedir: /var/home/greboid
+      shell: /bin/sh
+  groups:
+    - gid: 994
+      groupname: messagebus
+    - gid: 993
+      groupname: systemd-network
+    - gid: 992
+      groupname: systemd-resolve
+    - gid: 991
+      groupname: systemd-timesync
+    - gid: 990
+      groupname: docker
+      members: [greboid]
+    - gid: 989
+      groupname: systemd-journal
+    - gid: 988
+      groupname: empower
+    - gid: 987
+      groupname: clock
+    - gid: 986
+      groupname: render
+    - gid: 985
+      groupname: sgx
+    - gid: 10
+      groupname: wheel
+      members: [greboid]
+    - gid: 1000
+      groupname: greboid
+
+environment:
+  LANG: C.UTF-8
+  SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+
+annotations:
+  containers.bootc: "1"
+  org.opencontainers.image.title: minimal
+  org.opencontainers.image.vendor: Greboid
+  org.opencontainers.image.description: Alpine + systemd + bootc (composefs) bootable OS (osimage minimal image)

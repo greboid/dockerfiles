@@ -1,0 +1,13 @@
+name: pr
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    uses: osimage/common/.forgejo/workflows/apko-image.yml@master
+    with:
+      image-def: apko.yaml
+      name: installer
+      seal-uki: false
+    secrets: inherit

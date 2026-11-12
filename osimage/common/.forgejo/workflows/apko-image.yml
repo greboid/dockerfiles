@@ -1,0 +1,89 @@
+name: apko-image
+
+on:
+  workflow_call:
+    inputs:
+      image-def:
+        description: 'Image definition (apko.yaml) path in the caller repo'
+        required: true
+        type: string
+      name:
+        description: 'Image name: dev tag (localhost/<name>:dev) and dist file name'
+        required: true
+        type: string
+      seal-uki:
+        description: 'Seal a host UKI onto the image (bootc OS images; needs root)'
+        required: false
+        type: boolean
+        default: false
+      publish-ref:
+        description: 'Container registry ref to publish (without tag); empty = build only'
+        required: false
+        type: string
+        default: ''
+
+concurrency:
+  group: apko-image-${{ github.repository }}-${{ inputs.name }}
+
+jobs:
+  build:
+    runs-on: alpine
+    env:
+      ORG_REPO: https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      IMAGE_DEF: ${{ inputs.image-def }}
+      IMAGE_NAME: ${{ inputs.name }}
+      SEAL_UKI: ${{ inputs.seal-uki }}
+    steps:
+      - name: Checkout caller repo
+        uses: actions/toolkit/git-checkout@master
+
+      - name: Checkout common
+        env:
+          COMMON_REF: ${{ github.action_ref }}
+        run: |
+          set -eu
+          apk add --no-cache git
+          git clone --depth 1 "--branch=${COMMON_REF:-master}" \
+            "$GITHUB_SERVER_URL/osimage/common.git" common
+
+      - name: Trust the org repository and install build tools
+        run: |
+          set -eu
+          curl -fsSL --retry 3 -o key.rsa.pub "${ORG_REPO%/*/*}/key"
+          hash=$(openssl pkey -pubin -in key.rsa.pub -outform DER | sha256sum | cut -d' ' -f1)
+          mv key.rsa.pub "/etc/apk/keys/packages@$hash.rsa.pub"
+          echo "ORG_KEY=/etc/apk/keys/packages@$hash.rsa.pub" >> "$GITHUB_ENV"
+          echo "$ORG_REPO" >> /etc/apk/repositories
+          apk update
+          pkgs="apko bubblewrap skopeo crane tar"
+          if [ "$SEAL_UKI" = "true" ]; then
+            pkgs="$pkgs ukify binutils bootc umoci"
+          fi
+          apk add --no-cache $pkgs
+
+      - name: Build image
+        run: |
+          set -eu
+          export APKO_EXTRA_REPO_ARGS="-k $ORG_KEY"
+          if [ "$SEAL_UKI" = "true" ]; then
+            common/build-image.sh "$IMAGE_DEF" "$IMAGE_NAME"
+          else
+            common/build-installer-image.sh "$IMAGE_DEF" "$IMAGE_NAME"
+          fi
+
+      - name: Publish
+        if: inputs.publish-ref != ''
+        env:
+          PUBLISH_REF: ${{ inputs.publish-ref }}
+          RELEASE_PACKAGE_TOKEN: ${{ secrets.RELEASE_PACKAGE_TOKEN }}
+        run: |
+          set -eu
+          version_tag="$(date -u +%Y.%m.%d)"
+          creds="greboid:$RELEASE_PACKAGE_TOKEN"
+          skopeo copy --all --format oci --dest-creds "$creds" \
+            "docker-archive:dist/${IMAGE_NAME}.tar" \
+            "docker://${PUBLISH_REF}:${version_tag}"
+          skopeo copy --all --format oci --dest-creds "$creds" \
+            "docker-archive:dist/${IMAGE_NAME}.tar" \
+            "docker://${PUBLISH_REF}:latest"
+          echo "published ${PUBLISH_REF}:${version_tag} (+ latest)"
