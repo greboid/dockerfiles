@@ -52,7 +52,7 @@ pipeline:
     with:
       packages: .
       output: apko
-  - name: Install the license                                                                                                                                                    
+  - name: Install the license
     runs: install -Dm644 LICENSE "${{targets.destdir}}/usr/share/licenses/${{package.name}}/LICENSE"
 
 test:

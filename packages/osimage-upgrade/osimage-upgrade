@@ -2,8 +2,6 @@
 set -eu
 
 staged=/run/composefs/staged-deployment
-# A second finalize of one deployment fails: bootc has already removed
-# loader/entries.staged.
 finalized=/run/osimage-upgrade.finalized
 
 usage() {
@@ -42,7 +40,6 @@ while [ "$n" -gt 0 ]; do
 done
 
 if [ "$passthrough" = true ]; then
-    # Neither mode leaves a deployment to finalize; bootc rejects --apply here.
     if [ "$apply" = true ]; then
         set -- "$@" --apply
     fi

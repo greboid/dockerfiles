@@ -1,2 +1,4 @@
 dist/
-keys/
+/keys/
+*.rsa
+*.rsa.pub

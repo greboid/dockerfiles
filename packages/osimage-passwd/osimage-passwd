@@ -1,77 +1,122 @@
 #!/bin/sh
-# Set or lock a local account password on a sealed-/etc osimage system.
-#
-# /etc/shadow is a bind mount of the per-machine copy in
-# /var/lib/osimage/etc/shadow (set up by the initramfs, see
-# 90osimage-state in osimage-kernel). passwd(1) cannot be used: it
-# writes a temporary file next to /etc/shadow and renames it into
-# place, which fails on the read-only /etc. This tool edits the /var
-# copy in place instead, keeping the inode the bind mount refers to.
-#
-# Usage: osimage-passwd [-l] [user]   (default user: root)
-#   -l  lock the account's password (no password login)
+# Set, clear, lock or unlock a local account password on a sealed-/etc
+# osimage system. Accepts the busybox passwd options.
 set -eu
 
 SHADOW=/var/lib/osimage/etc/shadow
+prog=${0##*/}
 
 die() {
-    echo "osimage-passwd: $*" >&2
+    echo "$prog: $*" >&2
     exit 1
 }
 
-lock=0
-if [ "${1:-}" = -l ]; then
-    lock=1
-    shift
-fi
-user=${1:-root}
+usage() {
+    cat >&2 <<EOF
+Usage: $prog [-a ALG] [-d | -l | -u] [USER]
 
-[ "$(id -u)" = 0 ] || die "must be run as root"
+Change USER's password (default: calling user)
+
+	-a ALG	des,md5,sha256,sha512 (default sha512)
+	-d	Set password to ''
+	-l	Lock (disable) account
+	-u	Unlock (enable) account
+EOF
+    exit "${1:-1}"
+}
+
+args=$*
+alg=sha512
+mode=set
+while getopts a:dluh opt; do
+    case "$opt" in
+        a) alg=$OPTARG ;;
+        d) [ "$mode" = set ] || usage; mode=clear ;;
+        l) [ "$mode" = set ] || usage; mode=lock ;;
+        u) [ "$mode" = set ] || usage; mode=unlock ;;
+        h) usage 0 ;;
+        *) usage ;;
+    esac
+done
+shift $((OPTIND - 1))
+[ $# -le 1 ] || usage
+
+case "$alg" in
+    des | md5 | sha256 | sha512) ;;
+    *) die "unknown algorithm: $alg" ;;
+esac
+
+if [ "$(id -u)" != 0 ]; then
+    echo "$prog: /etc/shadow is sealed on this system; passwords can only be changed as root" >&2
+    echo "$prog: run: doas $prog${args:+ $args}" >&2
+    exit 1
+fi
 [ -f "$SHADOW" ] || die "$SHADOW missing (initramfs without the osimage-state module?)"
 etc_ino=$(stat -c %d:%i /etc/shadow) && var_ino=$(stat -c %d:%i "$SHADOW") &&
     [ -n "$etc_ino" ] && [ "$etc_ino" = "$var_ino" ] ||
     die "/etc/shadow is not bound to $SHADOW; changes would not take effect"
-awk -F: -v u="$user" '$1 == u { found = 1 } END { exit !found }' "$SHADOW" ||
-    die "no such user in $SHADOW: $user"
 
-if [ "$lock" = 1 ]; then
-    hash='!'
+# Under doas the calling user is DOAS_USER, not root.
+if [ $# -eq 1 ]; then
+    user=$1
+elif [ -n "${DOAS_USER:-}" ]; then
+    user=$DOAS_USER
 else
-    [ -t 0 ] || die "a terminal is required to read the password"
-    trap 'stty echo' EXIT INT TERM
-    stty -echo
-    printf 'New password for %s: ' "$user"
-    read -r pw1
-    printf '\nRetype password: '
-    read -r pw2
-    printf '\n'
-    stty echo
-    trap - EXIT INT TERM
-    [ -n "$pw1" ] || die "empty password refused (use -l to lock instead)"
-    [ "$pw1" = "$pw2" ] || die "passwords do not match"
-    # Password goes through a pipe, never the argument list.
-    hash=$(printf '%s\n' "$pw1" | cryptpw -m sha512)
-    unset pw1 pw2
-    case "$hash" in
-        '$6$'*) ;;
-        *) die "cryptpw did not produce a SHA-512 hash" ;;
-    esac
+    user=$(id -un) || die "cannot determine the calling user; name one"
 fi
+current=$(awk -F: -v u="$user" '$1 == u { print $2; found = 1; exit } END { exit !found }' "$SHADOW") ||
+    die "unknown user $user"
+
+case "$mode" in
+    lock)
+        case "$current" in
+            '!'*) hash=$current ;;
+            *) hash="!$current" ;;
+        esac
+        ;;
+    unlock)
+        hash=${current#!}
+        [ -n "$hash" ] || die "unlocking $user would leave it with no password; set one instead"
+        ;;
+    clear)
+        hash=
+        ;;
+    set)
+        [ -t 0 ] || die "a terminal is required to read the password"
+        trap 'stty echo' EXIT INT TERM
+        stty -echo
+        printf 'New password for %s: ' "$user"
+        read -r pw1
+        printf '\nRetype password: '
+        read -r pw2
+        printf '\n'
+        stty echo
+        trap - EXIT INT TERM
+        [ -n "$pw1" ] || die "empty password refused (use -d to clear it)"
+        [ "$pw1" = "$pw2" ] || die "passwords do not match"
+        hash=$(printf '%s\n' "$pw1" | cryptpw -m "$alg")
+        unset pw1 pw2
+        case "$alg:$hash" in
+            sha512:'$6$'* | sha256:'$5$'* | md5:'$1$'* | des:?*) ;;
+            *) die "cryptpw did not produce a $alg hash" ;;
+        esac
+        ;;
+esac
 
 days=$(($(date +%s) / 86400))
 umask 077
 tmp="$SHADOW.osimage-passwd.$$"
 trap 'rm -f "$tmp"' EXIT INT TERM
-awk -F: -v OFS=: -v u="$user" -v h="$hash" -v d="$days" \
-    '$1 == u { $2 = h; $3 = d } { print }' "$SHADOW" > "$tmp"
+awk -F: -v OFS=: -v u="$user" -v h="$hash" -v d="$days" -v m="$mode" \
+    '$1 == u { $2 = h; if (m == "set" || m == "clear") $3 = d } { print }' "$SHADOW" > "$tmp"
 [ "$(wc -l < "$tmp")" = "$(wc -l < "$SHADOW")" ] || die "rewrite produced a different line count; aborting"
 
 cp -p "$SHADOW" "$SHADOW-"
-# In place: a rename would leave the bind mount on the old inode.
 cat "$tmp" > "$SHADOW"
 sync
-if [ "$lock" = 1 ]; then
-    echo "osimage-passwd: password for $user locked"
-else
-    echo "osimage-passwd: password for $user updated"
-fi
+case "$mode" in
+    lock) echo "$prog: password for $user locked" ;;
+    unlock) echo "$prog: password for $user unlocked" ;;
+    clear) echo "$prog: password for $user cleared" ;;
+    set) echo "$prog: password for $user changed" ;;
+esac

@@ -1,7 +1,7 @@
 package:
   name: buildah
-  version: 1.46.0
-  epoch: 1
+  version: 1.46.1
+  epoch: 0
   description: Tool for building OCI container images (source-built v1.45.1)
   target-architecture:
     - x86_64
@@ -45,8 +45,8 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 973a5d405cbd87ee7a40fba7f3237f2ddfa2176e
-      repository: https://github.com/containers/buildah
+      expected-commit: 2560f6018472520e26e5bc0cdb8170845927b01b
+      repository: https://github.com/podman-container-tools/buildah
       tag: v${{package.version}}
   - name: Build bin/buildah with the pinned Go toolchain
     runs: |
@@ -74,5 +74,5 @@ test:
 update:
   enabled: true
   github:
-    identifier: containers/buildah
+    identifier: podman-container-tools/buildah
     strip-prefix: v

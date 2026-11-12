@@ -13,13 +13,8 @@ package:
     runtime:
       - busybox-binsh=1.37.0-r31
       - kmod=34.2-r1
-      # udevd dlopen()s libkmod.so.2 for its module-autoload builtin; the
-      # library lives in kmod-libs, which nothing else pulls in
       - kmod-libs=34.2-r1
       - linux-pam=1.7.1-r2
-      # the util-linux mount/umount the -Dmount-path/-Dumount-path units
-      # exec (busybox's applets lack options systemd and bootc pass,
-      # e.g. umount -R)
       - mount=2.42.3-r1
       - umount=2.42.3-r1
       - util-linux=2.42.3-r1
@@ -69,29 +64,9 @@ pipeline:
       expected-sha256: 100fc873b848b9b0297d8a705e8e2ed326256c8483d9960ee1ffe264c8a5c3e3
   - name: Patch
     runs: |
-      # musl getopt() does not permute non-option arguments: repart's
-      # ext4 mkfs options from SYSTEMD_REPART_MKFS_OPTIONS_* (bootc
-      # passes -O verity) must precede the device node, or mkfs.ext4
-      # parses them as positionals ("invalid blocks '-O'").
       patch -p1 < patches/001-mkfs-util-extra-options-before-node.patch
   - name: Configure
     runs: |
-      # Flag set mirrors Alpine's aports systemd-boot recipe for the same
-      # systemd version (known-good musl configuration), with the network,
-      # login, hwdb, initrd and tmpfiles/sysusers components enabled for a
-      # full PID 1 system and everything outside that scope disabled.
-      # HAVE_DBUS (-Ddbus=enabled) additionally installs the broker
-      # policy/activation data files so that org.freedesktop.systemd1 is
-      # reachable through dbus-daemon (compile-only: libdbus is not
-      # linked). repart is enabled and requires libfdisk (fdisk.pc ships
-      # in util-linux-dev); an explicit enable turns a missing libfdisk
-      # into a hard configure error. No TPM/OpenSSL/cryptsetup needed for
-      # GPT/vfat/ext4 operation. Alpine keeps /usr/sbin separate from
-      # /usr/bin; split-bin=true includes it in the service PATH.
-      # lint.args permits systemd's matching /usr/sbin install layout.
-      # The *-path flags point units and PID 1 at the tools where Alpine
-      # actually installs them (/bin, /sbin); left unset they default to
-      # /usr/sbin or /usr/bin, where Alpine ships none of them.
       meson setup output \
         --prefix=/usr \
         --sysconfdir=/etc \
@@ -188,25 +163,9 @@ pipeline:
   - name: Install
     runs: |
       DESTDIR="${{targets.destdir}}" meson install -C output
-      # No /sbin/init entry point: the image boots with an explicit
-      # init=/usr/lib/systemd/systemd kernel argument. Alpine's /sbin is
-      # separate from systemd's /usr/sbin install directory.
       install -Dm 0644 LICENSE.LGPL2.1 \
         "${{targets.destdir}}/usr/share/licenses/${{package.name}}/LICENSE.LGPL2.1"
-      # Boot EFI artifacts ship in the systemd-boot / systemd-efistub
-      # subpackages; remove them from the main package to avoid conflicts.
       rm -rf "${{targets.destdir}}/usr/lib/systemd/boot"
-      # The repartitioner, its units and built-in definitions ship in the
-      # systemd-repart subpackage (moved out by that subpackage's
-      # pipeline, which runs after strip). Here we only remove upstream's
-      # boot-time enablement: systemd-repart.service is wanted by
-      # sysinit.target and initrd-root-fs.target and its socket by
-      # sockets.target. We only ever repartition via bootc install
-      # --run-repart, and the image ships /usr/lib/repart.d definitions,
-      # so keeping these links would repartition on every boot of the
-      # installed system or the live installer. The unit files stay
-      # (static) for explicit/invoked use; the removal is asserted in the
-      # subpackage pipeline.
       rm -f "${{targets.destdir}}/usr/lib/systemd/system/sysinit.target.wants/systemd-repart.service"
       rm -f "${{targets.destdir}}/usr/lib/systemd/system/initrd-root-fs.target.wants/systemd-repart.service"
       rm -f "${{targets.destdir}}/usr/lib/systemd/system/sockets.target.wants/systemd-repart.socket"
@@ -285,8 +244,6 @@ subpackages:
   - name: systemd-repart
     dependencies:
       runtime:
-        # Links /usr/lib/systemd/libsystemd-shared-262.so from the main
-        # package; must move in lockstep.
         - systemd=${{package.full-version}}
     pipeline:
       - name: Move the repartitioner, its units and built-in definitions out of the main package
@@ -299,20 +256,10 @@ subpackages:
              "${{targets.destdir}}/usr/lib/systemd/system/systemd-repart.socket" \
              "${{targets.destdir}}/usr/lib/systemd/system/systemd-repart@.service" \
              "${{targets.subpkgdir}}/usr/lib/systemd/system/"
-          # Built-in definitions for sysext/confext/portable factory
-          # images; our osimage repart.d profile ships in osimage-config.
           cp -r "${{targets.destdir}}/usr/lib/systemd/repart/definitions/." \
             "${{targets.subpkgdir}}/usr/lib/systemd/repart/definitions/"
           rm -rf "${{targets.destdir}}/usr/bin/systemd-repart" \
             "${{targets.destdir}}/usr/lib/systemd/repart"
-          # Copy from the main destdir (already stripped, with the
-          # install RUNPATH); removing it from the destdir above keeps the
-          # main package clean: its contents are finalized after
-          # subpackage pipelines.
-          # Boot-time enablement must not ship anywhere: upstream's wants
-          # links are removed from the main package (see Install); assert
-          # so a systemd upgrade that re-adds them fails the build
-          # instead of silently repartitioning disks at boot.
           d="${{targets.subpkgdir}}/usr/lib/systemd/system"
           test ! -e "$d/sysinit.target.wants/systemd-repart.service"
           test ! -e "$d/initrd-root-fs.target.wants/systemd-repart.service"
@@ -336,8 +283,6 @@ subpackages:
             test -f /usr/lib/systemd/system/systemd-repart@.service
             test -f /usr/lib/systemd/system/systemd-repart.socket
             test -d /usr/lib/systemd/repart/definitions
-            # Boot-time enablement must not have shipped in this package
-            # either (no wants links to the moved units).
             d=/usr/lib/systemd/system
             test ! -e "$d/sysinit.target.wants/systemd-repart.service"
             test ! -e "$d/initrd-root-fs.target.wants/systemd-repart.service"

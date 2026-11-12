@@ -10,8 +10,6 @@ package:
         - "*"
       license: MIT
   dependencies:
-    # tree/etc/motd overrides the Alpine default; apko's file conflict
-    # check is not cleared by naming alpine-baselayout-data instead.
     replaces:
       - alpine-baselayout
     runtime:

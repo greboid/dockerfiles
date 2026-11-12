@@ -1,18 +1,5 @@
 #!/bin/sh
 # Roll back to the previous deployment after a failed boot assessment.
-#
-# Started through OnFailure= on systemd-boot-check-no-failures.service:
-# the boot reached userspace but failed the health gate.  `bootc rollback` moves
-# the previous deployment back to the primary boot entry; the boot-count
-# hook then arms it with fresh boot attempts.
-#
-# Loop guard: /var is shared across deployments through the stateroot.
-# Each incident records the pair (rolled-back-from, rolled-back-to) as
-# a flag file named after the failed deployment containing the target's
-# digest.  When the booted deployment is either end of a recorded
-# incident, the gate failure is left for manual intervention -- rolling
-# back again would only bounce between the two unhealthy deployments.
-# Delete the flag files to re-arm.
 
 PATH=/usr/bin:/bin:/usr/sbin:/sbin
 export PATH
@@ -40,9 +27,6 @@ for f in "$flagdir"/*; do
     fi
 done
 
-# The rollback target is the one non-booted deployment: the BLS entry
-# whose composefs digest differs from the booted one, on the ESP the
-# system booted from (never an attached installer USB's ESP).
 target=
 esp=$(booted_esp_device)
 if [ -z "$esp" ]; then
@@ -77,8 +61,6 @@ if [ -z "$target" ]; then
     exit 1
 fi
 
-# Record the incident before rolling back: a crash between rollback and
-# reboot must not lead to a rollback loop.
 : >"$flagdir/$digest" || { log "cannot write $flagdir/$digest"; exit 1; }
 echo "$target" >"$flagdir/$digest"
 

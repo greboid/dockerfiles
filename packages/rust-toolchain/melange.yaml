@@ -53,9 +53,6 @@ pipeline:
       v="${{package.version}}"
       dest="${{targets.destdir}}/usr"
       install -d "$dest"
-      # Each dist tarball nests its component under a versioned top-level
-      # directory, alongside installer scaffolding; extracting just the
-      # component subtree overlays the three into one prefix.
       /bin/tar -xJf "cargo-$v-$arch.tar.xz" --no-same-owner \
         --strip-components=2 --exclude='*/manifest.in' \
         --exclude='*/etc' --exclude='*/etc/*' \

@@ -41,8 +41,6 @@ pipeline:
       expected-sha256: 839d21eb4bd27bb0ee40d74c9da46df088c2e1425fcd8c3ea62b7e3a3dd28a91
   - name: Configure
     runs: |
-      # dracut-cpio (rust) is optional: plain cpio is the default and the
-      # enhanced cpio is not needed for our initramfs.
       ./configure \
         --prefix=/usr \
         --sysconfdir=/etc \

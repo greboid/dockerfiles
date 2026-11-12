@@ -19,21 +19,16 @@ jobs:
         run: |
           set -eu
           curl -fsSL --retry 3 -o key.rsa.pub "${ORG_REPO%/*/*}/key"
-          hash=$(openssl pkey -pubin -in key.rsa.pub -outform DER 2>/dev/null | sha256sum | cut -d' ' -f1)
-          mv key.rsa.pub "packages@${hash}.rsa.pub"
-          cp "packages@${hash}.rsa.pub" "/etc/apk/keys/packages@${hash}.rsa.pub"
+          hash=$(openssl pkey -pubin -in key.rsa.pub -outform DER | sha256sum | cut -d' ' -f1)
+          mv key.rsa.pub "/etc/apk/keys/packages@$hash.rsa.pub"
           printf '%s\n' \
-            "--keyring-append $PWD/packages@${hash}.rsa.pub" \
+            "--keyring-append /etc/apk/keys/packages@$hash.rsa.pub" \
             "--repository-append $ORG_REPO" >> org-repo.args
           echo "$ORG_REPO" >> /etc/apk/repositories
           apk update
-          echo "trusting index key packages@$hash"
 
       - name: Collect optional lint overrides
         run: |
-          # A repo may ship a lint.args file (one CLI argument per line) to
-          # relax or tighten melange's linters for deliberate violations,
-          # e.g. osimage-kernel's non-usrmerged /lib/modules symlink.
           touch lint.args
 
       - name: Install melange from the org repository
@@ -116,7 +111,7 @@ jobs:
               --user "greboid:$RELEASE_PACKAGE_TOKEN" \
               -X POST "$GITHUB_SERVER_URL/api/v1/packages/$owner/alpine/$name/-/link/$repo")
             case "$code" in
-              201|400) ;; # 400 = already linked
+              201|400) ;;
               *) echo "unexpected link status $code for $name" >&2; exit 1 ;;
             esac
             echo "linked $name to $owner/$repo"

@@ -3,20 +3,19 @@ archs:
 
 contents:
   keyring:
-    - keys/packages@f3acd02d7d98309c4ae1d1bf92e58fe2673383ee9b816cb8b0ef8a5eac56c6bc.rsa.pub
     - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
   repositories:
     - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
     - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
     - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
   packages:
-    - ca-certificates-bundle=20261020-r3
+    - ca-certificates-bundle=20261020-r4
     - tzdata=2026f-r0
     - os-release=3.24.2-r0
-    - forgejo-runner=13.2.1-r2
-    - buildah=1.46.0-r1
+    - forgejo-runner=13.2.1-r3
+    - buildah=1.46.1-r0
     - fuse-overlay-storage-conf=1.0.0-r0
-    - git=2.54.0-r0
+    - git=2.54.1-r0
     - fuse-overlayfs=1.16-r0
     - gnupg=2.4.9-r1
 

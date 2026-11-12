@@ -3,7 +3,6 @@ archs:
 
 contents:
   keyring:
-    - keys/packages@f3acd02d7d98309c4ae1d1bf92e58fe2673383ee9b816cb8b0ef8a5eac56c6bc.rsa.pub
     - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
   repositories:
     - https://dl-cdn.alpinelinux.org/alpine/v3.24/main

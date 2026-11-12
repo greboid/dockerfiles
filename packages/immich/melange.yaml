@@ -94,8 +94,6 @@ pipeline:
       curl -sfL --retry 3 -o countryInfo.txt https://download.geonames.org/export/dump/countryInfo.txt
       curl -sfL --retry 3 -o ne_10m_admin_0_countries.geojson https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_0_countries.geojson
       echo "239eec57ac17f100a11e2536cffc56752c318b50ae765b0918ff7aab4ce8f255  ne_10m_admin_0_countries.geojson" | sha256sum -c -
-      # geonames regenerates these files, so exact hashes go stale; verify
-      # structure instead of content.
       unzip -t cities500.zip
       [ "$(unzip -p cities500.zip cities500.txt | wc -l)" -gt 200000 ]
       [ "$(wc -l < admin1CodesASCII.txt)" -gt 3000 ]
@@ -144,9 +142,6 @@ test:
         node -e 'require("/usr/src/app/server/node_modules/sharp")("/tmp/smoke.heic").resize(32).jpeg().toBuffer().then((b) => { if (b.length === 0) { throw new Error("empty jpeg"); } console.log("HEIC smoke test ok"); });' | grep -q "HEIC smoke test ok"
     - name: Transcodes with nice and the tonemapx filter
       runs: |
-        # Immich hardcodes fluent-ffmpeg niceness 10 (nice must resolve) and
-        # HDR thumbnails require jellyfin's tonemapx filter — the two
-        # runtime quirks that motivated the legacy image's tooling.
         nice -n 10 true
         ffmpeg -loglevel error -f lavfi -i testsrc2=s=256x144:r=5 -t 1 -pix_fmt p010le -c:v libx265 -x265-params lossless=1 -color_primaries bt2020 -color_trc smpte2084 -colorspace bt2020nc -y /tmp/smoke-hdr.mp4
         ffmpeg -loglevel error -i /tmp/smoke-hdr.mp4 -vf 'tonemapx=tonemap=hable:desat=0:p=bt709:t=bt709:m=bt709:r=pc:peak=100:format=yuv420p' -frames:v 1 -y /tmp/smoke-tonemap.jpg

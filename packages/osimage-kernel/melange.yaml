@@ -162,15 +162,12 @@ test:
           test ! -e "/usr/lib/modules/$kver/$d" || {
             echo "untrimmed module subtree: $d" >&2; exit 1; }
         done
-        # one modules.dep line per shipped module: metadata regenerated
-        # for the reduced tree, not left over from Alpine's full tree
         nk=$(find "/usr/lib/modules/$kver/kernel" -name '*.ko.gz' | wc -l)
         nd=$(grep -c '\.ko' "/usr/lib/modules/$kver/modules.dep")
         test "$nk" = "$nd" || {
           echo "modules.dep ($nd lines) does not match $nk modules" >&2
           exit 1
         }
-        # a representative kept driver must still be resolvable
         modprobe -d / -S "$kver" --show-depends virtio_net >/dev/null
     - name: Initramfs subpackages carry the bootc payload
       runs: |
@@ -193,7 +190,6 @@ test:
           hook=$(lsinitrd -f var/lib/dracut/hooks/pre-pivot/70-etc-state.sh "/usr/lib/modules/$kver/$img")
           echo "$hook" | grep -q 'mount -o remount,bind,ro'
           echo "$hook" | grep -q 'new_machine_id >'
-          # later images' accounts are appended to the per-machine shadow
           echo "$hook" | grep -q '!($1 in seen)'
         done
         grep -q sbin/dmsquash-live-root /tmp/live-contents

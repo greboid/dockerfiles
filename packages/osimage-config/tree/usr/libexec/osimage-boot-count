@@ -1,46 +1,5 @@
 #!/bin/sh
 # Stamp systemd-boot boot-counting suffixes onto bootc composefs BLS entries.
-#
-# bootc installs Type 1 BLS entries without boot-counting suffixes, so
-# systemd-boot never counts boot attempts: a broken staged deployment is
-# selected as the default entry forever.  This hook applies the loader's
-# own counting scheme (filenames ending in +<tries>-<done>) to the
-# entries bootc manages:
-#
-#   - the entry whose composefs digest matches the booted one is left
-#     alone: reaching this script proves nothing about its health. Its
-#     counter (if any) is removed only by systemd-bless-boot.service,
-#     which runs after boot-complete.target, i.e. after the
-#     systemd-boot-check-no-failures health gate passed.  Stripping it
-#     here (multi-user.target, or the shutdown-path finalize run) would
-#     mark a deployment good before assessment: one that hangs or
-#     crashes between multi-user and boot-complete would stay the
-#     default entry forever instead of falling back,
-#   - every other bootc entry (staged deployment or rollback target)
-#     gets a +2-0 suffix (two boot attempts) when it has none.  Counters
-#     are never reset here: freshening an expired counter on every boot
-#     would make the broken deployment the default again and boot-loop
-#     the machine.
-#
-# Entries come in three shapes: Type 1 carries the digest in its options
-# line; a sealed entry is a wrapper .conf pointing at the deployment's
-# UKI via `uki` (systemd >= 258) or the legacy `efi` key, and the digest
-# is read from the bootc_composefs-<digest>.efi filename - it is the
-# same digest the UKI embeds on the cmdline. Parsing is shared with the
-# other boot assessment scripts through /usr/libexec/osimage-boot-common.
-#
-# Only the ESP the running system booted from is touched: an attached
-# installer USB or a second installed disk has its own ESP that must
-# never gain or lose counters.
-#
-# Runs at boot (osimage-boot-count.service, self-healing for entries
-# that missed stamping) and after every bootc bootloader-entry exchange:
-# via the drop-in on bootc-finalize-staged.service, whose ExecStop runs
-# after `bootc composefs-finalize-staged`.  `bootc rollback` exchanges
-# the entries itself, so it must be followed by an explicit run.
-#
-# Failure to stamp is logged but never fails the unit: a missing or
-# unmountable ESP must not fail the boot assessment.
 
 PATH=/usr/bin:/bin:/usr/sbin:/sbin
 export PATH
@@ -55,8 +14,6 @@ log() { echo "osimage-boot-count: $*"; }
 
 booted_digest=$(booted_composefs_digest)
 if [ -z "$booted_digest" ]; then
-    # Direct-kernel boots (installer) and non-composefs systems have no
-    # counted deployments; nothing to do.
     log "no composefs.digest on the kernel cmdline; nothing to do"
     exit 0
 fi
@@ -77,17 +34,10 @@ stamp_entry() {
             continue
         fi
         if [ "$edigest" = "$booted_digest" ]; then
-            # blessing is systemd-bless-boot's job (see header)
             [ "$counter" = yes ] &&
                 log "booted entry $name still counted; left for systemd-bless-boot"
             continue
         elif [ "$counter" = no ] && [ ! -e "$FLAGDIR/$edigest" ]; then
-            # Never re-arm a deployment that an auto-rollback already
-            # walked back: the boot-time run would otherwise give the
-            # broken deployment fresh attempts on every healthy boot of
-            # its rollback target.  Applies to the finalize run too: a
-            # re-deploy of the exact same digest needs the flag deleted
-            # (or a new digest) to regain counted attempts.
             mv "$f" "$d/${name%.conf}+$TRIES-0.conf" &&
                 log "staged entry $name stamped +$TRIES-0"
         fi

@@ -10,7 +10,6 @@ if ! mkdir -p "$STATE" 2> /dev/null; then
 fi
 chmod 0755 "$STATE"
 
-# A random machine ID in systemd's format: 32 lowercase hex digits.
 new_machine_id() {
     IFS=- read -r _a _b _c _d _e < /proc/sys/kernel/random/uuid || return 1
     _id="$_a$_b$_c$_d$_e"

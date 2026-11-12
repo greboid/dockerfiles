@@ -1,5 +1,4 @@
 dist/
-keys/local.rsa
-keys/local.rsa.pub
-keys/packages.rsa
-keys/packages.rsa.pub
+/keys/
+*.rsa
+*.rsa.pub

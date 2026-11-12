@@ -1,7 +1,3 @@
-# Copy to .depbot.yaml in each image repo — see build-common README.
-# min_age_days: 0 org-wide (migration-plan decision 7). The image
-# definitions' versioned pins live in apko.yaml, so apko joins the
-# (now genuinely inert) apk entry from the Dockerfile era.
 min_age_days: 0
 
 automerge:

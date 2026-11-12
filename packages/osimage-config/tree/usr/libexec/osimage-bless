@@ -1,14 +1,5 @@
 #!/bin/sh
 # Deterministic ESP mounting for systemd-bless-boot.
-#
-# bless's built-in $BOOT partition scan depends on udev blkid
-# properties that are not reliably populated this early after
-# multi-user on fast boots ("Couldn't find $BOOT partition"), so mount
-# the ESP ourselves and point bless at the mount point. Only the ESP
-# the system booted from is blessed: an attached installer USB or a
-# second installed disk has its own ESP that must never be blessed.
-# ESP selection is shared with the other boot assessment scripts
-# through /usr/libexec/osimage-boot-common.
 
 PATH=/usr/bin:/bin:/usr/sbin:/sbin
 export PATH

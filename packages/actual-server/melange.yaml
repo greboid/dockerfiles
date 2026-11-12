@@ -43,30 +43,19 @@ pipeline:
       tag: v${{package.version}}
   - name: Put the repo-pinned yarn on PATH
     runs: |
-      # yarn isn't on npm as 4.x and corepack would fetch it; the checkout
-      # ships the exact release bundle under .yarn/releases. lage shells out
-      # to `yarn`, so it must be on PATH (/usr/local/bin doesn't exist here).
       ln -sf /home/build/.yarn/releases/yarn-4.17.1.cjs /usr/bin/yarn
       yarn --version
   - name: Install workspace dependencies
     runs: |
-      # No build scripts: every native dependency (better-sqlite3, argon2,
-      # bcrypt) ships musl prebuilds inside its npm tarball and resolves them
-      # at require time; skipping scripts also skips the electron download.
       export NODE_OPTIONS=--max-old-space-size=8192 YARN_ENABLE_SCRIPTS=0
       yarn install
   - name: Clone and prune translations
     runs: |
-      # Same as bin/package-browser, minus lage (its glob-hasher native
-      # module has no musl build), which the next step works around.
       git clone --depth 1 https://github.com/actualbudget/translations \
         packages/desktop-client/locale
       packages/desktop-client/bin/remove-untranslated-languages
   - name: Build the web client and the server
     runs: |
-      # lage's `build:browser --to=@actual-app/web` task graph, run by hand:
-      # the build scripts of @actual-app/web's workspace deps in dependency
-      # order, then the browser build, then the sync-server vite build.
       export NODE_OPTIONS=--max-old-space-size=8192
       yarn workspace @actual-app/crdt run build
       yarn workspace @actual-app/core run build
@@ -77,16 +66,10 @@ pipeline:
     runs: |
       export NODE_OPTIONS=--max-old-space-size=8192
       yarn workspaces focus @actual-app/sync-server --production
-      # Replace the workspace symlinks with the built artifacts, like the
-      # upstream Dockerfile: the server resolves the web UI through
-      # node_modules/@actual-app/web/build.
       rm -rf node_modules/@actual-app/web node_modules/@actual-app/sync-server
       mkdir -p node_modules/@actual-app/web
       cp packages/desktop-client/package.json node_modules/@actual-app/web/package.json
       cp -a packages/desktop-client/build node_modules/@actual-app/web/build
-      # The native modules ship prebuilds for every platform; keep only the
-      # x86_64 musl ones so foreign ELFs don't leak into the apk's scanned
-      # dependencies (see the immich recipe's prebuild prune).
       find node_modules -type f -name '*.node' ! -name '*linuxmusl-x64*' \
         ! -path '*/prebuilds/linux-x64/*' -delete
       find node_modules -type f -name '*.node' -path '*/prebuilds/linux-x64/*' \

@@ -1,20 +1,6 @@
 # alpine-runner
 
-Container image `git.mouse-lake.ts.net/containers/alpine-runner` — the CI
-runner image Forgejo's `runs-on: alpine` label maps to. Built with apko from
-the `packages` organisation's Alpine repository: it installs the org's
-`fuse-overlay-storage-conf` package (the overlay-over-fuse storage
-configuration), `buildah` (org package, fuse-overlayfs mount program), plus
-git, curl, wget, openssl and gnupg for the toolkit actions.
+Forgejo Actions runner image for the `alpine` label, with buildah, git, curl and gnupg.
 
-- Tags: `:YYYY.M.D-alpineX.Y` and `:latest`, pushed on every `master` build
-- Builds run on push to `master` via the shared workflow in `containers/build-common`
-- Package version pins in `apko.yaml` arrive as depbot PRs (`.depbot.yaml`)
-
-## Local build
-
-The repository key is committed under `keys/`, so a plain apko build works:
-
-```sh
-apko build apko.yaml alpine-runner:local image.tar
-```
+Built with apko from the `packages` Alpine repository and published to
+`git.mouse-lake.ts.net/containers/alpine-runner`.

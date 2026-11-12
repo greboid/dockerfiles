@@ -1,8 +1,8 @@
 package:
   name: osimage-passwd
   version: 1.0.0
-  epoch: 0
-  description: osimage password tooling (set or lock local account passwords on a sealed /etc)
+  epoch: 1
+  description: osimage password tooling (busybox-compatible passwd for a sealed /etc)
   target-architecture:
     - x86_64
   copyright:
@@ -28,6 +28,8 @@ pipeline:
   - name: Install the password tool
     runs: |
       install -Dm 0755 osimage-passwd "${{targets.destdir}}/usr/bin/osimage-passwd"
+      # Takes precedence over the busybox applet link apko would create.
+      ln -s osimage-passwd "${{targets.destdir}}/usr/bin/passwd"
 
 test:
   environment:
@@ -45,10 +47,16 @@ test:
     - name: Tool is present and refuses to run outside an osimage system
       runs: |
         test -x /usr/bin/osimage-passwd
+        test "$(readlink /usr/bin/passwd)" = osimage-passwd
+        /usr/bin/passwd -h 2>&1 | grep -q 'Usage: passwd'
+        if /usr/bin/osimage-passwd -a bogus 2> err; then
+          exit 1
+        fi
+        grep -q 'unknown algorithm' err
         if /usr/bin/osimage-passwd 2> err; then
           exit 1
         fi
-        grep -Eq 'must be run as root|/var/lib/osimage/etc/shadow missing' err
+        grep -Eq 'only be changed as root|/var/lib/osimage/etc/shadow missing' err
 
 update:
   enabled: false

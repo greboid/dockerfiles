@@ -1,7 +1,7 @@
 package:
   name: irc-notifier
   version: 1.0.6
-  epoch: 20
+  epoch: 21
   description: irc-bot plugin relaying Igloo push notifications to IRC
   target-architecture:
     - x86_64
@@ -12,7 +12,7 @@ package:
       license: MIT
   dependencies:
     runtime:
-      - ca-certificates-bundle=20261020-r3
+      - ca-certificates-bundle=20261020-r4
       - tzdata=2026f-r0
 
 environment:
@@ -25,10 +25,10 @@ environment:
       - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
     packages:
       - busybox=1.37.0-r31
-      - ca-certificates=20261020-r3
-      - git=2.54.0-r0
-      - go=1.27.4-r0
-      - go-licenses=2.0.1-r17
+      - ca-certificates=20261020-r4
+      - git=2.54.1-r0
+      - go=1.27.4-r1
+      - go-licenses=2.0.1-r18
       - os-release=3.24.2-r0
 
 pipeline:

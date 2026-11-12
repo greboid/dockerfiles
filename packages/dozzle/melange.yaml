@@ -1,7 +1,7 @@
 package:
   name: dozzle
   version: 11.4.2
-  epoch: 1
+  epoch: 2
   description: Real-time log viewer for Docker containers with a web interface
   target-architecture:
     - x86_64
@@ -12,7 +12,7 @@ package:
       license: MIT
   dependencies:
     runtime:
-      - ca-certificates-bundle=20261020-r3
+      - ca-certificates-bundle=20261020-r4
       - tzdata=2026f-r0
 
 environment:
@@ -25,10 +25,10 @@ environment:
       - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
     packages:
       - busybox=1.37.0-r31
-      - ca-certificates=20261020-r3
-      - git=2.54.0-r0
-      - go=1.27.4-r0
-      - go-licenses=2.0.1-r17
+      - ca-certificates=20261020-r4
+      - git=2.54.1-r0
+      - go=1.27.4-r1
+      - go-licenses=2.0.1-r18
       - nodejs=24.22.1-r1
       - npm=11.12.1-r0
       - openssl=3.5.9-r0
@@ -50,16 +50,10 @@ pipeline:
       rm shared_request.csr
   - name: Install bun
     runs: |
-      # bun isn't packaged for alpine; install the version pinned in
-      # package.json's packageManager field from npm instead.
       npm install -g bun@1.4.3
       bun --version
   - name: Build the web UI
     runs: |
-      # bun's napi-rs loaders (rolldown, tailwind oxide) detect musl by
-      # reading /usr/bin/ldd as text, but the workspace has none, so they
-      # fall back to process.report, which under bun claims glibc, and
-      # pick glibc bindings that bun then refuses to load.
       if [ ! -e /usr/bin/ldd ]; then
         printf '#!/bin/sh\nexec /lib/ld-musl-x86_64.so.1 --version\n' > /usr/bin/ldd
         chmod +x /usr/bin/ldd

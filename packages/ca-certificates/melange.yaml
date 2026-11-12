@@ -42,8 +42,6 @@ pipeline:
   - name: Install the certificates and tools
     runs: |
       make install DESTDIR="${{targets.destdir}}"
-      # The usrmerge linter requires binaries in /usr/bin; upstream installs
-      # update-ca-certificates into /usr/sbin.
       mv "${{targets.destdir}}"/usr/sbin/update-ca-certificates \
         "${{targets.destdir}}"/usr/bin/
       rmdir "${{targets.destdir}}"/usr/sbin
@@ -79,9 +77,6 @@ pipeline:
   - uses: strip
     with:
       opts: -s
-  # No license file is installed: upstream ships none (the license is a
-  # statement over certdata.txt and the bundled scripts) and neither the
-  # previously published bundle nor Alpine's own apk contain one.
 
 subpackages:
   - name: ca-certificates-bundle

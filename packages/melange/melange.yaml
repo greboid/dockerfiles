@@ -49,12 +49,6 @@ pipeline:
         patches/006-bwrap-guest-modes.patch
         patches/007-forgejo-update-monitor.patch
         patches/008-embedded-org-pipelines.patch
-  # melange resolves its build guests through chainguard.dev/apko as pinned
-  # by its go.mod, so the apko patch series never reaches it: check out
-  # exactly that tag, apply the forgejo index patch (byte-identical with the
-  # apko package's patches/007), and replace the module with that tree.
-  # Keep tag/expected-commit in lockstep with the chainguard.dev/apko pin
-  # in the melange source's go.mod; depbot bumps them.
   - name: Check out the apko tag pinned by melange's go.mod
     uses: git-checkout
     with:
@@ -66,11 +60,6 @@ pipeline:
     working-directory: apko-lib
     with:
       patches: ../patches/apko/007-index-head-405-fallback.patch
-  # A disk replace skips module verification, so go.sum stays untouched.
-  # The melange runner resets PATH, and go=1.27.1-r1 is the local
-  # source-built toolchain installed at the legacy /usr/local/go layout
-  # (Alpine v3.24 ships only go 1.26.8, older than the go 1.27.0 that
-  # melange's go.mod requires): put that tree on PATH and GOROOT explicitly.
   - name: Replace the apko module with the patched tree
     runs: |
       export PATH="/usr/local/go/bin:$PATH" GOROOT=/usr/local/go

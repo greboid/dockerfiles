@@ -1,7 +1,7 @@
 package:
   name: bootc
   version: 1.17.4
-  epoch: 0
+  epoch: 1
   description: Bootable container images - bootc for Alpine (no SELinux)
   target-architecture:
     - x86_64
@@ -13,7 +13,7 @@ package:
     runtime:
       - ostree=2025.7-r1
       - pcre2
-      - ca-certificates-bundle=20261020-r3
+      - ca-certificates-bundle=20261020-r4
 
 environment:
   contents:
@@ -26,8 +26,8 @@ environment:
     packages:
       - os-release=3.24.2-r0
       - busybox=1.37.0-r31
-      - ca-certificates-bundle=20261020-r3
-      - rust-toolchain=1.98.1-r1
+      - ca-certificates-bundle=20261020-r4
+      - rust-toolchain=1.98.1-r2
       - gcc=15.2.0-r5
       - musl-dev=1.2.6-r3
       - pkgconf=2.5.1-r0
@@ -53,8 +53,6 @@ pipeline:
       zstd -d -c bootc-${{package.version}}.tar.zstd | tar -x
       zstd -d -c bootc-${{package.version}}-vendor.tar.zstd | tar -x -C bootc-${{package.version}}
       test -d bootc-${{package.version}}/vendor
-      # cargo only reads .cargo/config.toml; merge in the vendored-sources
-      # configuration shipped as .cargo/vendor-config.toml.
       cat bootc-${{package.version}}/.cargo/vendor-config.toml >> \
         bootc-${{package.version}}/.cargo/config.toml
       grep -q vendored-sources bootc-${{package.version}}/.cargo/config.toml
@@ -64,14 +62,7 @@ pipeline:
         patches/002-esp-mount-iocharset-ascii.patch
   - name: Build
     runs: |
-      # Alpine has no SELinux; drop the default selinux feature and keep
-      # install-to-disk so `bootc install` can lay down disks. The workspace
-      # xtask tooling does not build on musl, so build the shipped binaries
-      # directly. PCRE2_SYS_STATIC=0 links the system pcre2.
       cd bootc-${{package.version}}
-      # Dynamic musl binary (matches the rest of the org's packages); the
-      # toolchain otherwise defaults to static-pie, which cannot link the
-      # dynamic ostree/glib stack.
       RUSTFLAGS="-C target-feature=-crt-static" PCRE2_SYS_STATIC=0 \
         cargo build --release --offline \
         --no-default-features --features install-to-disk \
@@ -93,9 +84,6 @@ pipeline:
         "$destdir/usr/lib/bootc/initramfs-setup"
       install -Dm 0755 crates/cli/bootc-generator-stub \
         "$destdir/usr/lib/systemd/system-generators/bootc-systemd-generator"
-      # Fedora ships the stub with #!/bin/bash; Alpine base images have no
-      # bash (busybox sh runs the stub fine), and a missing interpreter
-      # makes the generator fail on every boot.
       sed -i '1s|^#!/bin/bash$|#!/bin/sh|' \
         "$destdir/usr/lib/systemd/system-generators/bootc-systemd-generator"
       install -d -m 0755 "$destdir/usr/lib/dracut/modules.d/51bootc"
@@ -110,8 +98,6 @@ pipeline:
         "$destdir/usr/share/doc/bootc/baseimage/base/sysroot"
       install -Dm 0644 baseimage/base/usr/lib/ostree/prepare-root.conf \
         "$destdir/usr/share/doc/bootc/baseimage/base/usr/lib/ostree/prepare-root.conf"
-      # The reference base carries its own ostree symlink and sysroot dir;
-      # bootc's lint recurses into this tree and expects both.
       cp -PfT baseimage/base/ostree \
         "$destdir/usr/share/doc/bootc/baseimage/base/ostree"
       cp -Prf baseimage/dracut \

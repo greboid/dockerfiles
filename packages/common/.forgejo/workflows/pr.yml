@@ -31,9 +31,6 @@ jobs:
 
       - name: Collect optional lint overrides
         run: |
-          # A repo may ship a lint.args file (one CLI argument per line) to
-          # relax or tighten melange's linters for deliberate violations,
-          # e.g. osimage-kernel's non-usrmerged /lib/modules symlink.
           touch lint.args
 
       - name: Install melange from the org repository
