@@ -1,7 +1,7 @@
 package:
   name: osimage-config
   version: 1.0.0
-  epoch: 21
+  epoch: 23
   description: OS configuration for osimage bootc images (baked systemd enablement, boot kargs, boot assessment)
   target-architecture:
     - x86_64
@@ -29,6 +29,7 @@ pipeline:
   - name: Install the osimage configuration tree
     runs: |
       cp -a tree/. "${{targets.destdir}}/"
+      chmod 0750 "${{targets.destdir}}/etc/doas.d"
 
   - name: Bake the systemd enablement symlinks
     runs: |
@@ -120,6 +121,10 @@ pipeline:
       grep -q '^DefaultEnvironment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin$' "${{targets.destdir}}/usr/lib/systemd/system.conf.d/20-osimage-path.conf"
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/autovt@.service")" = "/usr/lib/systemd/system/getty@.service"
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/multi-user.target.wants/systemd-networkd.service")" = "/usr/lib/systemd/system/systemd-networkd.service"
+      test "$(stat -c %a "${{targets.destdir}}/etc/doas.d")" = 750
+      grep -q '^permit nopass :wheel cmd tailscale$' "${{targets.destdir}}/etc/doas.d/osimage.conf"
+      grep -q '^auth *sufficient *pam_rssh.so auth_key_file=/etc/osimage/authorized_keys/${user}.keys$' "${{targets.destdir}}/etc/pam.d/doas"
+      test -s "${{targets.destdir}}/etc/osimage/authorized_keys/greboid.keys"
 
 test:
   environment:

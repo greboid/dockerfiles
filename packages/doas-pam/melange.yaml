@@ -1,0 +1,85 @@
+package:
+  name: doas-pam
+  version: 6.8.2
+  epoch: 0
+  description: OpenDoas built against linux-pam (Alpine doas is built without PAM)
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: ISC
+  checks:
+    disabled:
+      - setuidgid
+  dependencies:
+    replaces:
+      - doas
+    runtime:
+      - linux-pam=1.7.1-r2
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - os-release=3.24.2-r0
+      - build-base=0.5-r4
+      - ca-certificates-bundle=20261020-r4
+      - bison=3.8.2-r3
+      - linux-pam-dev=1.7.1-r2
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://github.com/Duncaen/OpenDoas/archive/v${{package.version}}.tar.gz
+      expected-sha512: 4a93ff477413c859ba2702e688fa4f83248fff85e61e12336838a1e9aa1a8d9963a9782e4bc5e58e8d04b86c2c8ceb6b235ae9d3b32b3e548a2514a43653137d
+  - uses: patch
+    with:
+      patches: patches/configuration-directory.patch patches/manpage-example-path.patch patches/change-PATH.patch patches/rowhammer.patch
+  - name: Use the Alpine PAM stack
+    runs: cp files/doas.pam pam.d__doas__linux
+  - runs: |
+      ./configure \
+        --prefix=/usr \
+        --pamdir=/usr/lib/pam.d \
+        --with-pam \
+        --with-timestamp \
+        --with-doas-confdir
+      grep -q '^#define USE_PAM' config.h
+      make
+  - runs: |
+      install -D -m 4755 doas "${{targets.destdir}}"/usr/bin/doas
+      install -D -m 644 pam.d__doas__linux "${{targets.destdir}}"/usr/lib/pam.d/doas
+      install -d -m 750 "${{targets.destdir}}"/etc/doas.d
+      install -m 640 files/doas.conf -t "${{targets.destdir}}"/etc/
+      test "$(stat -c %a "${{targets.destdir}}"/usr/bin/doas)" = 4755
+  - uses: strip
+
+test:
+  environment:
+    contents:
+      keyring:
+        - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+        - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-6165ee59.rsa.pub
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - busybox=1.37.0-r31
+  pipeline:
+    - runs: |
+        test -f /usr/lib/pam.d/doas
+        test -x /usr/bin/doas
+        test -f /etc/doas.conf
+        grep -q libpam.so /usr/bin/doas
+
+update:
+  enabled: true
+  github:
+    identifier: Duncaen/OpenDoas
+    strip-prefix: v

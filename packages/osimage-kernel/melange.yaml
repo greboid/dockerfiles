@@ -1,7 +1,7 @@
 package:
   name: osimage-kernel
   version: 7.1.5
-  epoch: 11
+  epoch: 13
   description: Alpine linux-stable kernel repacked into the bootc /usr/lib/modules layout, trimmed for headless servers
   target-architecture:
     - x86_64
@@ -27,11 +27,13 @@ environment:
       - busybox=1.37.0-r31
       - bash=5.3.9-r1
       - kmod=34.2-r1
-      - dracut=111-r2
+      - dracut=112-r1
       - bootc=1.17.3-r2
-      - osimage-config=1.0.0-r16
-      - systemd=262.1-r5
+      - osimage-config=1.0.0-r21
+      - systemd=262.1-r7
       - lsblk=2.42.3-r1
+      - findmnt=2.42.3-r1
+      - util-linux-login=2.42.3-r1
       - device-mapper=2.03.35-r3
       - blkid=2.42.3-r1
       - linux-stable=7.1.5-r0
@@ -82,17 +84,11 @@ pipeline:
         "$moddir/kernel/fs/jffs2"
       depmod -b "${{targets.destdir}}" "$kver"
 
-  - name: Install the osimage dracut modules and bootc initramfs config
+  - name: Install the osimage dracut modules
     runs: |
       cp -a dracut/90bootc-remount /usr/lib/dracut/modules.d/90bootc-remount
       cp -a dracut/90bootc-gptroot /usr/lib/dracut/modules.d/90bootc-gptroot
       cp -a dracut/90osimage-state /usr/lib/dracut/modules.d/90osimage-state
-      mkdir -p /usr/lib/dracut.conf.d
-      cat > /usr/lib/dracut.conf.d/10-bootc.conf <<'DRACUTCONF'
-      hostonly=no
-      add_dracutmodules+=" bootc bootc-remount bootc-gptroot osimage-state "
-      omit_dracutmodules+=" network network-legacy nbd "
-      DRACUTCONF
 
 subpackages:
   - name: osimage-kernel-initramfs
@@ -108,21 +104,26 @@ subpackages:
           dracut --force --no-hostonly --tmpdir /tmp \
             --kmoddir "${{targets.destdir}}/usr/lib/modules/$kver" \
             --add " bootc bootc-remount osimage-state " \
+            --omit " systemd systemd-sysusers kernel-network-modules net-lib " \
             "${{targets.subpkgdir}}/usr/lib/modules/$kver/initramfs.img" "$kver"
           test -s "${{targets.subpkgdir}}/usr/lib/modules/$kver/initramfs.img"
   - name: osimage-kernel-initramfs-live
-    description: Prebuilt dmsquash-live installer initramfs for osimage-kernel
+    description: Prebuilt systemd live installer initramfs for osimage-kernel
     dependencies:
       runtime:
         - osimage-kernel=${{package.version}}-r${{package.epoch}}
     pipeline:
-      - name: Generate the dmsquash-live installer initramfs
+      # systemd-gpt-auto mounts the squashfs root partition, systemd.volatile=overlay makes it writable,
+      # and systemd-loop@ re-exposes its GPT when booted from optical media.
+      - name: Generate the systemd live installer initramfs
         runs: |
           kver=$(ls /lib/modules | head -1)
           install -d "${{targets.subpkgdir}}/usr/lib/modules/$kver"
           dracut --force --no-hostonly --tmpdir /tmp \
             --kmoddir "${{targets.destdir}}/usr/lib/modules/$kver" \
-            -m " base kernel-modules dmsquash-live bootc-remount osimage-state " \
+            -m " systemd systemd-initrd systemd-udevd dracut-systemd base kernel-modules rootfs-block bootc-remount osimage-state " \
+            --add-drivers " squashfs overlay loop sr_mod " \
+            --install " /usr/bin/systemd-dissect /usr/lib/systemd/system/systemd-loop@.service /usr/lib/systemd/system/modprobe@.service " \
             "${{targets.subpkgdir}}/usr/lib/modules/$kver/initramfs-install.img" "$kver"
           test -s "${{targets.subpkgdir}}/usr/lib/modules/$kver/initramfs-install.img"
 
@@ -138,7 +139,7 @@ test:
         - os-release=3.24.2-r0
         - busybox=1.37.0-r31
         - kmod=34.2-r1
-        - dracut=111-r2
+        - dracut=112-r1
         - linux-firmware-none=20260519-r0
         - osimage-kernel-initramfs-live
   pipeline:
@@ -186,14 +187,23 @@ test:
         grep -q parse-gptroot.sh /tmp/boot-contents
         grep -q etc-state.sh /tmp/boot-contents
         grep -q etc-state.sh /tmp/live-contents
+        grep -q 'bin/awk' /tmp/boot-contents
         for img in initramfs.img initramfs-install.img; do
           hook=$(lsinitrd -f var/lib/dracut/hooks/pre-pivot/70-etc-state.sh "/usr/lib/modules/$kver/$img")
           echo "$hook" | grep -q 'mount -o remount,bind,ro'
           echo "$hook" | grep -q 'new_machine_id >'
-          echo "$hook" | grep -q '!($1 in seen)'
+          echo "$hook" | grep -q 'shadow.locked'
+          echo "$hook" | grep -q 'shadow-unlocked'
+          ! echo "$hook" | grep -q '!($1 in seen)'
         done
-        grep -q sbin/dmsquash-live-root /tmp/live-contents
-        grep -q sbin/dmsetup /tmp/live-contents
+        grep -q systemd-gpt-auto-generator /tmp/live-contents
+        grep -q systemd-volatile-root /tmp/live-contents
+        grep -q usr/bin/systemd-dissect /tmp/live-contents
+        grep -q 'systemd-loop@.service' /tmp/live-contents
+        grep -q 99-systemd.rules /tmp/live-contents
+        if grep -q 'usr/lib/systemd/systemd$' /tmp/boot-contents; then
+          echo "composefs initramfs unexpectedly contains systemd" >&2; exit 1
+        fi
 
 update:
   enabled: false

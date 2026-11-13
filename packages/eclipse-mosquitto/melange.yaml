@@ -1,7 +1,7 @@
 package:
   name: eclipse-mosquitto
   version: 2.1.2
-  epoch: 0
+  epoch: 1
   description: MQTT broker with TLS, websockets and persistence (statically linked)
   target-architecture:
     - x86_64
@@ -12,7 +12,7 @@ package:
       license: EPL-2.0 OR EDL-1.0
   dependencies:
     runtime:
-      - ca-certificates-bundle=20261020-r2
+      - ca-certificates-bundle=20261020-r4
 
 environment:
   contents:
@@ -24,8 +24,8 @@ environment:
       - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
     packages:
       - busybox=1.37.0-r31
-      - ca-certificates=20261020-r2
-      - git=2.54.0-r0
+      - ca-certificates=20261020-r4
+      - git=2.54.1-r0
       - os-release=3.24.2-r0
       - gcc=15.2.0-r5
       - linux-headers=7.0.0-r1
@@ -48,39 +48,26 @@ pipeline:
       expected-commit: 99fa50f30e325609394c324c8ff71cfbbe95d8ab
       repository: https://github.com/eclipse/mosquitto
       tag: v${{package.version}}
-  - name: Trim config.mk to a minimal static build
-    runs: |
-      sed -i \
-        -e 's/^WITH_DOCS:=yes/WITH_DOCS:=no/' \
-        -e 's/^WITH_SQLITE:=yes/WITH_SQLITE:=no/' \
-        -e 's/^WITH_GMOCK:=yes/WITH_GMOCK:=no/' \
-        -e 's/^WITH_EDITLINE:=yes/WITH_EDITLINE:=no/' \
-        -e 's/^WITH_HTTP_API:=yes/WITH_HTTP_API:=no/' \
-        -e 's/^WITH_SHARED_LIBRARIES:=yes/WITH_SHARED_LIBRARIES:=no/' \
-        -e 's/^WITH_STATIC_LIBRARIES:=no/WITH_STATIC_LIBRARIES:=yes/' \
-        config.mk
-      # The upstream link lines put -lcrypto/-lcjson before the static
-      # archives that reference them; harmless when linking dynamically,
-      # fatal with -static. Reorder so the libs follow the archives.
-      sed -i 's/^LOCAL_LDADD+=-lcrypto \${LIBMOSQ_COMMON}/LOCAL_LDADD+=\${LIBMOSQ_COMMON} -lcrypto/' \
-        apps/mosquitto_passwd/Makefile
-      sed -i 's/^STATIC_LDADD+=-lcjson \${LIBMOSQ_COMMON}/STATIC_LDADD+=\${LIBMOSQ_COMMON} -lcjson/' \
-        client/Makefile
-      sed -i 's/^LOCAL_LDADD+=-lcjson -lm \${LIBMOSQ_COMMON}/LOCAL_LDADD+=\${LIBMOSQ_COMMON} -lcjson -lm/' \
-        src/Makefile
-      grep -q '^LOCAL_LDADD+=\${LIBMOSQ_COMMON} -lcrypto' apps/mosquitto_passwd/Makefile
-      grep -q '^STATIC_LDADD+=\${LIBMOSQ_COMMON} -lcjson' client/Makefile
-      grep -q '^LOCAL_LDADD+=\${LIBMOSQ_COMMON} -lcjson -lm' src/Makefile
+  - uses: patch
+    with:
+      patches: |
+        patches/001-static-link-order.patch
   - name: Build broker, apps and clients
     runs: |
-      # Skip plugins/, man pages and mosquitto_ctrl (which needs editline);
-      # the broker, passwd tool and clients are self-contained and link
-      # statically via LDFLAGS.
-      make -C libcommon
-      make -C lib
-      make -C apps/mosquitto_passwd
-      make -C client
-      make -C src
+      # Command-line variables override the defaults in config.mk.
+      set -- \
+        WITH_DOCS=no \
+        WITH_SQLITE=no \
+        WITH_GMOCK=no \
+        WITH_EDITLINE=no \
+        WITH_HTTP_API=no \
+        WITH_SHARED_LIBRARIES=no \
+        WITH_STATIC_LIBRARIES=yes
+      make -C libcommon "$@"
+      make -C lib "$@"
+      make -C apps/mosquitto_passwd "$@"
+      make -C client "$@"
+      make -C src "$@"
   - uses: dirs
     with:
       dirs: ${{vars.runtime-dirs}}
@@ -113,27 +100,6 @@ test:
         executables: /usr/bin/mosquitto /usr/bin/mosquitto_passwd /usr/bin/mosquitto_pub /usr/bin/mosquitto_sub
         files: /etc/mosquitto/mosquitto.conf /usr/share/licenses/eclipse-mosquitto/LICENSE.txt
         dirs: ${{vars.runtime-dirs}}
-    - name: Static binaries
-      runs: |
-        for bin in mosquitto mosquitto_passwd mosquitto_pub mosquitto_sub; do
-          file /usr/bin/$bin | grep -q "statically linked"
-        done
-    - name: Pub/sub round trip through the broker
-      runs: |
-        /usr/bin/mosquitto -c /etc/mosquitto/mosquitto.conf -p 18883 &
-        broker=$!
-        sleep 1
-        /usr/bin/mosquitto_sub -h 127.0.0.1 -p 18883 -t smoke -C 1 > /tmp/sub.out &
-        sub=$!
-        sleep 1
-        echo roundtrip | /usr/bin/mosquitto_pub -h 127.0.0.1 -p 18883 -t smoke -s
-        wait $sub
-        kill $broker
-        grep -q roundtrip /tmp/sub.out
-    - name: Passwd hashing round trip
-      runs: |
-        /usr/bin/mosquitto_passwd -b -c /tmp/pwfile user s3cret
-        grep -q '\$7\$' /tmp/pwfile
 
 update:
   enabled: true

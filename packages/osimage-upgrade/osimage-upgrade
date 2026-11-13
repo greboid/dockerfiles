@@ -5,7 +5,7 @@ staged=/run/composefs/staged-deployment
 finalized=/run/osimage-upgrade.finalized
 
 usage() {
-    echo 'Usage: osimage-upgrade [--apply] [bootc upgrade options...]'
+    echo "Usage: ${0##*/} [--apply] [bootc upgrade options...]"
     echo
     echo 'Runs `bootc upgrade`, then finalizes the staged deployment'
     echo '(bootc composefs-finalize-staged) so the next reboot enters it.'

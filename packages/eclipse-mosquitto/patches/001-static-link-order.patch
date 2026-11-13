@@ -1,0 +1,33 @@
+--- a/apps/mosquitto_passwd/Makefile
++++ b/apps/mosquitto_passwd/Makefile
+@@ -4,7 +4,7 @@
+ LOCAL_CFLAGS+=
+ LOCAL_CPPFLAGS+=-I${R}/lib
+ LOCAL_LDFLAGS+=
+-LOCAL_LDADD+=-lcrypto ${LIBMOSQ_COMMON}
++LOCAL_LDADD+=${LIBMOSQ_COMMON} -lcrypto
+ 
+ .PHONY: all install uninstall clean reallyclean
+ 
+--- a/client/Makefile
++++ b/client/Makefile
+@@ -11,7 +11,7 @@
+ LOCAL_CPPFLAGS+=
+ LOCAL_LDFLAGS+=
+ LOCAL_LDADD+=-lcjson ${SHARED_DEP} ${LIBMOSQ_COMMON}
+-STATIC_LDADD+=-lcjson ${LIBMOSQ_COMMON}
++STATIC_LDADD+=${LIBMOSQ_COMMON} -lcjson
+ 
+ ifeq ($(WITH_SOCKS),yes)
+ 	LOCAL_CPPFLAGS+=-DWITH_SOCKS
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -6,7 +6,7 @@
+ LOCAL_CFLAGS+=
+ LOCAL_CPPFLAGS+=-DWITH_BROKER -I${R}/lib -I${R}/libcommon
+ LOCAL_LDFLAGS+=
+-LOCAL_LDADD+=-lcjson -lm ${LIBMOSQ_COMMON}
++LOCAL_LDADD+=${LIBMOSQ_COMMON} -lcjson -lm
+ 
+ # ------------------------------------------
+ #  Platform specific

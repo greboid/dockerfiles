@@ -30,7 +30,7 @@ environment:
       - meson=1.11.1-r0
       - pkgconf=2.5.1-r0
       - expat-dev=2.10.0-r0
-      - systemd-dev=262.1-r6
+      - systemd-dev=262.1-r7
 
 pipeline:
   - uses: fetch
@@ -114,7 +114,7 @@ test:
       packages:
         - os-release=3.24.2-r0
         - busybox=1.37.0-r31
-        - systemd=262.1-r6
+        - systemd=262.1-r7
   pipeline:
     - name: Daemon executes
       runs: |

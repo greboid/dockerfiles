@@ -38,13 +38,11 @@ jobs:
       - name: Trust the org repository and install build tools
         run: |
           set -eu
-          curl -fsSL --retry 3 -o key.rsa.pub "${ORG_REPO%/*/*}/key"
-          hash=$(openssl pkey -pubin -in key.rsa.pub -outform DER | sha256sum | cut -d' ' -f1)
-          mv key.rsa.pub "/etc/apk/keys/packages@$hash.rsa.pub"
+          cp common/keys/packages@f3acd02d7d98309c4ae1d1bf92e58fe2673383ee9b816cb8b0ef8a5eac56c6bc.rsa.pub /etc/apk/keys/
           echo "$ORG_REPO" >> /etc/apk/repositories
           apk update
-          apk add --no-cache crane tar python3 ukify binutils xorriso \
-            mtools squashfs-tools curl
+          apk add --no-cache crane tar ukify systemd-repart \
+            dosfstools mtools squashfs-tools curl
 
       - name: Pull the published installer image
         run: common/fetch-installer-rootfs.sh dist

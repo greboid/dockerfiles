@@ -1,7 +1,7 @@
 package:
   name: dracut
   version: 112
-  epoch: 0
+  epoch: 1
   description: Generic initramfs generator built without the eudev dependency chain
   target-architecture:
     - x86_64
@@ -44,6 +44,7 @@ pipeline:
       ./configure \
         --prefix=/usr \
         --sysconfdir=/etc \
+        --systemdsystemunitdir=/usr/lib/systemd/system \
         --disable-dracut-cpio \
         --disable-documentation
   - name: Build
@@ -78,6 +79,8 @@ test:
         test -d /usr/lib/dracut/modules.d/80base
         test -d /usr/lib/dracut/modules.d/70kernel-modules
         test -d /usr/lib/dracut/modules.d/74rootfs-block
+        test -d /usr/lib/dracut/modules.d/10systemd
+        test -d /usr/lib/dracut/modules.d/77dracut-systemd
 
 update:
   enabled: true

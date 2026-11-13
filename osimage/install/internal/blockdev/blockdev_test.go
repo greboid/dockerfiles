@@ -5,7 +5,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
-	"strings"
 	"testing"
 )
 
@@ -138,32 +137,33 @@ func TestSysFS(t *testing.T) {
 	if s.IsPartition("sda") || !s.IsPartition("sda1") {
 		t.Error("IsPartition: wrong answer")
 	}
-	for name, want := range map[string]string{"sda": "sda", "sda1": "sda", "loop0": "loop0"} {
+	// Optical boot: loop0 re-exposes sr0 with 512-byte sectors, loop1 holds the squashfs partition loop0p2.
+	for dir, backing := range map[string]string{
+		"loop0": "/sr0",
+		"loop1": "/dev/loop0p2",
+		"loop2": "/dev/sda1",
+		"loop3": "/run/initramfs/squashed.img",
+	} {
+		d := filepath.Join(root, "devices", "virtual", "block", dir)
+		must(t, os.MkdirAll(filepath.Join(d, "loop"), 0o755))
+		must(t, os.WriteFile(filepath.Join(d, "loop", "backing_file"), []byte(backing+"\n"), 0o644))
+		must(t, os.Symlink("../../devices/virtual/block/"+dir, filepath.Join(class, dir)))
+	}
+	p2 := filepath.Join(root, "devices", "virtual", "block", "loop0", "loop0p2")
+	must(t, os.MkdirAll(p2, 0o755))
+	must(t, os.WriteFile(filepath.Join(p2, "partition"), []byte("2\n"), 0o644))
+	must(t, os.Symlink("../../devices/virtual/block/loop0/loop0p2", filepath.Join(class, "loop0p2")))
+	must(t, os.MkdirAll(filepath.Join(root, "devices", "pci0000:00", "block", "sr0"), 0o755))
+	must(t, os.Symlink("../../devices/pci0000:00/block/sr0", filepath.Join(class, "sr0")))
+
+	for name, want := range map[string]string{
+		"sda": "sda", "sda1": "sda", "loop9": "loop9",
+		"loop1": "sr0", "loop0p2": "sr0", "loop2": "sda", "loop3": "loop3",
+	} {
 		got, err := s.DiskOf(name)
 		if err != nil || got != want {
 			t.Errorf("DiskOf(%s) = %q, %v; want %q", name, got, err, want)
 		}
-	}
-}
-
-func TestParseMountinfo(t *testing.T) {
-	in := strings.Join([]string{
-		`22 1 0:21 / / rw,relatime shared:1 - overlay LiveOS_rootfs rw,lowerdir=/run/rootfsbase`,
-		`30 22 11:0 / /run/initramfs/live ro,relatime shared:9 - iso9660 /dev/sr0 ro`,
-		`31 22 8:17 / /mnt/with\040space rw - ext4 /dev/sdb1 rw`,
-		`garbage`,
-	}, "\n")
-	got, err := ParseMountinfo(strings.NewReader(in))
-	if err != nil {
-		t.Fatal(err)
-	}
-	want := []Mount{
-		{Target: "/", FSType: "overlay", Source: "LiveOS_rootfs"},
-		{Target: "/run/initramfs/live", FSType: "iso9660", Source: "/dev/sr0"},
-		{Target: "/mnt/with space", FSType: "ext4", Source: "/dev/sdb1"},
-	}
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("ParseMountinfo() = %+v, want %+v", got, want)
 	}
 }
 

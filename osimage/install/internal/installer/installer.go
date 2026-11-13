@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -39,7 +40,7 @@ const (
 // overridable for tests.
 type Paths struct {
 	Sys         string
-	Mountinfo   string
+	Designators string
 	RepartDir   string
 	ApkDB       string
 	StorageConf string
@@ -52,7 +53,7 @@ type Paths struct {
 // DefaultPaths are the live installer's paths.
 var DefaultPaths = Paths{
 	Sys:         "/sys",
-	Mountinfo:   "/proc/self/mountinfo",
+	Designators: "/dev/disk/by-designator",
 	RepartDir:   "/usr/lib/repart.d",
 	ApkDB:       "/lib/apk/db/installed",
 	StorageConf: "/etc/containers/storage.conf",
@@ -132,7 +133,7 @@ func Candidates(ctx context.Context, c *Config) ([]Candidate, error) {
 // candidates is Candidates with the disk list injected.
 func candidates(c *Config, disks []*blockdev.Device) ([]Candidate, error) {
 	sys := blockdev.SysFS{Root: c.Paths.Sys}
-	live, err := liveMediaDisks(c.Paths.Mountinfo, sys)
+	live, err := liveMediaDisks(c.Paths.Designators, sys)
 	if err != nil {
 		return nil, err
 	}
@@ -265,7 +266,7 @@ func Preflight(ctx context.Context, c *Config) (*Target, error) {
 		return nil, fmt.Errorf("%s is a partition; osimage-install installs to a whole disk", c.Disk)
 	}
 
-	live, err := liveMediaDisks(c.Paths.Mountinfo, sys)
+	live, err := liveMediaDisks(c.Paths.Designators, sys)
 	if err != nil {
 		return nil, err
 	}
@@ -291,36 +292,25 @@ func Preflight(ctx context.Context, c *Config) (*Target, error) {
 	return &Target{Path: real, Name: name, Ident: dev.Ident(), Content: dev.Describe(), ProfileVersion: version}, nil
 }
 
-// liveMediaDisks returns the whole disks backing the live system.
-func liveMediaDisks(mountinfo string, sys blockdev.SysFS) ([]string, error) {
-	f, err := os.Open(mountinfo)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-	mounts, err := blockdev.ParseMountinfo(f)
-	if err != nil {
-		return nil, err
-	}
+// liveMediaDisks returns the whole disks backing the live system, found
+// through udev's boot-disk designator links (root and ESP).
+func liveMediaDisks(designators string, sys blockdev.SysFS) ([]string, error) {
 	var out []string
-	for _, m := range mounts {
-		switch m.Target {
-		case "/", "/run/initramfs/live", "/run/initramfs/squashfs":
-		default:
+	for _, d := range []string{"root", "esp"} {
+		real, err := filepath.EvalSymlinks(filepath.Join(designators, d))
+		if errors.Is(err, fs.ErrNotExist) {
 			continue
 		}
-		if !strings.HasPrefix(m.Source, "/dev/") {
-			continue
-		}
-		src := m.Source
-		if r, err := filepath.EvalSymlinks(src); err == nil {
-			src = r
-		}
-		disk, err := sys.DiskOf(filepath.Base(src))
 		if err != nil {
 			return nil, err
 		}
-		out = append(out, disk)
+		disk, err := sys.DiskOf(filepath.Base(real))
+		if err != nil {
+			return nil, err
+		}
+		if !slices.Contains(out, disk) {
+			out = append(out, disk)
+		}
 	}
 	return out, nil
 }

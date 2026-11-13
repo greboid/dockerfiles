@@ -95,9 +95,12 @@ func TestPackageVersion(t *testing.T) {
 }
 
 func TestCandidates(t *testing.T) {
-	mi := filepath.Join(t.TempDir(), "mountinfo")
-	must(t, os.WriteFile(mi, []byte("30 22 8:32 / /run/initramfs/live ro - iso9660 /dev/sdc ro\n"), 0o644))
-	c := &Config{Paths: Paths{Mountinfo: mi, Sys: t.TempDir()}}
+	devs := t.TempDir()
+	must(t, os.WriteFile(filepath.Join(devs, "sdc"), nil, 0o644))
+	designators := filepath.Join(devs, "by-designator")
+	must(t, os.MkdirAll(designators, 0o755))
+	must(t, os.Symlink("../sdc", filepath.Join(designators, "root")))
+	c := &Config{Paths: Paths{Designators: designators, Sys: t.TempDir()}}
 	disks := []*blockdev.Device{
 		{Path: "/dev/vda", Type: "disk", Size: 20 << 30},
 		{Path: "/dev/sda", Type: "disk", Size: 120 << 30, Model: "Samsung SSD", Children: []blockdev.Device{
@@ -203,6 +206,40 @@ func TestEnsureStorageConf(t *testing.T) {
 	must(t, err)
 	if !strings.Contains(string(b), `graphroot = "`+filepath.Join(dir, "store", "graphroot")+`"`) {
 		t.Errorf("storage.conf = %q", b)
+	}
+}
+
+// Optical boot: udev's designators point at partitions of a loop device over sr0.
+func TestLiveMediaDisksOptical(t *testing.T) {
+	root := t.TempDir()
+	class := filepath.Join(root, "class", "block")
+	must(t, os.MkdirAll(class, 0o755))
+	loop0 := filepath.Join(root, "devices", "virtual", "block", "loop0")
+	for _, p := range []string{"loop0p1", "loop0p2"} {
+		must(t, os.MkdirAll(filepath.Join(loop0, p), 0o755))
+		must(t, os.WriteFile(filepath.Join(loop0, p, "partition"), []byte("1\n"), 0o644))
+		must(t, os.Symlink("../../devices/virtual/block/loop0/"+p, filepath.Join(class, p)))
+	}
+	must(t, os.MkdirAll(filepath.Join(loop0, "loop"), 0o755))
+	must(t, os.WriteFile(filepath.Join(loop0, "loop", "backing_file"), []byte("/sr0\n"), 0o644))
+	must(t, os.Symlink("../../devices/virtual/block/loop0", filepath.Join(class, "loop0")))
+	must(t, os.MkdirAll(filepath.Join(root, "devices", "pci0000:00", "block", "sr0"), 0o755))
+	must(t, os.Symlink("../../devices/pci0000:00/block/sr0", filepath.Join(class, "sr0")))
+
+	dev := t.TempDir()
+	designators := filepath.Join(dev, "disk", "by-designator")
+	must(t, os.MkdirAll(designators, 0o755))
+	for d, p := range map[string]string{"root": "loop0p2", "esp": "loop0p1"} {
+		must(t, os.WriteFile(filepath.Join(dev, p), nil, 0o644))
+		must(t, os.Symlink("../../"+p, filepath.Join(designators, d)))
+	}
+
+	got, err := liveMediaDisks(designators, blockdev.SysFS{Root: root})
+	if err != nil || !reflect.DeepEqual(got, []string{"sr0"}) {
+		t.Fatalf("liveMediaDisks = %v, %v; want [sr0]", got, err)
+	}
+	if got, err := liveMediaDisks(filepath.Join(dev, "missing"), blockdev.SysFS{Root: root}); err != nil || got != nil {
+		t.Fatalf("no designators: liveMediaDisks = %v, %v; want none", got, err)
 	}
 }
 

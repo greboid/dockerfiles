@@ -1,7 +1,7 @@
 package:
   name: systemd
   version: 262.1
-  epoch: 6
+  epoch: 7
   description: systemd init system (PID 1), udev and core daemons built for musl
   target-architecture:
     - x86_64
@@ -169,6 +169,10 @@ pipeline:
       rm -f "${{targets.destdir}}/usr/lib/systemd/system/sysinit.target.wants/systemd-repart.service"
       rm -f "${{targets.destdir}}/usr/lib/systemd/system/initrd-root-fs.target.wants/systemd-repart.service"
       rm -f "${{targets.destdir}}/usr/lib/systemd/system/sockets.target.wants/systemd-repart.socket"
+      # The default service PATH has no /sbin, where Alpine's kmod puts modprobe.
+      sed -i 's|^ExecStart=-modprobe |ExecStart=-/sbin/modprobe |' \
+        "${{targets.destdir}}/usr/lib/systemd/system/modprobe@.service"
+      grep -q '^ExecStart=-/sbin/modprobe ' "${{targets.destdir}}/usr/lib/systemd/system/modprobe@.service"
   - uses: strip
 
 subpackages:
@@ -360,6 +364,7 @@ test:
           grep -q '^ExecStart=-/sbin/agetty ' "$d/$u" || { echo "$u: agetty path" >&2; exit 1; }
         done
         grep -q '^ExecStart=/bin/kmod static-nodes ' "$d/kmod-static-nodes.service"
+        grep -q '^ExecStart=-/sbin/modprobe -abq ' "$d/modprobe@.service"
         grep -q '^ConditionPathExists=/bin/kmod$' "$d/kmod-static-nodes.service"
         test -x /bin/mount && test -x /bin/umount
         grep -qaF /bin/umount /usr/lib/systemd/libsystemd-core-262.so

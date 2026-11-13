@@ -1,7 +1,7 @@
 package:
   name: apko
-  version: 1.4.18
-  epoch: 2
+  version: 1.5.0
+  epoch: 0
   description: Builds OCI images from apk packages (source-built, org patch set)
   target-architecture:
     - x86_64
@@ -35,7 +35,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 269536961a0980591d3030028c9798d956abecd9
+      expected-commit: 54d4fe18f248a43b6f28cc550cfabe489a082d65
       repository: https://github.com/chainguard-dev/apko
       tag: v${{package.version}}
   - uses: patch

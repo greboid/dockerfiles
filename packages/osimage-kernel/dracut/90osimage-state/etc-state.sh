@@ -17,7 +17,7 @@ new_machine_id() {
     printf '%s\n' "$_id"
 }
 
-for f in machine-id hostname shadow; do
+for f in machine-id hostname; do
     [ -f "$NEWROOT/etc/$f" ] || continue
     if [ "$f" = machine-id ] && [ -f "$STATE/$f" ] && [ ! -s "$STATE/$f" ]; then
         rm -f "$STATE/$f"
@@ -34,29 +34,8 @@ for f in machine-id hostname shadow; do
             warn "osimage-state: cannot seed $STATE/$f"
             continue
         }
-        [ "$f" = shadow ] && chmod 0640 "$STATE/$f.new"
         mv "$STATE/$f.new" "$STATE/$f" || continue
         info "osimage-state: seeded $STATE/$f"
-    fi
-    if [ "$f" = shadow ] && [ -f "$STATE/$f" ]; then
-        added="$STATE/$f.merge-accounts.$$"
-        if awk -F: 'NR == FNR { seen[$1] = 1; next } !($1 in seen) { print }' \
-            "$STATE/$f" "$NEWROOT/etc/$f" > "$added"; then
-            if [ -s "$added" ]; then
-                merged="$STATE/$f.new"
-                if cat "$STATE/$f" "$added" > "$merged" \
-                    && chmod 0640 "$merged" \
-                    && mv "$merged" "$STATE/$f"; then
-                    info "osimage-state: merged new accounts into $STATE/$f"
-                else
-                    rm -f "$merged"
-                    warn "osimage-state: cannot merge new accounts into $STATE/$f"
-                fi
-            fi
-        else
-            warn "osimage-state: cannot diff accounts between /etc/shadow and $STATE/shadow"
-        fi
-        rm -f "$added"
     fi
     if ! mount --bind "$STATE/$f" "$NEWROOT/etc/$f"; then
         warn "osimage-state: cannot bind $STATE/$f over /etc/$f"
@@ -65,4 +44,24 @@ for f in machine-id hostname shadow; do
     mount -o remount,bind,ro "$NEWROOT/etc/$f" ||
         warn "osimage-state: cannot make /etc/$f read-only"
 done
+# Passwords are always locked unless the image opts out (the live installer);
+# $STATE/shadow is left for rollback to older deployments.
+if [ -f "$NEWROOT/etc/shadow" ] && [ ! -e "$NEWROOT/usr/lib/osimage/shadow-unlocked" ]; then
+    if awk -F: -v OFS=: '$2 !~ /^[!*]/ { $2 = "!" $2 } { print }' \
+        "$NEWROOT/etc/shadow" > "$STATE/shadow.locked.new" \
+        && chmod 0640 "$STATE/shadow.locked.new" \
+        && mv "$STATE/shadow.locked.new" "$STATE/shadow.locked"; then
+        src="$STATE/shadow.locked"
+    else
+        rm -f "$STATE/shadow.locked.new"
+        warn "osimage-state: cannot lock /etc/shadow; hiding it"
+        src=/dev/null
+    fi
+    if mount --bind "$src" "$NEWROOT/etc/shadow"; then
+        mount -o remount,bind,ro "$NEWROOT/etc/shadow" ||
+            warn "osimage-state: cannot make /etc/shadow read-only"
+    else
+        warn "osimage-state: cannot bind $src over /etc/shadow"
+    fi
+fi
 return 0

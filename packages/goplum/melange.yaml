@@ -1,7 +1,7 @@
 package:
   name: goplum
-  version: 1.3.0
-  epoch: 2
+  version: 1.4.0
+  epoch: 0
   description: Configurable health checker with a gRPC API
   target-architecture:
     - x86_64
@@ -34,7 +34,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 375a3821e182aea3c9a737102cd599ab9633b7a8
+      expected-commit: 5601c3c0c31811d5e17aa4278dffc7761d37fd31
       repository: https://github.com/csmith/goplum
       tag: v${{package.version}}
   - uses: go/build

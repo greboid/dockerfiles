@@ -3,12 +3,10 @@
 package blockdev
 
 import (
-	"bufio"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -192,58 +190,41 @@ func (s SysFS) IsPartition(name string) bool {
 }
 
 // DiskOf returns the whole-disk name that holds the block device
-// name, or name itself when it is not a partition.
+// name, or name itself when it is not a partition. Loop devices backed
+// by a block device resolve to the disk holding that device.
 func (s SysFS) DiskOf(name string) (string, error) {
-	if !s.IsPartition(name) {
-		return name, nil
-	}
-	real, err := filepath.EvalSymlinks(s.node(name))
-	if err != nil {
-		return "", fmt.Errorf("resolving %s in sysfs: %w", name, err)
-	}
-	return filepath.Base(filepath.Dir(real)), nil
-}
-
-// Mount is one entry of /proc/self/mountinfo.
-type Mount struct {
-	Target string
-	FSType string
-	Source string
-}
-
-// ParseMountinfo parses the /proc/<pid>/mountinfo format.
-func ParseMountinfo(r io.Reader) ([]Mount, error) {
-	var out []Mount
-	sc := bufio.NewScanner(r)
-	for sc.Scan() {
-		pre, post, ok := strings.Cut(sc.Text(), " - ")
-		if !ok {
-			continue
-		}
-		pf, sf := strings.Fields(pre), strings.Fields(post)
-		if len(pf) < 5 || len(sf) < 2 {
-			continue
-		}
-		out = append(out, Mount{Target: unescape(pf[4]), FSType: sf[0], Source: unescape(sf[1])})
-	}
-	return out, sc.Err()
-}
-
-// unescape decodes the octal escapes (\040 etc.) mountinfo uses.
-func unescape(s string) string {
-	if !strings.Contains(s, `\`) {
-		return s
-	}
-	var b strings.Builder
-	for i := 0; i < len(s); i++ {
-		if s[i] == '\\' && i+4 <= len(s) {
-			if v, err := strconv.ParseUint(s[i+1:i+4], 8, 8); err == nil {
-				b.WriteByte(byte(v))
-				i += 3
-				continue
+	for range 8 {
+		if s.IsPartition(name) {
+			real, err := filepath.EvalSymlinks(s.node(name))
+			if err != nil {
+				return "", fmt.Errorf("resolving %s in sysfs: %w", name, err)
 			}
+			name = filepath.Base(filepath.Dir(real))
 		}
-		b.WriteByte(s[i])
+		backing := s.loopBacking(name)
+		if backing == "" {
+			return name, nil
+		}
+		name = backing
 	}
-	return b.String()
+	return "", fmt.Errorf("loop device chain too deep at %s", name)
+}
+
+// loopBacking returns the block device name behind loop device name, or
+// "" when name is not a loop device or is not backed by a block device.
+func (s SysFS) loopBacking(name string) string {
+	b, err := os.ReadFile(filepath.Join(s.node(name), "loop", "backing_file"))
+	if err != nil {
+		return ""
+	}
+	// The path is as seen by whoever attached it, e.g. "/sr0" from systemd-dissect in the initrd.
+	path := strings.TrimSpace(string(b))
+	if real, err := filepath.EvalSymlinks(path); err == nil {
+		path = real
+	}
+	name = filepath.Base(path)
+	if _, err := os.Stat(s.node(name)); err != nil {
+		return ""
+	}
+	return name
 }

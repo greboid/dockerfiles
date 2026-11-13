@@ -1,0 +1,69 @@
+package:
+  name: pam-rssh
+  version: 1.2.1
+  epoch: 0
+  description: PAM module for authentication via a forwarded ssh-agent
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: MIT
+  dependencies:
+    runtime:
+      - linux-pam=1.7.1-r2
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - os-release=3.24.2-r0
+      - build-base=0.5-r4
+      - ca-certificates-bundle=20261020-r4
+      - git=2.54.1-r0
+      - rust=1.96.1-r0
+      - cargo=1.96.1-r0
+      - pkgconf=2.5.1-r0
+      - openssl-dev=3.5.9-r0
+      - linux-pam-dev=1.7.1-r2
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/z4yx/pam_rssh
+      tag: v${{package.version}}
+      expected-commit: e8dd046c423f85df266c23bcc3d7033bfee81255
+      recurse-submodules: true
+  - runs: |
+      test -f dep/ssh-agent.rs/Cargo.toml
+      cargo build --release --locked
+  - runs: |
+      install -D -m 755 target/release/libpam_rssh.so "${{targets.destdir}}"/usr/lib/security/pam_rssh.so
+  - uses: strip
+
+test:
+  environment:
+    contents:
+      keyring:
+        - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+        - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-6165ee59.rsa.pub
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      packages:
+        - busybox=1.37.0-r31
+  pipeline:
+    - runs: |
+        test -f /usr/lib/security/pam_rssh.so
+        grep -q pam_sm_authenticate /usr/lib/security/pam_rssh.so
+
+update:
+  enabled: true
+  github:
+    identifier: z4yx/pam_rssh
+    strip-prefix: v

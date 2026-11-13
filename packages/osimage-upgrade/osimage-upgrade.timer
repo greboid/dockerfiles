@@ -1,0 +1,8 @@
+[Unit]
+Description=Daily osimage upgrade
+
+[Timer]
+OnCalendar=*-*-* 04:00:00
+
+[Install]
+WantedBy=timers.target
