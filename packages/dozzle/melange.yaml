@@ -1,7 +1,7 @@
 package:
   name: dozzle
-  version: 11.4.2
-  epoch: 3
+  version: 11.4.3
+  epoch: 0
   description: Real-time log viewer for Docker containers with a web interface
   target-architecture:
     - x86_64
@@ -37,7 +37,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: be08accb2b336056f1e5b182944ead2f755a3400
+      expected-commit: 76c2bdae87e9d7e3c7b3d839bd895ce7ba961888
       repository: https://github.com/amir20/dozzle
       tag: v${{package.version}}
   - name: Generate the embedded agent TLS keypair
