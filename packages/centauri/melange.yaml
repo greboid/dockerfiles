@@ -1,7 +1,7 @@
 package:
   name: centauri
   version: 2.10.1
-  epoch: 0
+  epoch: 1
   description: TLS front proxy with automatic certificates via lego
   target-architecture:
     - x86_64
@@ -28,7 +28,6 @@ environment:
       - ca-certificates=20261020-r4
       - git=2.54.1-r0
       - go=1.27.4-r1
-      - go-licenses=2.0.1-r18
       - os-release=3.24.2-r0
 
 vars:
@@ -49,11 +48,10 @@ pipeline:
   - uses: dirs
     with:
       dirs: ${{vars.runtime-dirs}}
-  - uses: go/licenses
+  - uses: license/install
     with:
-      ignore-extra: github.com/go-acme/tencentclouddnspod/v20210323 github.com/go-acme/tencentedgdeone/v20220901 github.com/nrdcg/oci-go-sdk/common/v1065 github.com/nrdcg/oci-go-sdk/common/v1065/auth github.com/nrdcg/oci-go-sdk/common/v1065/utils github.com/nrdcg/oci-go-sdk/dns/v1065
-      module: github.com/csmith/centauri
       license: LICENCE
+  - uses: go/credits
 test:
   environment:
     contents:
@@ -67,7 +65,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/centauri
-        files: /notices/github.com/csmith/centauri/LICENCE /usr/share/licenses/centauri/LICENCE
+        files: /usr/share/licenses/centauri/LICENCE /usr/share/licenses/centauri/CREDITS
         dirs: ${{vars.runtime-dirs}}
     - name: Validates configurations
       runs: |

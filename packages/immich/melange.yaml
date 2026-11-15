@@ -113,9 +113,7 @@ pipeline:
       install -d -m 0755 "${{targets.destdir}}/usr/src/app/upload"
       ln -sf ../lib/jellyfin-ffmpeg/ffmpeg "${{targets.destdir}}/usr/bin/ffmpeg"
       ln -sf ../lib/jellyfin-ffmpeg/ffprobe "${{targets.destdir}}/usr/bin/ffprobe"
-  - uses: go/licenses
-    with:
-      save: "false"
+  - uses: license/install
 test:
   environment:
     contents:

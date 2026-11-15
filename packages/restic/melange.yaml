@@ -1,7 +1,7 @@
 package:
   name: restic
   version: 0.19.1
-  epoch: 3
+  epoch: 4
   description: Fast, secure, efficient backup program
   target-architecture:
     - x86_64
@@ -28,7 +28,6 @@ environment:
       - ca-certificates=20261020-r4
       - git=2.54.1-r0
       - go=1.27.4-r1
-      - go-licenses=2.0.1-r18
       - os-release=3.24.2-r0
 
 pipeline:
@@ -42,10 +41,10 @@ pipeline:
       packages: ./cmd/restic
       output: restic
       static: "true"
-  - uses: go/licenses
+  - uses: license/install
     with:
-      module: github.com/restic/restic
       license: LICENSE
+  - uses: go/credits
 
 test:
   environment:
@@ -60,7 +59,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/restic
-        files: /notices/github.com/restic/restic/LICENSE /usr/share/licenses/restic/LICENSE
+        files: /usr/share/licenses/restic/LICENSE /usr/share/licenses/restic/CREDITS
     - name: Version reports the packaged release
       runs: |
         /usr/bin/restic version 2>&1 | grep -q "restic 0.19.1"

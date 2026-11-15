@@ -1,7 +1,7 @@
 package:
   name: linx-server
   version: 3.4.1
-  epoch: 22
+  epoch: 23
   description: Self-hosted file-sharing service with expiry and hotlink control
   target-architecture:
     - x86_64
@@ -28,7 +28,6 @@ environment:
       - ca-certificates=20261020-r4
       - git=2.54.1-r0
       - go=1.27.4-r1
-      - go-licenses=2.0.1-r18
       - os-release=3.24.2-r0
 
 vars:
@@ -48,10 +47,10 @@ pipeline:
   - uses: dirs
     with:
       dirs: ${{vars.runtime-dirs}}
-  - uses: go/licenses
+  - uses: license/install
     with:
-      module: github.com/andreimarcu/linx-server
       license: LICENSE.txt
+  - uses: go/credits
 test:
   environment:
     contents:
@@ -66,7 +65,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/linx-server
-        files: /notices/github.com/andreimarcu/linx-server/LICENSE.txt /usr/share/licenses/linx-server/LICENSE.txt
+        files: /usr/share/licenses/linx-server/LICENSE.txt /usr/share/licenses/linx-server/CREDITS
         dirs: ${{vars.runtime-dirs}}
 update:
   enabled: true

@@ -1,4 +1,3 @@
-# Overrides /usr/lib/pam.d/doas. Keys live in the sealed /etc so users cannot add their own.
 auth      sufficient pam_rssh.so auth_key_file=/etc/osimage/authorized_keys/${user}.keys
 auth      required   pam_deny.so
 account   include    base-account

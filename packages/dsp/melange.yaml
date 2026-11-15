@@ -1,7 +1,7 @@
 package:
   name: dsp
   version: 1.4.0
-  epoch: 3
+  epoch: 4
   description: Filtering proxy in front of the Docker socket
   target-architecture:
     - x86_64
@@ -28,7 +28,6 @@ environment:
       - ca-certificates=20261020-r4
       - git=2.54.1-r0
       - go=1.27.4-r1
-      - go-licenses=2.0.1-r18
       - os-release=3.24.2-r0
 
 pipeline:
@@ -42,9 +41,8 @@ pipeline:
       packages: ./cmd
       output: dsp
       static: "true"
-  - uses: go/licenses
-    with:
-      module: github.com/greboid/dsp
+  - uses: license/install
+  - uses: go/credits
 test:
   environment:
     contents:
@@ -58,7 +56,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/dsp
-        files: /notices/github.com/greboid/dsp/LICENSE /usr/share/licenses/dsp/LICENSE
+        files: /usr/share/licenses/dsp/LICENSE /usr/share/licenses/dsp/CREDITS
     - name: Exits cleanly when the Docker socket is missing
       runs: |
         /usr/bin/dsp >/tmp/dsp.log 2>&1

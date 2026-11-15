@@ -20,7 +20,6 @@ import (
 	"time"
 
 	"github.com/greboid/osimage-install/internal/blockdev"
-	"github.com/greboid/osimage-install/internal/shadow"
 	"github.com/greboid/osimage-install/internal/tailscale"
 	"github.com/greboid/osimage-install/internal/target"
 )
@@ -63,12 +62,6 @@ var DefaultPaths = Paths{
 	TailscaleState: tailscale.DefaultStateDir,
 }
 
-// Password is a precomputed crypt(3) hash for one account.
-type Password struct {
-	User string
-	Hash string
-}
-
 // Config is one installation.
 type Config struct {
 	Disk      string
@@ -77,8 +70,7 @@ type Config struct {
 	// BootcArgs are extra `bootc install to-disk` options.
 	BootcArgs []string
 
-	Hostname  string
-	Passwords []Password
+	Hostname string
 	// Tailscale, when non-nil, carries the installer's Tailscale node
 	// over to the target. The caller logs the node in first
 	// (tailscale.Prepare); the installer copies its state.
@@ -202,19 +194,6 @@ func (c *Config) Validate() error {
 		if err := target.ValidateHostname(c.Hostname); err != nil {
 			return err
 		}
-	}
-	seen := map[string]bool{}
-	for _, p := range c.Passwords {
-		if err := shadow.ValidateUser(p.User); err != nil {
-			return err
-		}
-		if err := shadow.ValidateHash(p.Hash); err != nil {
-			return fmt.Errorf("password for %s: %w", p.User, err)
-		}
-		if seen[p.User] {
-			return fmt.Errorf("password for %s given more than once", p.User)
-		}
-		seen[p.User] = true
 	}
 	if c.Tailscale != nil {
 		if c.Tailscale.Hostname != "" {
@@ -397,9 +376,6 @@ func Install(ctx context.Context, c *Config, t *Target) error {
 	if c.Hostname != "" {
 		fmt.Fprintf(out, "== hostname: %s\n", c.Hostname)
 	}
-	for _, p := range c.Passwords {
-		fmt.Fprintf(out, "== password: %s\n", p.User)
-	}
 	if c.Tailscale != nil {
 		fmt.Fprintln(out, "== tailscale: the installer's node moves to the installed system")
 	}
@@ -503,30 +479,6 @@ func seed(ctx context.Context, c *Config, t *Target) (err error) {
 			return fmt.Errorf("hostname: %w", err)
 		}
 		fmt.Fprintf(c.Stdout, "== seeded hostname %s\n", c.Hostname)
-	}
-
-	if len(c.Passwords) > 0 {
-		etc, err := root.DeploymentEtc()
-		if err != nil {
-			return err
-		}
-		content, uid, gid, err := target.ReadShadow(etc)
-		if err != nil {
-			return err
-		}
-		day := time.Now().Unix() / 86400
-		for _, p := range c.Passwords {
-			if content, err = shadow.SetHash(content, p.User, p.Hash, day); err != nil {
-				if errors.Is(err, shadow.ErrNoUser) {
-					return fmt.Errorf("%w (accounts come from the image's apko accounts: list)", err)
-				}
-				return err
-			}
-		}
-		if err := target.WriteShadow(varDir, content, uid, gid); err != nil {
-			return fmt.Errorf("shadow: %w", err)
-		}
-		fmt.Fprintf(c.Stdout, "== seeded passwords for %d account(s)\n", len(c.Passwords))
 	}
 
 	if c.Tailscale != nil {

@@ -1,7 +1,7 @@
 package:
   name: victoriametrics
   version: 1.156.0
-  epoch: 0
+  epoch: 1
   description: Cost-effective and scalable time series database (single-node)
   target-architecture:
     - x86_64
@@ -28,7 +28,6 @@ environment:
       - ca-certificates=20261020-r4
       - git=2.54.1-r0
       - go=1.27.4-r1
-      - go-licenses=2.0.1-r18
       - os-release=3.24.2-r0
 
 vars:
@@ -49,10 +48,10 @@ pipeline:
   - uses: dirs
     with:
       dirs: ${{vars.runtime-dirs}}
-  - uses: go/licenses
+  - uses: license/install
     with:
-      module: github.com/VictoriaMetrics/VictoriaMetrics
       license: LICENSE
+  - uses: go/credits
 
 test:
   environment:
@@ -67,7 +66,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/victoriametrics
-        files: /notices/github.com/VictoriaMetrics/VictoriaMetrics/LICENSE /usr/share/licenses/victoriametrics/LICENSE
+        files: /usr/share/licenses/victoriametrics/LICENSE /usr/share/licenses/victoriametrics/CREDITS
         dirs: ${{vars.runtime-dirs}}
 
 update:

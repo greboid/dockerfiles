@@ -1,0 +1,87 @@
+diff --git i/licensescore.go w/licensescore.go
+index e2a3d05..71689b9 100644
+--- i/licensescore.go
++++ w/licensescore.go
+@@ -1,6 +1,9 @@
+ package gocredits
+ 
+-import "regexp"
++import (
++	"path/filepath"
++	"regexp"
++)
+ 
+ // copied from github.com/pmezard/licenses
+ var (
+@@ -11,6 +14,17 @@ var (
+ 		`(licen[sc]e\.[^.]+)` +
+ 		`)$`)
+ 
++	// Variant names such as LICENSE-MIT, LICENSE-Apache-2.0.txt or
++	// MIT-LICENSE.txt, used by modules that ship one file per license.
++	reLicenseVariant = regexp.MustCompile(`(?i)^(?:` +
++		`(licen[sc]e[-_].+)|` +
++		`(.+[-_]licen[sc]e(?:\.[^.]+)?)` +
++		`)$`)
++
++	// Extensions a variant license file may have; anything else, such as
++	// license_test.go, is source rather than a license text.
++	reVariantExt = regexp.MustCompile(`(?i)^(?:|\.md|\.markdown|\.txt|\.rst|\.\d+)$`)
++
+ 	// NOTICE files as described in section 4(d) of the Apache License 2.0
+ 	reNotice = regexp.MustCompile(`(?i)^notice(?:\.(?:md|markdown|txt))?$`)
+ )
+@@ -31,5 +45,17 @@ func scoreLicenseName(name string) float64 {
+ 	case m[4] != "":
+ 		return 0.7
+ 	}
++	if !reVariantExt.MatchString(filepath.Ext(name)) {
++		return 0.
++	}
++	m = reLicenseVariant.FindStringSubmatch(name)
++	switch {
++	case m == nil:
++		break
++	case m[1] != "":
++		return 0.6
++	case m[2] != "":
++		return 0.5
++	}
+ 	return 0.
+ }
+diff --git i/licensescore_test.go w/licensescore_test.go
+new file mode 100644
+index 0000000..1efc220
+--- /dev/null
++++ w/licensescore_test.go
+@@ -0,0 +1,30 @@
++package gocredits
++
++import "testing"
++
++func TestScoreLicenseName(t *testing.T) {
++	tests := []struct {
++		name string
++		want float64
++	}{
++		{"LICENSE", 1.0},
++		{"LICENSE.md", 0.9},
++		{"COPYING", 0.8},
++		{"LICENSE.rst", 0.7},
++		{"LICENSE-MIT", 0.6},
++		{"LICENSE-APACHE", 0.6},
++		{"LICENSE-Apache-2.0.txt", 0.6},
++		{"LICENCE_BSD.md", 0.6},
++		{"MIT-LICENSE.txt", 0.5},
++		{"BSD_LICENSE", 0.5},
++		{"license_test.go", 0},
++		{"licenses.go", 0},
++		{"README.md", 0},
++		{"LICENSES", 0},
++	}
++	for _, tt := range tests {
++		if got := scoreLicenseName(tt.name); got != tt.want {
++			t.Errorf("scoreLicenseName(%q) = %v, want %v", tt.name, got, tt.want)
++		}
++	}
++}

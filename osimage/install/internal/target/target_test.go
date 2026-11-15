@@ -16,7 +16,6 @@ func fakeInstall(t *testing.T, ids ...string) Root {
 	for _, id := range ids {
 		etc := filepath.Join(root, deployDir, id, "etc")
 		must(t, os.MkdirAll(etc, 0o755))
-		must(t, os.WriteFile(filepath.Join(etc, "shadow"), []byte("root:::0:::::\n"), 0o640))
 		must(t, os.Symlink("../../os/default/var", filepath.Join(root, deployDir, id, "var")))
 	}
 	return Root{Path: root}
@@ -28,39 +27,21 @@ func TestLocate(t *testing.T) {
 	if err != nil || v != filepath.Join(r.Path, sharedVar) {
 		t.Errorf("Var() = %q, %v", v, err)
 	}
-	etc, err := r.DeploymentEtc()
-	if err != nil || etc != filepath.Join(r.Path, deployDir, "abc", "etc") {
-		t.Errorf("DeploymentEtc() = %q, %v", etc, err)
-	}
 }
 
 func TestLocateErrors(t *testing.T) {
 	if _, err := (Root{Path: t.TempDir()}).Var(); err == nil {
 		t.Error("Var() on an empty root: want error")
 	}
-	if _, err := fakeInstall(t).DeploymentEtc(); err == nil {
-		t.Error("no deployments: want error")
-	}
-	if _, err := fakeInstall(t, "a", "b").DeploymentEtc(); err == nil {
-		t.Error("two deployments: want error")
-	}
+
 }
 
-func TestWriteHostnameAndShadow(t *testing.T) {
+func TestWriteHostname(t *testing.T) {
 	r := fakeInstall(t, "abc")
 	v, _ := r.Var()
-	etc, _ := r.DeploymentEtc()
 
 	must(t, WriteHostname(v, "box1"))
 	assertFile(t, filepath.Join(v, stateDir, "hostname"), "box1\n", 0o644)
-
-	content, uid, gid, err := ReadShadow(etc)
-	must(t, err)
-	if string(content) != "root:::0:::::\n" || uid != os.Getuid() || gid != os.Getgid() {
-		t.Errorf("ReadShadow() = %q, owner %d:%d", content, uid, gid)
-	}
-	must(t, WriteShadow(v, []byte("root:$6$s$h:1:0:::::\n"), uid, gid))
-	assertFile(t, filepath.Join(v, stateDir, "shadow"), "root:$6$s$h:1:0:::::\n", 0o640)
 
 	fi, err := os.Stat(filepath.Join(v, stateDir))
 	must(t, err)

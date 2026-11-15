@@ -1,7 +1,7 @@
 package:
   name: webhooked
   version: 1.1.0
-  epoch: 21
+  epoch: 22
   description: Ensures a GitHub webhook is installed across a user's repositories
   target-architecture:
     - x86_64
@@ -27,7 +27,6 @@ environment:
       - busybox=1.37.0-r31
       - ca-certificates=20261020-r4
       - go=1.27.4-r1
-      - go-licenses=2.0.1-r18
       - os-release=3.24.2-r0
 
 pipeline:
@@ -41,10 +40,10 @@ pipeline:
       packages: ./
       output: webhooked
       static: "true"
-  - uses: go/licenses
+  - uses: license/install
     with:
-      checks: github.com/csmith/webhooked/LICENCE github.com/csmith/envflag/v2/LICENCE github.com/google/go-github/v72/github/LICENSE
       license: LICENCE
+  - uses: go/credits
 test:
   environment:
     contents:
@@ -58,7 +57,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/webhooked
-        files: /notices/github.com/csmith/webhooked/LICENCE /notices/github.com/google/go-github/v72/github/LICENSE /usr/share/licenses/webhooked/LICENCE
+        files: /usr/share/licenses/webhooked/LICENCE /usr/share/licenses/webhooked/CREDITS
     - name: Prints usage and exits cleanly when unconfigured
       runs: |
         out=$(/usr/bin/webhooked 2>&1)

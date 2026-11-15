@@ -86,9 +86,8 @@ pipeline:
   - uses: dirs
     with:
       dirs: ${{vars.runtime-dirs}}
-  - uses: go/licenses
+  - uses: license/install
     with:
-      save: "false"
       license: LICENSE.txt
 
 test:

@@ -1,7 +1,7 @@
 package:
   name: beszel
   version: 0.21.2
-  epoch: 0
+  epoch: 1
   description: Lightweight server monitoring hub with web UI and agent
   target-architecture:
     - x86_64
@@ -28,7 +28,6 @@ environment:
       - ca-certificates=20261020-r4
       - git=2.54.1-r0
       - go=1.27.4-r1
-      - go-licenses=2.0.1-r18
       - nodejs=24.22.3-r0
       - npm=11.12.1-r0
       - os-release=3.24.2-r0
@@ -54,10 +53,10 @@ pipeline:
       packages: ./internal/cmd/agent
       output: beszel-agent
       static: "true"
-  - uses: go/licenses
+  - uses: license/install
     with:
-      module: github.com/henrygd/beszel
       license: LICENSE
+  - uses: go/credits
 
 test:
   environment:
@@ -72,7 +71,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/beszel /usr/bin/beszel-agent
-        files: /notices/github.com/henrygd/beszel/LICENSE /usr/share/licenses/beszel/LICENSE
+        files: /usr/share/licenses/beszel/LICENSE /usr/share/licenses/beszel/CREDITS
     - name: Hub reports its version
       runs: |
         /usr/bin/beszel --version

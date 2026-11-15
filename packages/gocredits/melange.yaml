@@ -1,0 +1,75 @@
+package:
+  name: gocredits
+  version: 1.1.0
+  epoch: 1
+  description: Create a CREDITS file from the LICENSE and NOTICE files of Go module dependencies
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: MIT
+  dependencies:
+    runtime:
+      - go>=1.27
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates=20261020-r4
+      - git=2.54.1-r0
+      - go=1.27.4-r1
+      - os-release=3.24.2-r0
+  environment:
+    GOTOOLCHAIN: local
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: b80b6774909e4d94a218a3eb7c6f264d56c9d0fe
+      repository: https://github.com/Songmu/gocredits
+      tag: v${{package.version}}
+  - uses: patch
+    with:
+      patches: |
+        patches/001-license-name-variants.patch
+        patches/002-vendored-modules.patch
+        patches/003-reuse-licenses-dir.patch
+  - uses: go/build
+    with:
+      packages: ./cmd/gocredits
+      output: gocredits
+      ldflags: -X github.com/Songmu/gocredits.revision=b80b677
+  - uses: license/install
+  - uses: go/credits
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox=1.37.0-r31
+  pipeline:
+    - uses: test/paths
+      with:
+        files: /usr/share/licenses/gocredits/LICENSE /usr/share/licenses/gocredits/CREDITS
+    - uses: test/version
+      with:
+        flag: -version
+update:
+  enabled: true
+  shared: true
+  github:
+    identifier: Songmu/gocredits
+    strip-prefix: v

@@ -1,7 +1,7 @@
 package:
   name: forgejo
   version: 17.0.1
-  epoch: 5
+  epoch: 6
   description: Forgejo self-hosted software forge (Gitea fork)
   target-architecture:
     - x86_64
@@ -28,7 +28,6 @@ environment:
       - ca-certificates=20261020-r4
       - git=2.54.1-r0
       - go=1.27.4-r1
-      - go-licenses=2.0.1-r18
       - os-release=3.24.2-r0
       - make=4.4.1-r4
       - nodejs=24.22.3-r0
@@ -64,16 +63,8 @@ pipeline:
   - uses: dirs
     with:
       dirs: ${{vars.runtime-dirs}}
-  - uses: go/licenses
-    with:
-      ignore-extra: github.com/golang/freetype github.com/golang/freetype/raster github.com/golang/freetype/truetype github.com/mrjones/oauth github.com/yohcop/openid-go
-      module: forgejo.org
-  - name: Prune the vendored frontend notice trees
-    runs: |
-      DESTDIR="${{targets.destdir}}" \
-        rm -rf "${DESTDIR}/notices/forgejo.org/node_modules" \
-               "${DESTDIR}/notices/forgejo.org/public" \
-               "${DESTDIR}/notices/forgejo.org/forgejo"
+  - uses: license/install
+  - uses: go/credits
 test:
   environment:
     contents:
@@ -87,7 +78,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/forgejo
-        files: /notices/forgejo.org/LICENSE /usr/share/licenses/forgejo/LICENSE
+        files: /usr/share/licenses/forgejo/LICENSE /usr/share/licenses/forgejo/CREDITS
         dirs: ${{vars.runtime-dirs}}
     - uses: test/version
 update:

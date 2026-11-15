@@ -1,10 +1,9 @@
 // Command osimage-install installs the published osimage image onto a
-// disk from the live installer, optionally seeding the hostname, account
-// passwords and the installer's Tailscale node before the first boot.
+// disk from the live installer, optionally seeding the hostname and the
+// installer's Tailscale node before the first boot.
 package main
 
 import (
-	"bufio"
 	"context"
 	"errors"
 	"flag"
@@ -13,15 +12,12 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
-	"slices"
 	"strings"
 	"syscall"
 
 	"golang.org/x/term"
 
 	"github.com/greboid/osimage-install/internal/installer"
-	"github.com/greboid/osimage-install/internal/sha512crypt"
-	"github.com/greboid/osimage-install/internal/shadow"
 	"github.com/greboid/osimage-install/internal/tailscale"
 )
 
@@ -37,10 +33,9 @@ with bootc: composefs backend, systemd-boot, systemd-repart layout
 
 On a terminal, <disk> may be omitted: the installer lists the disks
 (usable ones numbered, refused ones with the reason) and asks which
-to install to. It then asks for the hostname, root's password and
-whether to move the installer's Tailscale node over, using the options
-below as the defaults, then shows the plan and asks before erasing
-the disk.
+to install to. It then asks for the hostname and whether to move the
+installer's Tailscale node over, using the options below as the
+defaults, then shows the plan and asks before erasing the disk.
 
 Image:
   --source-ref REF        image to install (env OSIMAGE_SOURCE_REF)
@@ -51,12 +46,6 @@ Image:
 
 Per-machine state, written to the target before its first boot:
   --hostname NAME         seed /etc/hostname
-  --password USER         prompt for USER's password (repeatable)
-  --password-file USER=PATH
-                          read USER's password from the first line of
-                          PATH (repeatable)
-  --password-hash USER=HASH
-                          set USER's crypt(3) hash as-is (repeatable)
 
 Tailscale: the installer's own node moves to the installed system, so
 it is logged in once and the installed machine boots as that node:
@@ -85,12 +74,6 @@ the image or the repart profile (--karg, --filesystem, ...) are
 refused. REGISTRY_AUTH_FILE is honoured for private registries.
 `
 
-// pairs collects repeatable flags.
-type pairs []string
-
-func (p *pairs) String() string     { return strings.Join(*p, ",") }
-func (p *pairs) Set(v string) error { *p = append(*p, v); return nil }
-
 func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
@@ -113,14 +96,12 @@ type flags struct {
 	tsSSH          bool
 	tsTags         string
 	nonInteractive bool
-	prompt         pairs
 }
 
 func run(ctx context.Context, args []string, stdin *os.File, stdout, stderr io.Writer) error {
 	defRef := envOr("OSIMAGE_DEFAULT_REF", installer.DefaultRef)
 
 	var f flags
-	var pwFiles, pwHashes pairs
 	fs := flag.NewFlagSet("osimage-install", flag.ContinueOnError)
 	fs.SetOutput(stderr)
 	fs.Usage = func() { fmt.Fprint(stderr, usage) }
@@ -134,9 +115,6 @@ func run(ctx context.Context, args []string, stdin *os.File, stdout, stderr io.W
 	fs.BoolVar(&f.tsSSH, "tailscale-ssh", false, "")
 	fs.StringVar(&f.tsTags, "tailscale-tags", "", "")
 	fs.BoolVar(&f.nonInteractive, "non-interactive", false, "")
-	fs.Var(&f.prompt, "password", "")
-	fs.Var(&pwFiles, "password-file", "")
-	fs.Var(&pwHashes, "password-hash", "")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -166,29 +144,6 @@ func run(ctx context.Context, args []string, stdin *os.File, stdout, stderr io.W
 		Paths:     installer.DefaultPaths,
 	}
 
-	for _, p := range pwHashes {
-		user, hash, ok := strings.Cut(p, "=")
-		if !ok {
-			return fmt.Errorf("--password-hash %q: want USER=HASH", p)
-		}
-		cfg.Passwords = append(cfg.Passwords, installer.Password{User: user, Hash: hash})
-	}
-	for _, p := range pwFiles {
-		user, path, ok := strings.Cut(p, "=")
-		if !ok {
-			return fmt.Errorf("--password-file %q: want USER=PATH", p)
-		}
-		pw, err := readPasswordFile(path)
-		if err != nil {
-			return fmt.Errorf("password for %s: %w", user, err)
-		}
-		hash, err := sha512crypt.Generate(pw)
-		if err != nil {
-			return err
-		}
-		cfg.Passwords = append(cfg.Passwords, installer.Password{User: user, Hash: hash})
-	}
-
 	if f.tailscale || f.tsKey != "" {
 		cfg.Tailscale = f.tailscaleOptions()
 	} else if f.tsHostname != "" || f.tsSSH || f.tsTags != "" {
@@ -207,22 +162,6 @@ func run(ctx context.Context, args []string, stdin *os.File, stdout, stderr io.W
 	if err := cfg.Validate(); err != nil {
 		return err
 	}
-	// Explicitly prompted users are checked now too, so a typo fails
-	// before any prompt.
-	given := map[string]bool{}
-	for _, p := range cfg.Passwords {
-		given[p.User] = true
-	}
-	for _, user := range f.prompt {
-		if err := shadow.ValidateUser(user); err != nil {
-			return err
-		}
-		if given[user] {
-			return fmt.Errorf("password for %s given more than once", user)
-		}
-		given[user] = true
-	}
-
 	t, err := installer.Preflight(ctx, cfg)
 	if err != nil {
 		return err
@@ -230,19 +169,6 @@ func run(ctx context.Context, args []string, stdin *os.File, stdout, stderr io.W
 
 	if interactive {
 		if err := ask(ctx, p, cfg, &f); err != nil {
-			return err
-		}
-	}
-
-	for _, user := range f.prompt {
-		if !isTerm {
-			return fmt.Errorf("a terminal is required to prompt for %s's password (use --password-file or --password-hash)", user)
-		}
-		pw, err := p.password(user, "")
-		if err != nil {
-			return err
-		}
-		if err := addPassword(cfg, user, pw); err != nil {
 			return err
 		}
 	}
@@ -271,7 +197,7 @@ func wipeQuestion(disk string, t *installer.Target) string {
 	return fmt.Sprintf("Erase %s (%s, currently %s) and install?", disk, t.Ident, t.Content)
 }
 
-// ask fills in the hostname, root's password and the Tailscale choice
+// ask fills in the hostname and the Tailscale choice
 // on the terminal, with the command line values as defaults.
 func ask(ctx context.Context, p *prompter, cfg *installer.Config, f *flags) error {
 	def := cfg.Hostname
@@ -284,25 +210,6 @@ func ask(ctx context.Context, p *prompter, cfg *installer.Config, f *flags) erro
 	}
 	if cfg.Hostname != "" || name != imageHostname() {
 		cfg.Hostname = name
-	}
-
-	// root, unless --password root asks for it explicitly later
-	if !slices.Contains(f.prompt, "root") {
-		keep := "no password (image default)"
-		for _, pw := range cfg.Passwords {
-			if pw.User == "root" {
-				keep = "the password from the command line"
-			}
-		}
-		pw, err := p.password("root", keep)
-		if err != nil {
-			return err
-		}
-		if pw != nil {
-			if err := addPassword(cfg, "root", pw); err != nil {
-				return err
-			}
-		}
 	}
 
 	// Tailscale: offered when the installer has it; the default is yes
@@ -348,23 +255,6 @@ func (f *flags) tailscaleOptions() *tailscale.Options {
 	return o
 }
 
-// addPassword hashes pw and sets it for user, replacing an earlier
-// entry (a prompt answer overrides the command line default).
-func addPassword(cfg *installer.Config, user string, pw []byte) error {
-	hash, err := sha512crypt.Generate(pw)
-	if err != nil {
-		return err
-	}
-	for i := range cfg.Passwords {
-		if cfg.Passwords[i].User == user {
-			cfg.Passwords[i].Hash = hash
-			return nil
-		}
-	}
-	cfg.Passwords = append(cfg.Passwords, installer.Password{User: user, Hash: hash})
-	return nil
-}
-
 // prepareTailscale logs the installer's node in (QR code or auth key)
 // and applies the requested name and SSH setting. A dry run only
 // reports the node's state.
@@ -403,21 +293,4 @@ func envOr(key, def string) string {
 		return v
 	}
 	return def
-}
-
-func readPasswordFile(path string) ([]byte, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-	line, err := bufio.NewReader(f).ReadString('\n')
-	if err != nil && !errors.Is(err, io.EOF) {
-		return nil, err
-	}
-	line = strings.TrimRight(line, "\r\n")
-	if line == "" {
-		return nil, fmt.Errorf("%s: empty password", path)
-	}
-	return []byte(line), nil
 }

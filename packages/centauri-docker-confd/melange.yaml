@@ -1,7 +1,7 @@
 package:
   name: centauri-docker-confd
   version: 1.6.4
-  epoch: 0
+  epoch: 1
   description: Generates centauri route configuration from Docker containers
   target-architecture:
     - x86_64
@@ -28,7 +28,6 @@ environment:
       - ca-certificates=20261020-r4
       - git=2.54.1-r0
       - go=1.27.4-r1
-      - go-licenses=2.0.1-r18
       - os-release=3.24.2-r0
 
 pipeline:
@@ -42,10 +41,10 @@ pipeline:
       packages: ./
       output: centauri-docker-confd
       static: "true"
-  - uses: go/licenses
+  - uses: license/install
     with:
-      module: github.com/csmith/centauri-docker-confd
       license: LICENCE
+  - uses: go/credits
 test:
   environment:
     contents:
@@ -59,7 +58,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/centauri-docker-confd
-        files: /notices/github.com/csmith/centauri-docker-confd/LICENCE /usr/share/licenses/centauri-docker-confd/LICENCE
+        files: /usr/share/licenses/centauri-docker-confd/LICENCE /usr/share/licenses/centauri-docker-confd/CREDITS
     - name: Fails loudly without a Docker daemon
       runs: |
         if /usr/bin/centauri-docker-confd >/tmp/confd.log 2>&1; then

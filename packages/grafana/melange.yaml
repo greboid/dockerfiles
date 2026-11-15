@@ -1,7 +1,7 @@
 package:
   name: grafana
   version: 13.3.1
-  epoch: 0
+  epoch: 1
   description: Observability and data visualization platform (server + embedded web)
   target-architecture:
     - x86_64
@@ -28,7 +28,6 @@ environment:
       - ca-certificates=20261020-r4
       - git=2.54.1-r0
       - go=1.27.4-r1
-      - go-licenses=2.0.1-r18
       - nodejs=24.22.3-r0
       - npm=11.12.1-r0
       - os-release=3.24.2-r0
@@ -61,10 +60,12 @@ pipeline:
       mkdir -p "${{targets.destdir}}/usr/share/grafana"
       cp -a public "${{targets.destdir}}/usr/share/grafana/public"
       cp -a conf "${{targets.destdir}}/usr/share/grafana/conf"
-  - uses: go/licenses
+  - uses: license/install
     with:
-      module: github.com/grafana/grafana
       license: LICENSE
+  - uses: go/credits
+    with:
+      skip-missing: "true"
 
 test:
   environment:
@@ -79,7 +80,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/grafana
-        files: /notices/github.com/grafana/grafana/LICENSE /usr/share/licenses/grafana/LICENSE /usr/share/grafana/conf/defaults.ini
+        files: /usr/share/licenses/grafana/LICENSE /usr/share/licenses/grafana/CREDITS /usr/share/grafana/conf/defaults.ini
         dirs: /usr/share/grafana/public
     - name: Prints version
       runs: |

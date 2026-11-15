@@ -1,7 +1,7 @@
 package:
   name: dozzle
   version: 11.4.3
-  epoch: 0
+  epoch: 1
   description: Real-time log viewer for Docker containers with a web interface
   target-architecture:
     - x86_64
@@ -28,7 +28,6 @@ environment:
       - ca-certificates=20261020-r4
       - git=2.54.1-r0
       - go=1.27.4-r1
-      - go-licenses=2.0.1-r18
       - nodejs=24.22.3-r0
       - npm=11.12.1-r0
       - openssl=3.5.9-r0
@@ -66,10 +65,10 @@ pipeline:
       output: dozzle
       static: "true"
       ldflags: -X github.com/amir20/dozzle/internal/cli.Version=${{package.version}}
-  - uses: go/licenses
+  - uses: license/install
     with:
-      module: github.com/amir20/dozzle
       license: LICENSE
+  - uses: go/credits
 
 test:
   environment:
@@ -84,7 +83,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/dozzle
-        files: /notices/github.com/amir20/dozzle/LICENSE /usr/share/licenses/dozzle/LICENSE
+        files: /usr/share/licenses/dozzle/LICENSE /usr/share/licenses/dozzle/CREDITS
     - uses: test/version
     - name: Refuses to start without a Docker daemon
       runs: |

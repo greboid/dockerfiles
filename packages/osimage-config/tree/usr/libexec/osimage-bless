@@ -1,5 +1,4 @@
 #!/bin/sh
-# Deterministic ESP mounting for systemd-bless-boot.
 
 PATH=/usr/bin:/bin:/usr/sbin:/sbin
 export PATH

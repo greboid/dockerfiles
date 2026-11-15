@@ -1,5 +1,4 @@
 #!/bin/sh
-# Roll back to the previous deployment after a failed boot assessment.
 
 PATH=/usr/bin:/bin:/usr/sbin:/sbin
 export PATH

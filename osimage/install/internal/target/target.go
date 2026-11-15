@@ -9,7 +9,7 @@
 //	state/deploy/<id>/var  ->  ../../os/default/var
 //
 // The osimage initramfs (90osimage-state in osimage-kernel) seeds
-// /var/lib/osimage/etc/{machine-id,hostname,shadow} only when they do
+// /var/lib/osimage/etc/{machine-id,hostname} only when they do
 // not exist yet, then binds them read-only over /etc. Writing them here
 // before the first boot therefore replaces the image defaults; the
 // machine-id in particular is generated here, so the read-only bind
@@ -19,12 +19,10 @@ package target
 import (
 	"crypto/rand"
 	"encoding/hex"
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
-	"syscall"
 )
 
 const (
@@ -45,26 +43,6 @@ func (r Root) Var() (string, error) {
 		return "", fmt.Errorf("%s not found on the installed root; not a bootc composefs install?", sharedVar)
 	}
 	return p, nil
-}
-
-// DeploymentEtc returns the /etc copy of the only deployment. A fresh
-// install has exactly one; anything else means this is not the disk
-// that was just installed.
-func (r Root) DeploymentEtc() (string, error) {
-	entries, err := os.ReadDir(filepath.Join(r.Path, deployDir))
-	if err != nil {
-		return "", fmt.Errorf("reading %s: %w", deployDir, err)
-	}
-	var ids []string
-	for _, e := range entries {
-		if e.IsDir() {
-			ids = append(ids, e.Name())
-		}
-	}
-	if len(ids) != 1 {
-		return "", fmt.Errorf("found %d deployments under %s, want exactly 1 on a fresh install", len(ids), deployDir)
-	}
-	return filepath.Join(r.Path, deployDir, ids[0], "etc"), nil
 }
 
 // ValidateHostname accepts an RFC 1123 host name of at most 64 bytes
@@ -129,34 +107,6 @@ func WriteMachineID(varDir, id string) error {
 		return err
 	}
 	return writeFile(filepath.Join(dir, "machine-id"), []byte(id+"\n"), 0o444, -1, -1)
-}
-
-// ReadShadow returns the image's shadow file and its owner.
-func ReadShadow(etcDir string) (content []byte, uid, gid int, err error) {
-	p := filepath.Join(etcDir, "shadow")
-	content, err = os.ReadFile(p)
-	if err != nil {
-		return nil, 0, 0, fmt.Errorf("reading the image's shadow: %w", err)
-	}
-	fi, err := os.Stat(p)
-	if err != nil {
-		return nil, 0, 0, err
-	}
-	st, ok := fi.Sys().(*syscall.Stat_t)
-	if !ok {
-		return nil, 0, 0, errors.New("cannot read shadow ownership")
-	}
-	return content, int(st.Uid), int(st.Gid), nil
-}
-
-// WriteShadow seeds /var/lib/osimage/etc/shadow (mode 0640, like the
-// initramfs seed).
-func WriteShadow(varDir string, content []byte, uid, gid int) error {
-	dir, err := ensureStateDir(varDir)
-	if err != nil {
-		return err
-	}
-	return writeFile(filepath.Join(dir, "shadow"), content, 0o640, uid, gid)
 }
 
 // writeFile writes atomically: nothing binds these paths yet, so a

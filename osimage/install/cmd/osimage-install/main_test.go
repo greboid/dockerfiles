@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/greboid/osimage-install/internal/installer"
-	"github.com/greboid/osimage-install/internal/sha512crypt"
 )
 
 func TestWipeQuestion(t *testing.T) {
@@ -26,55 +25,43 @@ func TestWipeQuestion(t *testing.T) {
 
 func TestAskDefaults(t *testing.T) {
 	t.Setenv("PATH", "") // no tailscale CLI: the Tailscale question is skipped
-	cfg := &installer.Config{
-		Hostname:  "box1",
-		Passwords: []installer.Password{{User: "root", Hash: "$6$s$fromflag"}},
-	}
+	cfg := &installer.Config{Hostname: "box1"}
 	// Enter on everything keeps the command line values.
-	p, out := fakePrompter("\n", "")
+	p, out := fakePrompter("\n")
 	if err := ask(context.Background(), p, cfg, &flags{hostname: "box1"}); err != nil {
 		t.Fatal(err)
 	}
-	if cfg.Hostname != "box1" || len(cfg.Passwords) != 1 || cfg.Passwords[0].Hash != "$6$s$fromflag" {
+	if cfg.Hostname != "box1" {
 		t.Errorf("defaults not kept: %+v", cfg)
 	}
-	for _, want := range []string{"Hostname [box1]: ", "[Enter keeps the password from the command line]"} {
-		if !strings.Contains(out.String(), want) {
-			t.Errorf("output missing %q: %q", want, out.String())
-		}
+	if !strings.Contains(out.String(), "Hostname [box1]: ") {
+		t.Errorf("output missing hostname prompt: %q", out.String())
 	}
 }
 
 func TestAskAnswers(t *testing.T) {
 	t.Setenv("PATH", "")
 	cfg := &installer.Config{}
-	p, out := fakePrompter("box2\n", "pw", "pw")
+	p, out := fakePrompter("box2\n")
 	if err := ask(context.Background(), p, cfg, &flags{}); err != nil {
 		t.Fatal(err)
 	}
 	if cfg.Hostname != "box2" {
 		t.Errorf("hostname = %q", cfg.Hostname)
 	}
-	if !strings.Contains(out.String(), "[Enter keeps no password (image default)]") {
-		t.Errorf("prompt = %q", out.String())
-	}
-	if len(cfg.Passwords) != 1 || cfg.Passwords[0].User != "root" {
-		t.Fatalf("passwords = %+v", cfg.Passwords)
-	}
-	salt := strings.Split(cfg.Passwords[0].Hash, "$")[2]
-	if sha512crypt.Crypt([]byte("pw"), []byte(salt), sha512crypt.DefaultRounds) != cfg.Passwords[0].Hash {
-		t.Error("root hash is not the typed password")
+	if strings.Contains(out.String(), "assword") {
+		t.Errorf("unexpected password prompt: %q", out.String())
 	}
 }
 
 func TestAskImageDefaultHostname(t *testing.T) {
 	t.Setenv("PATH", "")
 	cfg := &installer.Config{}
-	p, _ := fakePrompter("\n", "")
+	p, _ := fakePrompter("\n")
 	if err := ask(context.Background(), p, cfg, &flags{}); err != nil {
 		t.Fatal(err)
 	}
-	if cfg.Hostname != "" || len(cfg.Passwords) != 0 {
+	if cfg.Hostname != "" {
 		t.Errorf("Enter everywhere should seed nothing: %+v", cfg)
 	}
 }

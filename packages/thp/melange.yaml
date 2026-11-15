@@ -1,7 +1,7 @@
 package:
   name: thp
   version: 1.4.0
-  epoch: 2
+  epoch: 3
   description: Tailscale HTTP proxy forwarding tailnet requests to an upstream
   target-architecture:
     - x86_64
@@ -28,7 +28,6 @@ environment:
       - ca-certificates=20261020-r4
       - git=2.54.1-r0
       - go=1.27.4-r1
-      - go-licenses=2.0.1-r18
       - os-release=3.24.2-r0
 
 vars:
@@ -49,10 +48,10 @@ pipeline:
   - uses: dirs
     with:
       dirs: ${{vars.runtime-dirs}}
-  - uses: go/licenses
+  - uses: license/install
     with:
-      module: github.com/greboid/thp
       license: LICENCE
+  - uses: go/credits
 test:
   environment:
     contents:
@@ -66,6 +65,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/thp
+        files: /usr/share/licenses/thp/LICENCE /usr/share/licenses/thp/CREDITS
 update:
   enabled: true
   github:

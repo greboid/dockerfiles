@@ -1,0 +1,84 @@
+diff --git a/gocredits.go b/gocredits.go
+index 5c51e22..21157df 100644
+--- a/gocredits.go
++++ b/gocredits.go
+@@ -9,6 +9,7 @@ import (
+ 	"net/http"
+ 	"os"
+ 	"path/filepath"
++	"strings"
+ 	"text/template"
+ 	"unicode/utf8"
+ )
+@@ -230,7 +231,7 @@ func findLicense(dir string) (string, string, error) {
+ 		}
+ 	}
+ 	if fileName == "" {
+-		return "", "", os.ErrNotExist
++		return findReuseLicenses(dir)
+ 	}
+ 	bs, err := os.ReadFile(filepath.Join(dir, fileName))
+ 	if err != nil {
+@@ -239,6 +240,30 @@ func findLicense(dir string) (string, string, error) {
+ 	return fileName, string(bs), nil
+ }
+ 
++// findReuseLicenses reads the license texts of a REUSE-style LICENSES
++// directory, used by modules with no license file at their root.
++func findReuseLicenses(dir string) (string, string, error) {
++	files, err := os.ReadDir(filepath.Join(dir, "LICENSES"))
++	if err != nil {
++		return "", "", err
++	}
++	var texts []string
++	for _, f := range files {
++		if f.IsDir() {
++			continue
++		}
++		bs, err := os.ReadFile(filepath.Join(dir, "LICENSES", f.Name()))
++		if err != nil {
++			return "", "", err
++		}
++		texts = append(texts, string(bs))
++	}
++	if len(texts) == 0 {
++		return "", "", os.ErrNotExist
++	}
++	return "LICENSES", strings.Join(texts, "\n"), nil
++}
++
+ // findNotice returns the content of the NOTICE file in dir, or an empty string
+ // when there is none.
+ func findNotice(dir string) (string, error) {
+diff --git a/reuse_test.go b/reuse_test.go
+new file mode 100644
+index 0000000..cc05549
+--- /dev/null
++++ b/reuse_test.go
+@@ -0,0 +1,26 @@
++package gocredits
++
++import (
++	"os"
++	"path/filepath"
++	"testing"
++)
++
++func TestFindLicenseReuseDir(t *testing.T) {
++	dir := t.TempDir()
++	if err := os.MkdirAll(filepath.Join(dir, "LICENSES"), 0o755); err != nil {
++		t.Fatal(err)
++	}
++	for name, content := range map[string]string{"Apache-2.0.txt": "apache\n", "MIT.txt": "mit\n"} {
++		if err := os.WriteFile(filepath.Join(dir, "LICENSES", name), []byte(content), 0o644); err != nil {
++			t.Fatal(err)
++		}
++	}
++	name, content, err := findLicense(dir)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if name != "LICENSES" || content != "apache\n\nmit\n" {
++		t.Fatalf("got %q %q", name, content)
++	}
++}

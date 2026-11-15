@@ -3,25 +3,15 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"errors"
 	"strings"
 	"testing"
 
 	"github.com/greboid/osimage-install/internal/installer"
 )
 
-func fakePrompter(lines string, secrets ...string) (*prompter, *bytes.Buffer) {
+func fakePrompter(lines string) (*prompter, *bytes.Buffer) {
 	var out bytes.Buffer
-	p := &prompter{in: bufio.NewReader(strings.NewReader(lines)), out: &out}
-	p.secret = func() ([]byte, error) {
-		if len(secrets) == 0 {
-			return nil, errors.New("no more input")
-		}
-		s := secrets[0]
-		secrets = secrets[1:]
-		return []byte(s), nil
-	}
-	return p, &out
+	return &prompter{in: bufio.NewReader(strings.NewReader(lines)), out: &out}, &out
 }
 
 func TestHostname(t *testing.T) {
@@ -134,24 +124,6 @@ func TestFormatSize(t *testing.T) {
 	} {
 		if got := formatSize(b); got != want {
 			t.Errorf("formatSize(%d) = %q, want %q", b, got, want)
-		}
-	}
-}
-
-func TestPassword(t *testing.T) {
-	p, _ := fakePrompter("", "")
-	if got, err := p.password("root", "no password"); err != nil || got != nil {
-		t.Errorf("Enter with a keep = %q, %v; want nil", got, err)
-	}
-
-	p, out := fakePrompter("", "", "a", "b", "s3cret", "s3cret")
-	got, err := p.password("root", "")
-	if err != nil || string(got) != "s3cret" {
-		t.Errorf("password() = %q, %v", got, err)
-	}
-	for _, want := range []string{"empty password refused", "passwords do not match"} {
-		if !strings.Contains(out.String(), want) {
-			t.Errorf("output missing %q: %q", want, out.String())
 		}
 	}
 }

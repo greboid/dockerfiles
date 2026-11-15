@@ -1,7 +1,7 @@
 package:
   name: tailscale
   version: 1.104.7
-  epoch: 0
+  epoch: 1
   description: Tailscale daemon, CLI and container entrypoint (userspace networking)
   target-architecture:
     - x86_64
@@ -28,7 +28,6 @@ environment:
       - ca-certificates=20261020-r4
       - git=2.54.1-r0
       - go=1.27.4-r1
-      - go-licenses=2.0.1-r18
       - os-release=3.24.2-r0
 
 vars:
@@ -66,11 +65,10 @@ pipeline:
   - name: copy the systemd unit
     runs: |
       install -Dm644 tailscaled.service ${{targets.destdir}}/usr/lib/systemd/system/tailscaled.service
-  - uses: go/licenses
+  - uses: license/install
+  - uses: go/credits
     with:
-      packages: ./cmd/tailscaled ./cmd/tailscale ./cmd/containerboot
-      ignore-extra: github.com/golang/freetype/raster github.com/golang/freetype/truetype
-      module: tailscale.com
+      skip-missing: "true"
 test:
   environment:
     contents:
@@ -84,7 +82,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/tailscaled /usr/bin/tailscale /usr/bin/containerboot
-        files: /notices/tailscale.com/LICENSE /usr/share/licenses/tailscale/LICENSE /usr/lib/tmpfiles.d/tailscale.conf /usr/lib/systemd/system/tailscaled.service
+        files: /usr/share/licenses/tailscale/LICENSE /usr/share/licenses/tailscale/CREDITS /usr/lib/tmpfiles.d/tailscale.conf /usr/lib/systemd/system/tailscaled.service
         dirs: ${{vars.runtime-dirs}}
     - uses: test/version
       with:

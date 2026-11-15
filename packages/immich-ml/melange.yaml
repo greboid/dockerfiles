@@ -80,9 +80,7 @@ pipeline:
       cp -a /opt/venv "${{targets.destdir}}/opt/venv"
       cp -a machine-learning/immich_ml "${{targets.destdir}}/usr/src/immich_ml"
       cp -a machine-learning/scripts/healthcheck.py "${{targets.destdir}}/usr/src/healthcheck.py"
-  - uses: go/licenses
-    with:
-      save: "false"
+  - uses: license/install
 test:
   environment:
     contents:

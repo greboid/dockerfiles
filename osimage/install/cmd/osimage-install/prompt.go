@@ -10,8 +10,6 @@ import (
 	"strconv"
 	"strings"
 
-	"golang.org/x/term"
-
 	"github.com/greboid/osimage-install/internal/installer"
 	"github.com/greboid/osimage-install/internal/target"
 )
@@ -19,22 +17,12 @@ import (
 // prompter asks questions on the terminal. Every question has a
 // default (from the command line, or the image), taken on Enter.
 type prompter struct {
-	in     *bufio.Reader
-	out    io.Writer
-	secret func() ([]byte, error)
+	in  *bufio.Reader
+	out io.Writer
 }
 
 func newTermPrompter(stdin *os.File, out io.Writer) *prompter {
-	fd := int(stdin.Fd())
-	return &prompter{
-		in:  bufio.NewReader(stdin),
-		out: out,
-		secret: func() ([]byte, error) {
-			b, err := term.ReadPassword(fd)
-			fmt.Fprintln(out)
-			return b, err
-		},
-	}
+	return &prompter{in: bufio.NewReader(stdin), out: out}
 }
 
 func (p *prompter) line(q string) (string, error) {
@@ -157,38 +145,4 @@ func formatSize(b uint64) string {
 		return fmt.Sprintf("%.1f TiB", float64(b)/(1<<40))
 	}
 	return fmt.Sprintf("%.0f GiB", float64(b)/(1<<30))
-}
-
-// password asks for a new password twice. keep describes what an empty
-// answer keeps (nil is returned then); with keep empty a password is
-// required.
-func (p *prompter) password(user, keep string) ([]byte, error) {
-	for {
-		if keep != "" {
-			fmt.Fprintf(p.out, "Password for %s [Enter keeps %s]: ", user, keep)
-		} else {
-			fmt.Fprintf(p.out, "New password for %s: ", user)
-		}
-		pw1, err := p.secret()
-		if err != nil {
-			return nil, err
-		}
-		if len(pw1) == 0 {
-			if keep != "" {
-				return nil, nil
-			}
-			fmt.Fprintln(p.out, "empty password refused")
-			continue
-		}
-		fmt.Fprint(p.out, "Retype password: ")
-		pw2, err := p.secret()
-		if err != nil {
-			return nil, err
-		}
-		if string(pw1) != string(pw2) {
-			fmt.Fprintln(p.out, "passwords do not match")
-			continue
-		}
-		return pw1, nil
-	}
 }

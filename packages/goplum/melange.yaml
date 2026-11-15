@@ -1,7 +1,7 @@
 package:
   name: goplum
   version: 1.4.0
-  epoch: 0
+  epoch: 1
   description: Configurable health checker with a gRPC API
   target-architecture:
     - x86_64
@@ -28,7 +28,6 @@ environment:
       - ca-certificates=20261020-r4
       - git=2.54.1-r0
       - go=1.27.4-r1
-      - go-licenses=2.0.1-r18
       - os-release=3.24.2-r0
 
 pipeline:
@@ -42,10 +41,10 @@ pipeline:
       packages: ./cmd/goplum
       output: goplum
       static: "true"
-  - uses: go/licenses
+  - uses: license/install
     with:
-      checks: chameth.com/goplum/LICENCE github.com/csmith/envflag/v2/LICENCE
       license: LICENCE
+  - uses: go/credits
 test:
   environment:
     contents:
@@ -60,7 +59,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/goplum
-        files: /notices/chameth.com/goplum/LICENCE /notices/github.com/csmith/envflag/v2/LICENCE /usr/share/licenses/goplum/LICENCE
+        files: /usr/share/licenses/goplum/LICENCE /usr/share/licenses/goplum/CREDITS
 update:
   enabled: true
   github:

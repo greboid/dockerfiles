@@ -1,0 +1,86 @@
+diff --git a/gocredits.go b/gocredits.go
+index 83f93b9..5c51e22 100644
+--- a/gocredits.go
++++ b/gocredits.go
+@@ -154,11 +154,10 @@ func takeCredits(dir string, skipMissing bool) ([]*license, error) {
+ 		FilePath: lpath,
+ 		Content:  string(bs),
+ 	}}
+-	gopath, err := run("go", "env", "GOPATH")
++	gopkgmod, err := run("go", "env", "GOMODCACHE")
+ 	if err != nil {
+ 		return nil, err
+ 	}
+-	gopkgmod := filepath.Join(gopath, "pkg", "mod")
+ 
+ 	ld, err := depsFromGoList(dir)
+ 	if err != nil {
+diff --git a/golist.go b/golist.go
+index 23dc10b..59c1183 100644
+--- a/golist.go
++++ b/golist.go
+@@ -220,6 +220,13 @@ func (r *depsResolver) resolve() (*licenseDirs, error) {
+ 				l.dir = m.Replace.Dir
+ 			}
+ 		}
++		// go list reports no module directory in vendor mode; vendored
++		// modules keep their files under vendor/<module path>.
++		if l.dir == "" {
++			if d := filepath.Join(r.dir, "vendor", m.Path); isDir(d) {
++				l.dir = d
++			}
++		}
+ 		modules[l.name] = l
+ 	}
+ 	names := make([]string, 0, len(modules))
+@@ -487,3 +494,8 @@ func constraintLines(src []byte) string {
+ 	}
+ 	return strings.Join(lines, "\n")
+ }
++
++func isDir(path string) bool {
++	fi, err := os.Stat(path)
++	return err == nil && fi.IsDir()
++}
+diff --git a/vendor_test.go b/vendor_test.go
+new file mode 100644
+index 0000000..c0a710b
+--- /dev/null
++++ b/vendor_test.go
+@@ -0,0 +1,36 @@
++package gocredits
++
++import (
++	"os"
++	"path/filepath"
++	"testing"
++)
++
++func TestTakeCreditsVendored(t *testing.T) {
++	dir := t.TempDir()
++	files := map[string]string{
++		"go.mod":                         "module example.com/m\n\ngo 1.21\n\nrequire example.com/dep v1.0.0\n",
++		"main.go":                        "package main\n\nimport _ \"example.com/dep\"\n\nfunc main() {}\n",
++		"vendor/modules.txt":             "# example.com/dep v1.0.0\n## explicit; go 1.21\nexample.com/dep\n",
++		"vendor/example.com/dep/dep.go":  "package dep\n",
++		"vendor/example.com/dep/LICENSE": "dep license\n",
++	}
++	for name, content := range files {
++		path := filepath.Join(dir, name)
++		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
++			t.Fatal(err)
++		}
++		if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
++			t.Fatal(err)
++		}
++	}
++	t.Setenv("GOFLAGS", "-mod=vendor")
++	t.Setenv("GOPROXY", "off")
++	licenses, err := takeCredits(dir, false)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if len(licenses) != 2 || licenses[1].Name != "example.com/dep" || licenses[1].Content != "dep license\n" {
++		t.Fatalf("unexpected credits: %+v", licenses[1:])
++	}
++}

@@ -29,7 +29,7 @@ contents:
     - osimage-kernel=7.1.5-r13
     - osimage-kernel-initramfs=7.1.5-r13
     - linux-firmware-none=20260519-r0
-    - osimage-config=1.0.0-r26
+    - osimage-config=1.0.0-r27
     - e2fsprogs=1.47.4-r0
     - agetty=2.42.3-r1
     - util-linux-misc=2.42.3-r1

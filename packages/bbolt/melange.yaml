@@ -1,7 +1,7 @@
 package:
   name: bbolt
   version: 1.5.0
-  epoch: 4
+  epoch: 5
   description: Command line tool for inspecting bbolt databases
   target-architecture:
     - x86_64
@@ -28,7 +28,6 @@ environment:
       - ca-certificates=20261020-r4
       - git=2.54.1-r0
       - go=1.27.4-r1
-      - go-licenses=2.0.1-r18
       - os-release=3.24.2-r0
 
 pipeline:
@@ -43,10 +42,10 @@ pipeline:
       output: bbolt
       static: "true"
       ldflags: -X go.etcd.io/bbolt/version.Version=v${{package.version}}
-  - uses: go/licenses
+  - uses: license/install
     with:
-      module: go.etcd.io/bbolt
       license: LICENSE
+  - uses: go/credits
 
 test:
   environment:
@@ -61,7 +60,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/bbolt
-        files: /notices/go.etcd.io/bbolt/LICENSE /usr/share/licenses/bbolt/LICENSE
+        files: /usr/share/licenses/bbolt/LICENSE /usr/share/licenses/bbolt/CREDITS
     - name: Creates a database and reports on it
       runs: |
         /usr/bin/bbolt bench --path /tmp/bbolt-test.db --count 10 --work >/tmp/bbolt-bench.log 2>&1

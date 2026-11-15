@@ -1,7 +1,7 @@
 package:
   name: ergo
   version: 2.19.1
-  epoch: 12
+  epoch: 13
   description: Modern IRC server written in Go
   target-architecture:
     - x86_64
@@ -45,6 +45,7 @@ pipeline:
       mkdir -p "${{targets.destdir}}/ircd-bin"
       cp -R languages "${{targets.destdir}}/ircd-bin/languages"
   - uses: license/install
+  - uses: go/credits
 test:
   environment:
     contents:
@@ -58,7 +59,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/ergo
-        files: /usr/share/licenses/ergo/LICENSE
+        files: /usr/share/licenses/ergo/LICENSE /usr/share/licenses/ergo/CREDITS
         dirs: /ircd-bin/languages
         nonempty-dirs: /ircd-bin/languages
     - uses: test/version

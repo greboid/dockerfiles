@@ -1,7 +1,7 @@
 package:
   name: irc-bot
   version: 5.1.0
-  epoch: 3
+  epoch: 4
   description: Extensible IRC bot with a gRPC plugin interface
   target-architecture:
     - x86_64
@@ -28,7 +28,6 @@ environment:
       - ca-certificates=20261020-r4
       - git=2.54.1-r0
       - go=1.27.4-r1
-      - go-licenses=2.0.1-r18
       - os-release=3.24.2-r0
 
 pipeline:
@@ -42,9 +41,8 @@ pipeline:
       packages: ./cmd/bot
       output: irc-bot
       static: "true"
-  - uses: go/licenses
-    with:
-      module: github.com/greboid/irc-bot/v5
+  - uses: license/install
+  - uses: go/credits
 test:
   environment:
     contents:
@@ -58,7 +56,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/irc-bot
-        files: /notices/github.com/greboid/irc-bot/v5/LICENSE /usr/share/licenses/irc-bot/LICENSE
+        files: /usr/share/licenses/irc-bot/LICENSE /usr/share/licenses/irc-bot/CREDITS
 update:
   enabled: true
   github:

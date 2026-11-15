@@ -46,9 +46,8 @@ pipeline:
     with:
       output: static-web-server
       auditable: "false"
-  - uses: go/licenses
+  - uses: license/install
     with:
-      save: "false"
       license: LICENSE-APACHE LICENSE-MIT
 test:
   environment:

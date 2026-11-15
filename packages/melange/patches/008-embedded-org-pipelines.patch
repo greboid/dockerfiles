@@ -297,57 +297,63 @@ index 24ae09c..2e613e1 100644
 +        -tags "${{inputs.tags}}" \
 +        -o "${{targets.destdir}}/${{inputs.prefix}}/${{inputs.install-dir}}/${{inputs.output}}" \
 +        ${{inputs.packages}}
-diff --git c/pkg/build/pipelines/go/licenses.yaml i/pkg/build/pipelines/go/licenses.yaml
+diff --git c/pkg/build/pipelines/go/credits.yaml i/pkg/build/pipelines/go/credits.yaml
 new file mode 100644
-index 0000000..e06e73a
+index 0000000..d93b515
 --- /dev/null
-+++ i/pkg/build/pipelines/go/licenses.yaml
-@@ -0,0 +1,134 @@
-+name: Install and check go module licenses
++++ i/pkg/build/pipelines/go/credits.yaml
+@@ -0,0 +1,36 @@
++name: Install the Go dependency credits
++
++needs:
++  packages:
++    - gocredits
 +
 +inputs:
-+  module:
++  directory:
 +    description: |
-+      Go module path of the built project, used as the notices directory
-+      name (notices/<module>/<license>).
-+    default: ''
++      Go module directory to credit, relative to the source root.
++    default: .
 +
++  skip-missing:
++    description: |
++      Skip, with a warning, dependency modules that ship no license file
++      instead of failing.
++    default: 'false'
++
++pipeline:
++  # Fails when a dependency module ships no license file, unless
++  # skip-missing is set. gocredits walks
++  # the source tree for packages, so the module cache go/build keeps there
++  # is hidden behind a dot-directory while it runs.
++  - runs: |
++      cd "${{inputs.directory}}"
++      cache="$PWD/go-package-cache"
++      hidden="$PWD/.go-package-cache"
++      [ -d "$cache" ] && mv "$cache" "$hidden"
++      mkdir -p "${{targets.destdir}}/usr/share/licenses/${{package.name}}"
++      skip=""
++      [ "${{inputs.skip-missing}}" = "true" ] && skip="-skip-missing"
++      rc=0
++      GOMODCACHE="$hidden" GOTELEMETRY=off gocredits $skip . \
++        > "${{targets.destdir}}/usr/share/licenses/${{package.name}}/CREDITS" || rc=$?
++      [ -d "$hidden" ] && mv "$hidden" "$cache"
++      exit $rc
+diff --git c/pkg/build/pipelines/license/install.yaml i/pkg/build/pipelines/license/install.yaml
+new file mode 100644
+index 0000000..89869fd
+--- /dev/null
++++ i/pkg/build/pipelines/license/install.yaml
+@@ -0,0 +1,33 @@
++name: Install the package's license files
++
++inputs:
 +  license:
 +    description: |
-+      Path(s) to the module's license file(s), space-separated; each is
-+      installed under usr/share/licenses/<package.name>/ (and, when a
-+      module is named, notices/<module>/). When empty, a license file is
-+      looked up in the source root among LICENSE, LICENSE.md, LICENCE,
-+      LICENCE.md, COPYING and COPYING.md.
++      Path(s) to the license file(s) to install, space-separated. When
++      empty, a license file is looked up in the source root among LICENSE,
++      LICENSE.md, LICENCE, LICENCE.md, COPYING and COPYING.md.
 +    default: ''
-+
-+  packages:
-+    description: |
-+      Go package patterns handed to go-licenses for checks and saves.
-+    default: ./
-+
-+  checks:
-+    description: |
-+      Space-separated module/license-file pairs naming the dependency
-+      licenses the package must ship: each is resolved from the go module
-+      cache the build populated (go-package-cache in the workspace, the
-+      same cache go/build uses) and installed as notices/<module>/<file>.
-+      Example: "github.com/docker/docker/LICENSE". The special value
-+      "true" instead runs go-licenses check over the packages, failing on
-+      unknown or forbidden dependency licenses.
-+    default: 'false'
-+
-+  ignore-extra:
-+    description: |
-+      Tolerate go-licenses check failures (for dependency trees with
-+      licenses outside the org's allowlist).
-+    default: 'false'
-+
-+  save:
-+    description: |
-+      Save the transitive dependency license texts under
-+      usr/share/licenses/<package.name>/third-party.
-+    default: 'false'
 +
 +pipeline:
 +  - runs: |
@@ -360,116 +366,18 @@ index 0000000..e06e73a
 +          fi
 +        done
 +      fi
-+
++      if [ -z "$lic" ]; then
++        echo "license/install: no license file found" >&2
++        exit 1
++      fi
 +      for f in $lic; do
 +        if [ ! -f "$f" ]; then
-+          echo "go/licenses: no license file found: $f" >&2
++          echo "license/install: no license file found: $f" >&2
 +          exit 1
 +        fi
 +        install -Dm 0644 "$f" \
 +          "${{targets.destdir}}/usr/share/licenses/${{package.name}}/$(basename "$f")"
-+        if [ -n "${{inputs.module}}" ]; then
-+          install -Dm 0644 "$f" \
-+            "${{targets.destdir}}/notices/${{inputs.module}}/$(basename "$f")"
-+        fi
 +      done
-+
-+      if [ "${{inputs.checks}}" = "true" ]; then
-+        if ! command -v go-licenses >/dev/null 2>&1; then
-+          echo "go/licenses: checks=true requires the go-licenses package in the build environment" >&2
-+          exit 1
-+        fi
-+        if ! go-licenses check "${{inputs.packages}}"; then
-+          if [ "${{inputs.ignore-extra}}" != "true" ]; then
-+            exit 1
-+          fi
-+          echo "go/licenses: check failed but ignore-extra is set; continuing"
-+        fi
-+      elif [ -n "${{inputs.checks}}" ] && [ "${{inputs.checks}}" != "false" ]; then
-+        modcache="$PWD/go-package-cache"
-+        mainmod=""
-+        if command -v go >/dev/null 2>&1; then
-+          mainmod=$(GOMODCACHE="$modcache" GOTELEMETRY=off go list -m 2>/dev/null || true)
-+        fi
-+        find_module_license() {
-+          _cur="$1"
-+          while [ -n "$_cur" ]; do
-+            _enc=$(printf '%s' "$_cur" | awk '{ r = "";
-+              for (i = 1; i <= length($0); i++) {
-+                c = substr($0, i, 1)
-+                if (c >= "A" && c <= "Z") r = r "!" tolower(c); else r = r c
-+              }
-+              print r }')
-+            for _f in "$modcache/$_enc@"*/"$2"; do
-+              if [ -f "$_f" ]; then
-+                printf '%s\n' "$_f"
-+                return 0
-+              fi
-+            done
-+            case "$_cur" in */*) _cur="${_cur%/*}" ;; *) _cur="" ;; esac
-+          done
-+          return 1
-+        }
-+        for pair in ${{inputs.checks}}; do
-+          mod="${pair%/*}"
-+          licfile="${pair##*/}"
-+          if [ -z "$mod" ] || [ "$mod" = "$pair" ]; then
-+            echo "go/licenses: checks entry is not module/license-file: $pair" >&2
-+            exit 1
-+          fi
-+          found=""
-+          if [ -n "$mainmod" ] && [ "$mod" = "$mainmod" ] && [ -f "$licfile" ]; then
-+            found="$licfile"
-+          elif ! found=$(find_module_license "$mod" "$licfile"); then
-+            echo "go/licenses: no $licfile for module $mod in the go module cache" >&2
-+            exit 1
-+          fi
-+          install -Dm 0644 "$found" \
-+            "${{targets.destdir}}/notices/$mod/$licfile"
-+        done
-+      fi
-+
-+      if [ "${{inputs.save}}" = "true" ]; then
-+        if ! command -v go-licenses >/dev/null 2>&1; then
-+          echo "go/licenses: save=true requires the go-licenses package in the build environment" >&2
-+          exit 1
-+        fi
-+        go-licenses save "${{inputs.packages}}" \
-+          --save_path "${{targets.destdir}}/usr/share/licenses/${{package.name}}/third-party"
-+      fi
-diff --git c/pkg/build/pipelines/license/install.yaml i/pkg/build/pipelines/license/install.yaml
-new file mode 100644
-index 0000000..40d720a
---- /dev/null
-+++ i/pkg/build/pipelines/license/install.yaml
-@@ -0,0 +1,27 @@
-+name: Install the package's license file
-+
-+inputs:
-+  license:
-+    description: |
-+      Path to the license file to install. When empty, a license file is
-+      looked up in the source root among LICENSE, LICENSE.md, LICENCE,
-+      LICENCE.md, COPYING and COPYING.md.
-+    default: ''
-+
-+pipeline:
-+  - runs: |
-+      lic="${{inputs.license}}"
-+      if [ -z "$lic" ]; then
-+        for candidate in LICENSE LICENSE.md LICENCE LICENCE.md COPYING COPYING.md; do
-+          if [ -f "$candidate" ]; then
-+            lic="$candidate"
-+            break
-+          fi
-+        done
-+      fi
-+      if [ -z "$lic" ] || [ ! -f "$lic" ]; then
-+        echo "license/install: no license file found" >&2
-+        exit 1
-+      fi
-+      install -Dm 0644 "$lic" \
-+        "${{targets.destdir}}/usr/share/licenses/${{package.name}}/$(basename "$lic")"
 diff --git c/pkg/build/pipelines/pnpm/build.yaml i/pkg/build/pipelines/pnpm/build.yaml
 new file mode 100644
 index 0000000..23eb44e

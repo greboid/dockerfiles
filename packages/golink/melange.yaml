@@ -1,7 +1,7 @@
 package:
   name: golink
   version: 1.0.0
-  epoch: 22
+  epoch: 23
   description: A private shortlink service for your tailnet
   target-architecture:
     - x86_64
@@ -28,7 +28,6 @@ environment:
       - ca-certificates=20261020-r4
       - git=2.54.1-r0
       - go=1.27.4-r1
-      - go-licenses=2.0.1-r18
       - os-release=3.24.2-r0
 
 vars:
@@ -48,9 +47,8 @@ pipeline:
   - uses: dirs
     with:
       dirs: ${{vars.runtime-dirs}}
-  - uses: go/licenses
-    with:
-      module: github.com/tailscale/golink
+  - uses: license/install
+  - uses: go/credits
 test:
   environment:
     contents:
@@ -64,7 +62,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/golink
-        files: /notices/github.com/tailscale/golink/LICENSE /usr/share/licenses/golink/LICENSE
+        files: /usr/share/licenses/golink/LICENSE /usr/share/licenses/golink/CREDITS
     - name: Binary executes without serving
       runs: |
         /usr/bin/golink -h 2>&1 | grep -q dev-listen

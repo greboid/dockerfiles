@@ -1,7 +1,7 @@
 package:
   name: irc-goplum
   version: 4.2.0
-  epoch: 2
+  epoch: 3
   description: irc-bot plugin reporting goplum alert results to IRC channels
   target-architecture:
     - x86_64
@@ -28,7 +28,6 @@ environment:
       - ca-certificates=20261020-r4
       - git=2.54.1-r0
       - go=1.27.4-r1
-      - go-licenses=2.0.1-r18
       - os-release=3.24.2-r0
 
 pipeline:
@@ -42,9 +41,8 @@ pipeline:
       packages: ./cmd/goplum
       output: irc-goplum
       static: "true"
-  - uses: go/licenses
-    with:
-      module: github.com/greboid/irc-goplum/v4/cmd/goplum
+  - uses: license/install
+  - uses: go/credits
 test:
   environment:
     contents:
@@ -58,7 +56,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/irc-goplum
-        files: /notices/github.com/greboid/irc-goplum/v4/cmd/goplum/LICENSE /usr/share/licenses/irc-goplum/LICENSE
+        files: /usr/share/licenses/irc-goplum/LICENSE /usr/share/licenses/irc-goplum/CREDITS
 update:
   enabled: true
   github:

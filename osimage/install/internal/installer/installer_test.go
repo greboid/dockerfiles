@@ -164,10 +164,6 @@ func TestValidate(t *testing.T) {
 		"no disk":       func(c *Config) { c.Disk = "" },
 		"bad bootc arg": func(c *Config) { c.BootcArgs = []string{"--karg=x"} },
 		"bad hostname":  func(c *Config) { c.Hostname = "a_b" },
-		"plaintext":     func(c *Config) { c.Passwords = []Password{{"root", "hunter2"}} },
-		"duplicate user": func(c *Config) {
-			c.Passwords = []Password{{"root", "$6$s$h"}, {"root", "$6$s$i"}}
-		},
 		"tailscale bad hostname": func(c *Config) {
 			c.Tailscale = &tailscale.Options{AuthKeyFile: key, Hostname: "a_b"}
 		},
@@ -185,13 +181,13 @@ func TestDryRun(t *testing.T) {
 	var out bytes.Buffer
 	c := &Config{
 		Disk: "/dev/vda", SourceRef: DefaultRef, TargetRef: DefaultRef,
-		Hostname: "box1", Passwords: []Password{{"root", "$6$s$h"}},
-		DryRun: true, Stdout: &out, Stderr: &out, Paths: DefaultPaths,
+		Hostname: "box1",
+		DryRun:   true, Stdout: &out, Stderr: &out, Paths: DefaultPaths,
 	}
 	if err := Install(context.Background(), c, &Target{Path: "/dev/vda", Ident: "QEMU", ProfileVersion: "1.0.0-r3"}); err != nil {
 		t.Fatal(err)
 	}
-	for _, want := range []string{"== hostname: box1", "== password: root", "== dry run: bootc install to-disk"} {
+	for _, want := range []string{"== hostname: box1", "== dry run: bootc install to-disk"} {
 		if !strings.Contains(out.String(), want) {
 			t.Errorf("dry-run output missing %q:\n%s", want, out.String())
 		}

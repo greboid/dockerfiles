@@ -1,7 +1,7 @@
 package:
   name: tsp
   version: 1.3.3
-  epoch: 0
+  epoch: 1
   description: Tailscale TCP proxy forwarding tailnet connections to an upstream
   target-architecture:
     - x86_64
@@ -48,10 +48,10 @@ pipeline:
   - uses: dirs
     with:
       dirs: ${{vars.runtime-dirs}}
-  - uses: go/licenses
+  - uses: license/install
     with:
-      save: "false"
       license: LICENCE
+  - uses: go/credits
 test:
   environment:
     contents:
@@ -65,7 +65,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/tsp
-        files: /usr/share/licenses/tsp/LICENCE
+        files: /usr/share/licenses/tsp/LICENCE /usr/share/licenses/tsp/CREDITS
         dirs: ${{vars.runtime-dirs}}
     - name: Refuses to start without an upstream
       runs: |

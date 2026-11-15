@@ -1,7 +1,7 @@
 package:
   name: irc-github
   version: 4.0.5
-  epoch: 4
+  epoch: 5
   description: irc-bot plugin announcing GitHub events in IRC channels
   target-architecture:
     - x86_64
@@ -28,7 +28,6 @@ environment:
       - ca-certificates=20261020-r4
       - git=2.54.1-r0
       - go=1.27.4-r1
-      - go-licenses=2.0.1-r18
       - os-release=3.24.2-r0
 
 pipeline:
@@ -42,9 +41,8 @@ pipeline:
       packages: ./cmd/github
       output: irc-github
       static: "true"
-  - uses: go/licenses
-    with:
-      module: github.com/greboid/irc-github/v4/cmd/github
+  - uses: license/install
+  - uses: go/credits
 test:
   environment:
     contents:
@@ -58,7 +56,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/irc-github
-        files: /notices/github.com/greboid/irc-github/v4/cmd/github/LICENSE /usr/share/licenses/irc-github/LICENSE
+        files: /usr/share/licenses/irc-github/LICENSE /usr/share/licenses/irc-github/CREDITS
 update:
   enabled: true
   github:

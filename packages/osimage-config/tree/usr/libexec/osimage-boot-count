@@ -1,5 +1,4 @@
 #!/bin/sh
-# Stamp systemd-boot boot-counting suffixes onto bootc composefs BLS entries.
 
 PATH=/usr/bin:/bin:/usr/sbin:/sbin
 export PATH

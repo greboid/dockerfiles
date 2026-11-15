@@ -1,7 +1,7 @@
 package:
   name: soju
   version: 0.10.1
-  epoch: 21
+  epoch: 22
   description: IRC bouncer with a companion administrative client
   target-architecture:
     - x86_64
@@ -28,7 +28,6 @@ environment:
       - ca-certificates=20261020-r4
       - git=2.54.1-r0
       - go=1.27.4-r1
-      - go-licenses=2.0.1-r18
       - os-release=3.24.2-r0
   environment:
     GOFLAGS: -tags=moderncsqlite
@@ -57,10 +56,8 @@ pipeline:
   - uses: dirs
     with:
       dirs: ${{vars.runtime-dirs}}
-  - uses: go/licenses
-    with:
-      ignore-extra: codeberg.org/emersion/soju git.sr.ht/~sircmpwn/go-bare
-      checks: codeberg.org/emersion/go-scfg/LICENSE github.com/cespare/xxhash/v2/LICENSE.txt
+  - uses: license/install
+  - uses: go/credits
 test:
   environment:
     contents:
@@ -74,7 +71,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/soju /usr/bin/sojuctl
-        files: /notices/codeberg.org/emersion/go-scfg/LICENSE /usr/share/licenses/soju/LICENSE
+        files: /usr/share/licenses/soju/LICENSE /usr/share/licenses/soju/CREDITS
         dirs: ${{vars.runtime-dirs}}
     - name: Refuses to start without a config file
       runs: |

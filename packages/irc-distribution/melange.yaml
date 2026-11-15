@@ -1,7 +1,7 @@
 package:
   name: irc-distribution
   version: 1.1.0
-  epoch: 22
+  epoch: 23
   description: irc-bot plugin distributing webhook payloads to IRC channels
   target-architecture:
     - x86_64
@@ -28,7 +28,6 @@ environment:
       - ca-certificates=20261020-r4
       - git=2.54.1-r0
       - go=1.27.4-r1
-      - go-licenses=2.0.1-r18
       - os-release=3.24.2-r0
 
 pipeline:
@@ -42,10 +41,10 @@ pipeline:
       packages: ./cmd/distribution
       output: irc-distribution
       static: "true"
-  - uses: go/licenses
+  - uses: license/install
     with:
-      module: github.com/csmith/irc-distribution/cmd/distribution
       license: LICENCE
+  - uses: go/credits
 test:
   environment:
     contents:
@@ -59,7 +58,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/irc-distribution
-        files: /notices/github.com/csmith/irc-distribution/cmd/distribution/LICENCE /usr/share/licenses/irc-distribution/LICENCE
+        files: /usr/share/licenses/irc-distribution/LICENCE /usr/share/licenses/irc-distribution/CREDITS
 update:
   enabled: true
   github:

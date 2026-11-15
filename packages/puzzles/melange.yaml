@@ -1,7 +1,7 @@
 package:
   name: puzzles
   version: 1.0.3
-  epoch: 23
+  epoch: 24
   description: Word and image puzzle helper web service
   target-architecture:
     - x86_64
@@ -27,7 +27,6 @@ environment:
       - busybox=1.37.0-r31
       - ca-certificates=20261020-r4
       - go=1.27.4-r1
-      - go-licenses=2.0.1-r18
       - os-release=3.24.2-r0
 
 pipeline:
@@ -45,9 +44,8 @@ pipeline:
     runs: |
       install -d -m 0755 "${{targets.destdir}}/app/wordlists"
       install -m 0644 wordlists/*.wl "${{targets.destdir}}/app/wordlists/"
-  - uses: go/licenses
-    with:
-      checks: github.com/greboid/puzzles/LICENSE github.com/csmith/envflag/LICENCE github.com/csmith/kowalski/v5/LICENCE
+  - uses: license/install
+  - uses: go/credits
 test:
   environment:
     contents:
@@ -62,7 +60,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/puzzles
-        files: /app/wordlists/combined.wl /app/wordlists/urbandictionary.wl /notices/github.com/greboid/puzzles/LICENSE /notices/github.com/csmith/kowalski/v5/LICENCE /usr/share/licenses/puzzles/LICENSE
+        files: /app/wordlists/combined.wl /app/wordlists/urbandictionary.wl /usr/share/licenses/puzzles/LICENSE /usr/share/licenses/puzzles/CREDITS
 update:
   enabled: true
   github:
