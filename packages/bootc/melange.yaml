@@ -32,7 +32,7 @@ environment:
       - musl-dev=1.2.6-r3
       - pkgconf=2.5.1-r0
       - ostree-dev=2025.7-r1
-      - openssl-dev=3.5.9-r0
+      - openssl-dev=3.5.9-r1
       - pcre2-dev
       - patch
       - zstd=1.5.7-r2

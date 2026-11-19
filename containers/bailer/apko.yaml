@@ -11,8 +11,8 @@ contents:
     - ca-certificates-bundle=20261020-r4
     - tzdata=2026f-r0
     - os-release=3.24.2-r0
-    - bailer=0.2.0-r3
-    - restic=0.19.1-r3
+    - bailer=0.2.0-r5
+    - restic=0.19.1-r4
 
 accounts:
   run-as: 0

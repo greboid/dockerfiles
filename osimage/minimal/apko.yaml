@@ -41,11 +41,11 @@ contents:
     - qemu-guest-agent-systemd=1.0.0-r0
     - dbus=1.16.2-r4
     - erofs-utils=1.9.1-r0
-    - tailscale=1.104.7-r0
+    - tailscale=1.104.7-r1
     - docker=29.9.3-r1
     - docker-systemd=29.9.3-r1
     - containerd-systemd=2.3.7-r0
-    - docker-cli-compose=5.6.1-r0
+    - docker-cli-compose=5.7.2-r0
     - doas-pam=6.8.2-r0
     - pam-rssh=1.2.1-r0
     - doas-sudo-shim=0.2.0-r0
@@ -53,6 +53,7 @@ contents:
     - git=2.54.1-r0
     - openssh-client-default=10.3_p1-r2
     - nano=9.3-r0
+    - rsync=3.5.2-r1
 
 paths:
   - path: /boot

@@ -1,6 +1,6 @@
 package:
   name: immich
-  version: 3.4.1
+  version: 3.4.2
   epoch: 0
   description: Self-hosted photo and video management (server + embedded web)
   target-architecture:
@@ -61,7 +61,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 22b95194c80a2f2e6201093916b6c8c3d6d271dd
+      expected-commit: b6b4b80df113656bfa4872cab31c7319e89438a9
       repository: https://github.com/immich-app/immich
       tag: v${{package.version}}
   - uses: pnpm/install

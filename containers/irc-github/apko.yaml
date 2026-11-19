@@ -11,7 +11,7 @@ contents:
     - ca-certificates-bundle=20261020-r4
     - tzdata=2026f-r0
     - os-release=3.24.2-r0
-    - irc-github=4.0.5-r4
+    - irc-github=4.0.5-r5
 
 accounts:
   run-as: 65532:65532

@@ -1,7 +1,7 @@
 package:
   name: eclipse-mosquitto
-  version: 2.1.2
-  epoch: 1
+  version: 2.1.4
+  epoch: 0
   description: MQTT broker with TLS, websockets and persistence (statically linked)
   target-architecture:
     - x86_64
@@ -31,8 +31,8 @@ environment:
       - linux-headers=7.0.0-r1
       - make=4.4.1-r4
       - musl-dev=1.2.6-r3
-      - openssl-dev=3.5.9-r0
-      - openssl-libs-static=3.5.9-r0
+      - openssl-dev=3.5.9-r1
+      - openssl-libs-static=3.5.9-r1
       - cjson-dev=1.7.19-r1
       - cjson-static=1.7.19-r1
       - pkgconf=2.5.1-r0
@@ -45,7 +45,7 @@ vars:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 99fa50f30e325609394c324c8ff71cfbbe95d8ab
+      expected-commit: d69b6b757d05857fc54fd3c12628f22cf4b1540d
       repository: https://github.com/eclipse/mosquitto
       tag: v${{package.version}}
   - uses: patch

@@ -54,7 +54,7 @@ test:
       packages:
         - os-release=3.24.2-r0
         - busybox=1.37.0-r31
-        - openssl=3.5.9-r0
+        - openssl=3.5.9-r1
   pipeline:
     - uses: test/paths
       with:
