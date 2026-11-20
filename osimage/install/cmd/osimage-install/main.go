@@ -19,11 +19,16 @@ import (
 
 	"github.com/greboid/osimage-install/internal/installer"
 	"github.com/greboid/osimage-install/internal/tailscale"
+	"github.com/greboid/osimage-install/internal/target"
 )
 
 // seedHostname is the image default the initramfs seeds from
 // (osimage-config); the live installer ships the same file.
 const seedHostname = "/usr/lib/osimage/etc-seed/hostname"
+
+// defaultIPv6Gateway is the router's link-local address on netcup and
+// similar providers.
+const defaultIPv6Gateway = "fe80::1"
 
 const usage = `usage: osimage-install [options] [<disk>] [bootc install to-disk options]
 
@@ -33,9 +38,10 @@ with bootc: composefs backend, systemd-boot, systemd-repart layout
 
 On a terminal, <disk> may be omitted: the installer lists the disks
 (usable ones numbered, refused ones with the reason) and asks which
-to install to. It then asks for the hostname and whether to move the
-installer's Tailscale node over, using the options below as the
-defaults, then shows the plan and asks before erasing the disk.
+to install to. It then asks for the hostname, a static IPv6 address
+and whether to move the installer's Tailscale node over, using the
+options below as the defaults, then shows the plan and asks before
+erasing the disk.
 
 Image:
   --source-ref REF        image to install (env OSIMAGE_SOURCE_REF)
@@ -46,6 +52,10 @@ Image:
 
 Per-machine state, written to the target before its first boot:
   --hostname NAME         seed /etc/hostname
+  --ipv6-address ADDR/LEN static IPv6 address, added to the DHCP
+                          configuration (for hosts without IPv6 router
+                          advertisements)
+  --ipv6-gateway ADDR     gateway for --ipv6-address (default fe80::1)
 
 Tailscale: the installer's own node moves to the installed system, so
 it is logged in once and the installed machine boots as that node:
@@ -90,6 +100,8 @@ func main() {
 // flags are the parsed command line.
 type flags struct {
 	hostname       string
+	ipv6Address    string
+	ipv6Gateway    string
 	tailscale      bool
 	tsKey          string
 	tsHostname     string
@@ -109,6 +121,8 @@ func run(ctx context.Context, args []string, stdin *os.File, stdout, stderr io.W
 	targetRef := fs.String("target-ref", envOr("OSIMAGE_TARGET_REF", defRef), "")
 	dryRun := fs.Bool("dry-run", false, "")
 	fs.StringVar(&f.hostname, "hostname", "", "")
+	fs.StringVar(&f.ipv6Address, "ipv6-address", "", "")
+	fs.StringVar(&f.ipv6Gateway, "ipv6-gateway", defaultIPv6Gateway, "")
 	fs.BoolVar(&f.tailscale, "tailscale", false, "")
 	fs.StringVar(&f.tsKey, "tailscale-authkey-file", "", "")
 	fs.StringVar(&f.tsHostname, "tailscale-hostname", "", "")
@@ -142,6 +156,16 @@ func run(ctx context.Context, args []string, stdin *os.File, stdout, stderr io.W
 		Stdout:    stdout,
 		Stderr:    stderr,
 		Paths:     installer.DefaultPaths,
+	}
+
+	if f.ipv6Address != "" {
+		ip, err := target.ParseStaticIPv6(f.ipv6Address, f.ipv6Gateway)
+		if err != nil {
+			return err
+		}
+		cfg.IPv6 = ip
+	} else if f.ipv6Gateway != defaultIPv6Gateway {
+		return errors.New("--ipv6-gateway needs --ipv6-address")
 	}
 
 	if f.tailscale || f.tsKey != "" {
@@ -210,6 +234,9 @@ func ask(ctx context.Context, p *prompter, cfg *installer.Config, f *flags) erro
 	}
 	if cfg.Hostname != "" || name != imageHostname() {
 		cfg.Hostname = name
+	}
+	if cfg.IPv6, err = p.ipv6(cfg.IPv6, f.ipv6Gateway); err != nil {
+		return err
 	}
 
 	// Tailscale: offered when the installer has it; the default is yes

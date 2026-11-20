@@ -52,6 +52,34 @@ func (p *prompter) hostname(def string) (string, error) {
 	}
 }
 
+// ipv6 asks for a static IPv6 address/prefix; an empty answer keeps
+// def and "none" clears it.
+func (p *prompter) ipv6(def *target.StaticIPv6, gateway string) (*target.StaticIPv6, error) {
+	shown := "none"
+	if def != nil {
+		shown = def.Address.String()
+		gateway = def.Gateway.String()
+	}
+	for {
+		a, err := p.line(fmt.Sprintf("Static IPv6 address/prefix, gateway %s [%s]: ", gateway, shown))
+		if err != nil {
+			return nil, err
+		}
+		switch strings.ToLower(a) {
+		case "":
+			return def, nil
+		case "none":
+			return nil, nil
+		}
+		s, err := target.ParseStaticIPv6(a, gateway)
+		if err != nil {
+			fmt.Fprintln(p.out, err)
+			continue
+		}
+		return s, nil
+	}
+}
+
 func (p *prompter) yesNo(q string, def bool) (bool, error) {
 	hint := "[y/N]"
 	if def {

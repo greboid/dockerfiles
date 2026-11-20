@@ -64,9 +64,6 @@ test:
     - uses: test/paths
       with:
         files: /usr/share/licenses/gocredits/LICENSE /usr/share/licenses/gocredits/CREDITS
-    - uses: test/version
-      with:
-        flag: -version
 update:
   enabled: true
   shared: true

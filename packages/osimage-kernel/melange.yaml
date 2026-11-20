@@ -1,7 +1,7 @@
 package:
   name: osimage-kernel
   version: 7.1.5
-  epoch: 13
+  epoch: 15
   description: Alpine linux-stable kernel repacked into the bootc /usr/lib/modules layout, trimmed for headless servers
   target-architecture:
     - x86_64
@@ -22,14 +22,15 @@ environment:
     repositories:
       - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
       - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
     packages:
       - os-release=3.24.2-r0
       - busybox=1.37.0-r31
       - bash=5.3.9-r1
       - kmod=34.2-r1
       - dracut=112-r1
-      - bootc=1.17.3-r2
-      - osimage-config=1.0.0-r21
+      - bootc=1.17.4-r1
+      - osimage-config=1.0.0-r28
       - systemd=262.1-r7
       - lsblk=2.42.3-r1
       - findmnt=2.42.3-r1
@@ -135,6 +136,7 @@ test:
       repositories:
         - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
         - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
       packages:
         - os-release=3.24.2-r0
         - busybox=1.37.0-r31
@@ -194,6 +196,7 @@ test:
           echo "$hook" | grep -q 'new_machine_id >'
           echo "$hook" | grep -q 'shadow.locked'
           echo "$hook" | grep -q 'shadow-unlocked'
+          echo "$hook" | grep -q 'STATE/network" "$NEWROOT/etc/systemd/network"'
           ! echo "$hook" | grep -q '!($1 in seen)'
         done
         grep -q systemd-gpt-auto-generator /tmp/live-contents

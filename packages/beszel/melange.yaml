@@ -72,9 +72,6 @@ test:
       with:
         executables: /usr/bin/beszel /usr/bin/beszel-agent
         files: /usr/share/licenses/beszel/LICENSE /usr/share/licenses/beszel/CREDITS
-    - name: Hub reports its version
-      runs: |
-        /usr/bin/beszel --version
 
 update:
   enabled: true

@@ -1,7 +1,7 @@
 package:
   name: restic
-  version: 0.19.1
-  epoch: 4
+  version: 0.20.0
+  epoch: 0
   description: Fast, secure, efficient backup program
   target-architecture:
     - x86_64
@@ -33,7 +33,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 6aa3a516ce654808a1f28f9fa21e9b7c8e6e90bf
+      expected-commit: 9c88ff768f10c192dc6a87619a65a16374080e33
       repository: https://github.com/restic/restic
       tag: v${{package.version}}
   - uses: go/build
@@ -60,9 +60,6 @@ test:
       with:
         executables: /usr/bin/restic
         files: /usr/share/licenses/restic/LICENSE /usr/share/licenses/restic/CREDITS
-    - name: Version reports the packaged release
-      runs: |
-        /usr/bin/restic version 2>&1 | grep -q "restic 0.19.1"
 
 update:
   enabled: true

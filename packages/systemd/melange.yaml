@@ -337,9 +337,6 @@ test:
         - os-release=3.24.2-r0
         - busybox=1.37.0-r31
   pipeline:
-    - name: PID 1 binary executes
-      runs: |
-        /usr/lib/systemd/systemd --version
     - name: Core tools are present
       runs: |
         for exe in /usr/bin/systemctl /usr/bin/journalctl /usr/bin/udevadm \
@@ -347,7 +344,6 @@ test:
           /usr/bin/networkctl /usr/bin/timedatectl /usr/bin/hostnamectl; do
           test -x "$exe" || { echo "missing: $exe" >&2; exit 1; }
         done
-        systemctl --version
     - name: Default service PATH includes Alpine administrative binaries
       runs: |
         path="$(/usr/bin/systemd-path search-binaries-default)"

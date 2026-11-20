@@ -71,6 +71,7 @@ type Config struct {
 	BootcArgs []string
 
 	Hostname string
+	IPv6     *target.StaticIPv6
 	// Tailscale, when non-nil, carries the installer's Tailscale node
 	// over to the target. The caller logs the node in first
 	// (tailscale.Prepare); the installer copies its state.
@@ -376,6 +377,9 @@ func Install(ctx context.Context, c *Config, t *Target) error {
 	if c.Hostname != "" {
 		fmt.Fprintf(out, "== hostname: %s\n", c.Hostname)
 	}
+	if c.IPv6 != nil {
+		fmt.Fprintf(out, "== ipv6: %s\n", c.IPv6)
+	}
 	if c.Tailscale != nil {
 		fmt.Fprintln(out, "== tailscale: the installer's node moves to the installed system")
 	}
@@ -479,6 +483,13 @@ func seed(ctx context.Context, c *Config, t *Target) (err error) {
 			return fmt.Errorf("hostname: %w", err)
 		}
 		fmt.Fprintf(c.Stdout, "== seeded hostname %s\n", c.Hostname)
+	}
+
+	if c.IPv6 != nil {
+		if err := target.WriteStaticIPv6(varDir, *c.IPv6); err != nil {
+			return fmt.Errorf("ipv6: %w", err)
+		}
+		fmt.Fprintf(c.Stdout, "== seeded static ipv6 %s\n", c.IPv6)
 	}
 
 	if c.Tailscale != nil {

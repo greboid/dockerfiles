@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"net/netip"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/greboid/osimage-install/internal/blockdev"
 	"github.com/greboid/osimage-install/internal/tailscale"
+	"github.com/greboid/osimage-install/internal/target"
 )
 
 func TestSourceImgref(t *testing.T) {
@@ -182,12 +184,13 @@ func TestDryRun(t *testing.T) {
 	c := &Config{
 		Disk: "/dev/vda", SourceRef: DefaultRef, TargetRef: DefaultRef,
 		Hostname: "box1",
+		IPv6:     &target.StaticIPv6{Address: netip.MustParsePrefix("2001:db8::1/64"), Gateway: netip.MustParseAddr("fe80::1")},
 		DryRun:   true, Stdout: &out, Stderr: &out, Paths: DefaultPaths,
 	}
 	if err := Install(context.Background(), c, &Target{Path: "/dev/vda", Ident: "QEMU", ProfileVersion: "1.0.0-r3"}); err != nil {
 		t.Fatal(err)
 	}
-	for _, want := range []string{"== hostname: box1", "== dry run: bootc install to-disk"} {
+	for _, want := range []string{"== hostname: box1", "== ipv6: 2001:db8::1/64 via fe80::1", "== dry run: bootc install to-disk"} {
 		if !strings.Contains(out.String(), want) {
 			t.Errorf("dry-run output missing %q:\n%s", want, out.String())
 		}

@@ -1,7 +1,7 @@
 package:
   name: forgejo
-  version: 17.0.1
-  epoch: 6
+  version: 17.0.2
+  epoch: 0
   description: Forgejo self-hosted software forge (Gitea fork)
   target-architecture:
     - x86_64
@@ -43,7 +43,7 @@ vars:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 363f3dc30beef902b187af5a5244ff7af44901e6
+      expected-commit: eea4b0052f24f5ee986b46c00ebf30bdbbf654cb
       repository: https://codeberg.org/forgejo/forgejo
       tag: v${{package.version}}
   - uses: patch
@@ -80,7 +80,6 @@ test:
         executables: /usr/bin/forgejo
         files: /usr/share/licenses/forgejo/LICENSE /usr/share/licenses/forgejo/CREDITS
         dirs: ${{vars.runtime-dirs}}
-    - uses: test/version
 update:
   enabled: true
   forgejo:

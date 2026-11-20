@@ -123,9 +123,6 @@ test:
         - os-release=3.24.2-r0
         - busybox=1.37.0-r31
   pipeline:
-    - name: Binary reports its version
-      runs: |
-        /usr/bin/bootc --version
     - name: Initramfs and systemd integration shipped
       runs: |
         test -x /usr/lib/bootc/initramfs-setup

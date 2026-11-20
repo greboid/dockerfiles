@@ -108,3 +108,24 @@ func must(t *testing.T, err error) {
 		t.Fatal(err)
 	}
 }
+
+func TestStaticIPv6(t *testing.T) {
+	s, err := ParseStaticIPv6("2a03:4000:1:2::1/64", "fe80::1")
+	must(t, err)
+	v, _ := fakeInstall(t, "abc").Var()
+	must(t, WriteStaticIPv6(v, *s))
+	assertFile(t, filepath.Join(v, networkDir, ipv6DropIn),
+		"[Network]\nAddress=2a03:4000:1:2::1/64\nGateway=fe80::1\n", 0o644)
+
+	for _, bad := range [][2]string{
+		{"2a03:4000:1:2::1", "fe80::1"},
+		{"192.0.2.1/24", "fe80::1"},
+		{"fe80::2/64", "fe80::1"},
+		{"2a03:4000:1:2::1/64", "192.0.2.1"},
+		{"2a03:4000:1:2::1/64", "fe80::1%eth0"},
+	} {
+		if _, err := ParseStaticIPv6(bad[0], bad[1]); err == nil {
+			t.Errorf("ParseStaticIPv6(%q, %q) = nil, want error", bad[0], bad[1])
+		}
+	}
+}

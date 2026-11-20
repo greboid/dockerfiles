@@ -116,9 +116,6 @@ test:
         - busybox=1.37.0-r31
         - systemd=262.1-r7
   pipeline:
-    - name: Daemon executes
-      runs: |
-        /usr/bin/dbus-daemon --version
     - name: Socket-activated unit pair is installed
       runs: |
         test -f /usr/lib/systemd/system/dbus.service

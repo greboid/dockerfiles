@@ -20,6 +20,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
+	"net/netip"
 	"os"
 	"path/filepath"
 	"strings"
@@ -29,6 +30,9 @@ const (
 	sharedVar = "state/os/default/var"
 	deployDir = "state/deploy"
 	stateDir  = "lib/osimage/etc"
+	// The initramfs binds this over /etc/systemd/network when it exists.
+	networkDir = "lib/osimage/etc/network"
+	ipv6DropIn = "80-dhcp.network.d/50-static-ipv6.conf"
 )
 
 // Root is a mounted, freshly installed root partition.
@@ -84,6 +88,44 @@ func WriteHostname(varDir, name string) error {
 	}
 	// Owner left as-is (-1): the installer runs as root.
 	return writeFile(filepath.Join(dir, "hostname"), []byte(name+"\n"), 0o644, -1, -1)
+}
+
+// StaticIPv6 is a fixed IPv6 address on the DHCP-configured interface.
+type StaticIPv6 struct {
+	Address netip.Prefix
+	Gateway netip.Addr
+}
+
+// ParseStaticIPv6 parses an address with prefix length (2001:db8::1/64)
+// and a gateway address.
+func ParseStaticIPv6(address, gateway string) (*StaticIPv6, error) {
+	a, err := netip.ParsePrefix(address)
+	if err != nil {
+		return nil, fmt.Errorf("ipv6 address %q: want address/prefix-length", address)
+	}
+	if !a.Addr().Is6() || a.Addr().Is4In6() || a.Addr().IsLinkLocalUnicast() || a.Addr().IsUnspecified() {
+		return nil, fmt.Errorf("ipv6 address %q is not a usable IPv6 address", address)
+	}
+	g, err := netip.ParseAddr(gateway)
+	if err != nil || !g.Is6() || g.Is4In6() || g.Zone() != "" {
+		return nil, fmt.Errorf("ipv6 gateway %q is not an IPv6 address", gateway)
+	}
+	return &StaticIPv6{Address: a, Gateway: g}, nil
+}
+
+func (s StaticIPv6) String() string {
+	return fmt.Sprintf("%s via %s", s.Address, s.Gateway)
+}
+
+// WriteStaticIPv6 seeds a drop-in for osimage-config's 80-dhcp.network
+// under /var/lib/osimage/etc/network.
+func WriteStaticIPv6(varDir string, s StaticIPv6) error {
+	path := filepath.Join(varDir, networkDir, ipv6DropIn)
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		return err
+	}
+	conf := fmt.Sprintf("[Network]\nAddress=%s\nGateway=%s\n", s.Address, s.Gateway)
+	return writeFile(path, []byte(conf), 0o644, -1, -1)
 }
 
 // NewMachineID returns a random machine ID in systemd's format: 32

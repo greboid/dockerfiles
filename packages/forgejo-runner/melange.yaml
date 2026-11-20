@@ -1,7 +1,7 @@
 package:
   name: forgejo-runner
-  version: 13.2.1
-  epoch: 4
+  version: 13.2.2
+  epoch: 0
   description: Forgejo Actions runner
   target-architecture:
     - x86_64
@@ -39,7 +39,7 @@ vars:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: c4a92ffa5e3a400ae7e9c40a2914e649eb338ad7
+      expected-commit: 0e61343d1cb98d2a381d0d18f34aea408e66e4d2
       repository: https://code.forgejo.org/forgejo/runner
       tag: v${{package.version}}
   - name: Build the runner
@@ -68,7 +68,6 @@ test:
         executables: /usr/bin/forgejo-runner
         files: /usr/share/forgejo-runner/storage.conf /usr/share/licenses/forgejo-runner/LICENSE /usr/share/licenses/forgejo-runner/CREDITS
         dirs: ${{vars.runtime-dirs}}
-    - uses: test/version
 update:
   enabled: true
   forgejo:

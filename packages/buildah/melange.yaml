@@ -68,7 +68,7 @@ test:
         - ca-certificates-bundle=20261020-r4
         - alpine-baselayout=3.7.2-r1
   pipeline:
-    - name: Reports the packaged custom version
+    - name: Binary is installed
       runs: |
         test -x /usr/bin/buildah
 update:

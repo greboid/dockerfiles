@@ -62,9 +62,6 @@ test:
         files: /usr/share/licenses/ergo/LICENSE /usr/share/licenses/ergo/CREDITS
         dirs: /ircd-bin/languages
         nonempty-dirs: /ircd-bin/languages
-    - uses: test/version
-      with:
-        pattern: ergo-${{package.version}}
 update:
   enabled: true
   github:

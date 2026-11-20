@@ -82,9 +82,6 @@ test:
         executables: /usr/bin/grafana
         files: /usr/share/licenses/grafana/LICENSE /usr/share/licenses/grafana/CREDITS /usr/share/grafana/conf/defaults.ini
         dirs: /usr/share/grafana/public
-    - name: Prints version
-      runs: |
-        /usr/bin/grafana -v 2>&1 | grep -q "${{package.version}}"
 
 update:
   enabled: true

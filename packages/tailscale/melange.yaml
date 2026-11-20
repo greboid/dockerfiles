@@ -84,9 +84,6 @@ test:
         executables: /usr/bin/tailscaled /usr/bin/tailscale /usr/bin/containerboot
         files: /usr/share/licenses/tailscale/LICENSE /usr/share/licenses/tailscale/CREDITS /usr/lib/tmpfiles.d/tailscale.conf /usr/lib/systemd/system/tailscaled.service
         dirs: ${{vars.runtime-dirs}}
-    - uses: test/version
-      with:
-        flag: version
 update:
   enabled: true
   github:

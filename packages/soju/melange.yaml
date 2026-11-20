@@ -1,7 +1,7 @@
 package:
   name: soju
-  version: 0.10.1
-  epoch: 22
+  version: 0.11.1
+  epoch: 0
   description: IRC bouncer with a companion administrative client
   target-architecture:
     - x86_64
@@ -38,8 +38,8 @@ vars:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: ca81b9905e24aadd6a346a5ae72ae7e9d14db568
-      repository: https://github.com/emersion/soju
+      expected-commit: 7690ac91c9da6874796b822a47160dba3fc39dcb
+      repository: https://codeberg.org/emersion/soju
       tag: v${{package.version}}
   - uses: go/build
     with:
@@ -82,7 +82,8 @@ test:
         grep -q "failed to load config file" /tmp/soju.log
 update:
   enabled: true
-  github:
+  forgejo:
+    instance: https://codeberg.org
     identifier: emersion/soju
     strip-prefix: v
     use-tag: true

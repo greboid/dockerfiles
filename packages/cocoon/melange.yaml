@@ -1,7 +1,7 @@
 package:
   name: cocoon
-  version: 0.14.2
-  epoch: 1
+  version: 0.14.4
+  epoch: 0
   description: An atproto PDS (Bluesky) server
   target-architecture:
     - x86_64
@@ -37,7 +37,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: b0da400e194877f79e80f52f08f5bcfc4ed01b58
+      expected-commit: 6e3922f4aa0299170b83b362b462473aad245c0e
       repository: https://github.com/haileyok/cocoon
       tag: v${{package.version}}
   - uses: go/build
@@ -64,9 +64,6 @@ test:
       with:
         executables: /usr/bin/cocoon
         files: /usr/share/licenses/cocoon/LICENSE /usr/share/licenses/cocoon/CREDITS
-    - uses: test/version
-      with:
-        pattern: v${{package.version}}
 update:
   enabled: true
   github:

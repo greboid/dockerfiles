@@ -44,6 +44,11 @@ for f in machine-id hostname; do
     mount -o remount,bind,ro "$NEWROOT/etc/$f" ||
         warn "osimage-state: cannot make /etc/$f read-only"
 done
+if [ -d "$STATE/network" ]; then
+    mkdir -p "$NEWROOT/etc/systemd/network" &&
+        mount --bind "$STATE/network" "$NEWROOT/etc/systemd/network" ||
+        warn "osimage-state: cannot bind $STATE/network over /etc/systemd/network"
+fi
 # Passwords are always locked unless the image opts out (the live installer);
 # $STATE/shadow is left for rollback to older deployments.
 if [ -f "$NEWROOT/etc/shadow" ] && [ ! -e "$NEWROOT/usr/lib/osimage/shadow-unlocked" ]; then

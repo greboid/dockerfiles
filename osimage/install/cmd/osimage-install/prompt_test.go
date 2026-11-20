@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/greboid/osimage-install/internal/installer"
+	"github.com/greboid/osimage-install/internal/target"
 )
 
 func fakePrompter(lines string) (*prompter, *bytes.Buffer) {
@@ -125,5 +126,25 @@ func TestFormatSize(t *testing.T) {
 		if got := formatSize(b); got != want {
 			t.Errorf("formatSize(%d) = %q, want %q", b, got, want)
 		}
+	}
+}
+
+func TestIPv6Prompt(t *testing.T) {
+	def, _ := target.ParseStaticIPv6("2001:db8::1/64", "fe80::1")
+	p, out := fakePrompter("bad\n2001:db8::2/64\n")
+	got, err := p.ipv6(nil, "fe80::1")
+	if err != nil || got == nil || got.String() != "2001:db8::2/64 via fe80::1" {
+		t.Fatalf("ipv6() = %v, %v", got, err)
+	}
+	if !strings.Contains(out.String(), "[none]: ") {
+		t.Errorf("output missing default: %q", out.String())
+	}
+	p, _ = fakePrompter("\n")
+	if got, _ := p.ipv6(def, "fe80::1"); got != def {
+		t.Errorf("Enter: got %v, want default", got)
+	}
+	p, _ = fakePrompter("none\n")
+	if got, _ := p.ipv6(def, "fe80::1"); got != nil {
+		t.Errorf("none: got %v", got)
 	}
 }

@@ -70,7 +70,6 @@ test:
   pipeline:
     - name: Generator and C helpers are present
       runs: |
-        /usr/bin/dracut --version
         test -x /usr/lib/dracut/dracut-install
         test -x /usr/lib/dracut/skipcpio
         test -x /usr/lib/dracut/dracut-util

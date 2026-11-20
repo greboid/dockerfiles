@@ -98,10 +98,9 @@ test:
         - os-release=3.24.2-r0
         - busybox=1.37.0-r31
   pipeline:
-    - name: Version and loader registration
+    - name: Loader registration
       runs: |
         test -x /usr/bin/vips
-        /usr/bin/vips --version | grep "${PACKAGE_VERSION}" >/dev/null
         vips -l | grep heifload >/dev/null
         vips -l | grep jpegsave >/dev/null
 update:

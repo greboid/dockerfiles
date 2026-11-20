@@ -27,7 +27,7 @@ contents:
     - gnupg-dirmngr=2.4.9-r1
     - gnupg-gpgconf=2.4.9-r1
     - gnupg-keyboxd=2.4.9-r1
-    - gnutls=3.8.13-r0
+    - gnutls=3.8.14-r0
     - gpg=2.4.9-r1
     - gpg-agent=2.4.9-r1
     - isl25=0.25-r2

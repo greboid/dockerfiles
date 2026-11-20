@@ -27,7 +27,7 @@ environment:
       - gcc=15.2.0-r5
       - make=4.4.1-r4
       - musl-dev=1.2.6-r3
-      - openssl-dev=3.5.9-r0
+      - openssl-dev=3.5.9-r1
       - perl=5.42.3-r0
 
 pipeline:
@@ -101,7 +101,7 @@ subpackages:
           packages:
             - os-release=3.24.2-r0
             - busybox=1.37.0-r31
-            - openssl=3.5.9-r0
+            - openssl=3.5.9-r1
       pipeline:
         - uses: test/paths
           with:
@@ -125,7 +125,7 @@ test:
       packages:
         - os-release=3.24.2-r0
         - busybox=1.37.0-r31
-        - openssl=3.5.9-r0
+        - openssl=3.5.9-r1
         - perl=5.42.3-r0
   pipeline:
     - uses: test/paths
