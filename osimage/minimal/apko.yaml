@@ -21,13 +21,13 @@ contents:
     - systemd=262.1-r7
     - systemd-boot=262.1-r7
     - systemd-efistub=262.1-r7
-    - bootc=1.17.4-r1
+    - bootc=1.17.5-r0
     - podman=5.8.10-r0
-    - osimage-upgrade=1.0.0-r6
+    - osimage-upgrade=1.0.0-r7
     - skopeo=1.20.1-r2
     - zstd=1.5.7-r2
-    - osimage-kernel=7.1.5-r15
-    - osimage-kernel-initramfs=7.1.5-r15
+    - osimage-kernel=7.1.5-r16
+    - osimage-kernel-initramfs=7.1.5-r16
     - linux-firmware-none=20260519-r0
     - osimage-config=1.0.0-r28
     - e2fsprogs=1.47.4-r0
