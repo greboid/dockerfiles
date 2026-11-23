@@ -1,7 +1,7 @@
 package:
   name: linx-server
   version: 3.4.1
-  epoch: 23
+  epoch: 24
   description: Self-hosted file-sharing service with expiry and hotlink control
   target-architecture:
     - x86_64
@@ -14,6 +14,7 @@ package:
     runtime:
       - ca-certificates-bundle=20261020-r4
       - tzdata=2026f-r0
+      - secret-env=0.1.0-r2
 
 environment:
   contents:
@@ -51,6 +52,10 @@ pipeline:
     with:
       license: LICENSE.txt
   - uses: go/credits
+  - uses: secret-env/wrap
+    with:
+      name: linx-server
+      config: secret-env/linx-server.conf
 test:
   environment:
     contents:
@@ -67,6 +72,11 @@ test:
         executables: /usr/bin/linx-server
         files: /usr/share/licenses/linx-server/LICENSE.txt /usr/share/licenses/linx-server/CREDITS
         dirs: ${{vars.runtime-dirs}}
+    - name: Runs through secret-env
+      runs: |
+        test "$(readlink /usr/bin/linx-server)" = /usr/bin/secret-env
+        test -x /usr/libexec/linx-server.real
+        grep -qx 'path = /usr/libexec/linx-server.real' /etc/secret-env/linx-server.conf
 update:
   enabled: true
   github:

@@ -129,3 +129,71 @@ func TestStaticIPv6(t *testing.T) {
 		}
 	}
 }
+
+func TestStaticIPv4(t *testing.T) {
+	s, err := ParseStaticIPv4("192.0.2.10/24", "192.0.2.1")
+	must(t, err)
+	v, _ := fakeInstall(t, "abc").Var()
+	must(t, WriteStaticIPv4(v, *s))
+	assertFile(t, filepath.Join(v, networkDir, ipv4DropIn),
+		"[Network]\nDHCP=ipv6\nAddress=192.0.2.10/24\nGateway=192.0.2.1\n", 0o644)
+
+	for _, bad := range [][2]string{
+		{"192.0.2.10", "192.0.2.1"},
+		{"2001:db8::1/64", "192.0.2.1"},
+		{"0.0.0.0/0", "192.0.2.1"},
+		{"192.0.2.10/24", "fe80::1"},
+		{"192.0.2.10/24", ""},
+	} {
+		if _, err := ParseStaticIPv4(bad[0], bad[1]); err == nil {
+			t.Errorf("ParseStaticIPv4(%q, %q) = nil, want error", bad[0], bad[1])
+		}
+	}
+}
+
+func TestDNS(t *testing.T) {
+	d, err := ParseDNS("1.1.1.1, 2606:4700::1111", "no")
+	must(t, err)
+	v, _ := fakeInstall(t, "abc").Var()
+	must(t, WriteDNS(v, *d))
+	assertFile(t, filepath.Join(v, networkDir, dnsDropIn),
+		"[Network]\nDNS=1.1.1.1\nDNS=2606:4700::1111\nDNSSEC=no\n", 0o644)
+
+	if d, err := ParseDNS("", ""); d != nil || err != nil {
+		t.Errorf("ParseDNS empty = %v, %v; want nil, nil", d, err)
+	}
+	if d, err := ParseDNS("", "allow-downgrade"); err != nil || d.String() != "dnssec allow-downgrade" {
+		t.Errorf("ParseDNS dnssec only = %v, %v", d, err)
+	}
+	for _, bad := range [][2]string{{"x", ""}, {"0.0.0.0", ""}, {"", "off"}} {
+		if _, err := ParseDNS(bad[0], bad[1]); err == nil {
+			t.Errorf("ParseDNS(%q, %q) = nil, want error", bad[0], bad[1])
+		}
+	}
+}
+
+func TestCopyNetwork(t *testing.T) {
+	src := t.TempDir()
+	must(t, os.WriteFile(filepath.Join(src, "10-eth0.network"), []byte("[Network]\nDNSSEC=no\n"), 0o640))
+	must(t, os.MkdirAll(filepath.Join(src, "80-dhcp.network.d"), 0o755))
+	must(t, os.WriteFile(filepath.Join(src, "80-dhcp.network.d", "x.conf"), []byte("[Network]\n"), 0o644))
+	must(t, os.Symlink("/dev/null", filepath.Join(src, "99-mask.network")))
+
+	files, err := NetworkFiles(src)
+	must(t, err)
+	if strings.Join(files, " ") != "10-eth0.network 80-dhcp.network.d/x.conf 99-mask.network" {
+		t.Errorf("NetworkFiles() = %v", files)
+	}
+	if files, err := NetworkFiles(filepath.Join(src, "missing")); err != nil || len(files) != 0 {
+		t.Errorf("NetworkFiles(missing) = %v, %v", files, err)
+	}
+
+	v, _ := fakeInstall(t, "abc").Var()
+	must(t, CopyNetwork(src, v))
+	dst := filepath.Join(v, networkDir)
+	assertFile(t, filepath.Join(dst, "10-eth0.network"), "[Network]\nDNSSEC=no\n", 0o640)
+	assertFile(t, filepath.Join(dst, "80-dhcp.network.d", "x.conf"), "[Network]\n", 0o644)
+	if l, err := os.Readlink(filepath.Join(dst, "99-mask.network")); err != nil || l != "/dev/null" {
+		t.Errorf("mask symlink = %q, %v", l, err)
+	}
+}

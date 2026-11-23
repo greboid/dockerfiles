@@ -1,0 +1,87 @@
+package:
+  name: drover
+  version: 0.0.10
+  epoch: 0
+  description: Moves singleton Docker Compose projects between hosts
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle=20261020-r4
+      - tzdata=2026f-r0
+      - docker-cli=29.9.3-r1
+      - docker-cli-compose=5.7.2-r0
+      - git=2.54.1-r0
+      - rsync=3.5.2-r1
+      - tailscale=1.104.7-r2
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates=20261020-r4
+      - git=2.54.1-r0
+      - go=1.27.4-r1
+      - os-release=3.24.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 475441d43852fd91dd169d9fc8d34878c8243f23
+      repository: https://git.mouse-lake.ts.net/private/drover
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./
+      output: drover
+      static: "true"
+  - name: Install the systemd unit
+    runs: |
+      install -Dm644 deploy/systemd/drover.service "${{targets.destdir}}/usr/lib/systemd/system/drover.service"
+      mkdir -p "${{targets.destdir}}/etc/systemd/system/multi-user.target.wants"
+      ln -s /usr/lib/systemd/system/drover.service "${{targets.destdir}}/etc/systemd/system/multi-user.target.wants/drover.service"
+  - uses: license/install
+  - uses: go/credits
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox=1.37.0-r31
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/drover
+        files: /usr/share/licenses/drover/LICENSE /usr/share/licenses/drover/CREDITS /usr/lib/systemd/system/drover.service
+    - name: Prints usage
+      runs: |
+        out=$(/usr/bin/drover 2>&1 || true)
+        echo "$out" | grep -q "sync-compose"
+    - name: Unit runs the daemon
+      runs: |
+        grep -qx 'ExecStart=/usr/bin/drover daemon' /usr/lib/systemd/system/drover.service
+        grep -qx 'EnvironmentFile=-/var/drover/drover.env' /usr/lib/systemd/system/drover.service
+        test "$(readlink /etc/systemd/system/multi-user.target.wants/drover.service)" = /usr/lib/systemd/system/drover.service
+
+update:
+  enabled: true
+  forgejo:
+    identifier: private/drover
+    strip-prefix: v
+    use-tag: true

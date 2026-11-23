@@ -1,7 +1,7 @@
 package:
   name: thp
   version: 1.4.0
-  epoch: 3
+  epoch: 4
   description: Tailscale HTTP proxy forwarding tailnet requests to an upstream
   target-architecture:
     - x86_64
@@ -14,6 +14,7 @@ package:
     runtime:
       - ca-certificates-bundle=20261020-r4
       - tzdata=2026f-r0
+      - secret-env=0.1.0-r2
 
 environment:
   contents:
@@ -52,6 +53,10 @@ pipeline:
     with:
       license: LICENCE
   - uses: go/credits
+  - uses: secret-env/wrap
+    with:
+      name: thp
+      config: secret-env/thp.conf
 test:
   environment:
     contents:
@@ -66,6 +71,11 @@ test:
       with:
         executables: /usr/bin/thp
         files: /usr/share/licenses/thp/LICENCE /usr/share/licenses/thp/CREDITS
+    - name: Runs through secret-env
+      runs: |
+        test "$(readlink /usr/bin/thp)" = /usr/bin/secret-env
+        test -x /usr/libexec/thp.real
+        grep -qx 'path = /usr/libexec/thp.real' /etc/secret-env/thp.conf
 update:
   enabled: true
   github:

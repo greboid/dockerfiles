@@ -1,7 +1,7 @@
 package:
   name: redis
   version: 8.10.3
-  epoch: 2
+  epoch: 3
   description: In-memory data store with disk persistence (statically linked)
   target-architecture:
     - x86_64
@@ -14,6 +14,7 @@ package:
     runtime:
       - ca-certificates-bundle=20261020-r4
       - tzdata=2026f-r0
+      - secret-env=0.1.0-r2
 
 environment:
   contents:
@@ -68,6 +69,10 @@ pipeline:
   - uses: strip
     with:
       opts: -s
+  - uses: secret-env/wrap
+    with:
+      name: redis
+      config: secret-env/redis.conf
 test:
   environment:
     contents:
@@ -83,6 +88,11 @@ test:
         executables: /usr/bin/redis
         files: /redis.conf /usr/share/licenses/redis/LICENSE.txt
         dirs: ${{vars.runtime-dirs}}
+    - name: Runs through secret-env
+      runs: |
+        test "$(readlink /usr/bin/redis)" = /usr/bin/secret-env
+        test -x /usr/libexec/redis.real
+        grep -qx 'path = /usr/libexec/redis.real' /etc/secret-env/redis.conf
 update:
   enabled: true
   github:

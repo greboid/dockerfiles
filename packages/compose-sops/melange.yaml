@@ -1,0 +1,70 @@
+package:
+  name: compose-sops
+  version: 0.3.0
+  epoch: 0
+  description: Compose provider publishing SOPS-encrypted secrets as files on tmpfs
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: MIT
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates=20261020-r4
+      - git=2.54.1-r0
+      - go=1.27.4-r1
+      - os-release=3.24.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 6a9b8f328f6a8576bd6b574dbbd2eec8c1de7b60
+      repository: https://git.mouse-lake.ts.net/greboid/compose-sops
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./
+      output: compose-sops
+      static: "true"
+  - uses: license/install
+  - uses: go/credits
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox=1.37.0-r31
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/compose-sops
+        files: /usr/share/licenses/compose-sops/LICENSE /usr/share/licenses/compose-sops/CREDITS
+    - name: Reports provider metadata
+      runs: |
+        /usr/bin/compose-sops compose metadata | grep -q '"age-key-file"'
+    - name: Generates a key and prints its recipient
+      runs: |
+        /usr/bin/compose-sops keygen --output /tmp/key.txt
+        /usr/bin/compose-sops recipient --key-file /tmp/key.txt | grep -q '^age1'
+
+update:
+  enabled: true
+  forgejo:
+    identifier: greboid/compose-sops
+    strip-prefix: v
+    use-tag: true

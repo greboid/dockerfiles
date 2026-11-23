@@ -1,7 +1,7 @@
 package:
   name: webhooked
   version: 1.1.0
-  epoch: 22
+  epoch: 23
   description: Ensures a GitHub webhook is installed across a user's repositories
   target-architecture:
     - x86_64
@@ -14,6 +14,7 @@ package:
     runtime:
       - ca-certificates-bundle=20261020-r4
       - tzdata=2026f-r0
+      - secret-env=0.1.0-r2
 
 environment:
   contents:
@@ -44,6 +45,10 @@ pipeline:
     with:
       license: LICENCE
   - uses: go/credits
+  - uses: secret-env/wrap
+    with:
+      name: webhooked
+      config: secret-env/webhooked.conf
 test:
   environment:
     contents:
@@ -64,6 +69,11 @@ test:
         code=$?
         test "$code" = 0
         echo "$out" | grep -q "Usage of /usr/bin/webhooked:"
+    - name: Runs through secret-env
+      runs: |
+        test "$(readlink /usr/bin/webhooked)" = /usr/bin/secret-env
+        test -x /usr/libexec/webhooked.real
+        grep -qx 'path = /usr/libexec/webhooked.real' /etc/secret-env/webhooked.conf
 update:
   enabled: true
   github:

@@ -1,0 +1,51 @@
+package:
+  name: root-account
+  version: 1.0.0
+  epoch: 0
+  description: Minimal passwd and group entries for the root user
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      license: MIT
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - os-release=3.24.2-r0
+
+pipeline:
+  - name: Install root account files
+    runs: |
+      install -Dm644 passwd "${{targets.destdir}}/etc/passwd"
+      install -Dm644 group "${{targets.destdir}}/etc/group"
+      install -dm700 "${{targets.destdir}}/root"
+
+test:
+  environment:
+    contents:
+      keyring:
+        - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      packages:
+        - busybox=1.37.0-r31
+        - os-release=3.24.2-r0
+  pipeline:
+    - name: Root resolves
+      runs: |
+        grep -qx 'root:x:0:0:root:/root:/bin/sh' /etc/passwd
+        grep -qx 'root:x:0:' /etc/group
+        test -d /root
+
+update:
+  enabled: false
+  exclude-reason: no upstream to track; version is internal to this repository

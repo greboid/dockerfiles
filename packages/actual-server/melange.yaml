@@ -1,7 +1,7 @@
 package:
   name: actual-server
   version: 26.10.0
-  epoch: 4
+  epoch: 5
   description: Self-hosted personal finance manager (sync server + web UI)
   target-architecture:
     - x86_64
@@ -15,6 +15,7 @@ package:
       - nodejs=24.22.3-r0
       - ca-certificates-bundle=20261020-r4
       - tzdata=2026f-r0
+      - secret-env=0.1.0-r2
 
 environment:
   contents:
@@ -89,6 +90,10 @@ pipeline:
   - uses: license/install
     with:
       license: LICENSE.txt
+  - uses: secret-env/wrap
+    with:
+      name: actual-server
+      config: secret-env/actual-server.conf
 
 test:
   environment:
@@ -105,6 +110,11 @@ test:
         executables: /usr/bin/actual-server
         files: /usr/src/app/package.json /usr/src/app/build/app.js /usr/share/licenses/actual-server/LICENSE.txt
         dirs: ${{vars.runtime-dirs}} /usr/src/app/node_modules/@actual-app/web/build
+    - name: Runs through secret-env
+      runs: |
+        test "$(readlink /usr/bin/actual-server)" = /usr/bin/secret-env
+        test -x /usr/libexec/actual-server.real
+        grep -qx 'path = /usr/libexec/actual-server.real' /etc/secret-env/actual-server.conf
 
 update:
   enabled: true

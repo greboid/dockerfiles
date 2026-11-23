@@ -1,8 +1,0 @@
-.git/
-.forgejo/
-dist/
-melange-cache/
-keys/
-*.rsa
-*.rsa.pub
-source/target/

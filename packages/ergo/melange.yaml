@@ -1,7 +1,7 @@
 package:
   name: ergo
   version: 2.19.1
-  epoch: 13
+  epoch: 14
   description: Modern IRC server written in Go
   target-architecture:
     - x86_64
@@ -14,6 +14,7 @@ package:
     runtime:
       - ca-certificates-bundle=20261020-r4
       - tzdata=2026f-r0
+      - secret-env=0.1.0-r2
 
 environment:
   contents:
@@ -46,6 +47,10 @@ pipeline:
       cp -R languages "${{targets.destdir}}/ircd-bin/languages"
   - uses: license/install
   - uses: go/credits
+  - uses: secret-env/wrap
+    with:
+      name: ergo
+      config: secret-env/ergo.conf
 test:
   environment:
     contents:
@@ -62,6 +67,11 @@ test:
         files: /usr/share/licenses/ergo/LICENSE /usr/share/licenses/ergo/CREDITS
         dirs: /ircd-bin/languages
         nonempty-dirs: /ircd-bin/languages
+    - name: Runs through secret-env
+      runs: |
+        test "$(readlink /usr/bin/ergo)" = /usr/bin/secret-env
+        test -x /usr/libexec/ergo.real
+        grep -qx 'path = /usr/libexec/ergo.real' /etc/secret-env/ergo.conf
 update:
   enabled: true
   github:

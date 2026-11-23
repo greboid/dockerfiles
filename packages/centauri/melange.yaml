@@ -1,7 +1,7 @@
 package:
   name: centauri
   version: 2.10.1
-  epoch: 1
+  epoch: 2
   description: TLS front proxy with automatic certificates via lego
   target-architecture:
     - x86_64
@@ -14,6 +14,7 @@ package:
     runtime:
       - ca-certificates-bundle=20261020-r4
       - tzdata=2026f-r0
+      - secret-env=0.1.0-r2
 
 environment:
   contents:
@@ -52,6 +53,10 @@ pipeline:
     with:
       license: LICENCE
   - uses: go/credits
+  - uses: secret-env/wrap
+    with:
+      name: centauri
+      config: secret-env/centauri.conf
 test:
   environment:
     contents:
@@ -73,6 +78,11 @@ test:
         /usr/bin/centauri -config /tmp/good.conf -validate
         printf 'not a centauri config\n' > /tmp/bad.conf
         ! /usr/bin/centauri -config /tmp/bad.conf -validate
+    - name: Runs through secret-env
+      runs: |
+        test "$(readlink /usr/bin/centauri)" = /usr/bin/secret-env
+        test -x /usr/libexec/centauri.real
+        grep -qx 'path = /usr/libexec/centauri.real' /etc/secret-env/centauri.conf
 update:
   enabled: true
   github:

@@ -1,7 +1,7 @@
 package:
   name: irc-notifier
   version: 1.0.6
-  epoch: 22
+  epoch: 23
   description: irc-bot plugin relaying Igloo push notifications to IRC
   target-architecture:
     - x86_64
@@ -14,6 +14,7 @@ package:
     runtime:
       - ca-certificates-bundle=20261020-r4
       - tzdata=2026f-r0
+      - secret-env=0.1.0-r2
 
 environment:
   contents:
@@ -43,6 +44,10 @@ pipeline:
       static: "true"
   - uses: license/install
   - uses: go/credits
+  - uses: secret-env/wrap
+    with:
+      name: irc-notifier
+      config: secret-env/irc-notifier.conf
 test:
   environment:
     contents:
@@ -57,6 +62,11 @@ test:
       with:
         executables: /usr/bin/irc-notifier
         files: /usr/share/licenses/irc-notifier/LICENSE /usr/share/licenses/irc-notifier/CREDITS
+    - name: Runs through secret-env
+      runs: |
+        test "$(readlink /usr/bin/irc-notifier)" = /usr/bin/secret-env
+        test -x /usr/libexec/irc-notifier.real
+        grep -qx 'path = /usr/libexec/irc-notifier.real' /etc/secret-env/irc-notifier.conf
 update:
   enabled: true
   github:

@@ -1,7 +1,7 @@
 package:
   name: dozzle
   version: 11.5.0
-  epoch: 0
+  epoch: 1
   description: Real-time log viewer for Docker containers with a web interface
   target-architecture:
     - x86_64
@@ -14,6 +14,7 @@ package:
     runtime:
       - ca-certificates-bundle=20261020-r4
       - tzdata=2026f-r0
+      - secret-env=0.1.0-r2
 
 environment:
   contents:
@@ -69,6 +70,10 @@ pipeline:
     with:
       license: LICENSE
   - uses: go/credits
+  - uses: secret-env/wrap
+    with:
+      name: dozzle
+      config: secret-env/dozzle.conf
 
 test:
   environment:
@@ -91,6 +96,11 @@ test:
           exit 1
         fi
         grep -q "Could not connect to any Docker Engine" /tmp/dozzle.log
+    - name: Runs through secret-env
+      runs: |
+        test "$(readlink /usr/bin/dozzle)" = /usr/bin/secret-env
+        test -x /usr/libexec/dozzle.real
+        grep -qx 'path = /usr/libexec/dozzle.real' /etc/secret-env/dozzle.conf
 
 update:
   enabled: true

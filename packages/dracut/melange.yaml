@@ -1,7 +1,7 @@
 package:
   name: dracut
-  version: 112
-  epoch: 1
+  version: 113
+  epoch: 0
   description: Generic initramfs generator built without the eudev dependency chain
   target-architecture:
     - x86_64
@@ -38,7 +38,7 @@ pipeline:
   - uses: fetch
     with:
       uri: https://github.com/dracut-ng/dracut-ng/archive/refs/tags/${{package.version}}.tar.gz
-      expected-sha256: 839d21eb4bd27bb0ee40d74c9da46df088c2e1425fcd8c3ea62b7e3a3dd28a91
+      expected-sha256: a476ed20c8675ab6fd760a8210b2393afca0321d411747f3976f54fbb4b436b3
   - name: Configure
     runs: |
       ./configure \
@@ -70,8 +70,8 @@ test:
   pipeline:
     - name: Generator and C helpers are present
       runs: |
-        test -x /usr/lib/dracut/dracut-install
-        test -x /usr/lib/dracut/skipcpio
+        test -x /usr/bin/dracut-install
+        test -x /usr/bin/dracut-extractinitrd
         test -x /usr/lib/dracut/dracut-util
     - name: Modules ship the base set
       runs: |

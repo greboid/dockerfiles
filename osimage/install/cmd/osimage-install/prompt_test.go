@@ -148,3 +148,48 @@ func TestIPv6Prompt(t *testing.T) {
 		t.Errorf("none: got %v", got)
 	}
 }
+
+func TestIPv4Prompt(t *testing.T) {
+	p, out := fakePrompter("bad\n192.0.2.10/24\n\nfe80::1\n192.0.2.10/24\n192.0.2.1\n")
+	got, err := p.ipv4(nil)
+	if err != nil || got == nil || got.String() != "192.0.2.10/24 via 192.0.2.1" {
+		t.Fatalf("ipv4() = %v, %v", got, err)
+	}
+	if !strings.Contains(out.String(), "[none]: ") || !strings.Contains(out.String(), `ipv4 address "bad"`) ||
+		!strings.Contains(out.String(), `gateway "fe80::1" is not`) {
+		t.Errorf("output: %q", out.String())
+	}
+	def := got
+	p, _ = fakePrompter("\n")
+	if got, _ := p.ipv4(def); got != def {
+		t.Errorf("Enter: got %v, want default", got)
+	}
+	p, _ = fakePrompter("192.0.2.20/24\n\n")
+	if got, _ := p.ipv4(def); got == nil || got.String() != "192.0.2.20/24 via 192.0.2.1" {
+		t.Errorf("new address, default gateway: got %v", got)
+	}
+	p, _ = fakePrompter("none\n")
+	if got, _ := p.ipv4(def); got != nil {
+		t.Errorf("none: got %v", got)
+	}
+}
+
+func TestDNSPrompt(t *testing.T) {
+	p, out := fakePrompter("1.1.1.1 x\n1.1.1.1, 2606:4700::1111\nmaybe\nNo\n")
+	got, err := p.dns(nil)
+	if err != nil || got == nil || got.String() != "servers 1.1.1.1,2606:4700::1111, dnssec no" {
+		t.Fatalf("dns() = %v, %v", got, err)
+	}
+	if !strings.Contains(out.String(), "[none]: ") || !strings.Contains(out.String(), "[default]: ") {
+		t.Errorf("output: %q", out.String())
+	}
+	def := got
+	p, _ = fakePrompter("\n\n")
+	if got, _ := p.dns(def); got.String() != def.String() {
+		t.Errorf("Enter: got %v, want default", got)
+	}
+	p, _ = fakePrompter("none\ndefault\n")
+	if got, _ := p.dns(def); got != nil {
+		t.Errorf("none/default: got %v", got)
+	}
+}

@@ -12,11 +12,12 @@ contents:
     - ca-certificates-bundle=20261020-r4
     - tzdata=2026f-r0
     - os-release=3.24.2-r0
-    - forgejo-runner=13.2.2-r0
-    - buildah=1.46.1-r0
+    - forgejo-runner=13.2.2-r1
+    - secret-env=0.1.0-r2
+    - buildah=1.46.1-r2
     - fuse-overlay-storage-conf=1.0.0-r0
     - git=2.54.1-r0
-    - fuse-overlayfs=1.16-r0
+    - fuse-overlayfs=1.18-r0
     - gnupg=2.4.9-r1
 
 accounts:

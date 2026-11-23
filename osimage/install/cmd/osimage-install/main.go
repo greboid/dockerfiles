@@ -38,7 +38,7 @@ with bootc: composefs backend, systemd-boot, systemd-repart layout
 
 On a terminal, <disk> may be omitted: the installer lists the disks
 (usable ones numbered, refused ones with the reason) and asks which
-to install to. It then asks for the hostname, a static IPv6 address
+to install to. It then asks for the hostname, the network settings
 and whether to move the installer's Tailscale node over, using the
 options below as the defaults, then shows the plan and asks before
 erasing the disk.
@@ -52,10 +52,19 @@ Image:
 
 Per-machine state, written to the target before its first boot:
   --hostname NAME         seed /etc/hostname
+  --no-copy-network       do not copy the installer's own
+                          /etc/systemd/network (copied by default, so
+                          a hand-written .network file carries over)
+  --ipv4-address ADDR/LEN static IPv4 address; turns DHCPv4 off
+  --ipv4-gateway ADDR     gateway for --ipv4-address (required with it)
   --ipv6-address ADDR/LEN static IPv6 address, added to the DHCP
                           configuration (for hosts without IPv6 router
                           advertisements)
   --ipv6-gateway ADDR     gateway for --ipv6-address (default fe80::1)
+  --dns ADDRS             comma-separated DNS servers
+  --dnssec MODE           yes, no or allow-downgrade (default: the
+                          image's systemd-resolved setting)
+The ipv4/ipv6/dns settings are drop-ins for the image's 80-dhcp.network.
 
 Tailscale: the installer's own node moves to the installed system, so
 it is logged in once and the installed machine boots as that node:
@@ -100,8 +109,13 @@ func main() {
 // flags are the parsed command line.
 type flags struct {
 	hostname       string
+	noCopyNetwork  bool
+	ipv4Address    string
+	ipv4Gateway    string
 	ipv6Address    string
 	ipv6Gateway    string
+	dns            string
+	dnssec         string
 	tailscale      bool
 	tsKey          string
 	tsHostname     string
@@ -121,8 +135,13 @@ func run(ctx context.Context, args []string, stdin *os.File, stdout, stderr io.W
 	targetRef := fs.String("target-ref", envOr("OSIMAGE_TARGET_REF", defRef), "")
 	dryRun := fs.Bool("dry-run", false, "")
 	fs.StringVar(&f.hostname, "hostname", "", "")
+	fs.BoolVar(&f.noCopyNetwork, "no-copy-network", false, "")
+	fs.StringVar(&f.ipv4Address, "ipv4-address", "", "")
+	fs.StringVar(&f.ipv4Gateway, "ipv4-gateway", "", "")
 	fs.StringVar(&f.ipv6Address, "ipv6-address", "", "")
 	fs.StringVar(&f.ipv6Gateway, "ipv6-gateway", defaultIPv6Gateway, "")
+	fs.StringVar(&f.dns, "dns", "", "")
+	fs.StringVar(&f.dnssec, "dnssec", "", "")
 	fs.BoolVar(&f.tailscale, "tailscale", false, "")
 	fs.StringVar(&f.tsKey, "tailscale-authkey-file", "", "")
 	fs.StringVar(&f.tsHostname, "tailscale-hostname", "", "")
@@ -147,15 +166,29 @@ func run(ctx context.Context, args []string, stdin *os.File, stdout, stderr io.W
 	}
 
 	cfg := &installer.Config{
-		Disk:      disk,
-		SourceRef: *sourceRef,
-		TargetRef: *targetRef,
-		BootcArgs: bootcArgs,
-		Hostname:  f.hostname,
-		DryRun:    *dryRun,
-		Stdout:    stdout,
-		Stderr:    stderr,
-		Paths:     installer.DefaultPaths,
+		Disk:        disk,
+		SourceRef:   *sourceRef,
+		TargetRef:   *targetRef,
+		BootcArgs:   bootcArgs,
+		Hostname:    f.hostname,
+		CopyNetwork: !f.noCopyNetwork,
+		DryRun:      *dryRun,
+		Stdout:      stdout,
+		Stderr:      stderr,
+		Paths:       installer.DefaultPaths,
+	}
+
+	switch {
+	case f.ipv4Address != "" && f.ipv4Gateway == "":
+		return errors.New("--ipv4-address needs --ipv4-gateway")
+	case f.ipv4Address == "" && f.ipv4Gateway != "":
+		return errors.New("--ipv4-gateway needs --ipv4-address")
+	case f.ipv4Address != "":
+		ip, err := target.ParseStaticIPv4(f.ipv4Address, f.ipv4Gateway)
+		if err != nil {
+			return err
+		}
+		cfg.IPv4 = ip
 	}
 
 	if f.ipv6Address != "" {
@@ -167,6 +200,12 @@ func run(ctx context.Context, args []string, stdin *os.File, stdout, stderr io.W
 	} else if f.ipv6Gateway != defaultIPv6Gateway {
 		return errors.New("--ipv6-gateway needs --ipv6-address")
 	}
+
+	dns, err := target.ParseDNS(f.dns, f.dnssec)
+	if err != nil {
+		return err
+	}
+	cfg.DNS = dns
 
 	if f.tailscale || f.tsKey != "" {
 		cfg.Tailscale = f.tailscaleOptions()
@@ -221,8 +260,8 @@ func wipeQuestion(disk string, t *installer.Target) string {
 	return fmt.Sprintf("Erase %s (%s, currently %s) and install?", disk, t.Ident, t.Content)
 }
 
-// ask fills in the hostname and the Tailscale choice
-// on the terminal, with the command line values as defaults.
+// ask fills in the hostname, the network settings and the Tailscale
+// choice on the terminal, with the command line values as defaults.
 func ask(ctx context.Context, p *prompter, cfg *installer.Config, f *flags) error {
 	def := cfg.Hostname
 	if def == "" {
@@ -235,7 +274,23 @@ func ask(ctx context.Context, p *prompter, cfg *installer.Config, f *flags) erro
 	if cfg.Hostname != "" || name != imageHostname() {
 		cfg.Hostname = name
 	}
+	files, err := target.NetworkFiles(cfg.Paths.Network)
+	if err != nil {
+		return err
+	}
+	if len(files) > 0 {
+		fmt.Fprintf(p.out, "Network: this installer has %s (%s)\n", cfg.Paths.Network, strings.Join(files, ", "))
+		if cfg.CopyNetwork, err = p.yesNo("Copy this installer's network configuration to the installed system?", cfg.CopyNetwork); err != nil {
+			return err
+		}
+	}
+	if cfg.IPv4, err = p.ipv4(cfg.IPv4); err != nil {
+		return err
+	}
 	if cfg.IPv6, err = p.ipv6(cfg.IPv6, f.ipv6Gateway); err != nil {
+		return err
+	}
+	if cfg.DNS, err = p.dns(cfg.DNS); err != nil {
 		return err
 	}
 

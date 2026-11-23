@@ -1,7 +1,7 @@
 package:
   name: miniflux
   version: 2.3.5
-  epoch: 4
+  epoch: 5
   description: Minimalist and opinionated feed reader
   target-architecture:
     - x86_64
@@ -14,6 +14,7 @@ package:
     runtime:
       - ca-certificates-bundle=20261020-r4
       - tzdata=2026f-r0
+      - secret-env=0.1.0-r2
 
 environment:
   contents:
@@ -46,6 +47,10 @@ pipeline:
       ldflags: -X miniflux.app/v2/internal/version.Version=${{package.version}} -X miniflux.app/v2/internal/version.Commit=${{vars.commit}}
   - uses: license/install
   - uses: go/credits
+  - uses: secret-env/wrap
+    with:
+      name: miniflux
+      config: secret-env/miniflux.conf
 
 test:
   environment:
@@ -60,6 +65,11 @@ test:
     - uses: test/paths
       with:
         files: /usr/share/licenses/miniflux/LICENSE /usr/share/licenses/miniflux/CREDITS
+    - name: Runs through secret-env
+      runs: |
+        test "$(readlink /usr/bin/miniflux)" = /usr/bin/secret-env
+        test -x /usr/libexec/miniflux.real
+        grep -qx 'path = /usr/libexec/miniflux.real' /etc/secret-env/miniflux.conf
 update:
   enabled: true
   github:

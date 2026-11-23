@@ -1,7 +1,7 @@
 package:
   name: osimage-kernel
   version: 7.1.5
-  epoch: 16
+  epoch: 29
   description: Alpine linux-stable kernel repacked into the bootc /usr/lib/modules layout, trimmed for headless servers
   target-architecture:
     - x86_64
@@ -28,10 +28,10 @@ environment:
       - busybox=1.37.0-r31
       - bash=5.3.9-r1
       - kmod=34.2-r1
-      - dracut=112-r1
+      - dracut=113-r0
       - bootc=1.17.5-r0
-      - osimage-config=1.0.0-r28
-      - systemd=262.1-r7
+      - osimage-config=1.0.0-r32
+      - systemd=262.1-r16
       - lsblk=2.42.3-r1
       - findmnt=2.42.3-r1
       - util-linux-login=2.42.3-r1
@@ -141,7 +141,7 @@ test:
         - os-release=3.24.2-r0
         - busybox=1.37.0-r31
         - kmod=34.2-r1
-        - dracut=112-r1
+        - dracut=113-r0
         - linux-firmware-none=20260519-r0
         - osimage-kernel-initramfs-live
   pipeline:

@@ -1,7 +1,7 @@
 package:
   name: pdsps
   version: 1.1.0
-  epoch: 1
+  epoch: 2
   description: Answering atproto age-assurance states in front of a PDS
   target-architecture:
     - x86_64
@@ -14,6 +14,7 @@ package:
     runtime:
       - ca-certificates-bundle=20261020-r4
       - tzdata=2026f-r0
+      - secret-env=0.1.0-r2
 
 environment:
   contents:
@@ -45,6 +46,10 @@ pipeline:
     with:
       license: LICENCE
   - uses: go/credits
+  - uses: secret-env/wrap
+    with:
+      name: pdsps
+      config: secret-env/pdsps.conf
 test:
   environment:
     contents:
@@ -66,6 +71,11 @@ test:
           exit 1
         fi
         grep -q "upstream is required" /tmp/pdsps.log
+    - name: Runs through secret-env
+      runs: |
+        test "$(readlink /usr/bin/pdsps)" = /usr/bin/secret-env
+        test -x /usr/libexec/pdsps.real
+        grep -qx 'path = /usr/libexec/pdsps.real' /etc/secret-env/pdsps.conf
 update:
   enabled: true
   github:

@@ -1,7 +1,7 @@
 package:
   name: postgres-18
   version: 18.6
-  epoch: 8
+  epoch: 9
   description: PostgreSQL 18 database server
   target-architecture:
     - x86_64
@@ -24,6 +24,7 @@ package:
       - ncurses-libs=6.6_p20260516-r0
       - libuuid=2.42.3-r1
       - musl-locales=0.1.0-r1
+      - secret-env=0.1.0-r2
 
 environment:
   contents:
@@ -83,6 +84,10 @@ pipeline:
   - uses: license/install
     with:
       license: COPYRIGHT
+  - uses: secret-env/wrap
+    with:
+      name: entry.sh
+      config: secret-env/entry.sh.conf
 test:
   environment:
     contents:
@@ -107,6 +112,11 @@ test:
         executables: /usr/bin/postgres /usr/bin/psql /usr/bin/entry.sh
         files: /usr/share/licenses/postgres-18/COPYRIGHT
         dirs: ${{vars.runtime-dirs}} ${{vars.world-writable-dirs}}
+    - name: Runs through secret-env
+      runs: |
+        test "$(readlink /usr/bin/entry.sh)" = /usr/bin/secret-env
+        test -x /usr/libexec/entry.sh.real
+        grep -qx 'path = /usr/libexec/entry.sh.real' /etc/secret-env/entry.sh.conf
 update:
   enabled: true
   release-monitor:

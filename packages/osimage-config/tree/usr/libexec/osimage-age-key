@@ -1,0 +1,24 @@
+#!/bin/sh
+# Creates the compose-sops age key on first boot, sealed with systemd-creds
+# (TPM2 when present, else the host key in /var/lib/systemd).
+
+set -eu
+
+PATH=/usr/bin:/bin:/usr/sbin:/sbin
+export PATH
+
+CRED=/var/drover/age-key.cred
+NAME=compose-sops-key
+
+[ -e "$CRED" ] && exit 0
+
+mkdir -p /var/drover
+tmp=$(mktemp -d /run/compose-sops/keygen.XXXXXX)
+trap 'rm -rf "$tmp"' EXIT
+
+compose-sops keygen --output "$tmp/key.txt"
+rm -f "$CRED.new"
+compose-sops cred --key "$tmp/key.txt" --with-key auto --name "$NAME" "$CRED.new"
+sync "$CRED.new"
+mv "$CRED.new" "$CRED"
+sync /var/drover

@@ -1,7 +1,7 @@
 package:
   name: httpredirect
   version: 1.2.0
-  epoch: 4
+  epoch: 5
   description: Configurable HTTP redirect service
   target-architecture:
     - x86_64
@@ -14,6 +14,7 @@ package:
     runtime:
       - ca-certificates-bundle=20261020-r4
       - tzdata=2026f-r0
+      - secret-env=0.1.0-r2
 
 environment:
   contents:
@@ -43,6 +44,10 @@ pipeline:
       static: "true"
   - uses: license/install
   - uses: go/credits
+  - uses: secret-env/wrap
+    with:
+      name: httpredirect
+      config: secret-env/httpredirect.conf
 test:
   environment:
     contents:
@@ -57,6 +62,11 @@ test:
       with:
         executables: /usr/bin/httpredirect
         files: /usr/share/licenses/httpredirect/LICENSE /usr/share/licenses/httpredirect/CREDITS
+    - name: Runs through secret-env
+      runs: |
+        test "$(readlink /usr/bin/httpredirect)" = /usr/bin/secret-env
+        test -x /usr/libexec/httpredirect.real
+        grep -qx 'path = /usr/libexec/httpredirect.real' /etc/secret-env/httpredirect.conf
 update:
   enabled: true
   github:

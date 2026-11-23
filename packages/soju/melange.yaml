@@ -1,7 +1,7 @@
 package:
   name: soju
   version: 0.11.1
-  epoch: 0
+  epoch: 1
   description: IRC bouncer with a companion administrative client
   target-architecture:
     - x86_64
@@ -14,6 +14,7 @@ package:
     runtime:
       - ca-certificates-bundle=20261020-r4
       - tzdata=2026f-r0
+      - secret-env=0.1.0-r2
 
 environment:
   contents:
@@ -58,6 +59,10 @@ pipeline:
       dirs: ${{vars.runtime-dirs}}
   - uses: license/install
   - uses: go/credits
+  - uses: secret-env/wrap
+    with:
+      name: soju
+      config: secret-env/soju.conf
 test:
   environment:
     contents:
@@ -80,6 +85,11 @@ test:
           exit 1
         fi
         grep -q "failed to load config file" /tmp/soju.log
+    - name: Runs through secret-env
+      runs: |
+        test "$(readlink /usr/bin/soju)" = /usr/bin/secret-env
+        test -x /usr/libexec/soju.real
+        grep -qx 'path = /usr/libexec/soju.real' /etc/secret-env/soju.conf
 update:
   enabled: true
   forgejo:

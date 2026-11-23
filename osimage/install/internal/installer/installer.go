@@ -47,6 +47,8 @@ type Paths struct {
 	RunDir      string
 	// TailscaleState is the installer tailscaled's state directory.
 	TailscaleState string
+	// Network is the installer's own systemd-networkd config.
+	Network string
 }
 
 // DefaultPaths are the live installer's paths.
@@ -60,6 +62,7 @@ var DefaultPaths = Paths{
 	RunDir:      "/run",
 
 	TailscaleState: tailscale.DefaultStateDir,
+	Network:        "/etc/systemd/network",
 }
 
 // Config is one installation.
@@ -71,7 +74,12 @@ type Config struct {
 	BootcArgs []string
 
 	Hostname string
-	IPv6     *target.StaticIPv6
+	// CopyNetwork copies the installer's Paths.Network to the target
+	// before the drop-ins below are written.
+	CopyNetwork bool
+	IPv4        *target.StaticIPv4
+	IPv6        *target.StaticIPv6
+	DNS         *target.DNS
 	// Tailscale, when non-nil, carries the installer's Tailscale node
 	// over to the target. The caller logs the node in first
 	// (tailscale.Prepare); the installer copies its state.
@@ -377,8 +385,22 @@ func Install(ctx context.Context, c *Config, t *Target) error {
 	if c.Hostname != "" {
 		fmt.Fprintf(out, "== hostname: %s\n", c.Hostname)
 	}
+	if c.CopyNetwork {
+		if files, _ := target.NetworkFiles(c.Paths.Network); len(files) > 0 {
+			fmt.Fprintf(out, "== network: copying %s (%s)\n", c.Paths.Network, strings.Join(files, ", "))
+			if c.IPv4 != nil || c.IPv6 != nil || c.DNS != nil {
+				fmt.Fprintln(out, "== network: the ipv4/ipv6/dns settings are drop-ins for 80-dhcp.network; a copied .network file that sorts before it and matches the interface takes precedence")
+			}
+		}
+	}
+	if c.IPv4 != nil {
+		fmt.Fprintf(out, "== ipv4: %s\n", c.IPv4)
+	}
 	if c.IPv6 != nil {
 		fmt.Fprintf(out, "== ipv6: %s\n", c.IPv6)
+	}
+	if c.DNS != nil {
+		fmt.Fprintf(out, "== dns: %s\n", c.DNS)
 	}
 	if c.Tailscale != nil {
 		fmt.Fprintln(out, "== tailscale: the installer's node moves to the installed system")
@@ -485,11 +507,38 @@ func seed(ctx context.Context, c *Config, t *Target) (err error) {
 		fmt.Fprintf(c.Stdout, "== seeded hostname %s\n", c.Hostname)
 	}
 
+	if c.CopyNetwork {
+		files, err := target.NetworkFiles(c.Paths.Network)
+		if err != nil {
+			return fmt.Errorf("network: %w", err)
+		}
+		if len(files) > 0 {
+			if err := target.CopyNetwork(c.Paths.Network, varDir); err != nil {
+				return fmt.Errorf("network: %w", err)
+			}
+			fmt.Fprintf(c.Stdout, "== seeded network config from %s\n", c.Paths.Network)
+		}
+	}
+
+	if c.IPv4 != nil {
+		if err := target.WriteStaticIPv4(varDir, *c.IPv4); err != nil {
+			return fmt.Errorf("ipv4: %w", err)
+		}
+		fmt.Fprintf(c.Stdout, "== seeded static ipv4 %s\n", c.IPv4)
+	}
+
 	if c.IPv6 != nil {
 		if err := target.WriteStaticIPv6(varDir, *c.IPv6); err != nil {
 			return fmt.Errorf("ipv6: %w", err)
 		}
 		fmt.Fprintf(c.Stdout, "== seeded static ipv6 %s\n", c.IPv6)
+	}
+
+	if c.DNS != nil {
+		if err := target.WriteDNS(varDir, *c.DNS); err != nil {
+			return fmt.Errorf("dns: %w", err)
+		}
+		fmt.Fprintf(c.Stdout, "== seeded dns %s\n", c.DNS)
 	}
 
 	if c.Tailscale != nil {

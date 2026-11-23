@@ -11,7 +11,8 @@ contents:
     - ca-certificates-bundle=20261020-r4
     - tzdata=2026f-r0
     - os-release=3.24.2-r0
-    - irc-adze=1.0.1-r4
+    - irc-adze=1.0.1-r5
+    - secret-env=0.1.0-r2
 
 accounts:
   run-as: 65532:65532

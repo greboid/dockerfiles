@@ -1,7 +1,5 @@
 /dist/
 /melange-cache/
-/source/target/
-__pycache__/
 /keys/
 *.rsa
 *.rsa.pub

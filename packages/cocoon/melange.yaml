@@ -1,6 +1,6 @@
 package:
   name: cocoon
-  version: 0.14.4
+  version: 0.15
   epoch: 0
   description: An atproto PDS (Bluesky) server
   target-architecture:
@@ -16,6 +16,7 @@ package:
       - libgcc=15.2.0-r5
       - musl=1.2.6-r3
       - tzdata=2026f-r0
+      - secret-env=0.1.0-r2
 
 environment:
   contents:
@@ -37,7 +38,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 6e3922f4aa0299170b83b362b462473aad245c0e
+      expected-commit: ec9eb1809820faeb8a991eb2221112a0df8cc289
       repository: https://github.com/haileyok/cocoon
       tag: v${{package.version}}
   - uses: go/build
@@ -50,6 +51,10 @@ pipeline:
   - uses: go/credits
     with:
       skip-missing: "true"
+  - uses: secret-env/wrap
+    with:
+      name: cocoon
+      config: secret-env/cocoon.conf
 test:
   environment:
     contents:
@@ -64,6 +69,11 @@ test:
       with:
         executables: /usr/bin/cocoon
         files: /usr/share/licenses/cocoon/LICENSE /usr/share/licenses/cocoon/CREDITS
+    - name: Runs through secret-env
+      runs: |
+        test "$(readlink /usr/bin/cocoon)" = /usr/bin/secret-env
+        test -x /usr/libexec/cocoon.real
+        grep -qx 'path = /usr/libexec/cocoon.real' /etc/secret-env/cocoon.conf
 update:
   enabled: true
   github:

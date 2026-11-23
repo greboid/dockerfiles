@@ -1,7 +1,7 @@
 package:
   name: puzzles
   version: 1.0.3
-  epoch: 24
+  epoch: 25
   description: Word and image puzzle helper web service
   target-architecture:
     - x86_64
@@ -14,6 +14,7 @@ package:
     runtime:
       - ca-certificates-bundle=20261020-r4
       - tzdata=2026f-r0
+      - secret-env=0.1.0-r2
 
 environment:
   contents:
@@ -46,6 +47,10 @@ pipeline:
       install -m 0644 wordlists/*.wl "${{targets.destdir}}/app/wordlists/"
   - uses: license/install
   - uses: go/credits
+  - uses: secret-env/wrap
+    with:
+      name: puzzles
+      config: secret-env/puzzles.conf
 test:
   environment:
     contents:
@@ -61,6 +66,11 @@ test:
       with:
         executables: /usr/bin/puzzles
         files: /app/wordlists/combined.wl /app/wordlists/urbandictionary.wl /usr/share/licenses/puzzles/LICENSE /usr/share/licenses/puzzles/CREDITS
+    - name: Runs through secret-env
+      runs: |
+        test "$(readlink /usr/bin/puzzles)" = /usr/bin/secret-env
+        test -x /usr/libexec/puzzles.real
+        grep -qx 'path = /usr/libexec/puzzles.real' /etc/secret-env/puzzles.conf
 update:
   enabled: true
   github:

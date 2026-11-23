@@ -1,7 +1,7 @@
 package:
   name: githubmirror
   version: 1.0.3
-  epoch: 21
+  epoch: 22
   description: Mirrors GitHub repositories over HTTPS for cloning
   target-architecture:
     - x86_64
@@ -14,6 +14,7 @@ package:
     runtime:
       - ca-certificates-bundle=20261020-r4
       - tzdata=2026f-r0
+      - secret-env=0.1.0-r2
 
 environment:
   contents:
@@ -43,6 +44,10 @@ pipeline:
       static: "true"
   - uses: license/install
   - uses: go/credits
+  - uses: secret-env/wrap
+    with:
+      name: githubmirror
+      config: secret-env/githubmirror.conf
 test:
   environment:
     contents:
@@ -62,6 +67,11 @@ test:
         /usr/bin/githubmirror >/tmp/githubmirror.log 2>&1
         test $? -eq 0
         grep -q "authtoken" /tmp/githubmirror.log
+    - name: Runs through secret-env
+      runs: |
+        test "$(readlink /usr/bin/githubmirror)" = /usr/bin/secret-env
+        test -x /usr/libexec/githubmirror.real
+        grep -qx 'path = /usr/libexec/githubmirror.real' /etc/secret-env/githubmirror.conf
 update:
   enabled: true
   github:

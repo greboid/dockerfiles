@@ -1,7 +1,7 @@
 package:
   name: dockercleanup
   version: 1.1.1
-  epoch: 4
+  epoch: 5
   description: Periodically prunes stopped containers and unused images via the Docker API
   target-architecture:
     - x86_64
@@ -14,6 +14,7 @@ package:
     runtime:
       - ca-certificates-bundle=20261020-r4
       - tzdata=2026f-r0
+      - secret-env=0.1.0-r2
 
 environment:
   contents:
@@ -43,6 +44,10 @@ pipeline:
       static: "true"
   - uses: license/install
   - uses: go/credits
+  - uses: secret-env/wrap
+    with:
+      name: dockercleanup
+      config: secret-env/dockercleanup.conf
 test:
   environment:
     contents:
@@ -60,6 +65,11 @@ test:
     - name: Binary runs
       runs: |
         /usr/bin/dockercleanup --help 2>&1 | grep -q "Usage"
+    - name: Runs through secret-env
+      runs: |
+        test "$(readlink /usr/bin/dockercleanup)" = /usr/bin/secret-env
+        test -x /usr/libexec/dockercleanup.real
+        grep -qx 'path = /usr/libexec/dockercleanup.real' /etc/secret-env/dockercleanup.conf
 update:
   enabled: true
   forgejo:

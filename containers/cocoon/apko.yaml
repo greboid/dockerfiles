@@ -11,7 +11,8 @@ contents:
     - ca-certificates-bundle=20261020-r4
     - tzdata=2026f-r0
     - os-release=3.24.2-r0
-    - cocoon=0.14.4-r0
+    - cocoon=0.15-r0
+    - secret-env=0.1.0-r2
 
 accounts:
   run-as: 65532:65532

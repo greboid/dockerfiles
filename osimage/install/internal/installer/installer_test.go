@@ -184,13 +184,15 @@ func TestDryRun(t *testing.T) {
 	c := &Config{
 		Disk: "/dev/vda", SourceRef: DefaultRef, TargetRef: DefaultRef,
 		Hostname: "box1",
+		IPv4:     &target.StaticIPv4{Address: netip.MustParsePrefix("192.0.2.10/24"), Gateway: netip.MustParseAddr("192.0.2.1")},
 		IPv6:     &target.StaticIPv6{Address: netip.MustParsePrefix("2001:db8::1/64"), Gateway: netip.MustParseAddr("fe80::1")},
+		DNS:      &target.DNS{DNSSEC: "no"},
 		DryRun:   true, Stdout: &out, Stderr: &out, Paths: DefaultPaths,
 	}
 	if err := Install(context.Background(), c, &Target{Path: "/dev/vda", Ident: "QEMU", ProfileVersion: "1.0.0-r3"}); err != nil {
 		t.Fatal(err)
 	}
-	for _, want := range []string{"== hostname: box1", "== ipv6: 2001:db8::1/64 via fe80::1", "== dry run: bootc install to-disk"} {
+	for _, want := range []string{"== hostname: box1", "== ipv4: 192.0.2.10/24 via 192.0.2.1", "== ipv6: 2001:db8::1/64 via fe80::1", "== dns: dnssec no", "== dry run: bootc install to-disk"} {
 		if !strings.Contains(out.String(), want) {
 			t.Errorf("dry-run output missing %q:\n%s", want, out.String())
 		}

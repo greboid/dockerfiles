@@ -80,6 +80,103 @@ func (p *prompter) ipv6(def *target.StaticIPv6, gateway string) (*target.StaticI
 	}
 }
 
+// ipv4 asks for a static IPv4 address/prefix and its gateway; an empty
+// answer keeps def and "none" clears it.
+func (p *prompter) ipv4(def *target.StaticIPv4) (*target.StaticIPv4, error) {
+	shown, defGW := "none", ""
+	if def != nil {
+		shown, defGW = def.Address.String(), def.Gateway.String()
+	}
+	for {
+		a, err := p.line(fmt.Sprintf("Static IPv4 address/prefix, replaces DHCPv4 [%s]: ", shown))
+		if err != nil {
+			return nil, err
+		}
+		switch strings.ToLower(a) {
+		case "":
+			return def, nil
+		case "none":
+			return nil, nil
+		}
+		if _, err := target.ParseIPv4Address(a); err != nil {
+			fmt.Fprintln(p.out, err)
+			continue
+		}
+		q := "IPv4 gateway: "
+		if defGW != "" {
+			q = fmt.Sprintf("IPv4 gateway [%s]: ", defGW)
+		}
+		gw := ""
+		for gw == "" {
+			if gw, err = p.line(q); err != nil {
+				return nil, err
+			}
+			if gw == "" {
+				gw = defGW
+			}
+		}
+		s, err := target.ParseStaticIPv4(a, gw)
+		if err != nil {
+			fmt.Fprintln(p.out, err)
+			continue
+		}
+		return s, nil
+	}
+}
+
+// dns asks for DNS servers and the DNSSEC mode; an empty answer keeps
+// def's value, "none" clears the servers and "default" the mode.
+func (p *prompter) dns(def *target.DNS) (*target.DNS, error) {
+	servers, mode := "", ""
+	if def != nil {
+		servers, mode = def.ServerList(), def.DNSSEC
+	}
+	if servers == "" {
+		servers = "none"
+	}
+	if mode == "" {
+		mode = "default"
+	}
+	q := fmt.Sprintf("DNS servers, comma-separated [%s]: ", servers)
+	for {
+		a, err := p.line(q)
+		if err != nil {
+			return nil, err
+		}
+		if a == "" {
+			a = servers
+		}
+		if strings.EqualFold(a, "none") {
+			a = ""
+		}
+		if _, err := target.ParseDNS(a, ""); err != nil {
+			fmt.Fprintln(p.out, err)
+			continue
+		}
+		servers = a
+		break
+	}
+	q = fmt.Sprintf("DNSSEC (%s, default) [%s]: ", strings.Join(target.DNSSECModes, ", "), mode)
+	for {
+		a, err := p.line(q)
+		if err != nil {
+			return nil, err
+		}
+		if a == "" {
+			a = mode
+		}
+		if a = strings.ToLower(a); a == "default" {
+			a = ""
+		}
+		d, err := target.ParseDNS(servers, a)
+		if err != nil {
+			fmt.Fprintln(p.out, err)
+			continue
+		}
+		return d, nil
+	}
+}
+
 func (p *prompter) yesNo(q string, def bool) (bool, error) {
 	hint := "[y/N]"
 	if def {

@@ -102,10 +102,10 @@ index 0000000..5ff8091
 +        install -d -m "${{inputs.mode}}" "${{targets.destdir}}/$dir"
 +      done
 diff --git c/pkg/build/pipelines/go/build.yaml i/pkg/build/pipelines/go/build.yaml
-index 24ae09c..2e613e1 100644
+index 24ae09c..9241b16 100644
 --- c/pkg/build/pipelines/go/build.yaml
 +++ i/pkg/build/pipelines/go/build.yaml
-@@ -1,156 +1,65 @@
+@@ -1,156 +1,71 @@
 -name: Run a build using the go compiler
 +name: Build go code
  
@@ -292,11 +292,17 @@ index 24ae09c..2e613e1 100644
 +      else
 +        export CGO_ENABLED=1
        fi
++      # Workspace files such as the module cache above are untracked in the
++      # checkout; ignore them so the binary is not stamped vcs.modified.
++      ignore=$(mktemp)
++      echo '**' > "$ignore"
++      export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.excludesFile GIT_CONFIG_VALUE_0="$ignore"
 +      go build -trimpath \
 +        -ldflags "${{inputs.ldflags}}" \
 +        -tags "${{inputs.tags}}" \
 +        -o "${{targets.destdir}}/${{inputs.prefix}}/${{inputs.install-dir}}/${{inputs.output}}" \
 +        ${{inputs.packages}}
++      rm -f "$ignore"
 diff --git c/pkg/build/pipelines/go/credits.yaml i/pkg/build/pipelines/go/credits.yaml
 new file mode 100644
 index 0000000..d93b515

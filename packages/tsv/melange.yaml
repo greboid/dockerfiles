@@ -1,7 +1,7 @@
 package:
   name: tsv
   version: 1.2.3
-  epoch: 1
+  epoch: 2
   description: Tailscale VPN node bridging tailnet traffic to WireGuard
   target-architecture:
     - x86_64
@@ -14,6 +14,7 @@ package:
     runtime:
       - ca-certificates-bundle=20261020-r4
       - tzdata=2026f-r0
+      - secret-env=0.1.0-r2
 
 environment:
   contents:
@@ -51,6 +52,10 @@ pipeline:
     with:
       license: LICENCE
   - uses: go/credits
+  - uses: secret-env/wrap
+    with:
+      name: tsv
+      config: secret-env/tsv.conf
 test:
   environment:
     contents:
@@ -74,6 +79,11 @@ test:
         fi
         grep -q "Flag validation failed" /tmp/tsv.log
         grep -q "\-\-wg-private-key is required" /tmp/tsv.log
+    - name: Runs through secret-env
+      runs: |
+        test "$(readlink /usr/bin/tsv)" = /usr/bin/secret-env
+        test -x /usr/libexec/tsv.real
+        grep -qx 'path = /usr/libexec/tsv.real' /etc/secret-env/tsv.conf
 update:
   enabled: true
   github:
