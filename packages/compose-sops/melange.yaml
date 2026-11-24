@@ -1,6 +1,6 @@
 package:
   name: compose-sops
-  version: 0.3.0
+  version: 0.4.1
   epoch: 0
   description: Compose provider publishing SOPS-encrypted secrets as files on tmpfs
   target-architecture:
@@ -29,7 +29,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 6a9b8f328f6a8576bd6b574dbbd2eec8c1de7b60
+      expected-commit: 0a39e876cbc7c0652ebc0481ff14b2c29ed77f7d
       repository: https://git.mouse-lake.ts.net/greboid/compose-sops
       tag: v${{package.version}}
   - uses: go/build

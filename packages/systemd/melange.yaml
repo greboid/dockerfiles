@@ -1,7 +1,7 @@
 package:
   name: systemd
   version: 262.1
-  epoch: 16
+  epoch: 17
   description: systemd init system (PID 1), udev and core daemons built for musl
   target-architecture:
     - x86_64
@@ -38,7 +38,7 @@ environment:
       - coreutils=9.11-r0
       - gperf=3.3-r0
       - pkgconf=2.5.1-r0
-      - python3=3.14.10-r1
+      - python3=3.14.10-r2
       - py3-elftools=0.32-r1
       - py3-jinja2=3.1.6-r1
       - meson=1.11.1-r0

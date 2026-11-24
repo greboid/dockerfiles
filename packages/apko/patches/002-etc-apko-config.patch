@@ -1,5 +1,5 @@
 diff --git a/pkg/build/build_implementation.go b/pkg/build/build_implementation.go
-index 2c5c0f4b..d27fd38e 100644
+index fe5b4497..1ecfc727 100644
 --- a/pkg/build/build_implementation.go
 +++ b/pkg/build/build_implementation.go
 @@ -20,7 +20,6 @@ import (
@@ -10,7 +10,7 @@ index 2c5c0f4b..d27fd38e 100644
  	"errors"
  	"fmt"
  	"hash"
-@@ -329,10 +328,6 @@ func (bc *Context) buildImage(ctx context.Context) ([]apk.InstalledDiff, error)
+@@ -331,10 +330,6 @@ func (bc *Context) buildImage(ctx context.Context) ([]apk.InstalledDiff, error)
  		}
  	}
  
@@ -21,7 +21,7 @@ index 2c5c0f4b..d27fd38e 100644
  	if err := mutatePaths(bc.fs, &bc.o, &bc.ic); err != nil {
  		return nil, fmt.Errorf("failed to mutate paths: %w", err)
  	}
-@@ -442,24 +437,6 @@ func ldsoLibDirs(fsys apkfs.FullFS, confDirs []string) []string {
+@@ -464,24 +459,6 @@ func ldsoLibDirs(fsys apkfs.FullFS, confDirs []string) []string {
  	return libdirs
  }
  

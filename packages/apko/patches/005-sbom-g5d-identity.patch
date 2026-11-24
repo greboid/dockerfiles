@@ -69,117 +69,19 @@ index d58fa244..14d4ddfe 100644
  	if err := renderDoc(doc, path); err != nil {
  		return fmt.Errorf("rendering document: %w", err)
  	}
-diff --git a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/both-describes-methods.spdx.json b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/both-describes-methods.spdx.json
-index 158110cc..c855353a 100644
---- a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/both-describes-methods.spdx.json
-+++ b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/both-describes-methods.spdx.json
-@@ -6,12 +6,12 @@
-     "created": "0001-01-01T00:00:00Z",
-     "creators": [
-       "Tool: apko (devel)",
--      "Organization: Chainguard, Inc"
-+      "Organization: Greboid"
-     ],
-     "licenseListVersion": "3.27"
-   },
-   "dataLicense": "CC0-1.0",
--  "documentNamespace": "https://spdx.org/spdxdocs/apko/",
-+  "documentNamespace": "https://g5d.dev/containers/sbom/spdx/images/43dd90b84481fcd493b0de33e54490ebe45880836c83e9e4bbb7ae8cdf9b4cd7",
-   "documentDescribes": [
-     "SPDXRef-Package-ImageLayer-"
-   ],
-diff --git a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/custom-license.spdx.json b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/custom-license.spdx.json
-index 9e2ae2ff..9811aa52 100644
---- a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/custom-license.spdx.json
-+++ b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/custom-license.spdx.json
-@@ -6,12 +6,12 @@
-     "created": "0001-01-01T00:00:00Z",
-     "creators": [
-       "Tool: apko (devel)",
--      "Organization: Chainguard, Inc"
-+      "Organization: Greboid"
-     ],
-     "licenseListVersion": "3.27"
-   },
-   "dataLicense": "CC0-1.0",
--  "documentNamespace": "https://spdx.org/spdxdocs/apko/",
-+  "documentNamespace": "https://g5d.dev/containers/sbom/spdx/images/0838509ced7b556db9c1ab420e83ad7c1f29e9bc003da1ba39cb2f83897b5bfe",
-   "documentDescribes": [
-     "SPDXRef-Package-ImageLayer-"
-   ],
-diff --git a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/describes-relationship.spdx.json b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/describes-relationship.spdx.json
-index a97bc223..1cd51bdb 100644
---- a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/describes-relationship.spdx.json
-+++ b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/describes-relationship.spdx.json
-@@ -6,12 +6,12 @@
-     "created": "0001-01-01T00:00:00Z",
-     "creators": [
-       "Tool: apko (devel)",
--      "Organization: Chainguard, Inc"
-+      "Organization: Greboid"
-     ],
-     "licenseListVersion": "3.27"
-   },
-   "dataLicense": "CC0-1.0",
--  "documentNamespace": "https://spdx.org/spdxdocs/apko/",
-+  "documentNamespace": "https://g5d.dev/containers/sbom/spdx/images/d86bf353e59f80fd99a096b61b436765775053ad53b1b5f64a72daa26321ed93",
-   "documentDescribes": [
-     "SPDXRef-Package-ImageLayer-"
-   ],
-diff --git a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/no-supplier.spdx.json b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/no-supplier.spdx.json
-index ac17f96e..7054b2dd 100644
---- a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/no-supplier.spdx.json
-+++ b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/no-supplier.spdx.json
-@@ -6,12 +6,12 @@
-     "created": "0001-01-01T00:00:00Z",
-     "creators": [
-       "Tool: apko (devel)",
--      "Organization: Chainguard, Inc"
-+      "Organization: Greboid"
-     ],
-     "licenseListVersion": "3.27"
-   },
-   "dataLicense": "CC0-1.0",
--  "documentNamespace": "https://spdx.org/spdxdocs/apko/",
-+  "documentNamespace": "https://g5d.dev/containers/sbom/spdx/images/6c6c024b7bd195b138f74eebd6ca4bb3d2f35e56e1a51add0ad6154025240b74",
-   "documentDescribes": [
-     "SPDXRef-Package-ImageLayer-"
-   ],
-diff --git a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/package-deduplicating.spdx.json b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/package-deduplicating.spdx.json
-index 9ef1a539..b3838a6b 100644
---- a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/package-deduplicating.spdx.json
-+++ b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/package-deduplicating.spdx.json
-@@ -6,12 +6,12 @@
-     "created": "0001-01-01T00:00:00Z",
-     "creators": [
-       "Tool: apko (devel)",
--      "Organization: Chainguard, Inc"
-+      "Organization: Greboid"
-     ],
-     "licenseListVersion": "3.27"
-   },
-   "dataLicense": "CC0-1.0",
--  "documentNamespace": "https://spdx.org/spdxdocs/apko/",
-+  "documentNamespace": "https://g5d.dev/containers/sbom/spdx/images/d98ecd6b63ebaf4310b37bc8e7590abbfbf6e4f899878e2d203e325e986d541c",
-   "documentDescribes": [
-     "SPDXRef-Package-ImageLayer-"
-   ],
-diff --git a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/unbound-package-dedupe.spdx.json b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/unbound-package-dedupe.spdx.json
-index 7260e81b..b7346d48 100644
---- a/pkg/sbom/generator/spdx/testdata/expected_image_sboms/unbound-package-dedupe.spdx.json
-+++ b/pkg/sbom/generator/spdx/testdata/expected_image_sboms/unbound-package-dedupe.spdx.json
-@@ -6,12 +6,12 @@
-     "created": "0001-01-01T00:00:00Z",
-     "creators": [
-       "Tool: apko (devel)",
--      "Organization: Chainguard, Inc"
-+      "Organization: Greboid"
-     ],
-     "licenseListVersion": "3.27"
-   },
-   "dataLicense": "CC0-1.0",
--  "documentNamespace": "https://spdx.org/spdxdocs/apko/",
-+  "documentNamespace": "https://g5d.dev/containers/sbom/spdx/images/b08b3418448007346700b35d6d06bf9369682c07571710a4a5fca4c65c8bd1de",
-   "documentDescribes": [
-     "SPDXRef-Package-ImageLayer-"
-   ],
+diff --git a/pkg/sbom/generator/spdx/spdx_test.go b/pkg/sbom/generator/spdx/spdx_test.go
+index 0845de46..eade9727 100644
+--- a/pkg/sbom/generator/spdx/spdx_test.go
++++ b/pkg/sbom/generator/spdx/spdx_test.go
+@@ -244,6 +244,11 @@ func TestSPDX_Generate(t *testing.T) {
+ 			require.NoError(t, err)
+ 
+ 			expectedImageSBOMPath := filepath.Join("testdata", "expected_image_sboms", imageSBOMName)
++			// Goldens are not carried in the patch set; scripts/verify.sh
++			// regenerates them with this.
++			if os.Getenv("APKO_UPDATE_GOLDENS") != "" {
++				require.NoError(t, os.WriteFile(expectedImageSBOMPath, actual, 0o644))
++			}
+ 			expected, err := os.ReadFile(expectedImageSBOMPath)
+ 			require.NoError(t, err)
+ 

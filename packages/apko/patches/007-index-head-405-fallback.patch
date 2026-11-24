@@ -1,8 +1,8 @@
 diff --git a/pkg/apk/apk/cache.go b/pkg/apk/apk/cache.go
-index 60dae3dc..262f5794 100644
+index c051d03a..6ac7676e 100644
 --- a/pkg/apk/apk/cache.go
 +++ b/pkg/apk/apk/cache.go
-@@ -232,6 +232,29 @@ func (t *cacheTransport) head(request *http.Request, cacheFile string) (*http.Re
+@@ -260,6 +260,29 @@ func (t *cacheTransport) head(request *http.Request, cacheFile string) (*http.Re
  		// HEAD shouldn't have a body. Make sure we close it so we can reuse the connection.
  		defer resp.Body.Close()
  
@@ -33,10 +33,10 @@ index 60dae3dc..262f5794 100644
  
  		return resp, nil
 diff --git a/pkg/apk/apk/index.go b/pkg/apk/apk/index.go
-index 5a78f8a4..dcfec266 100644
+index 377a2e46..80c3a76d 100644
 --- a/pkg/apk/apk/index.go
 +++ b/pkg/apk/apk/index.go
-@@ -110,10 +110,6 @@ func (i *indexCache) get(ctx context.Context, repoName, repoURL string, keys map
+@@ -121,10 +121,6 @@ func (i *indexCache) get(ctx context.Context, repoName, repoURL string, keys map
  		}
  		defer resp.Body.Close()
  
@@ -47,7 +47,7 @@ index 5a78f8a4..dcfec266 100644
  		fetchAndParse := func(etag string) (NamedIndex, error) {
  			b, _, err := fetchRepositoryIndex(ctx, u, etag, opts)
  			if err != nil {
-@@ -126,6 +122,21 @@ func (i *indexCache) get(ctx context.Context, repoName, repoURL string, keys map
+@@ -137,6 +133,21 @@ func (i *indexCache) get(ctx context.Context, repoName, repoURL string, keys map
  			return NewNamedRepositoryWithIndex(repoName, repoRef.WithIndex(idx)), nil
  		}
  

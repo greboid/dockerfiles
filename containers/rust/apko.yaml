@@ -38,7 +38,7 @@ contents:
     - libcrypto3=3.5.9-r1
     - libcurl=8.23.0-r0
     - libexpat=2.10.0-r0
-    - libffi=3.5.2-r1
+    - libffi=3.8.1-r0
     - libgcc=15.2.0-r5
     - libgcc-static=15.2.0-r5
     - libgcrypt=1.12.2-r0
