@@ -1,0 +1,63 @@
+name: release
+description: Create a release on this Forgejo instance and upload its assets; a compact replacement for softprops/action-gh-release (no Node.js). Authenticates with a Forgejo Authorized Integration (the audience input, no stored token) or an access token. Reruns replace the tag's release wholesale, so stale assets never survive.
+inputs:
+  tag:
+    description: Tag to release; created at commitish when it does not exist yet. Defaults to the pushed tag's name when the workflow runs on a tag event
+    default: ''
+  name:
+    description: Release title; defaults to the tag
+    default: ''
+  body:
+    description: Release notes
+    default: ''
+  commitish:
+    description: Commit to point the tag at; defaults to the commit the workflow runs on
+    default: ''
+  assets:
+    description: Whitespace/newline-separated files to upload (workspace-relative), each as path or name=path to rename; duplicate names are an error
+    default: ''
+  replace:
+    description: Replace an existing release for the tag, its assets included (the tag itself is kept)
+    default: 'true'
+  draft:
+    description: Mark the release as a draft
+    default: 'false'
+  prerelease:
+    description: Mark the release as a pre-release
+    default: 'false'
+  repository:
+    description: owner/name to release into; defaults to the workflow's repository
+    default: ''
+  token:
+    description: Access token for the Forgejo API; takes precedence over audience, then the job token
+    default: ''
+  audience:
+    description: Audience of a Forgejo Authorized Integration; when set (and token is not), fetches an OIDC JWT from the runner and authenticates with it (requires Forgejo v16+ and enable-openid-connect set to true in the workflow)
+    default: ''
+  debug:
+    description: Enable debug logging
+    default: 'false'
+outputs:
+  id:
+    description: The release's numeric id
+  url:
+    description: The release's HTML URL
+  assets:
+    description: Number of assets uploaded
+runs:
+  using: docker
+  image: docker://git.mouse-lake.ts.net/actions/toolkit/release:dev
+  env:
+    TOKEN: ${{ inputs.token }}
+  args:
+    - -tag=${{ inputs.tag }}
+    - -name=${{ inputs.name }}
+    - -body=${{ inputs.body }}
+    - -commitish=${{ inputs.commitish }}
+    - -assets=${{ inputs.assets }}
+    - -replace=${{ inputs.replace }}
+    - -draft=${{ inputs.draft }}
+    - -prerelease=${{ inputs.prerelease }}
+    - -repository=${{ inputs.repository }}
+    - -audience=${{ inputs.audience }}
+    - -debug=${{ inputs.debug }}

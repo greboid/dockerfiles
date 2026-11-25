@@ -1,0 +1,12 @@
+# Image for the apko-changelog action, built and pushed to the instance registry by
+# the images workflow (.forgejo/workflows/images.yml) with the repository
+# root as the docker build context (Dockerfile.apko-changelog).
+FROM git.mouse-lake.ts.net/containers/golang:latest AS build
+WORKDIR /src
+COPY . .
+RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/action ./apko-changelog/cmd
+
+FROM git.mouse-lake.ts.net/containers/alpine:latest
+RUN apk add --no-cache ca-certificates
+COPY --from=build /out/action /bin/action
+ENTRYPOINT ["/bin/action"]

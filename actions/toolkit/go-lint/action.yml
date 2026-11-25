@@ -1,0 +1,11 @@
+name: go-lint
+description: gofmt check; fails the step when any of the workspace module's own .go files are not gofmt-formatted, using the gofmt from the action image's toolchain
+inputs:
+  debug:
+    description: Enable debug logging
+    default: 'false'
+runs:
+  using: docker
+  image: docker://git.mouse-lake.ts.net/actions/toolkit/go-lint:dev
+  args:
+    - -debug=${{ inputs.debug }}

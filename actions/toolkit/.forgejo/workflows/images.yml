@@ -1,0 +1,26 @@
+name: images
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+enable-openid-connect: true # makes the runner expose the ID token endpoint
+
+jobs:
+  images:
+    runs-on: alpine
+    strategy:
+      fail-fast: false
+      matrix:
+        action: [git-checkout, go-setup, node-setup, apko-changelog, docker-login, docker-build, docker-push, go-build, go-test, go-vet, go-lint, git-commit, git-try-push, release, package-latest]
+    steps:
+      - uses: actions/toolkit/git-checkout@master
+      - uses: actions/toolkit/docker-login@master
+        with:
+          audience: u:1:0bebe21a-5e95-465d-bb12-861337791a8c # registry authorized integration
+      - uses: actions/toolkit/docker-push@master
+        with:
+          tags: git.mouse-lake.ts.net/actions/toolkit/${{ matrix.action }}:dev
+          file: Dockerfile.${{ matrix.action }}

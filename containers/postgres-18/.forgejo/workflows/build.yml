@@ -37,13 +37,26 @@ jobs:
           registry: git.mouse-lake.ts.net
           username: greboid
           password: ${{ secrets.RELEASE_PACKAGE_TOKEN }}
+          ghcr: ${{ secrets.GH_TOKEN }}
       - name: Compute tags
         run: |
           version_tag="$(date -u +%Y.%m.%d | sed 's/\.0/./g')-alpine3.24"
           {
             echo "IMAGE_TAG=git.mouse-lake.ts.net/containers/postgres-18:${version_tag}"
             echo "IMAGE_LATEST=git.mouse-lake.ts.net/containers/postgres-18:latest"
+            echo "VERSION_TAG=${version_tag}"
           } >> "$GITHUB_ENV"
 
       - name: Build and publish
-        run: apko publish -k "$ORG_KEY" apko.yaml "$IMAGE_TAG" "$IMAGE_LATEST"
+        env:
+          GH_USERNAME: ${{ secrets.GH_USERNAME }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          set -eu
+          tags="$IMAGE_TAG $IMAGE_LATEST"
+          if [ -n "$GH_USERNAME" ] && [ -n "$GH_TOKEN" ]; then
+            tags="$tags ghcr.io/greboid/dockerfiles/postgres-18:$VERSION_TAG ghcr.io/greboid/dockerfiles/postgres-18:latest"
+          else
+            echo "GH_USERNAME/GH_TOKEN not set; skipping ghcr.io mirror" >&2
+          fi
+          apko publish -k "$ORG_KEY" apko.yaml $tags

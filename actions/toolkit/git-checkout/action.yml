@@ -1,0 +1,45 @@
+name: git-checkout
+description: Pure-Go repository checkout for Forgejo Runner (no Node.js, no git binary)
+inputs:
+  repository:
+    description: Repository to check out (owner/name); defaults to GITHUB_REPOSITORY
+    default: ''
+  ref:
+    description: Ref to check out; defaults to GITHUB_REF
+    default: ''
+  token:
+    description: Access token; defaults to GITHUB_TOKEN then GITEA_TOKEN
+    default: ''
+  username:
+    description: Username for token basic auth; defaults to GITHUB_ACTOR then x-access-token
+    default: ''
+  path:
+    description: Directory, relative to the workspace, to check out into
+    default: '.'
+  fetch-depth:
+    description: Number of commits to fetch; 0 fetches all history and tags
+    default: '1'
+  submodules:
+    description: 'false, true or recursive'
+    default: 'false'
+  debug:
+    description: Enable debug logging
+    default: 'false'
+outputs:
+  ref:
+    description: The ref that was checked out
+  commit:
+    description: The commit SHA that was checked out
+runs:
+  using: docker
+  image: docker://git.mouse-lake.ts.net/actions/toolkit/git-checkout:dev
+  env:
+    TOKEN: ${{ inputs.token }}
+  args:
+    - -repository=${{ inputs.repository }}
+    - -ref=${{ inputs.ref }}
+    - -username=${{ inputs.username }}
+    - -path=${{ inputs.path }}
+    - -fetch-depth=${{ inputs.fetch-depth }}
+    - -submodules=${{ inputs.submodules }}
+    - -debug=${{ inputs.debug }}

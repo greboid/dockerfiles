@@ -1,0 +1,16 @@
+# Image for the go-build action, built and pushed to the instance registry by
+# the images workflow (.forgejo/workflows/images.yml) with the repository
+# root as the docker build context (Dockerfile.go-build).
+#
+# The golang image is both the build and the runtime environment: it
+# ships the toolchain (and gofmt, and git for VCS stamping) the action
+# runs with, so no setup step is needed and the version is pinned by
+# the image.
+FROM git.mouse-lake.ts.net/containers/golang:latest AS build
+WORKDIR /src
+COPY . .
+RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/action ./go-build/cmd
+
+FROM git.mouse-lake.ts.net/containers/golang:latest
+COPY --from=build /out/action /bin/action
+ENTRYPOINT ["/bin/action"]

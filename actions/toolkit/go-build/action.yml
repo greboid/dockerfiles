@@ -1,0 +1,30 @@
+name: go-build
+description: go build step; compiles the workspace module (one package by default, or the given package patterns) into a static binary with -tags netgo,osusergo -a -trimpath, in a Go toolchain container, with optional CGO, ldflags and output name
+inputs:
+  cgo:
+    description: Enable cgo (sets CGO_ENABLED=1); requires a C compiler in the action image
+    default: '0'
+  ldflags:
+    description: Flags passed to -ldflags verbatim
+    default: '-w -extldflags "-static" -buildid=.'
+  packages:
+    description: Space-separated package patterns to build
+    default: ''
+  output:
+    description: Output path or binary name, relative to the workspace; defaults to the module name from go.mod
+    default: ''
+  debug:
+    description: Enable debug logging
+    default: 'false'
+outputs:
+  binary:
+    description: Absolute path of the built binary
+runs:
+  using: docker
+  image: docker://git.mouse-lake.ts.net/actions/toolkit/go-build:dev
+  args:
+    - -cgo=${{ inputs.cgo }}
+    - -ldflags=${{ inputs.ldflags }}
+    - -packages=${{ inputs.packages }}
+    - -output=${{ inputs.output }}
+    - -debug=${{ inputs.debug }}

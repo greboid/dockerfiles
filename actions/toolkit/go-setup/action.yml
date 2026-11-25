@@ -1,0 +1,34 @@
+name: go-setup
+description: Pure-Go replacement for actions/setup-go (no Node.js); installs a Go toolchain from go.dev with checksum verification
+inputs:
+  go-version:
+    description: 'Go version to install: exact (1.23.4), wildcard (1.23, 1.23.x, 1.x), stable or latest'
+    default: ''
+  go-version-file:
+    description: Path to a go.mod (or a file containing a go directive); defaults to the workspace go.mod when no version is given
+    default: ''
+  install-dir:
+    description: Directory to install toolchains into; defaults to .actions/go under the workspace
+    default: ''
+  force:
+    description: Re-download even if the toolchain is already installed
+    default: 'false'
+  cache:
+    description: Store and restore toolchain archives via the runner cache (ACTIONS_CACHE_URL); has no effect when the runner advertises no cache
+    default: 'true'
+  debug:
+    description: Enable debug logging
+    default: 'false'
+outputs:
+  go-version:
+    description: The resolved Go version
+runs:
+  using: docker
+  image: docker://git.mouse-lake.ts.net/actions/toolkit/go-setup:dev
+  args:
+    - -go-version=${{ inputs.go-version }}
+    - -go-version-file=${{ inputs.go-version-file }}
+    - -install-dir=${{ inputs.install-dir }}
+    - -cache=${{ inputs.cache }}
+    - -force=${{ inputs.force }}
+    - -debug=${{ inputs.debug }}

@@ -1,0 +1,41 @@
+name: package-latest
+description: Look up the latest version of a package in this instance's package registry (Forgejo/Gitea API), optionally filtered by type, name and version prefix, and report the next version to release
+inputs:
+  server-url:
+    description: Instance base URL to query; defaults to the workflow's server URL
+    default: ''
+  owner:
+    description: Owner (user or org) whose packages to list; defaults to the workflow's repository owner
+    default: ''
+  type:
+    description: Package type to list (container, generic, ...); empty lists every type
+    default: ''
+  package:
+    description: Package name to match (substring); e.g. dockerbase/root for a container package
+    default: ''
+  prefix:
+    description: Only versions starting with this prefix count, e.g. '1.20261007.' — include the trailing separator
+    default: ''
+  token:
+    description: Access token for private packages; public packages need none
+    default: ''
+  debug:
+    description: Enable debug logging
+    default: 'false'
+outputs:
+  version:
+    description: The latest matching version, empty when the registry has none
+  next:
+    description: The version a new release should use — the latest with its patch component incremented, or the prefix (plus 0) when nothing matched
+runs:
+  using: docker
+  image: docker://git.mouse-lake.ts.net/actions/toolkit/package-latest:dev
+  env:
+    TOKEN: ${{ inputs.token }}
+  args:
+    - -server-url=${{ inputs.server-url }}
+    - -owner=${{ inputs.owner }}
+    - -type=${{ inputs.type }}
+    - -package=${{ inputs.package }}
+    - -prefix=${{ inputs.prefix }}
+    - -debug=${{ inputs.debug }}

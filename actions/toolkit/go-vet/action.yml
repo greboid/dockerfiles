@@ -1,0 +1,15 @@
+name: go-vet
+description: go vet step; runs go vet over the workspace module's packages (./... by default) in a Go toolchain container
+inputs:
+  packages:
+    description: Space-separated package patterns to vet
+    default: './...'
+  debug:
+    description: Enable debug logging
+    default: 'false'
+runs:
+  using: docker
+  image: docker://git.mouse-lake.ts.net/actions/toolkit/go-vet:dev
+  args:
+    - -packages=${{ inputs.packages }}
+    - -debug=${{ inputs.debug }}

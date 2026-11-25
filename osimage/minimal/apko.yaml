@@ -22,7 +22,7 @@ contents:
     - systemd-boot=262.1-r19
     - systemd-efistub=262.1-r19
     - bootc=1.17.5-r2
-    - podman=5.8.10-r0
+    - podman=5.8.11-r0
     - osimage-upgrade=1.0.0-r11
     - skopeo=1.20.1-r2
     - zstd=1.6.0-r1

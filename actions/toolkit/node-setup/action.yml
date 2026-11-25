@@ -1,0 +1,51 @@
+name: node-setup
+description: Pure-Go replacement for actions/setup-node (no Node.js); installs a Node.js distribution (musl builds on Alpine-style images) with checksum verification and sets up pnpm (or yarn/npm via the package-manager input)
+inputs:
+  node-version:
+    description: 'Node version to install: exact (18.19.0), wildcard (18, 18.19), lts/*, lts/Jod or latest'
+    default: ''
+  node-version-file:
+    description: Path to a .nvmrc or package.json; defaults to .nvmrc or package.json in the working directory when no version is given
+    default: ''
+  package-manager:
+    description: 'Package manager to set up on top of Node: pnpm (default), yarn or npm; pnpm/yarn are installed into the toolchain, npm uses the one bundled with Node.js'
+    default: 'pnpm'
+  working-dir:
+    description: Directory holding the project's .nvmrc, package.json and .npmrc; defaults to the workspace
+    default: ''
+  registry-url:
+    description: npm registry to configure in a project .npmrc (e.g. a Forgejo package registry)
+    default: ''
+  token:
+    description: Auth token written for registry-url; defaults to GITHUB_TOKEN
+    default: ''
+  install-dir:
+    description: Directory to install distributions into; defaults to .actions/node under the workspace
+    default: ''
+  force:
+    description: Re-download even if the toolchain is already installed
+    default: 'false'
+  cache:
+    description: Accepted for actions/setup-node familiarity; ignored (the toolchain is kept in the workspace)
+    default: ''
+  debug:
+    description: Enable debug logging
+    default: 'false'
+outputs:
+  node-version:
+    description: The resolved Node.js version
+runs:
+  using: docker
+  image: docker://git.mouse-lake.ts.net/actions/toolkit/node-setup:dev
+  env:
+    TOKEN: ${{ inputs.token }}
+  args:
+    - -node-version=${{ inputs.node-version }}
+    - -node-version-file=${{ inputs.node-version-file }}
+    - -working-dir=${{ inputs.working-dir }}
+    - -install-dir=${{ inputs.install-dir }}
+    - -force=${{ inputs.force }}
+    - -cache=${{ inputs.cache }}
+    - -package-manager=${{ inputs.package-manager }}
+    - -registry-url=${{ inputs.registry-url }}
+    - -debug=${{ inputs.debug }}

@@ -1,0 +1,17 @@
+name: check
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+jobs:
+  check:
+    runs-on: alpine
+    steps:
+      - uses: actions/toolkit/git-checkout@master
+      - uses: actions/toolkit/go-setup@master
+      - uses: actions/toolkit/go-lint@master
+      - uses: actions/toolkit/go-vet@master
+      - uses: actions/toolkit/go-test@master

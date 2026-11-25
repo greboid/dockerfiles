@@ -1,0 +1,32 @@
+name: docker-login
+description: Replacement for docker/login-action (no Node.js); logs credentials into a docker config that later steps (and docker-push) find, verified via buildah login
+inputs:
+  registry:
+    description: Registry to log in to; with no inputs at all, defaults to the Forgejo instance of this workflow using GITHUB_TOKEN
+    default: ''
+  username:
+    description: Registry username (ignored in authorized-integration mode; Forgejo reads the token from the password)
+    default: ''
+  password:
+    description: Registry password or token; takes precedence over audience
+    default: ''
+  audience:
+    description: Audience of a Forgejo Authorized Integration; when set (and password is not), fetches an OIDC JWT from the runner and logs in to the Forgejo instance of this workflow with it (requires Forgejo v16+ and enable-openid-connect set to true in the workflow)
+    default: ''
+  ghcr:
+    description: GitHub PAT with write:packages to also log in to ghcr.io (for docker-push's ghcr mirror)
+    default: ''
+  debug:
+    description: Enable debug logging
+    default: 'false'
+runs:
+  using: docker
+  image: docker://git.mouse-lake.ts.net/actions/toolkit/docker-login:dev
+  env:
+    PASSWORD: ${{ inputs.password }}
+    GHCR: ${{ inputs.ghcr }}
+  args:
+    - -registry=${{ inputs.registry }}
+    - -username=${{ inputs.username }}
+    - -audience=${{ inputs.audience }}
+    - -debug=${{ inputs.debug }}

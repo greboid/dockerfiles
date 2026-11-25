@@ -1,0 +1,63 @@
+name: git-try-push
+description: Push the checked-out branch (and optional tags) to the remote with retries — when a concurrent push won the race, the remote branch is fetched and the local commits rebased onto it before waiting and retrying; a compact action-git-try-push for jobs that share a branch
+inputs:
+  branch:
+    description: Branch to push HEAD to; defaults to the checked-out branch (none when detached)
+    default: ''
+  tags:
+    description: Whitespace-separated tag names to push alongside the branch
+    default: ''
+  remote:
+    description: Remote to push to
+    default: origin
+  retries:
+    description: How many times to retry after a failed push
+    default: '10'
+  initial_wait:
+    description: Seconds to wait before the first retry
+    default: '2'
+  wait_factor:
+    description: Multiplier applied to the wait after each retry
+    default: '2'
+  wait_max:
+    description: Cap, in seconds, of the growing wait
+    default: '60'
+  rebase:
+    description: Catch up with the remote branch (fetch + rebase --autostash) between attempts
+    default: 'true'
+  push_flags:
+    description: Extra whitespace-separated git push flags, e.g. --force-with-lease
+    default: ''
+  token:
+    description: Access token; defaults to the audience input's ID token, then GITHUB_TOKEN, then GITEA_TOKEN
+    default: ''
+  audience:
+    description: Audience of a Forgejo Authorized Integration; used as the auth token when token is not set (requires enable-openid-connect set to true in the workflow)
+    default: ''
+  username:
+    description: Username for token basic auth; defaults to GITHUB_ACTOR then x-access-token
+    default: ''
+  debug:
+    description: Enable debug logging
+    default: 'false'
+outputs:
+  head:
+    description: The SHA that was pushed (HEAD after any rebase)
+runs:
+  using: docker
+  image: docker://git.mouse-lake.ts.net/actions/toolkit/git-try-push:dev
+  env:
+    TOKEN: ${{ inputs.token }}
+  args:
+    - -branch=${{ inputs.branch }}
+    - -tags=${{ inputs.tags }}
+    - -remote=${{ inputs.remote }}
+    - -retries=${{ inputs.retries }}
+    - -initial-wait=${{ inputs.initial_wait }}
+    - -wait-factor=${{ inputs.wait_factor }}
+    - -wait-max=${{ inputs.wait_max }}
+    - -rebase=${{ inputs.rebase }}
+    - -push-flags=${{ inputs.push_flags }}
+    - -audience=${{ inputs.audience }}
+    - -username=${{ inputs.username }}
+    - -debug=${{ inputs.debug }}

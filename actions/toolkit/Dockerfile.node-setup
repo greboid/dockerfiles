@@ -1,0 +1,16 @@
+# Image for the node-setup action, built and pushed to the instance registry by
+# the images workflow (.forgejo/workflows/images.yml) with the repository
+# root as the docker build context (Dockerfile.node-setup).
+#
+# The final image's libc decides which Node builds the action installs
+# (it detects musl in the image it runs in and switches to the musl
+# builds); Alpine matches the Alpine-style images it is used with.
+FROM git.mouse-lake.ts.net/containers/golang:latest AS build
+WORKDIR /src
+COPY . .
+RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/action ./node-setup/cmd
+
+FROM git.mouse-lake.ts.net/containers/alpine:latest
+RUN apk add --no-cache ca-certificates
+COPY --from=build /out/action /bin/action
+ENTRYPOINT ["/bin/action"]

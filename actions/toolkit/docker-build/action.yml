@@ -1,0 +1,42 @@
+name: docker-build
+description: Build-only sibling of docker-push (no Node.js); OCI builds with buildah in the action container, single-platform results loaded into the runner engine
+inputs:
+  tags:
+    description: Full image references to tag the image with, separated by commas or whitespace (optional; untagged builds are only addressable by the imageid output)
+    default: ''
+  context:
+    description: Build context directory, relative to the workspace
+    default: '.'
+  file:
+    description: 'Containerfile/Dockerfile path, relative to the context (default: Containerfile if present, else Dockerfile)'
+    default: ''
+  target:
+    description: Build target stage
+    default: ''
+  platforms:
+    description: Target platforms, separated by commas or whitespace (e.g. linux/amd64,linux/arm64); more than one builds each platform but loads nothing into the runner engine, whose docker-daemon transport takes only single images
+    default: ''
+  build-args:
+    description: Build-time variables, one KEY=VALUE per line
+    default: ''
+  no-cache:
+    description: Do not use the docker build cache
+    default: 'false'
+  debug:
+    description: Enable debug logging
+    default: 'false'
+outputs:
+  imageid:
+    description: ID of the built image (with multiple platforms, of the last platform build)
+runs:
+  using: docker
+  image: docker://git.mouse-lake.ts.net/actions/toolkit/docker-build:dev
+  args:
+    - -tags=${{ inputs.tags }}
+    - -context=${{ inputs.context }}
+    - -file=${{ inputs.file }}
+    - -target=${{ inputs.target }}
+    - -platforms=${{ inputs.platforms }}
+    - -build-args=${{ inputs.build-args }}
+    - -no-cache=${{ inputs.no-cache }}
+    - -debug=${{ inputs.debug }}

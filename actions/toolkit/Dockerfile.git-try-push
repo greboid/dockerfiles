@@ -1,0 +1,15 @@
+# Image for the git-try-push action, built and pushed to the instance registry by
+# the images workflow (.forgejo/workflows/images.yml) with the repository
+# root as the docker build context (Dockerfile.git-try-push).
+#
+# git is baked in: the action drives the git CLI (push/fetch/rebase),
+# which job images do not always ship.
+FROM git.mouse-lake.ts.net/containers/golang:latest AS build
+WORKDIR /src
+COPY . .
+RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/action ./git-try-push/cmd
+
+FROM git.mouse-lake.ts.net/containers/alpine:latest
+RUN apk add --no-cache ca-certificates git
+COPY --from=build /out/action /bin/action
+ENTRYPOINT ["/bin/action"]

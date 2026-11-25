@@ -1,0 +1,53 @@
+name: git-commit
+description: Commit the changes git-checkout left in the workspace (all of them, or only files matching the given pathspecs) and optionally push the commit back to its branch; a compact git-auto-commit-action
+inputs:
+  message:
+    description: Commit message (required)
+    default: ''
+  files:
+    description: Whitespace-separated pathspecs to stage, with git's own globbing; default stages every change, deletions included
+    default: ''
+  name:
+    description: Committer name; defaults to GITHUB_ACTOR
+    default: ''
+  email:
+    description: Committer email; defaults to <name>@users.noreply.<instance host>
+    default: ''
+  push:
+    description: Push the commit to origin after committing
+    default: 'true'
+  branch:
+    description: Branch to push to; defaults to the checked-out branch
+    default: ''
+  token:
+    description: Access token for pushing; defaults to the audience input's ID token, then GITHUB_TOKEN, then GITEA_TOKEN
+    default: ''
+  audience:
+    description: Audience of a Forgejo Authorized Integration; used as the auth token when token is not set (requires enable-openid-connect set to true in the workflow)
+    default: ''
+  username:
+    description: Username for token basic auth; defaults to GITHUB_ACTOR then x-access-token
+    default: ''
+  debug:
+    description: Enable debug logging
+    default: 'false'
+outputs:
+  changes-detected:
+    description: '''true'' when a commit was created, ''false'' when there was nothing to commit'
+  commit:
+    description: The SHA of the created commit (or of HEAD when nothing changed)
+runs:
+  using: docker
+  image: docker://git.mouse-lake.ts.net/actions/toolkit/git-commit:dev
+  env:
+    TOKEN: ${{ inputs.token }}
+  args:
+    - -message=${{ inputs.message }}
+    - -files=${{ inputs.files }}
+    - -name=${{ inputs.name }}
+    - -email=${{ inputs.email }}
+    - -push=${{ inputs.push }}
+    - -branch=${{ inputs.branch }}
+    - -audience=${{ inputs.audience }}
+    - -username=${{ inputs.username }}
+    - -debug=${{ inputs.debug }}

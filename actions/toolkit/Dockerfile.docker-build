@@ -1,0 +1,21 @@
+# Image for the docker-build action, built and pushed to the instance registry by
+# the images workflow (.forgejo/workflows/images.yml) with the repository
+# root as the docker build context (Dockerfile.docker-build).
+FROM git.mouse-lake.ts.net/containers/golang:latest AS build
+WORKDIR /src
+COPY . .
+RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/action ./docker-build/cmd
+
+# The final image is the build environment, so buildah and its helpers
+# (netavark is a buildah runtime dependency, fuse-overlayfs the faster
+# storage driver) are baked in instead of apk-installed on demand the
+# way the composite action did in the job container.
+FROM git.mouse-lake.ts.net/containers/alpine:latest
+# The alpine base image enables only main repos, while buildah's dependency
+# set (netavark, fuse-overlayfs, containers-common, matching gpgme) lives in
+# community — rewrite the repo list so this install sees a consistent pair.
+RUN . /etc/os-release \
+ && printf 'https://dl-cdn.alpinelinux.org/alpine/v%s/main\nhttps://dl-cdn.alpinelinux.org/alpine/v%s/community\n' "${VERSION_ID%.*}" "${VERSION_ID%.*}" > /etc/apk/repositories \
+ && apk add --no-cache ca-certificates buildah netavark fuse-overlayfs
+COPY --from=build /out/action /bin/action
+ENTRYPOINT ["/bin/action"]

@@ -1,0 +1,93 @@
+name: docker-push
+description: Replacement for docker/build-push-action (no Node.js); OCI builds with buildah in the action container — one platform by default, a multi-platform manifest list via the platforms input — pushed straight to the registry, with image tags derived from the workflow ref when not given explicitly
+inputs:
+  tags:
+    description: Full image references to tag and push, separated by commas or whitespace; when empty, derived from the workflow ref (master/main -> dev, semver tag -> latest/M.m.p/M.m/M) as <registry>/<owner>/<repo>:<version> on the registries below
+    default: ''
+  registries:
+    description: Comma separated registries for derived tags; defaults to the registry of the Forgejo instance this workflow runs on
+    default: ''
+  repository:
+    description: Image name for derived tags; defaults to owner/repository-name
+    default: ''
+  token:
+    description: Token used to list repository tags for the "latest" rule of derived tags; defaults to GITHUB_TOKEN
+    default: ''
+  context:
+    description: Build context directory, relative to the workspace
+    default: '.'
+  file:
+    description: 'Containerfile/Dockerfile path, relative to the context (default: Containerfile if present, else Dockerfile)'
+    default: ''
+  target:
+    description: Build target stage
+    default: ''
+  platforms:
+    description: Target platforms, separated by commas or whitespace (e.g. linux/amd64,linux/arm64); more than one builds each platform into a shared manifest list pushed with every tag
+    default: ''
+  build-args:
+    description: Build-time variables, one KEY=VALUE per line
+    default: ''
+  push:
+    description: Push after building
+    default: 'true'
+  no-cache:
+    description: Do not use the docker build cache
+    default: 'false'
+  registry:
+    description: Registry for the explicit credentials below (optional; otherwise the docker config from docker-login is used)
+    default: ''
+  username:
+    description: Registry username (optional; otherwise the docker config from docker-login is used)
+    default: ''
+  password:
+    description: Registry password (optional; otherwise the docker config from docker-login is used)
+    default: ''
+  ghcr:
+    description: Mirror the built image to the GitHub Container Registry (ghcr.io/owner/repo) in addition to the tags
+    default: 'false'
+  ghcr-repository:
+    description: GHCR repository to mirror to, owner/name (defaults to GITHUB_REPOSITORY, lower-cased)
+    default: ''
+  ghcr-token:
+    description: GitHub PAT with write:packages to push the mirror; defaults to ghcr.io credentials from docker-login
+    default: ''
+  ghcr-username:
+    description: Username for the ghcr.io login (defaults to GITHUB_ACTOR)
+    default: ''
+  debug:
+    description: Enable debug logging
+    default: 'false'
+outputs:
+  imageid:
+    description: ID of the built image
+  digest:
+    description: Digest of the pushed manifest (of the manifest list for multi-platform pushes)
+  version:
+    description: The pushed semver for tag refs, the commit SHA on master/main, "unknown" otherwise
+  tags:
+    description: The image references pushed, comma separated
+runs:
+  using: docker
+  image: docker://git.mouse-lake.ts.net/actions/toolkit/docker-push:dev
+  env:
+    TOKEN: ${{ inputs.token }}
+    PASSWORD: ${{ inputs.password }}
+    GHCR_TOKEN: ${{ inputs.ghcr-token }}
+  args:
+    - -tags=${{ inputs.tags }}
+    - -registries=${{ inputs.registries }}
+    - -repository=${{ inputs.repository }}
+    - -context=${{ inputs.context }}
+    - -file=${{ inputs.file }}
+    - -target=${{ inputs.target }}
+    - -platforms=${{ inputs.platforms }}
+    - -build-args=${{ inputs.build-args }}
+    - -push=${{ inputs.push }}
+    - -no-cache=${{ inputs.no-cache }}
+    - -registry=${{ inputs.registry }}
+    - -username=${{ inputs.username }}
+    - -ghcr=${{ inputs.ghcr }}
+    - -ghcr-repository=${{ inputs.ghcr-repository }}
+    - -ghcr-username=${{ inputs.ghcr-username }}
+    - -debug=${{ inputs.debug }}

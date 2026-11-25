@@ -1,0 +1,28 @@
+name: apko-changelog
+description: Compare two apko lock files (new vs old) and produce a commit-message style changelog summarising per-architecture package changes
+inputs:
+  new-lockfile:
+    description: Path (relative to the workspace) of the new apko lock file
+    default: base.lock.json
+  old-lockfile:
+    description: Path (relative to the workspace) of the previous apko lock file
+    default: old.lock.json
+  version:
+    description: Version string to mention in the message; defaults to the VERSTRING environment variable
+    default: ''
+  debug:
+    description: Enable debug logging
+    default: 'false'
+outputs:
+  changes:
+    description: 'true when the lock files differ in package versions, empty otherwise'
+  message:
+    description: The changelog message (multi-line), ready to use as a commit message
+runs:
+  using: docker
+  image: docker://git.mouse-lake.ts.net/actions/toolkit/apko-changelog:dev
+  args:
+    - -new-lockfile=${{ inputs.new-lockfile }}
+    - -old-lockfile=${{ inputs.old-lockfile }}
+    - -version=${{ inputs.version }}
+    - -debug=${{ inputs.debug }}

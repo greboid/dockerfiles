@@ -1,0 +1,14 @@
+# Image for the go-lint action, built and pushed to the instance registry by
+# the images workflow (.forgejo/workflows/images.yml) with the repository
+# root as the docker build context (Dockerfile.go-lint).
+#
+# The golang image is both the build and the runtime environment: it
+# ships the gofmt the action checks with.
+FROM git.mouse-lake.ts.net/containers/golang:latest AS build
+WORKDIR /src
+COPY . .
+RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/action ./go-lint/cmd
+
+FROM git.mouse-lake.ts.net/containers/golang:latest
+COPY --from=build /out/action /bin/action
+ENTRYPOINT ["/bin/action"]
