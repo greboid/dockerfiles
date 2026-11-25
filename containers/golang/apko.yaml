@@ -44,7 +44,7 @@ contents:
     - patch=2.8.1-r0
     - pcre2=10.49-r0
     - zlib=1.4-r0
-    - zstd-libs=1.5.7-r2
+    - zstd-libs=1.6.0-r1
 
 accounts:
   run-as: 0

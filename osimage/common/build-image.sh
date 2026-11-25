@@ -13,17 +13,22 @@ if ! command -v bootc >/dev/null 2>&1; then
     exit 1
 fi
 mkdir -p "$out"
-rm -rf "$out/rootfs" "$out/uki-diagnostics"
-rm -f "$out/$name.tar"
+base="$out/.base-oci"
+rm -rf "$out/rootfs" "$out/uki-diagnostics" "$base"
+rm -rf "$out/$name.oci" "$out/$name.tar"
+trap 'rm -rf "$base"' EXIT
 
 echo "== apko: build base image"
+# apko writes an OCI layout when the output is an existing directory.
+mkdir -p "$base"
 # shellcheck disable=SC2086
-SOURCE_DATE_EPOCH=0 apko build ${APKO_EXTRA_REPO_ARGS:-} "$img_def" "localhost/$name:dev" "$out/$name.tar"
+SOURCE_DATE_EPOCH=0 apko build ${APKO_EXTRA_REPO_ARGS:-} ${APKO_CACHE_DIR:+--cache-dir "$APKO_CACHE_DIR"} "$img_def" "localhost/$name:dev" "$base/"
 
 echo '== seal host UKI'
-"$common_dir/seal.sh" "$out/$name.tar" "$out/$name.tar" "$out/rootfs"
+"$common_dir/seal.sh" "$base" "$out/$name.oci" "$out/rootfs"
 
 echo '== bootc container lint (fatal)'
-bootc container lint --rootfs "$out/rootfs"
+# /etc is not persisted (composefs [etc] mount = "none"), so users cannot drift
+bootc container lint --rootfs "$out/rootfs" --skip sysusers
 
-echo "built $out/$name.tar"
+echo "built $out/$name.oci"

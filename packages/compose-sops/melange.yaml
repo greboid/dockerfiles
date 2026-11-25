@@ -1,8 +1,8 @@
 package:
   name: compose-sops
-  version: 0.4.1
+  version: 0.5.1
   epoch: 0
-  description: Compose provider publishing SOPS-encrypted secrets as files on tmpfs
+  description: Docker volume plugin publishing SOPS-encrypted secrets on tmpfs, installed into Docker at boot
   target-architecture:
     - x86_64
   copyright:
@@ -10,6 +10,9 @@ package:
         - "*"
       attestation: LICENSE
       license: MIT
+  dependencies:
+    runtime:
+      - docker-cli=29.9.3-r1
 
 environment:
   contents:
@@ -29,7 +32,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 0a39e876cbc7c0652ebc0481ff14b2c29ed77f7d
+      expected-commit: 53287055749f32ada2f770547b60f7d3a29b1264
       repository: https://git.mouse-lake.ts.net/greboid/compose-sops
       tag: v${{package.version}}
   - uses: go/build
@@ -37,6 +40,22 @@ pipeline:
       packages: ./
       output: compose-sops
       static: "true"
+      prefix: usr/lib/compose-sops/plugin/rootfs/usr
+  - name: Assemble the plugin
+    runs: |
+      plugin="${{targets.destdir}}/usr/lib/compose-sops/plugin"
+      install -Dm644 plugin/config.json "$plugin/config.json"
+      for d in documents state mnt/volumes run/compose-sops run/docker/plugins; do
+        mkdir -p "$plugin/rootfs/$d"
+      done
+  - name: Install the plugin installer and units
+    runs: |
+      d="${{targets.destdir}}"
+      install -Dm755 plugin/install.sh "$d/usr/libexec/compose-sops-plugin-install"
+      install -Dm644 plugin/systemd/compose-sops-plugin.service "$d/usr/lib/systemd/system/compose-sops-plugin.service"
+      install -Dm644 plugin/systemd/docker-compose-sops.conf "$d/usr/lib/systemd/system/docker.service.d/compose-sops.conf"
+      mkdir -p "$d/etc/systemd/system/docker.service.wants"
+      ln -s /usr/lib/systemd/system/compose-sops-plugin.service "$d/etc/systemd/system/docker.service.wants/compose-sops-plugin.service"
   - uses: license/install
   - uses: go/credits
 
@@ -45,6 +64,7 @@ test:
     contents:
       repositories:
         - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
         - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
       packages:
         - os-release=3.24.2-r0
@@ -52,15 +72,70 @@ test:
   pipeline:
     - uses: test/paths
       with:
-        executables: /usr/bin/compose-sops
-        files: /usr/share/licenses/compose-sops/LICENSE /usr/share/licenses/compose-sops/CREDITS
-    - name: Reports provider metadata
+        executables: /usr/lib/compose-sops/plugin/rootfs/usr/bin/compose-sops /usr/libexec/compose-sops-plugin-install
+        files: /usr/share/licenses/compose-sops/LICENSE /usr/share/licenses/compose-sops/CREDITS /usr/lib/compose-sops/plugin/config.json /usr/lib/systemd/system/compose-sops-plugin.service /usr/lib/systemd/system/docker.service.d/compose-sops.conf
+    - name: No binary on the PATH
       runs: |
-        /usr/bin/compose-sops compose metadata | grep -q '"age-key-file"'
-    - name: Generates a key and prints its recipient
+        test ! -e /usr/bin/compose-sops
+    - name: Plugin config serves the packaged binary
       runs: |
-        /usr/bin/compose-sops keygen --output /tmp/key.txt
-        /usr/bin/compose-sops recipient --key-file /tmp/key.txt | grep -q '^age1'
+        grep -q '"entrypoint": \["/usr/bin/compose-sops", "plugin"\]' /usr/lib/compose-sops/plugin/config.json
+        grep -q '"propagatedMount": "/mnt/volumes"' /usr/lib/compose-sops/plugin/config.json
+        for d in documents state mnt/volumes run/compose-sops run/docker/plugins; do
+          test -d "/usr/lib/compose-sops/plugin/rootfs/$d"
+        done
+    - name: Plugin binary works
+      runs: |
+        bin=/usr/lib/compose-sops/plugin/rootfs/usr/bin/compose-sops
+        "$bin" keygen --output /tmp/key.txt
+        "$bin" recipient --key-file /tmp/key.txt | grep -q '^age1'
+        out=$("$bin" 2>&1 || true)
+        echo "$out" | grep -q 'compose-sops plugin'
+    - name: Unit installs the plugin after docker
+      runs: |
+        unit=/usr/lib/systemd/system/compose-sops-plugin.service
+        grep -qx 'Requires=docker.service' "$unit"
+        grep -qx 'After=docker.service compose-sops-key.service' "$unit"
+        grep -qx 'ExecStart=/usr/libexec/compose-sops-plugin-install /usr/lib/compose-sops/plugin' "$unit"
+        test "$(readlink /etc/systemd/system/docker.service.wants/compose-sops-plugin.service)" = "$unit"
+        grep -qx 'After=compose-sops-key.service' /usr/lib/systemd/system/docker.service.d/compose-sops.conf
+    - name: Installer creates, configures and enables the plugin once
+      runs: |
+        # Fake docker CLI keeping plugin state in files.
+        mkdir -p /tmp/fake /tmp/bin
+        cat > /tmp/bin/docker <<'EOF'
+        #!/bin/sh
+        s=/tmp/fake
+        echo "$*" >> $s/calls
+        [ "$1" = plugin ] || exit 1
+        case "$2" in
+          inspect)
+            [ -f $s/created ] || exit 1
+            case "$4" in
+              *Enabled*) cat $s/enabled 2>/dev/null || echo false ;;
+              *Env*) cat $s/env 2>/dev/null || echo COMPOSE_SOPS_BUILD= ;;
+              *Mounts*) cat $s/mounts 2>/dev/null || echo "documents=/srv key=/run/compose-sops state=/var/lib/compose-sops " ;;
+            esac ;;
+          create) touch $s/created ;;
+          rm) rm -f $s/created $s/enabled $s/env $s/mounts ;;
+          disable) echo false > $s/enabled ;;
+          enable) echo true > $s/enabled ;;
+          set)
+            shift 3
+            printf '%s\n' "$@" | grep '^COMPOSE_SOPS_BUILD=' > $s/env
+            printf '%s ' $(printf '%s\n' "$@" | sed -n 's/\.source=/=/p') > $s/mounts ;;
+        esac
+        EOF
+        chmod +x /tmp/bin/docker
+        export PATH=/tmp/bin:$PATH COMPOSE_SOPS_STATE_DIR=/tmp/state COMPOSE_SOPS_DOCUMENTS=/opt/stacks
+        /usr/libexec/compose-sops-plugin-install
+        grep -qx 'plugin create compose-sops /usr/lib/compose-sops/plugin' /tmp/fake/calls
+        grep -q '^plugin set compose-sops documents.source=/opt/stacks key.source=/run/compose-sops state.source=/tmp/state COMPOSE_SOPS_BUILD=' /tmp/fake/calls
+        grep -qx 'plugin enable compose-sops' /tmp/fake/calls
+        test "$(stat -c %a /tmp/state)" = 700
+        : > /tmp/fake/calls
+        /usr/libexec/compose-sops-plugin-install
+        ! grep -qE 'plugin (create|rm|set|disable|enable)' /tmp/fake/calls
 
 update:
   enabled: true

@@ -1,7 +1,7 @@
 package:
   name: osimage-config
   version: 1.0.0
-  epoch: 32
+  epoch: 40
   description: OS configuration for osimage bootc images (baked systemd enablement, boot kargs, boot assessment)
   target-architecture:
     - x86_64
@@ -102,13 +102,11 @@ pipeline:
       test -f "$resolv" && test ! -L "$resolv"
       head -n 1 "$resolv" | grep -q '^#.*systemd-resolved'
       test "$(grep '^nameserver ' "$resolv")" = 'nameserver 127.0.0.53'
-      test -f "${{targets.destdir}}/usr/lib/composefs/setup-root-conf.toml"
       test -f "${{targets.destdir}}/etc/profile.d/osimage-prompt.sh"
       test -f "${{targets.destdir}}/etc/machine-id" && test ! -s "${{targets.destdir}}/etc/machine-id"
       test "$(cat "${{targets.destdir}}/usr/lib/osimage/etc-seed/hostname")" = osimage
       ! grep -q '/etc/hostname' "${{targets.destdir}}/usr/lib/tmpfiles.d/osimage.conf"
       grep -q '^ConditionPathExists=!/var/lib/osimage/etc/machine-id$' "${{targets.destdir}}/usr/lib/systemd/system/systemd-machine-id-commit.service.d/osimage-state.conf"
-      grep -q '^enabled = true$' "${{targets.destdir}}/usr/lib/composefs/setup-root-conf.toml"
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/dbus-org.freedesktop.login1.service")" = /usr/lib/systemd/system/systemd-logind.service
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/dbus-org.freedesktop.hostname1.service")" = /usr/lib/systemd/system/systemd-hostnamed.service
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/dbus-org.freedesktop.timedate1.service")" = /usr/lib/systemd/system/systemd-timedated.service
@@ -125,6 +123,11 @@ pipeline:
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/multi-user.target.wants/systemd-networkd.service")" = "/usr/lib/systemd/system/systemd-networkd.service"
       test "$(stat -c %a "${{targets.destdir}}/etc/doas.d")" = 750
       grep -q '^permit nopass :wheel cmd tailscale$' "${{targets.destdir}}/etc/doas.d/osimage.conf"
+      grep -q '^permit nopass :wheel cmd upgrade$' "${{targets.destdir}}/etc/doas.d/osimage.conf"
+      grep -q '^permit nopass :wheel cmd osimage-upgrade$' "${{targets.destdir}}/etc/doas.d/osimage.conf"
+      grep -q '^permit nopass :wheel cmd /usr/bin/tailscale$' "${{targets.destdir}}/etc/doas.d/osimage.conf"
+      grep -q '^permit nopass :wheel cmd /usr/bin/upgrade$' "${{targets.destdir}}/etc/doas.d/osimage.conf"
+      grep -q '^permit nopass :wheel cmd /usr/bin/osimage-upgrade$' "${{targets.destdir}}/etc/doas.d/osimage.conf"
       grep -q '^permit setenv { .*ENV=/etc/profile.d/osimage-prompt.sh } :wheel$' "${{targets.destdir}}/etc/doas.d/osimage.conf"
       grep -q '^auth *sufficient *pam_rssh.so auth_key_file=/etc/osimage/authorized_keys/${user}.keys$' "${{targets.destdir}}/etc/pam.d/doas"
       test -s "${{targets.destdir}}/etc/osimage/authorized_keys/greboid.keys"
@@ -133,7 +136,14 @@ pipeline:
       test "$(readlink "${{targets.destdir}}/etc/systemd/system/multi-user.target.wants/compose-sops-key.service")" = /usr/lib/systemd/system/compose-sops-key.service
       test -x "${{targets.destdir}}/usr/libexec/osimage-age-key"
       grep -q '^ExecStart=/usr/bin/systemd-creds decrypt --name=compose-sops-key /var/drover/age-key.cred /run/compose-sops/age-key.txt$' "${{targets.destdir}}/usr/lib/systemd/system/compose-sops-key.service"
-      grep -qx 'After=compose-sops-key.service' "${{targets.destdir}}/usr/lib/systemd/system/drover.service.d/age-key.conf"
+      grep -qx 'Group=docker' "${{targets.destdir}}/usr/lib/systemd/system/compose-sops-key.service"
+      grep -qx 'Before=docker.service' "${{targets.destdir}}/usr/lib/systemd/system/compose-sops-key.service"
+      grep -qx 'RuntimeDirectoryPreserve=restart' "${{targets.destdir}}/usr/lib/systemd/system/compose-sops-key.service"
+      grep -qx 'COMPOSE_SOPS=/usr/lib/compose-sops/plugin/rootfs/usr/bin/compose-sops' "${{targets.destdir}}/usr/libexec/osimage-age-key"
+      ! grep -qE '^compose-sops ' "${{targets.destdir}}/usr/libexec/osimage-age-key"
+      grep -qx 'COMPOSE_SOPS_DOCUMENTS=/var/drover' "${{targets.destdir}}/etc/compose-sops/plugin.env"
+      grep -qx 'ExecStartPost=/bin/chmod 0640 /run/compose-sops/age-key.txt' "${{targets.destdir}}/usr/lib/systemd/system/compose-sops-key.service"
+      grep -qx 'After=compose-sops-key.service compose-sops-plugin.service' "${{targets.destdir}}/usr/lib/systemd/system/drover.service.d/age-key.conf"
       grep -qx 'Wants=drover.service' "${{targets.destdir}}/usr/lib/systemd/system/docker.service.d/drover.conf"
 
 test:
@@ -161,7 +171,6 @@ test:
         test -f /usr/lib/systemd/system/osimage-boot-count.service
         test -f /usr/lib/tmpfiles.d/osimage.conf
         test "$(readlink /etc/systemd/system/local-fs.target.wants/tmp.mount)" = "/usr/lib/systemd/system/tmp.mount"
-        test -f /usr/lib/composefs/setup-root-conf.toml
     - name: Shared digest parsing covers BLS options and UKI wrappers
       runs: |
         . /usr/libexec/osimage-boot-common

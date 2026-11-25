@@ -63,6 +63,7 @@ jobs:
             --keyring-append "$PWD/keys/packages.rsa.pub" \
             $(cat org-repo.args) \
             $(cat lint.args) \
+            --cache-dir "${GOMODCACHE:-./melange-cache/}" \
             --out-dir dist
 
       - name: Test package

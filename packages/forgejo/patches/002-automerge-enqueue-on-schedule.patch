@@ -1,0 +1,101 @@
+diff --git a/services/automerge/automerge.go b/services/automerge/automerge.go
+index 21a33a1..c805fff 100644
+--- a/services/automerge/automerge.go
++++ b/services/automerge/automerge.go
+@@ -64,6 +64,11 @@ func ScheduleAutoMerge(ctx context.Context, doer *user_model.User, pull *issues_
+ 		_, err = issues_model.CreateAutoMergeComment(ctx, issues_model.CommentTypePRScheduledToAutoMerge, pull, doer)
+ 		return err
+ 	})
++	if err == nil && scheduled {
++		// Checks may already have passed, in which case no later status event
++		// would ever trigger the merge.
++		StartPRCheckAndAutoMerge(ctx, pull)
++	}
+ 	return scheduled, err
+ }
+ 
+diff --git a/tests/integration/pull_auto_merge_test.go b/tests/integration/pull_auto_merge_test.go
+index 7545bb3..1c35123 100644
+--- a/tests/integration/pull_auto_merge_test.go
++++ b/tests/integration/pull_auto_merge_test.go
+@@ -14,9 +14,9 @@ import (
+ 	"time"
+ 
+ 	auth_model "forgejo.org/models/auth"
+-	"forgejo.org/models/db"
+ 	issues_model "forgejo.org/models/issues"
+ 	pull_model "forgejo.org/models/pull"
++	repo_model "forgejo.org/models/repo"
+ 	unit_model "forgejo.org/models/unit"
+ 	"forgejo.org/models/unittest"
+ 	user_model "forgejo.org/models/user"
+@@ -180,7 +180,15 @@ func TestPullAutoMergeFromFork(t *testing.T) {
+ 			AddTokenAuth(badToken)
+ 		MakeRequest(t, req, http.StatusMethodNotAllowed) // (odd status code for this case; seems like it should be a 403)
+ 
+-		// Owner of the base repo will trigger an auto-merge:
++		// Simulate a booking whose actor has since lost write access to the base repo: the merge should not proceed.
++		require.NoError(t, pull_model.ScheduleAutoMerge(t.Context(), forkUser, pullRequest.ID, repo_model.MergeStyleSquash, "squash", false))
++		pullRequest = unittest.AssertExistsAndLoadBean(t, &issues_model.PullRequest{ID: pullRequest.ID})
++		automerge.StartPRCheckAndAutoMerge(t.Context(), pullRequest)
++		pullRequest = unittest.AssertExistsAndLoadBean(t, &issues_model.PullRequest{ID: pullRequest.ID})
++		assert.Empty(t, pullRequest.MergedCommitID)
++		require.NoError(t, pull_model.DeleteScheduledAutoMerge(t.Context(), pullRequest.ID))
++
++		// Owner of the base repo books an auto-merge. No checks are pending, so booking alone must merge:
+ 		session := loginUser(t, baseRepo.OwnerName)
+ 		token := getTokenForLoggedInUser(t, session, auth_model.AccessTokenScopeWriteRepository)
+ 		req = NewRequestWithJSON(t, "POST", fmt.Sprintf("/api/v1/repos/%s/%s/pulls/%d/merge", baseRepo.OwnerName, baseRepo.Name, pullIssue.Index),
+@@ -191,31 +199,8 @@ func TestPullAutoMergeFromFork(t *testing.T) {
+ 			AddTokenAuth(token)
+ 		MakeRequest(t, req, http.StatusCreated)
+ 
+-		// An AutoMerge record now exists which should proceed to a correct merge.  Before doing that, we'll modify that
+-		// record to simulate a situation - if someone was recently permitted to mark a PR for automerge but then had
+-		// their collaborator access removed, the merge should not proceed.
+-		am := unittest.AssertExistsAndLoadBean(t, &pull_model.AutoMerge{PullID: pullRequest.ID})
+-		assert.Equal(t, baseRepo.OwnerID, am.DoerID)
+-		am.DoerID = forkRepo.OwnerID // change to a user that doesn't have access to write to the base repo
+-		_, err = db.GetEngine(t.Context()).ID(am.ID).Update(am)
+-		require.NoError(t, err)
+-
+-		// Trigger automerge background handler, then check PR is *not* merged because the automerge actor does not have
+-		// write permission on the repo:
+-		pullRequest = unittest.AssertExistsAndLoadBean(t, &issues_model.PullRequest{ID: pullRequest.ID})
+-		automerge.StartPRCheckAndAutoMerge(t.Context(), pullRequest)
+-		pullRequest = unittest.AssertExistsAndLoadBean(t, &issues_model.PullRequest{ID: pullRequest.ID})
+-		assert.Empty(t, pullRequest.MergedCommitID)
+-
+-		// Restore the automerge actor to a user who does have write permission:
+-		am.DoerID = baseRepo.OwnerID
+-		_, err = db.GetEngine(t.Context()).ID(am.ID).Update(am)
+-		require.NoError(t, err)
+-
+-		// Trigger automerge background handler, then check PR is merged:
+-		pullRequest = unittest.AssertExistsAndLoadBean(t, &issues_model.PullRequest{ID: pullRequest.ID})
+-		automerge.StartPRCheckAndAutoMerge(t.Context(), pullRequest)
+ 		pullRequest = unittest.AssertExistsAndLoadBean(t, &issues_model.PullRequest{ID: pullRequest.ID})
+ 		assert.NotEmpty(t, pullRequest.MergedCommitID)
++		unittest.AssertNotExistsBean(t, &pull_model.AutoMerge{PullID: pullRequest.ID})
+ 	})
+ }
+diff --git a/tests/integration/pull_merge_test.go b/tests/integration/pull_merge_test.go
+index 5319b1f..7160d6d 100644
+--- a/tests/integration/pull_merge_test.go
++++ b/tests/integration/pull_merge_test.go
+@@ -877,11 +877,13 @@ func testPullAutoMergeAfterCommitStatusSucceed(t *testing.T, ctx APITestContext,
+ 
+ 	// create a pull request with some changes
+ 	branchName := "master"
++	// Unique per case: an identical commit would inherit a success status from an earlier case and merge on booking.
++	content := fmt.Sprintf("Hello, World (Edited %s %t %t)\n", forkName, deleteBranch, withAPI)
+ 	if deleteBranch {
+ 		branchName = "new_branch_1"
+-		testEditFileToNewBranch(t, ctx.Session, "user1", forkName, "master", branchName, "README.md", "Hello, World (Edited)\n")
++		testEditFileToNewBranch(t, ctx.Session, "user1", forkName, "master", branchName, "README.md", content)
+ 	} else {
+-		testEditFile(t, ctx.Session, "user1", forkName, "master", "README.md", "Hello, World (Edited)\n")
++		testEditFile(t, ctx.Session, "user1", forkName, "master", "README.md", content)
+ 	}
+ 	testPullCreate(t, ctx.Session, "user1", forkName, false, "master", branchName, "Indexer notifier test pull")
+ 

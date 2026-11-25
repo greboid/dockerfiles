@@ -1,0 +1,430 @@
+diff --git a/models/webhook/hooktask.go b/models/webhook/hooktask.go
+index f5f7384..e6a4b58 100644
+--- a/models/webhook/hooktask.go
++++ b/models/webhook/hooktask.go
+@@ -261,3 +261,15 @@ func deleteDeliveredHookTasksByWebhook(ctx context.Context, hookID int64, number
+ 
+ 	return nil
+ }
++
++// FindFailedHookTasksSince returns the hook tasks of hookID whose delivery was attempted at or after since and failed, oldest first
++func FindFailedHookTasksSince(ctx context.Context, hookID int64, since timeutil.TimeStampNano) ([]*HookTask, error) {
++	tasks := make([]*HookTask, 0, 10)
++	return tasks, db.GetEngine(ctx).
++		Where("hook_id = ?", hookID).
++		And("is_delivered = ?", true).
++		And("is_succeed = ?", false).
++		And("delivered >= ?", since).
++		Asc("id").
++		Find(&tasks)
++}
+diff --git a/modules/structs/hook_redeliver.go b/modules/structs/hook_redeliver.go
+new file mode 100644
+index 0000000..8e073e1
+--- /dev/null
++++ b/modules/structs/hook_redeliver.go
+@@ -0,0 +1,23 @@
++// Copyright 2026 The Forgejo Authors. All rights reserved.
++// SPDX-License-Identifier: GPL-3.0-or-later
++
++package structs
++
++import "time"
++
++// RedeliverHookOption selects the failed deliveries of a webhook to redeliver
++type RedeliverHookOption struct {
++	// Redeliver failed deliveries attempted at or after this time
++	// required: true
++	// swagger:strfmt date-time
++	Since time.Time `json:"since"`
++}
++
++// HookRedelivery is a delivery queued by replaying a failed one
++type HookRedelivery struct {
++	// UUID of the new delivery
++	UUID string `json:"uuid"`
++	// UUID of the failed delivery it replays
++	ReplayOf string `json:"replay_of"`
++	Event    string `json:"event"`
++}
+diff --git a/routers/api/v1/admin/hooks.go b/routers/api/v1/admin/hooks.go
+index 29aa8b3..e56de66 100644
+--- a/routers/api/v1/admin/hooks.go
++++ b/routers/api/v1/admin/hooks.go
+@@ -175,3 +175,61 @@ func DeleteHook(ctx *context.APIContext) {
+ 	}
+ 	ctx.Status(http.StatusNoContent)
+ }
++
++// RedeliverHook replays the failed deliveries of a system webhook
++func RedeliverHook(ctx *context.APIContext) {
++	// swagger:operation POST /admin/hooks/{id}/redeliver admin adminRedeliverHook
++	// ---
++	// summary: Redeliver the failed deliveries of a hook attempted since a given time
++	// description: Each failed delivery still kept in the delivery history is queued again as a new delivery, oldest first. A failed delivery is replayed again by every call whose time covers it.
++	// consumes:
++	// - application/json
++	// produces:
++	// - application/json
++	// parameters:
++	// - name: id
++	//   in: path
++	//   description: id of the hook
++	//   type: integer
++	//   format: int64
++	//   required: true
++	// - name: body
++	//   in: body
++	//   required: true
++	//   schema:
++	//     "$ref": "#/definitions/RedeliverHookOption"
++	// responses:
++	//   "200":
++	//     "$ref": "#/responses/HookRedeliveryList"
++	//   "404":
++	//     "$ref": "#/responses/notFound"
++	//   "422":
++	//     "$ref": "#/responses/validationError"
++
++	form := web.GetForm(ctx).(*api.RedeliverHookOption)
++	if form.Since.IsZero() {
++		ctx.Error(http.StatusUnprocessableEntity, "", "since is required")
++		return
++	}
++
++	hook, err := webhook.GetSystemOrDefaultWebhook(ctx, ctx.ParamsInt64(":id"))
++	if err != nil {
++		if errors.Is(err, util.ErrNotExist) {
++			ctx.NotFound()
++		} else {
++			ctx.Error(http.StatusInternalServerError, "GetSystemOrDefaultWebhook", err)
++		}
++		return
++	}
++
++	replays, originals, err := webhook_service.RedeliverFailedHookTasks(ctx, hook, form.Since)
++	if err != nil {
++		ctx.Error(http.StatusInternalServerError, "RedeliverFailedHookTasks", err)
++		return
++	}
++	out := make([]*api.HookRedelivery, len(replays))
++	for i, t := range replays {
++		out[i] = &api.HookRedelivery{UUID: t.UUID, ReplayOf: originals[i], Event: string(t.EventType)}
++	}
++	ctx.JSON(http.StatusOK, out)
++}
+diff --git a/routers/api/v1/api.go b/routers/api/v1/api.go
+index 72dc5e1..4c9431b 100644
+--- a/routers/api/v1/api.go
++++ b/routers/api/v1/api.go
+@@ -1418,6 +1418,7 @@ func Routes() *web.Route {
+ 				m.Combo("/{id}").Get(admin.GetHook).
+ 					Patch(bind(api.EditHookOption{}), admin.EditHook).
+ 					Delete(admin.DeleteHook)
++				m.Post("/{id}/redeliver", bind(api.RedeliverHookOption{}), admin.RedeliverHook)
+ 			})
+ 			m.Group("/actions/runners", func() {
+ 				m.Combo("").
+diff --git a/routers/api/v1/swagger/options.go b/routers/api/v1/swagger/options.go
+index bf55ab1..da4e99a 100644
+--- a/routers/api/v1/swagger/options.go
++++ b/routers/api/v1/swagger/options.go
+@@ -37,6 +37,8 @@ type swaggerParameterBodies struct {
+ 	CreateHookOption api.CreateHookOption
+ 	// in:body
+ 	EditHookOption api.EditHookOption
++	// in:body
++	RedeliverHookOption api.RedeliverHookOption
+ 
+ 	// in:body
+ 	EditGitHookOption api.EditGitHookOption
+diff --git a/routers/api/v1/swagger/repo.go b/routers/api/v1/swagger/repo.go
+index f93f523..f9d4b15 100644
+--- a/routers/api/v1/swagger/repo.go
++++ b/routers/api/v1/swagger/repo.go
+@@ -138,6 +138,13 @@ type swaggerHookListWithoutPagination struct {
+ 	Body []api.Hook `json:"body"`
+ }
+ 
++// HookRedeliveryList
++// swagger:response HookRedeliveryList
++type swaggerHookRedeliveryList struct {
++	// in:body
++	Body []api.HookRedelivery `json:"body"`
++}
++
+ // GitHook
+ // swagger:response GitHook
+ type swaggerResponseGitHook struct {
+diff --git a/services/webhook/webhook.go b/services/webhook/webhook.go
+index f163971..ab1a6da 100644
+--- a/services/webhook/webhook.go
++++ b/services/webhook/webhook.go
+@@ -10,6 +10,7 @@ import (
+ 	"html/template"
+ 	"net/http"
+ 	"strings"
++	"time"
+ 
+ 	"forgejo.org/models/db"
+ 	repo_model "forgejo.org/models/repo"
+@@ -22,6 +23,7 @@ import (
+ 	"forgejo.org/modules/queue"
+ 	"forgejo.org/modules/setting"
+ 	api "forgejo.org/modules/structs"
++	"forgejo.org/modules/timeutil"
+ 	"forgejo.org/modules/util"
+ 	webhook_module "forgejo.org/modules/webhook"
+ 	"forgejo.org/services/forms"
+@@ -294,3 +296,24 @@ func ReplayHookTask(ctx context.Context, w *webhook_model.Webhook, uuid string)
+ 
+ 	return enqueueHookTask(task.ID)
+ }
++
++// RedeliverFailedHookTasks replays every failed delivery of w attempted at or after since.
++// It returns the new tasks paired by position with the UUIDs of the deliveries they replay.
++func RedeliverFailedHookTasks(ctx context.Context, w *webhook_model.Webhook, since time.Time) (replays []*webhook_model.HookTask, originals []string, err error) {
++	failed, err := webhook_model.FindFailedHookTasksSince(ctx, w.ID, timeutil.TimeStampNano(since.UnixNano()))
++	if err != nil {
++		return nil, nil, err
++	}
++	for _, t := range failed {
++		replay, err := webhook_model.ReplayHookTask(ctx, w.ID, t.UUID)
++		if err != nil {
++			return replays, originals, err
++		}
++		replays = append(replays, replay)
++		originals = append(originals, t.UUID)
++		if err := enqueueHookTask(replay.ID); err != nil {
++			return replays, originals, err
++		}
++	}
++	return replays, originals, nil
++}
+diff --git a/templates/swagger/v1_json.tmpl b/templates/swagger/v1_json.tmpl
+index ed7d16c..b4de7b4 100644
+--- a/templates/swagger/v1_json.tmpl
++++ b/templates/swagger/v1_json.tmpl
+@@ -800,6 +800,51 @@
+         }
+       }
+     },
++    "/admin/hooks/{id}/redeliver": {
++      "post": {
++        "description": "Each failed delivery still kept in the delivery history is queued again as a new delivery, oldest first. A failed delivery is replayed again by every call whose time covers it.",
++        "consumes": [
++          "application/json"
++        ],
++        "produces": [
++          "application/json"
++        ],
++        "tags": [
++          "admin"
++        ],
++        "summary": "Redeliver the failed deliveries of a hook attempted since a given time",
++        "operationId": "adminRedeliverHook",
++        "parameters": [
++          {
++            "type": "integer",
++            "format": "int64",
++            "description": "id of the hook",
++            "name": "id",
++            "in": "path",
++            "required": true
++          },
++          {
++            "name": "body",
++            "in": "body",
++            "required": true,
++            "schema": {
++              "$ref": "#/definitions/RedeliverHookOption"
++            }
++          }
++        ],
++        "responses": {
++          "200": {
++            "$ref": "#/responses/HookRedeliveryList"
++          },
++          "404": {
++            "$ref": "#/responses/notFound"
++          },
++          "422": {
++            "$ref": "#/responses/validationError"
++          }
++        }
++      }
++    },
+     "/admin/orgs": {
+       "get": {
+         "produces": [
+@@ -27780,6 +27825,27 @@
+       },
+       "x-go-package": "forgejo.org/modules/structs"
+     },
++    "HookRedelivery": {
++      "description": "HookRedelivery is a delivery queued by replaying a failed one",
++      "type": "object",
++      "properties": {
++        "event": {
++          "type": "string",
++          "x-go-name": "Event"
++        },
++        "replay_of": {
++          "description": "UUID of the failed delivery it replays",
++          "type": "string",
++          "x-go-name": "ReplayOf"
++        },
++        "uuid": {
++          "description": "UUID of the new delivery",
++          "type": "string",
++          "x-go-name": "UUID"
++        }
++      },
++      "x-go-package": "forgejo.org/modules/structs"
++    },
+     "Identity": {
+       "description": "Identity for a person's identity like an author or committer",
+       "type": "object",
+@@ -29907,6 +29973,19 @@
+       },
+       "x-go-package": "forgejo.org/modules/structs"
+     },
++    "RedeliverHookOption": {
++      "description": "RedeliverHookOption selects the failed deliveries of a webhook to redeliver",
++      "type": "object",
++      "properties": {
++        "since": {
++          "description": "Redeliver failed deliveries attempted at or after this time",
++          "type": "string",
++          "format": "date-time",
++          "x-go-name": "Since"
++        }
++      },
++      "x-go-package": "forgejo.org/modules/structs"
++    },
+     "Reference": {
+       "type": "object",
+       "title": "Reference represents a Git reference.",
+@@ -32196,6 +32275,15 @@
+         }
+       }
+     },
++    "HookRedeliveryList": {
++      "description": "HookRedeliveryList",
++      "schema": {
++        "type": "array",
++        "items": {
++          "$ref": "#/definitions/HookRedelivery"
++        }
++      }
++    },
+     "Issue": {
+       "description": "Issue",
+       "schema": {
+diff --git a/tests/integration/api_admin_hook_redeliver_test.go b/tests/integration/api_admin_hook_redeliver_test.go
+new file mode 100644
+index 0000000..c799e14
+--- /dev/null
++++ b/tests/integration/api_admin_hook_redeliver_test.go
+@@ -0,0 +1,101 @@
++// Copyright 2026 The Forgejo Authors. All rights reserved.
++// SPDX-License-Identifier: GPL-3.0-or-later
++
++package integration
++
++import (
++	"fmt"
++	"net/http"
++	"net/http/httptest"
++	"sync"
++	"testing"
++	"time"
++
++	auth_model "forgejo.org/models/auth"
++	webhook_model "forgejo.org/models/webhook"
++	api "forgejo.org/modules/structs"
++	"forgejo.org/modules/timeutil"
++	webhook_module "forgejo.org/modules/webhook"
++	"forgejo.org/tests"
++
++	"github.com/stretchr/testify/assert"
++	"github.com/stretchr/testify/require"
++)
++
++func TestAPIAdminRedeliverHook(t *testing.T) {
++	defer tests.PrepareTestEnv(t)()
++
++	var mu sync.Mutex
++	var received []string
++	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
++		mu.Lock()
++		received = append(received, r.Header.Get("X-Forgejo-Event"))
++		mu.Unlock()
++	}))
++	defer srv.Close()
++
++	hook := &webhook_model.Webhook{
++		URL:             srv.URL,
++		HTTPMethod:      http.MethodPost,
++		Type:            webhook_module.FORGEJO,
++		ContentType:     webhook_model.ContentTypeJSON,
++		IsSystemWebhook: true,
++		IsActive:        true,
++		HookEvent:       &webhook_module.HookEvent{SendEverything: true},
++	}
++	require.NoError(t, webhook_model.CreateWebhook(t.Context(), hook, ""))
++
++	cutoff := time.Now().Add(-time.Hour)
++	addTask := func(event webhook_module.HookEventType, delivered time.Time, succeeded bool) *webhook_model.HookTask {
++		task, err := webhook_model.CreateHookTask(t.Context(), &webhook_model.HookTask{
++			HookID:         hook.ID,
++			PayloadContent: `{"ref":"refs/heads/main"}`,
++			PayloadVersion: 2,
++			EventType:      event,
++			IsDelivered:    true,
++			IsSucceed:      succeeded,
++			Delivered:      timeutil.TimeStampNano(delivered.UnixNano()),
++		})
++		require.NoError(t, err)
++		return task
++	}
++	addTask(webhook_module.HookEventPush, cutoff.Add(-time.Minute), false)
++	addTask(webhook_module.HookEventPush, cutoff.Add(time.Minute), true)
++	failed := addTask(webhook_module.HookEventPullRequest, cutoff.Add(time.Minute), false)
++
++	adminToken := getUserToken(t, "user1", auth_model.AccessTokenScopeWriteAdmin)
++	url := fmt.Sprintf("/api/v1/admin/hooks/%d/redeliver", hook.ID)
++
++	t.Run("Redeliver", func(t *testing.T) {
++		req := NewRequestWithJSON(t, "POST", url, &api.RedeliverHookOption{Since: cutoff}).AddTokenAuth(adminToken)
++		resp := MakeRequest(t, req, http.StatusOK)
++		var got []*api.HookRedelivery
++		DecodeJSON(t, resp, &got)
++		require.Len(t, got, 1)
++		assert.Equal(t, failed.UUID, got[0].ReplayOf)
++		assert.Equal(t, "pull_request", got[0].Event)
++		assert.NotEqual(t, failed.UUID, got[0].UUID)
++
++		assert.Eventually(t, func() bool {
++			mu.Lock()
++			defer mu.Unlock()
++			return len(received) == 1 && received[0] == "pull_request"
++		}, 10*time.Second, 50*time.Millisecond)
++	})
++
++	t.Run("Missing since", func(t *testing.T) {
++		req := NewRequestWithJSON(t, "POST", url, &api.RedeliverHookOption{}).AddTokenAuth(adminToken)
++		MakeRequest(t, req, http.StatusUnprocessableEntity)
++	})
++
++	t.Run("Unknown hook", func(t *testing.T) {
++		req := NewRequestWithJSON(t, "POST", "/api/v1/admin/hooks/999999/redeliver", &api.RedeliverHookOption{Since: cutoff}).AddTokenAuth(adminToken)
++		MakeRequest(t, req, http.StatusNotFound)
++	})
++
++	t.Run("Not admin", func(t *testing.T) {
++		token := getUserToken(t, "user2", auth_model.AccessTokenScopeWriteAdmin)
++		req := NewRequestWithJSON(t, "POST", url, &api.RedeliverHookOption{Since: cutoff}).AddTokenAuth(token)
++		MakeRequest(t, req, http.StatusForbidden)
++	})
++}

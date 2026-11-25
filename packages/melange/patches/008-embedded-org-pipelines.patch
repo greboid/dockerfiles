@@ -102,10 +102,10 @@ index 0000000..5ff8091
 +        install -d -m "${{inputs.mode}}" "${{targets.destdir}}/$dir"
 +      done
 diff --git c/pkg/build/pipelines/go/build.yaml i/pkg/build/pipelines/go/build.yaml
-index 24ae09c..9241b16 100644
+index 24ae09c..0d037c8 100644
 --- c/pkg/build/pipelines/go/build.yaml
 +++ i/pkg/build/pipelines/go/build.yaml
-@@ -1,156 +1,71 @@
+@@ -1,156 +1,76 @@
 -name: Run a build using the go compiler
 +name: Build go code
  
@@ -246,9 +246,11 @@ index 24ae09c..9241b16 100644
 -        mkdir -p ~/.config/git/
 -        echo '**' > ~/.config/git/ignore
 +      export GOTELEMETRY=off
-+      export GOMODCACHE="$PWD/go-package-cache"
-+      if [ -n "${{inputs.experiments}}" ]; then
-+        export GOEXPERIMENT="${{inputs.experiments}}"
++      # /var/cache/melange is the --cache-dir mount (the runner's shared module cache)
++      if [ -d /var/cache/melange ]; then
++        export GOMODCACHE=/var/cache/melange
++      else
++        export GOMODCACHE="$PWD/go-package-cache"
        fi
 -
 -      cd "${{inputs.modroot}}"
@@ -257,7 +259,9 @@ index 24ae09c..9241b16 100644
 -      if [ ! -e go.mod ]; then
 -        echo "go.mod not found in ${{inputs.modroot}}"
 -        exit 1
--      fi
++      if [ -n "${{inputs.experiments}}" ]; then
++        export GOEXPERIMENT="${{inputs.experiments}}"
+       fi
 -
 -      "${{inputs.tidy}}" && go mod tidy
 -
@@ -305,10 +309,10 @@ index 24ae09c..9241b16 100644
 +      rm -f "$ignore"
 diff --git c/pkg/build/pipelines/go/credits.yaml i/pkg/build/pipelines/go/credits.yaml
 new file mode 100644
-index 0000000..d93b515
+index 0000000..bd9fcc8
 --- /dev/null
 +++ i/pkg/build/pipelines/go/credits.yaml
-@@ -0,0 +1,36 @@
+@@ -0,0 +1,42 @@
 +name: Install the Go dependency credits
 +
 +needs:
@@ -329,19 +333,25 @@ index 0000000..d93b515
 +
 +pipeline:
 +  # Fails when a dependency module ships no license file, unless
-+  # skip-missing is set. gocredits walks
-+  # the source tree for packages, so the module cache go/build keeps there
-+  # is hidden behind a dot-directory while it runs.
++  # skip-missing is set. Uses the --cache-dir mount when present, as go/build
++  # does; otherwise gocredits walks the source tree for packages, so the
++  # module cache go/build keeps there is hidden behind a dot-directory while
++  # it runs.
 +  - runs: |
 +      cd "${{inputs.directory}}"
 +      cache="$PWD/go-package-cache"
 +      hidden="$PWD/.go-package-cache"
-+      [ -d "$cache" ] && mv "$cache" "$hidden"
++      modcache="$hidden"
++      if [ -d /var/cache/melange ]; then
++        modcache=/var/cache/melange
++      elif [ -d "$cache" ]; then
++        mv "$cache" "$hidden"
++      fi
 +      mkdir -p "${{targets.destdir}}/usr/share/licenses/${{package.name}}"
 +      skip=""
 +      [ "${{inputs.skip-missing}}" = "true" ] && skip="-skip-missing"
 +      rc=0
-+      GOMODCACHE="$hidden" GOTELEMETRY=off gocredits $skip . \
++      GOMODCACHE="$modcache" GOTELEMETRY=off gocredits $skip . \
 +        > "${{targets.destdir}}/usr/share/licenses/${{package.name}}/CREDITS" || rc=$?
 +      [ -d "$hidden" ] && mv "$hidden" "$cache"
 +      exit $rc

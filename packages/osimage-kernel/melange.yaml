@@ -1,7 +1,7 @@
 package:
   name: osimage-kernel
   version: 7.1.5
-  epoch: 30
+  epoch: 39
   description: Alpine linux-stable kernel repacked into the bootc /usr/lib/modules layout, trimmed for headless servers
   target-architecture:
     - x86_64
@@ -29,9 +29,8 @@ environment:
       - bash=5.3.9-r1
       - kmod=34.2-r1
       - dracut=113-r0
-      - bootc=1.17.5-r0
-      - osimage-config=1.0.0-r32
-      - systemd=262.1-r17
+      - bootc=1.17.5-r2
+      - systemd=262.1-r19
       - lsblk=2.42.3-r1
       - findmnt=2.42.3-r1
       - util-linux-login=2.42.3-r1
@@ -90,6 +89,8 @@ pipeline:
       cp -a dracut/90bootc-remount /usr/lib/dracut/modules.d/90bootc-remount
       cp -a dracut/90bootc-gptroot /usr/lib/dracut/modules.d/90bootc-gptroot
       cp -a dracut/90osimage-state /usr/lib/dracut/modules.d/90osimage-state
+      install -Dm 0644 dracut/90bootc-remount/setup-root-conf.toml \
+        "${{targets.destdir}}/usr/lib/composefs/setup-root-conf.toml"
 
 subpackages:
   - name: osimage-kernel-initramfs
@@ -153,6 +154,7 @@ test:
         test -s "/usr/lib/modules/$kver/modules.dep"
         test -d "/usr/lib/modules/$kver/kernel"
         test "$(readlink /lib/modules)" = "../usr/lib/modules"
+        grep -q '^enabled = true$' /usr/lib/composefs/setup-root-conf.toml
     - name: Headless-server trim applied and metadata consistent
       runs: |
         kver=$(ls /usr/lib/modules | head -1)

@@ -1,7 +1,7 @@
 package:
   name: bootc
   version: 1.17.5
-  epoch: 0
+  epoch: 2
   description: Bootable container images - bootc for Alpine (no SELinux)
   target-architecture:
     - x86_64
@@ -35,7 +35,7 @@ environment:
       - openssl-dev=3.5.9-r1
       - pcre2-dev
       - patch
-      - zstd=1.5.7-r2
+      - zstd=1.6.0-r1
 
 pipeline:
   - uses: fetch

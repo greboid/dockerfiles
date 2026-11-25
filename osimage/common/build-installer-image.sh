@@ -11,7 +11,7 @@ mkdir -p "$out"
 
 echo '== apko: build installer image'
 # shellcheck disable=SC2086
-SOURCE_DATE_EPOCH=0 apko build ${APKO_EXTRA_REPO_ARGS:-} \
+SOURCE_DATE_EPOCH=0 apko build ${APKO_EXTRA_REPO_ARGS:-} ${APKO_CACHE_DIR:+--cache-dir "$APKO_CACHE_DIR"} \
   "$img_def" \
   "localhost/$name:dev" "$out/$name.tar"
 

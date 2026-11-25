@@ -40,9 +40,15 @@ jobs:
           set -eu
           cp common/keys/packages@f3acd02d7d98309c4ae1d1bf92e58fe2673383ee9b816cb8b0ef8a5eac56c6bc.rsa.pub /etc/apk/keys/
           echo "$ORG_REPO" >> /etc/apk/repositories
-          apk update
-          apk add --no-cache crane tar ukify systemd-repart \
-            dosfstools mtools squashfs-tools curl
+          pkgs="crane tar ukify systemd-repart dosfstools mtools squashfs-tools curl"
+          # /caches/apk is a persistent runner volume; install uncached when it is absent.
+          if [ -d /caches/apk ]; then
+            mkdir -p /caches/apk/apk
+            apk add --update-cache --cache-dir /caches/apk/apk $pkgs
+          else
+            apk update
+            apk add --no-cache $pkgs
+          fi
 
       - name: Pull the published installer image
         run: common/fetch-installer-rootfs.sh dist

@@ -1,0 +1,351 @@
+diff --git a/models/pull/automerge.go b/models/pull/automerge.go
+index dcc1f39..787fa3b 100644
+--- a/models/pull/automerge.go
++++ b/models/pull/automerge.go
+@@ -104,3 +104,14 @@ func DeleteScheduledAutoMerge(ctx context.Context, pullID int64) error {
+ 	_, err = db.GetEngine(ctx).ID(scheduledPRM.ID).Delete(&AutoMerge{})
+ 	return err
+ }
++
++// FindScheduledMergesByDoer returns the auto merges scheduled by doerID, oldest first, with the total count
++func FindScheduledMergesByDoer(ctx context.Context, doerID int64, opts db.ListOptions) ([]*AutoMerge, int64, error) {
++	sess := db.GetEngine(ctx).Where("doer_id = ?", doerID).Asc("id")
++	if !opts.IsListAll() {
++		sess = db.SetSessionPagination(sess, &opts)
++	}
++	merges := make([]*AutoMerge, 0, 10)
++	total, err := sess.FindAndCount(&merges)
++	return merges, total, err
++}
+diff --git a/modules/structs/pull_automerge.go b/modules/structs/pull_automerge.go
+new file mode 100644
+index 0000000..3e6f9b1
+--- /dev/null
++++ b/modules/structs/pull_automerge.go
+@@ -0,0 +1,18 @@
++// Copyright 2026 The Forgejo Authors. All rights reserved.
++// SPDX-License-Identifier: GPL-3.0-or-later
++
++package structs
++
++import "time"
++
++// ScheduledAutoMerge is a pull request scheduled to merge once its checks succeed
++type ScheduledAutoMerge struct {
++	Repository *RepositoryMeta `json:"repository"`
++	// Index of the pull request in its repository
++	Index                  int64  `json:"number"`
++	PullRequestURL         string `json:"pull_request_url"`
++	MergeStyle             string `json:"merge_style"`
++	DeleteBranchAfterMerge bool   `json:"delete_branch_after_merge"`
++	// swagger:strfmt date-time
++	Created time.Time `json:"created_at"`
++}
+diff --git a/routers/api/v1/api.go b/routers/api/v1/api.go
+index 90b8638..72dc5e1 100644
+--- a/routers/api/v1/api.go
++++ b/routers/api/v1/api.go
+@@ -773,6 +773,7 @@ func Routes() *web.Route {
+ 			}
+ 			m.Get("/times", repo.ListMyTrackedTimes)
+ 			m.Get("/stopwatches", repo.GetStopwatches)
++			m.Get("/automerges", tokenRequiresScopes(auth_model.AccessTokenScopeCategoryRepository), user.ListMyAutoMerges)
+ 			m.Get("/subscriptions", user.GetMyWatchedRepos)
+ 			m.Get("/teams", org.ListUserTeams)
+ 			m.Group("/hooks", func() {
+diff --git a/routers/api/v1/swagger/user.go b/routers/api/v1/swagger/user.go
+index 805cfe3..3b01a3d 100644
+--- a/routers/api/v1/swagger/user.go
++++ b/routers/api/v1/swagger/user.go
+@@ -48,3 +48,13 @@ type swaggerResponseUserSettings struct {
+ 	// in:body
+ 	Body api.UserSettings `json:"body"`
+ }
++
++// ScheduledAutoMergeList
++// swagger:response ScheduledAutoMergeList
++type swaggerResponseScheduledAutoMergeList struct {
++	// in:body
++	Body []api.ScheduledAutoMerge `json:"body"`
++
++	// The total number of auto merges scheduled by the user
++	TotalCount int64 `json:"X-Total-Count"`
++}
+diff --git a/routers/api/v1/user/automerge.go b/routers/api/v1/user/automerge.go
+new file mode 100644
+index 0000000..e5c8bd1
+--- /dev/null
++++ b/routers/api/v1/user/automerge.go
+@@ -0,0 +1,97 @@
++// Copyright 2026 The Forgejo Authors. All rights reserved.
++// SPDX-License-Identifier: GPL-3.0-or-later
++
++package user
++
++import (
++	"net/http"
++
++	issues_model "forgejo.org/models/issues"
++	access_model "forgejo.org/models/perm/access"
++	pull_model "forgejo.org/models/pull"
++	"forgejo.org/models/unit"
++	api "forgejo.org/modules/structs"
++	"forgejo.org/routers/api/v1/utils"
++	"forgejo.org/services/context"
++)
++
++// ListMyAutoMerges lists the auto merges scheduled by the authenticated user
++func ListMyAutoMerges(ctx *context.APIContext) {
++	// swagger:operation GET /user/automerges user userListAutoMerges
++	// ---
++	// summary: List the pull requests the authenticated user has scheduled to merge when checks succeed
++	// description: Bookings in repositories the user can no longer read are omitted from the page, so a page may be shorter than the limit.
++	// produces:
++	// - application/json
++	// parameters:
++	// - name: page
++	//   in: query
++	//   description: page number of results to return (1-based)
++	//   type: integer
++	// - name: limit
++	//   in: query
++	//   description: page size of results
++	//   type: integer
++	// responses:
++	//   "200":
++	//     "$ref": "#/responses/ScheduledAutoMergeList"
++	//   "401":
++	//     "$ref": "#/responses/unauthorized"
++	//   "403":
++	//     "$ref": "#/responses/forbidden"
++
++	merges, total, err := pull_model.FindScheduledMergesByDoer(ctx, ctx.Doer().ID, utils.GetListOptions(ctx))
++	if err != nil {
++		ctx.InternalServerError(err)
++		return
++	}
++
++	out := make([]*api.ScheduledAutoMerge, 0, len(merges))
++	for _, am := range merges {
++		pr, err := issues_model.GetPullRequestByID(ctx, am.PullID)
++		if issues_model.IsErrPullRequestNotExist(err) {
++			continue
++		}
++		if err != nil {
++			ctx.InternalServerError(err)
++			return
++		}
++		if err := pr.LoadIssue(ctx); err != nil {
++			ctx.InternalServerError(err)
++			return
++		}
++		if err := pr.LoadBaseRepo(ctx); err != nil {
++			ctx.InternalServerError(err)
++			return
++		}
++		repo := pr.BaseRepo
++		pr.Issue.Repo = repo
++		if repo.IsPrivate && ctx.PublicOnly() {
++			continue
++		}
++		perm, err := access_model.GetUserRepoPermission(ctx, repo, ctx.Doer())
++		if err != nil {
++			ctx.InternalServerError(err)
++			return
++		}
++		if !perm.CanRead(unit.TypePullRequests) {
++			continue
++		}
++		out = append(out, &api.ScheduledAutoMerge{
++			Repository: &api.RepositoryMeta{
++				ID:       repo.ID,
++				Name:     repo.Name,
++				Owner:    repo.OwnerName,
++				FullName: repo.FullName(),
++			},
++			Index:                  pr.Index,
++			PullRequestURL:         pr.Issue.HTMLURL(),
++			MergeStyle:             string(am.MergeStyle),
++			DeleteBranchAfterMerge: am.DeleteBranchAfterMerge,
++			Created:                am.CreatedUnix.AsTime(),
++		})
++	}
++
++	ctx.SetTotalCountHeader(total)
++	ctx.JSON(http.StatusOK, out)
++}
+diff --git a/templates/swagger/v1_json.tmpl b/templates/swagger/v1_json.tmpl
+index 6f5447b..ed7d16c 100644
+--- a/templates/swagger/v1_json.tmpl
++++ b/templates/swagger/v1_json.tmpl
+@@ -20790,6 +20790,44 @@
+         }
+       }
+     },
++    "/user/automerges": {
++      "get": {
++        "description": "Bookings in repositories the user can no longer read are omitted from the page, so a page may be shorter than the limit.",
++        "produces": [
++          "application/json"
++        ],
++        "tags": [
++          "user"
++        ],
++        "summary": "List the pull requests the authenticated user has scheduled to merge when checks succeed",
++        "operationId": "userListAutoMerges",
++        "parameters": [
++          {
++            "type": "integer",
++            "description": "page number of results to return (1-based)",
++            "name": "page",
++            "in": "query"
++          },
++          {
++            "type": "integer",
++            "description": "page size of results",
++            "name": "limit",
++            "in": "query"
++          }
++        ],
++        "responses": {
++          "200": {
++            "$ref": "#/responses/ScheduledAutoMergeList"
++          },
++          "401": {
++            "$ref": "#/responses/unauthorized"
++          },
++          "403": {
++            "$ref": "#/responses/forbidden"
++          }
++        }
++      }
++    },
+     "/user/avatar": {
+       "post": {
+         "produces": [
+@@ -30487,6 +30525,39 @@
+       "type": "string",
+       "x-go-package": "forgejo.org/modules/structs"
+     },
++    "ScheduledAutoMerge": {
++      "description": "ScheduledAutoMerge is a pull request scheduled to merge once its checks succeed",
++      "type": "object",
++      "properties": {
++        "created_at": {
++          "type": "string",
++          "format": "date-time",
++          "x-go-name": "Created"
++        },
++        "delete_branch_after_merge": {
++          "type": "boolean",
++          "x-go-name": "DeleteBranchAfterMerge"
++        },
++        "merge_style": {
++          "type": "string",
++          "x-go-name": "MergeStyle"
++        },
++        "number": {
++          "description": "Index of the pull request in its repository",
++          "type": "integer",
++          "format": "int64",
++          "x-go-name": "Index"
++        },
++        "pull_request_url": {
++          "type": "string",
++          "x-go-name": "PullRequestURL"
++        },
++        "repository": {
++          "$ref": "#/definitions/RepositoryMeta"
++        }
++      },
++      "x-go-package": "forgejo.org/modules/structs"
++    },
+     "SearchResults": {
+       "description": "SearchResults results of a successful search",
+       "type": "object",
+@@ -32728,6 +32799,22 @@
+         }
+       }
+     },
++    "ScheduledAutoMergeList": {
++      "description": "ScheduledAutoMergeList",
++      "schema": {
++        "type": "array",
++        "items": {
++          "$ref": "#/definitions/ScheduledAutoMerge"
++        }
++      },
++      "headers": {
++        "X-Total-Count": {
++          "type": "integer",
++          "format": "int64",
++          "description": "The total number of auto merges scheduled by the user"
++        }
++      }
++    },
+     "SearchResults": {
+       "description": "SearchResults",
+       "schema": {
+diff --git a/tests/integration/api_user_automerge_test.go b/tests/integration/api_user_automerge_test.go
+new file mode 100644
+index 0000000..0df7166
+--- /dev/null
++++ b/tests/integration/api_user_automerge_test.go
+@@ -0,0 +1,57 @@
++// Copyright 2026 The Forgejo Authors. All rights reserved.
++// SPDX-License-Identifier: GPL-3.0-or-later
++
++package integration
++
++import (
++	"net/http"
++	"testing"
++
++	auth_model "forgejo.org/models/auth"
++	issues_model "forgejo.org/models/issues"
++	pull_model "forgejo.org/models/pull"
++	repo_model "forgejo.org/models/repo"
++	"forgejo.org/models/unittest"
++	user_model "forgejo.org/models/user"
++	api "forgejo.org/modules/structs"
++	"forgejo.org/tests"
++
++	"github.com/stretchr/testify/assert"
++	"github.com/stretchr/testify/require"
++)
++
++func TestAPIListMyAutoMerges(t *testing.T) {
++	defer tests.PrepareTestEnv(t)()
++
++	user2 := unittest.AssertExistsAndLoadBean(t, &user_model.User{ID: 2})
++	pr := unittest.AssertExistsAndLoadBean(t, &issues_model.PullRequest{ID: 2})
++	repo := unittest.AssertExistsAndLoadBean(t, &repo_model.Repository{ID: pr.BaseRepoID})
++	require.NoError(t, pull_model.ScheduleAutoMerge(t.Context(), user2, pr.ID, repo_model.MergeStyleSquash, "msg", true))
++
++	list := func(t *testing.T, username string) []*api.ScheduledAutoMerge {
++		t.Helper()
++		token := getUserToken(t, username, auth_model.AccessTokenScopeReadRepository, auth_model.AccessTokenScopeReadUser)
++		resp := MakeRequest(t, NewRequest(t, "GET", "/api/v1/user/automerges").AddTokenAuth(token), http.StatusOK)
++		var out []*api.ScheduledAutoMerge
++		DecodeJSON(t, resp, &out)
++		return out
++	}
++
++	t.Run("Booker", func(t *testing.T) {
++		got := list(t, user2.Name)
++		require.Len(t, got, 1)
++		assert.Equal(t, repo.FullName(), got[0].Repository.FullName)
++		assert.Equal(t, pr.Index, got[0].Index)
++		assert.Equal(t, "squash", got[0].MergeStyle)
++		assert.True(t, got[0].DeleteBranchAfterMerge)
++	})
++
++	t.Run("Other user", func(t *testing.T) {
++		assert.Empty(t, list(t, "user4"))
++	})
++
++	t.Run("Missing repository scope", func(t *testing.T) {
++		token := getUserToken(t, user2.Name, auth_model.AccessTokenScopeReadUser)
++		MakeRequest(t, NewRequest(t, "GET", "/api/v1/user/automerges").AddTokenAuth(token), http.StatusForbidden)
++	})
++}

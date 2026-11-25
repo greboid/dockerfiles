@@ -1,7 +1,7 @@
 package:
   name: forgejo
   version: 17.0.2
-  epoch: 1
+  epoch: 2
   description: Forgejo self-hosted software forge (Gitea fork)
   target-architecture:
     - x86_64
@@ -51,6 +51,9 @@ pipeline:
     with:
       patches: |
         patches/001-admin-actions-pending-jobs.patch
+        patches/002-automerge-enqueue-on-schedule.patch
+        patches/003-api-user-automerges.patch
+        patches/004-api-admin-hook-redeliver.patch
   - name: Build the frontend assets
     runs: make frontend
   - name: Generate embedded Go assets

@@ -6,8 +6,6 @@ install() {
     inst_hook pre-pivot 60 "$moddir/composefs-setup.sh"
     inst_multiple mount
     inst_multiple /usr/lib/bootc/initramfs-setup
-    if [ -e /usr/lib/composefs/setup-root-conf.toml ]; then
-        inst_simple /usr/lib/composefs/setup-root-conf.toml
-    fi
+    inst_simple "$moddir/setup-root-conf.toml" /usr/lib/composefs/setup-root-conf.toml
     return 0
 }

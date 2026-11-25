@@ -1,6 +1,6 @@
 package:
   name: drover
-  version: 0.0.12
+  version: 0.0.17
   epoch: 0
   description: Moves singleton Docker Compose projects between hosts
   target-architecture:
@@ -38,7 +38,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: b3716c216bb48973c68554342ba52ead0ff73ea7
+      expected-commit: 2bc52e298a49f3dc71529d705a4499c23a02d34f
       repository: https://git.mouse-lake.ts.net/private/drover
       tag: v${{package.version}}
   - uses: go/build
@@ -51,9 +51,6 @@ pipeline:
       install -Dm644 deploy/systemd/drover.service "${{targets.destdir}}/usr/lib/systemd/system/drover.service"
       mkdir -p "${{targets.destdir}}/etc/systemd/system/multi-user.target.wants"
       ln -s /usr/lib/systemd/system/drover.service "${{targets.destdir}}/etc/systemd/system/multi-user.target.wants/drover.service"
-  - name: Install the tmpfiles entry
-    runs: |
-      install -Dm644 tmpfiles.d/drover.conf "${{targets.destdir}}/usr/lib/tmpfiles.d/drover.conf"
   - uses: license/install
   - uses: go/credits
 
@@ -71,7 +68,7 @@ test:
     - uses: test/paths
       with:
         executables: /usr/bin/drover
-        files: /usr/share/licenses/drover/LICENSE /usr/share/licenses/drover/CREDITS /usr/lib/systemd/system/drover.service /usr/lib/tmpfiles.d/drover.conf
+        files: /usr/share/licenses/drover/LICENSE /usr/share/licenses/drover/CREDITS /usr/lib/systemd/system/drover.service
     - name: Prints usage
       runs: |
         out=$(/usr/bin/drover 2>&1 || true)
@@ -81,9 +78,6 @@ test:
         grep -qx 'ExecStart=/usr/bin/drover daemon' /usr/lib/systemd/system/drover.service
         grep -qx 'EnvironmentFile=-/var/drover/drover.env' /usr/lib/systemd/system/drover.service
         test "$(readlink /etc/systemd/system/multi-user.target.wants/drover.service)" = /usr/lib/systemd/system/drover.service
-    - name: Creates the secrets runtime dir
-      runs: |
-        grep -qx 'd /dev/shm/drover 0711 root root -' /usr/lib/tmpfiles.d/drover.conf
 
 update:
   enabled: true

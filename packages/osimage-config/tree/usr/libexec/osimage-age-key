@@ -8,6 +8,8 @@ PATH=/usr/bin:/bin:/usr/sbin:/sbin
 export PATH
 
 CRED=/var/drover/age-key.cred
+# The compose-sops package ships its binary only inside the volume plugin.
+COMPOSE_SOPS=/usr/lib/compose-sops/plugin/rootfs/usr/bin/compose-sops
 NAME=compose-sops-key
 
 [ -e "$CRED" ] && exit 0
@@ -16,9 +18,9 @@ mkdir -p /var/drover
 tmp=$(mktemp -d /run/compose-sops/keygen.XXXXXX)
 trap 'rm -rf "$tmp"' EXIT
 
-compose-sops keygen --output "$tmp/key.txt"
+"$COMPOSE_SOPS" keygen --output "$tmp/key.txt"
 rm -f "$CRED.new"
-compose-sops cred --key "$tmp/key.txt" --with-key auto --name "$NAME" "$CRED.new"
+"$COMPOSE_SOPS" cred --key "$tmp/key.txt" --with-key auto --name "$NAME" "$CRED.new"
 sync "$CRED.new"
 mv "$CRED.new" "$CRED"
 sync /var/drover

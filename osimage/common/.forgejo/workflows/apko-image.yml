@@ -33,6 +33,8 @@ jobs:
       IMAGE_DEF: ${{ inputs.image-def }}
       IMAGE_NAME: ${{ inputs.name }}
       SEAL_UKI: ${{ inputs.seal-uki }}
+      # PRs gate merges with the full archive round-trip check; pushes rebuild the same reproducible image.
+      SEAL_VERIFY: ${{ github.event_name == 'pull_request' && 'archive' || 'tree' }}
     steps:
       - name: Checkout caller repo
         uses: actions/toolkit/git-checkout@master
@@ -52,12 +54,19 @@ jobs:
           cp common/keys/packages@f3acd02d7d98309c4ae1d1bf92e58fe2673383ee9b816cb8b0ef8a5eac56c6bc.rsa.pub /etc/apk/keys/
           echo "ORG_KEY=/etc/apk/keys/packages@f3acd02d7d98309c4ae1d1bf92e58fe2673383ee9b816cb8b0ef8a5eac56c6bc.rsa.pub" >> "$GITHUB_ENV"
           echo "$ORG_REPO" >> /etc/apk/repositories
-          apk update
           pkgs="apko bubblewrap skopeo crane tar"
           if [ "$SEAL_UKI" = "true" ]; then
-            pkgs="$pkgs ukify binutils bootc umoci"
+            pkgs="$pkgs ukify binutils bootc umoci jq"
           fi
-          apk add --no-cache $pkgs
+          # /caches/apk is a persistent runner volume; build uncached when it is absent.
+          if [ -d /caches/apk ]; then
+            mkdir -p /caches/apk/apk /caches/apk/apko
+            echo "APKO_CACHE_DIR=/caches/apk/apko" >> "$GITHUB_ENV"
+            apk add --update-cache --cache-dir /caches/apk/apk $pkgs
+          else
+            apk update
+            apk add --no-cache $pkgs
+          fi
 
       - name: Build image
         run: |
@@ -78,10 +87,14 @@ jobs:
           set -eu
           version_tag="$(date -u +%Y.%m.%d)"
           creds="greboid:$RELEASE_PACKAGE_TOKEN"
+          # The sealed layout already holds compressed blobs; a docker-archive would be recompressed.
+          if [ "$SEAL_UKI" = "true" ]; then
+            src="oci:dist/${IMAGE_NAME}.oci:latest"
+          else
+            src="docker-archive:dist/${IMAGE_NAME}.tar"
+          fi
           skopeo copy --all --format oci --dest-creds "$creds" \
-            "docker-archive:dist/${IMAGE_NAME}.tar" \
-            "docker://${PUBLISH_REF}:${version_tag}"
+            "$src" "docker://${PUBLISH_REF}:${version_tag}"
           skopeo copy --all --format oci --dest-creds "$creds" \
-            "docker-archive:dist/${IMAGE_NAME}.tar" \
-            "docker://${PUBLISH_REF}:latest"
+            "$src" "docker://${PUBLISH_REF}:latest"
           echo "published ${PUBLISH_REF}:${version_tag} (+ latest)"

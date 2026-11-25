@@ -1,7 +1,7 @@
 package:
   name: purser
-  version: 1.3.3
-  epoch: 1
+  version: 1.4.0
+  epoch: 0
   description: Periodic vulnerability reports for the local Docker containers
   target-architecture:
     - x86_64
@@ -39,7 +39,7 @@ vars:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 98608c8db997dd068f5e1c7d322bf4157665c4f1
+      expected-commit: 2c022f57d899a961dbd06028b60470d55290987b
       repository: https://github.com/csmith/purser
       tag: v${{package.version}}
   - uses: go/build

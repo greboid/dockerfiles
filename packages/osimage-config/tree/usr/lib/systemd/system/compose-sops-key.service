@@ -3,15 +3,21 @@ Description=Materialize the compose-sops age key on tmpfs
 Documentation=man:systemd-creds(1)
 Requires=systemd-creds.socket
 After=systemd-creds.socket local-fs.target
+# dockerd enables the compose-sops volume plugin, which binds /run/compose-sops.
+Before=docker.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
 UMask=0077
+Group=docker
 RuntimeDirectory=compose-sops
-RuntimeDirectoryMode=0700
-ExecStartPre=/usr/libexec/osimage-age-key
+RuntimeDirectoryMode=0750
+# Keep the directory inode across restarts so the plugin bind stays valid.
+RuntimeDirectoryPreserve=restart
+ExecStartPre=+/usr/libexec/osimage-age-key
 ExecStart=/usr/bin/systemd-creds decrypt --name=compose-sops-key /var/drover/age-key.cred /run/compose-sops/age-key.txt
+ExecStartPost=/bin/chmod 0640 /run/compose-sops/age-key.txt
 
 [Install]
 WantedBy=multi-user.target
