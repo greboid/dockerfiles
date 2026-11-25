@@ -54,7 +54,7 @@ contents:
     - openssh-client-default=10.3_p1-r2
     - nano=9.3-r0
     - rsync=3.5.2-r1
-    - drover=0.0.17-r0
+    - drover=0.0.18-r0
     - compose-sops=0.5.1-r0
 
 paths:
