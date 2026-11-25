@@ -1,6 +1,6 @@
 name: sync
 
-# Rebuilds the read-only monorepo view of the containers, packages and osimage
+# Rebuilds the read-only monorepo view of the actions, containers, packages and osimage
 # organisations. This repository is generated output; the workflow is its
 # only legitimate writer.
 
