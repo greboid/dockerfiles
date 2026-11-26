@@ -29,7 +29,7 @@ contents:
     - osimage-kernel=7.1.5-r39
     - osimage-kernel-initramfs=7.1.5-r39
     - linux-firmware-none=20260519-r0
-    - osimage-config=1.0.0-r40
+    - osimage-config=1.0.0-r42
     - e2fsprogs=1.47.4-r0
     - agetty=2.42.3-r1
     - util-linux-misc=2.42.3-r1
@@ -39,7 +39,7 @@ contents:
     - fstrim=2.42.3-r1
     - qemu-guest-agent=11.0.3-r0
     - qemu-guest-agent-systemd=1.0.0-r0
-    - dbus=1.16.2-r15
+    - dbus=1.16.2-r16
     - erofs-utils=1.9.1-r0
     - tailscale=1.104.7-r2
     - docker=29.9.3-r1
@@ -54,8 +54,9 @@ contents:
     - openssh-client-default=10.3_p1-r2
     - nano=9.3-r0
     - rsync=3.5.2-r1
-    - drover=0.0.18-r0
+    - drover=0.0.19-r0
     - compose-sops=0.5.1-r0
+    - runcage=0.2.0-r0
 
 paths:
   - path: /boot

@@ -1,7 +1,7 @@
 package:
   name: dsp
-  version: 1.4.0
-  epoch: 5
+  version: 1.5.0
+  epoch: 0
   description: Filtering proxy in front of the Docker socket
   target-architecture:
     - x86_64
@@ -34,7 +34,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 34d99a710d8bca51e97b1992b510f0f1461b3e8d
+      expected-commit: d1c06fb98978dad93db90b2fad5f68a271fd11fb
       repository: https://github.com/greboid/dsp
       tag: v${{package.version}}
   - uses: go/build
@@ -62,11 +62,10 @@ test:
       with:
         executables: /usr/bin/dsp
         files: /usr/share/licenses/dsp/LICENSE /usr/share/licenses/dsp/CREDITS
-    - name: Exits cleanly when the Docker socket is missing
+    - name: Fails when the Docker socket is missing
       runs: |
-        /usr/bin/dsp >/tmp/dsp.log 2>&1
-        test $? -eq 0
-        grep -q "socket does not exist" /tmp/dsp.log
+        ! /usr/bin/dsp >/tmp/dsp.log 2>&1
+        grep -q "unable to access socket" /tmp/dsp.log
     - name: Runs through secret-env
       runs: |
         test "$(readlink /usr/bin/dsp)" = /usr/bin/secret-env

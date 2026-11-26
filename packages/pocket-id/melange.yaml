@@ -1,7 +1,7 @@
 package:
   name: pocket-id
   version: 2.19.3
-  epoch: 1
+  epoch: 2
   description: Simple OIDC provider that lets users authenticate with passkeys
   target-architecture:
     - x86_64
@@ -28,7 +28,7 @@ environment:
       - git=2.54.1-r0
       - go=1.27.4-r1
       - nodejs=24.22.3-r0
-      - pnpm=11.28.13-r0
+      - pnpm=11.29.0-r0
       - os-release=3.24.2-r0
   environment:
     GOPATH: /go
@@ -49,7 +49,7 @@ pipeline:
     runs: |
       cd backend
       export PATH="/usr/local/go/bin:/go/bin:$PATH"
-      export CGO_ENABLED=0 GOTELEMETRY=off GOMODCACHE="$PWD/go-package-cache"
+      export CGO_ENABLED=0 GOTELEMETRY=off
       go build -trimpath \
         -ldflags "-X github.com/pocket-id/pocket-id/backend/internal/common.Version=${{package.version}}" \
         -o "${{targets.destdir}}/usr/bin/pocket-id" \

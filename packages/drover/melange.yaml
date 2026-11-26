@@ -1,6 +1,6 @@
 package:
   name: drover
-  version: 0.0.18
+  version: 0.0.19
   epoch: 0
   description: Moves singleton Docker Compose projects between hosts
   target-architecture:
@@ -38,7 +38,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 8533a6c0ccd191ae2ba4fb8012e55d93205c5b6f
+      expected-commit: eb0eca651436c2e60474fc34f02f1e852fd0cea0
       repository: https://git.mouse-lake.ts.net/private/drover
       tag: v${{package.version}}
   - uses: go/build

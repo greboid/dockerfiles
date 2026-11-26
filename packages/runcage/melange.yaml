@@ -1,0 +1,82 @@
+package:
+  name: runcage
+  version: 0.2.0
+  epoch: 0
+  description: Docker OCI runtime wrapper decrypting SOPS documents into per-container tmpfs secrets
+  target-architecture:
+    - x86_64
+  copyright:
+    - paths:
+        - "*"
+      attestation: LICENSE
+      license: CC0-1.0
+  dependencies:
+    runtime:
+      - runc=1.4.4-r0
+
+environment:
+  contents:
+    keyring:
+      - https://alpinelinux.org/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+      - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+      - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+    packages:
+      - busybox=1.37.0-r31
+      - ca-certificates=20261020-r4
+      - git=2.54.1-r0
+      - go=1.27.4-r1
+      - os-release=3.24.2-r0
+
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 98938cee82aa57fa1db467b95989eaca943fe40c
+      repository: https://git.mouse-lake.ts.net/greboid/runcage
+      tag: v${{package.version}}
+  - uses: go/build
+    with:
+      packages: ./cmd/runcage
+      output: runcage
+      static: "true"
+  - name: Install the docker.service drop-in
+    runs: |
+      install -Dm644 contrib/systemd/docker.service.d/runcage.conf \
+        "${{targets.destdir}}/usr/lib/systemd/system/docker.service.d/runcage.conf"
+  - uses: license/install
+  - uses: go/credits
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/main
+        - https://dl-cdn.alpinelinux.org/alpine/v3.24/community
+        - https://git.mouse-lake.ts.net/api/packages/packages/alpine/v3.24/main
+      packages:
+        - os-release=3.24.2-r0
+        - busybox=1.37.0-r31
+  pipeline:
+    - uses: test/paths
+      with:
+        executables: /usr/bin/runcage
+        files: /usr/share/licenses/runcage/LICENSE /usr/share/licenses/runcage/CREDITS /usr/lib/systemd/system/docker.service.d/runcage.conf
+    - name: Binary is not group or world writable
+      runs: |
+        test $(( 0$(stat -c %a /usr/bin/runcage) & 022 )) -eq 0
+    - name: Drop-in imports the age-key credential
+      runs: |
+        grep -qx 'ImportCredential=age-key' /usr/lib/systemd/system/docker.service.d/runcage.conf
+    - name: Binary is statically linked
+      runs: |
+        if grep -q 'ld-musl' /usr/bin/runcage; then
+          exit 1
+        fi
+
+update:
+  enabled: true
+  forgejo:
+    identifier: greboid/runcage
+    strip-prefix: v
+    use-tag: true

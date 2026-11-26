@@ -1,0 +1,5 @@
+{
+  "runtimes": {
+    "runcage": { "path": "/usr/bin/runcage" }
+  }
+}

@@ -27,7 +27,7 @@ contents:
     - libatomic=15.2.0-r5
     - libcrypto3=3.5.9-r1
     - libcurl=8.23.0-r0
-    - libexpat=2.10.0-r0
+    - libexpat=2.11.0-r0
     - libgcc=15.2.0-r5
     - libgcc-static=15.2.0-r5
     - libgomp=15.2.0-r5
