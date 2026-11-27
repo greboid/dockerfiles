@@ -1,7 +1,7 @@
 package:
   name: secret-env
-  version: 0.1.0
-  epoch: 2
+  version: 0.2.0
+  epoch: 0
   description: Read secret files into an environment and directly exec an application
   target-architecture:
     - x86_64
@@ -32,7 +32,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 84eb1a1dba358b5d4ffbbb10376ca14ab64e2cec
+      expected-commit: d5fc51084eff79b179755f433888845053cb2894
       repository: https://git.mouse-lake.ts.net/greboid/secret-env
       tag: v${{package.version}}
   - name: Run the test suite

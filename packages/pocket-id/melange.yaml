@@ -1,7 +1,7 @@
 package:
   name: pocket-id
   version: 2.19.3
-  epoch: 2
+  epoch: 3
   description: Simple OIDC provider that lets users authenticate with passkeys
   target-architecture:
     - x86_64
@@ -14,7 +14,7 @@ package:
     runtime:
       - ca-certificates-bundle
       - tzdata
-      - secret-env=0.1.0-r2
+      - secret-env=0.2.0-r0
 
 environment:
   contents:

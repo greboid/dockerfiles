@@ -1,6 +1,6 @@
 package:
   name: drover
-  version: 0.0.19
+  version: 0.0.20
   epoch: 0
   description: Moves singleton Docker Compose projects between hosts
   target-architecture:
@@ -38,7 +38,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: eb0eca651436c2e60474fc34f02f1e852fd0cea0
+      expected-commit: 0ca3d9d8eb71c5c5eaa40dc48fbff6899273a287
       repository: https://git.mouse-lake.ts.net/private/drover
       tag: v${{package.version}}
   - uses: go/build
@@ -72,7 +72,7 @@ test:
     - name: Prints usage
       runs: |
         out=$(/usr/bin/drover 2>&1 || true)
-        echo "$out" | grep -q "sync-compose"
+        echo "$out" | grep -q "move STACK"
     - name: Unit runs the daemon
       runs: |
         grep -qx 'ExecStart=/usr/bin/drover daemon' /usr/lib/systemd/system/drover.service

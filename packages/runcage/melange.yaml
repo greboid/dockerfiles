@@ -1,6 +1,6 @@
 package:
   name: runcage
-  version: 0.2.0
+  version: 0.3.0
   epoch: 0
   description: Docker OCI runtime wrapper decrypting SOPS documents into per-container tmpfs secrets
   target-architecture:
@@ -32,7 +32,7 @@ environment:
 pipeline:
   - uses: git-checkout
     with:
-      expected-commit: 98938cee82aa57fa1db467b95989eaca943fe40c
+      expected-commit: ae5bddaf831970ae50fc6caceac686f9e90ae350
       repository: https://git.mouse-lake.ts.net/greboid/runcage
       tag: v${{package.version}}
   - uses: go/build
